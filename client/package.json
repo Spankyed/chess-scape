@@ -1,0 +1,38 @@
+{
+  "name": "dobbers-inc",
+  "author": "AbuDobby",
+  "version": "1.0.0",
+  "description": "Dobby Private Network (Vishva)",
+  "repository": "https://github.com/spankyed/dobby.git",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel src/index.html -p 3000",
+    "build": "parcel build src/index.html -d build --public-url ./"
+  },
+  "staticFiles": {
+    "staticPath": [
+      {
+        "staticPath": "src/assets",
+        "staticOutDir": "/assets"
+      }
+    ]
+  },
+  "dependencies": {
+    "hyperapp": "1.2.9",
+    "@hyperapp/logger": "^0.5.0",
+    "babylon-navigation-mesh": "^1.2.6",
+    "babylonjs": "^3.2.0",
+    "babylonjs-gui": "^3.2.0",
+    "lodash": "^4.17.11",
+    "rxjs": "^6.3.3",
+    "utilities": "^1.0.5"
+  },
+  "devDependencies": {
+    "@babel/core": "7.1.0",
+    "@babel/preset-env": "7.1.0",
+    "@babel/preset-react": "7.0.0",
+    "autoprefixer": "9.1.5",
+    "del-cli": "1.1.0",
+    "parcel-bundler": "1.10.1"
+  }
+}
