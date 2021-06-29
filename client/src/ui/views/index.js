@@ -2,15 +2,15 @@ import { h } from 'hyperapp';
 
 //components
 import Chat from '../components/Chat'; 
-import Scene from '../../core/Scenes';
+import Scene from '../../core/Scene';
 
 const view = (state, actions) => {
 
 	const { chatting, empty, clips, timeline } = state;
 
-	const init = () => {
-		Scene.setup(actions);
-		document.getElementById("renderCanvas").focus();
+	const init = (canvas) => {
+		Scene.setup(canvas, actions);
+		canvas.focus();
 	};
 	
 	return (

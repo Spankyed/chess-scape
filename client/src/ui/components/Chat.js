@@ -1,5 +1,5 @@
 import { h } from 'hyperapp';
-import Scene from '../../core/Scenes';
+import Scene from '../../core/Scene';
 import Api from '../../api/Api';
 
 const Chat = ({state, actions}) => {

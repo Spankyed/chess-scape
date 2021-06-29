@@ -11,20 +11,15 @@ export default class Board {
     }
     
     setup (scene, canvas) {
-        let [camera, light] = this.createLightCamera() //shouldn't disable/enable camera controls, and move logic to scene.js
         let ground = this.board
-    
-        // Events
         var listeners = {
-            pointerDown: this.onPointerDown(scene, ground, camera, canvas),
-            pointerUp: this.onPointerUp(scene, ground, camera, canvas),
+            pointerDown: this.onPointerDown(scene, ground, canvas),
+            pointerUp: this.onPointerUp(scene, ground, canvas),
             pointerMove: this.onPointerMove(scene, ground)
         }
-
         canvas.addEventListener("pointerdown", listeners.pointerDown, false);
         canvas.addEventListener("pointerup", listeners.pointerUp, false);
         canvas.addEventListener("pointermove", listeners.pointerMove, false);
-    
         scene.onDispose = function () {
             canvas.removeEventListener("pointerdown", listeners.pointerDown);
             canvas.removeEventListener("pointerup", listeners.pointerUp);
@@ -34,53 +29,50 @@ export default class Board {
         return scene;
     };
 
-    onPointerDown(scene, ground, camera, canvas) {
+    onPointerDown(scene, ground, canvas) {
         return (evt) => {
             if (evt.button !== 0) {
                 return;
             }
-    
             // check if we are under a mesh : todo: check if mesh is a piece
             var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== ground; });
             if (pickInfo.hit) {
                 this.currentMesh = pickInfo.pickedMesh;
-                
                 console.log('mesh',this.currentMesh)
-
                 if(this.currentMesh.id == 'box'){return;}
-
                 this.startingPoint = this.getGroundPosition(scene, ground);
-    
                 if (this.startingPoint) { // remove this once camera controls changed to arrow keys
-                    setTimeout(function () {
-                        camera.detachControl(canvas);
-                    }, 0);
+                    // setTimeout(function () {
+                    //     camera.detachControl(canvas);
+                    // }, 0);
                 }
             }
         }
     }
 
-    onPointerUp(scene, ground, camera, canvas) {
+    onPointerUp(scene, ground, canvas) {
         return () => {
             if (this.startingPoint) {
-
                 var closestSq = this.getNearestSqCenter(scene, ground).sq;
-    
                 if (!closestSq) { 
                     this.startingPoint = null;
                     return; 
                 }
+                // if (!legalPieceMoves.includes(closestSq)) { 
+                //     this.currentMesh.position = this.startingPoint; 
+                //     this.startingPoint = null;
+                // } else {
+                //     var current = this.squares[closestSq].coords
+                //     this.currentMesh.position = new BABYLON.Vector3(current.x, this.currentMesh.position.y, current.z)
+                //     this.startingPoint = current;
+                //     this.startingPoint = null;
+                // }
 
-                if (!legalPieceMoves.includes(closestSq)) { 
-                    this.currentMesh.position = this.startingPoint; 
-                    this.startingPoint = null;
-                } else {
-                    var current = this.squares[closestSq].coords
-                    this.currentMesh.position = new BABYLON.Vector3(current.x, this.currentMesh.position.y, current.z)
-                    this.startingPoint = current;
-                    camera.attachControl(canvas, true);
-                    this.startingPoint = null;
-                }
+                var current = this.squares[closestSq].coords
+                this.currentMesh.position = new BABYLON.Vector3(current.x, this.currentMesh.position.y, current.z)
+                this.startingPoint = current;
+                this.startingPoint = null;
+
 
                 return;
             }
@@ -133,44 +125,7 @@ export default class Board {
         return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
     }
 
-    createLightCamera(){
-        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 25, new BABYLON.Vector3(0, 0, 0), this.scene);
-        camera.attachControl(this.canvas, true);
-        camera.lowerBetaLimit = 0.1;
-        camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        this.scene.clearColor = new BABYLON.Color3(0, 0, .2);
-        this.scene.ambientColor = new BABYLON.Color3(0.8, 0.8, 0.8);
 
-        const light1 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0.2, 1, 0), this.scene);
-        light1.groundColor = new BABYLON.Color3(0, 0, 0);
-        light1.diffuse = new BABYLON.Color3(0.9, 0.9, 0.9);
-        light1.specular = new BABYLON.Color3(0, 0, 0);
-
-        const light2 = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0.3, -1, 0.3), this.scene);
-        light2.position = new BABYLON.Vector3(0, 60, 0);
-        light2.diffuse = new BABYLON.Color3(1, 1, 1);
-        light2.specular = new BABYLON.Color3(0, 0, 0);
-        light2.intensity = 0.2;
-
-
-        // var sg = new BABYLON.ShadowGenerator(1024, light1);
-
-        // sg.getShadowMap().renderList.push(sphere);
-    
-        // light1.shadowMinZ = 0;
-        // light1.shadowMaxZ = 3;
-        var material = new BABYLON.StandardMaterial(this.positionscene);
-        material.alpha = 1;
-        material.diffuseColor = new BABYLON.Color3(0, 0, 0); 
-
-        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50}, this.scene);
-        ground.position = new BABYLON.Vector3(0, -.01, 0);
-        
-        ground.material = material;
-
-        ground.receiveShadows = true;
-        return [camera, light1]
-    }
 
     createBoard(){
         const tiledGround = new BABYLON.MeshBuilder.CreateTiledGround("Tiled Ground", {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: this.grid});

@@ -3,9 +3,7 @@ var Api = (function() {
   var requestPayload;
   var responsePayload;
   var messageEndpoint = '/api/message';
-
   var sessionEndpoint = '/api/session';
-
   var sessionId = null;
 
   // Publicly accessible methods defined
