@@ -1,3 +1,7 @@
+import utils from './utils'; 
+
+const { FreeCameraKeyboardRotateInput } = utils
+
 export default class SceneManager {
     /**
      * Create a new scene and registers a manager instance
@@ -81,26 +85,30 @@ export default class SceneManager {
         //camera.applyGravity = true;
     
 
-        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
+        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.attachControl(canvas, true);
+        camera.inputs.attached.pointers.detachControl();
+        // camera.inputs.attached.keyboard.detachControl();
+        camera.inputs.attached.mousewheel.detachControl();
+        // console.log('inputs',camera.inputs)
+        // camera.inputs.add(new FreeCameraKeyboardRotateInput());
         camera.lowerBetaLimit = 0.1;
         camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-
-        camera.keysUp = [87]; // w
-        camera.keysDown = [83]; // S
-        camera.keysLeft = [65]; // a
-        camera.keysRight = [68]; // D
-        camera.fov=1
-        camera.speed = 1;
         camera.inertia = 0.4;
-        camera.angularSensibility = 500;
-        camera.maxZ=1000
-        camera.minZ=0
-        camera.ellipsoid = new BABYLON.Vector3(1, 1, 1); //0.4, 1, 0.4
-        this._scene.collisionsEnabled = true;
-        camera.checkCollisions = true;
+        camera.fov=.7
 
-        camera.inputs.addPointers
+        // camera.keysUp = [87]; // w
+        // camera.keysDown = [83]; // S
+        // camera.keysLeft = [37]; // a
+        // camera.keysRight = [39]; // D
+        // camera.speed = 1;
+        // camera.angularSensibility = 500;
+        // camera.maxZ=1000
+        // camera.minZ=0
+        // camera.ellipsoid = new BABYLON.Vector3(1, 1, 1); //0.4, 1, 0.4
+        // this._scene.collisionsEnabled = true;
+        // camera.checkCollisions = true;
+
         this._scene.activeCamera = camera
 
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,2,0), this._scene);
@@ -113,12 +121,12 @@ export default class SceneManager {
     }
 
     createLightCamera(canvas){
-        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
-        camera.attachControl(canvas, true);
-        camera.lowerBetaLimit = 0.1;
-        camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        this._scene.clearColor = new BABYLON.Color3(0, 0, .2);
-        this._scene.ambientColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+        // var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
+        // camera.attachControl(canvas, true);
+        // camera.lowerBetaLimit = 0.1;
+        // camera.upperBetaLimit = (Math.PI / 2) * 0.99;
+        // this._scene.clearColor = new BABYLON.Color3(0, 0, .2);
+        // this._scene.ambientColor = new BABYLON.Color3(0.8, 0.8, 0.8);
 
         const light1 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0.2, 1, 0), this._scene);
         light1.groundColor = new BABYLON.Color3(0, 0, 0);
@@ -148,7 +156,7 @@ export default class SceneManager {
         ground.material = material;
 
         ground.receiveShadows = true;
-        return [camera, light1]
+        return light1
     }
 
         /** TODO: Switch between players/characters */
