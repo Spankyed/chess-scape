@@ -12,10 +12,12 @@ export default class player {
 
     importMesh(path, fileName, scene) {
         let callback = (meshes, particleSystems, skeletons)=>{
-            let player = meshes[0];
+            let player = meshes[0]; // bishop
             console.log('pieces',meshes)
-            player.position = new BABYLON.Vector3(0, .68 +.32, 0);
-
+            player.position = new BABYLON.Vector3(1, 1, -3);
+            // meshes[0].name = 'bishop 1'
+            // meshes[0].id = 'bishop 1'
+            // player.showBoundingBox = true;
             var material = new BABYLON.StandardMaterial(scene);
             material.alpha = 1;
             material.diffuseColor = new BABYLON.Color3(0.90, 0.82, 0.63); //white
@@ -35,4 +37,3 @@ export default class player {
 
 
 }
-

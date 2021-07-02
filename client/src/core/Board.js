@@ -2,185 +2,198 @@ export default class Board {
     constructor(scene, canvas){
         this.scene = scene;  
         this.canvas = canvas;  
-        this.grid = { 'h' : 8, 'w' : 8 };  
         this.squares = {}
+        this.startingPos; 
+        this.startingSq 
+        this.currentPiece;  
+        this.dragPos;
+        this.isSelecting = false;
+        this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_piece", this.scene);
         this.board = this.createBoard()
-        this.startingPoint;  
-        this.currentMesh;  
-        return this.setup(scene,canvas)
+        this.setupEventListeners(scene,canvas)
+        return this.board
     }
     
-    setup (scene, canvas) {
-        let ground = this.board
-        var listeners = {
-            pointerDown: this.onPointerDown(scene, ground, canvas),
-            pointerUp: this.onPointerUp(scene, ground, canvas),
-            pointerMove: this.onPointerMove(scene, ground)
+    setupEventListeners(scene, canvas) {
+        const listeners =  {   
+            onPointerDown: (evt)=> this.onPointerDown(evt),
+            onPointerUp: (evt)=> this.onPointerUp(evt),
+            onPointerMove: (evt)=> this.onPointerMove(evt)
         }
-        canvas.addEventListener("pointerdown", listeners.pointerDown, false);
-        canvas.addEventListener("pointerup", listeners.pointerUp, false);
-        canvas.addEventListener("pointermove", listeners.pointerMove, false);
+        canvas.addEventListener("pointerdown", listeners.onPointerDown, false);
+        canvas.addEventListener("pointerup", listeners.onPointerUp, false);
+        canvas.addEventListener("pointermove", listeners.onPointerMove, false);
         scene.onDispose = function () {
-            canvas.removeEventListener("pointerdown", listeners.pointerDown);
-            canvas.removeEventListener("pointerup", listeners.pointerUp);
-            canvas.removeEventListener("pointermove", listeners.pointerMove);
+            canvas.removeEventListener("pointerdown", listeners.onPointerDown);
+            canvas.removeEventListener("pointerup", listeners.onPointerUp);
+            canvas.removeEventListener("pointermove", listeners.onPointerMove);
         }
-    
         return scene;
     };
-
-    onPointerDown(scene, ground, canvas) {
-        return (evt) => {
-            if (evt.button !== 0) {
-                return;
-            }
-            // check if we are under a mesh : todo: check if mesh is a piece
-            var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== ground; });
-            if (pickInfo.hit) {
-                this.currentMesh = pickInfo.pickedMesh;
-                console.log('mesh',this.currentMesh)
-                if(this.currentMesh.id == 'box'){return;}
-                this.startingPoint = this.getGroundPosition(scene, ground);
-                if (this.startingPoint) { // remove this once camera controls changed to arrow keys
-                    // setTimeout(function () {
-                    //     camera.detachControl(canvas);
-                    // }, 0);
-                }
-            }
+    // remove scene and ground
+    onPointerDown(evt) {
+        if (evt.button == 2) { // reset on right click
+            this.resetMove(true)
+            return;
         }
+        if (evt.button !== 0) return;
+        var pickInfo = this.pickWhere((mesh) => mesh.isPickable);
+        if (!pickInfo.hit)  return;
+        if (this.currentPiece == pickInfo.pickedMesh){
+            this.resetMove()
+            return
+        }
+        // todo: check if pickedMesh is enemy piece, then ignore event (let pointerUp handle the possible eat move)
+        this.currentPiece = pickInfo.pickedMesh;
+        if (!this.currentPiece) return;
+        // console.log('picked piece', this.currentPiece)
+        if (this.currentPiece.id == 'board' || !this.currentPiece.isPickable) { // ignore picking on board
+            this.currentPiece = null
+            return
+        };
+        // set chesspiece startingPos and highlight the square underneath the piece yellow
+        this.startingPos = this.currentPiece.position.clone();
+        // console.log('starting point?',{picked:this.startingPos,mesh:this.currentPiece.position})
+        this.startingSq = this.getClosestSq(this.startingPos);
+        this.selectedHighlightLayer.removeAllMeshes();
+        this.selectedHighlightLayer.addMesh(this.startingSq.mesh, BABYLON.Color3.Yellow());
+        this.isSelecting = true;
+        this.isDragging = true
+        // console.log('mesh',this.currentPiece)
     }
 
-    onPointerUp(scene, ground, canvas) {
-        return () => {
-            if (this.startingPoint) {
-                var closestSq = this.getNearestSqCenter(scene, ground).sq;
-                if (!closestSq) { 
-                    this.startingPoint = null;
-                    return; 
-                }
-                // if (!legalPieceMoves.includes(closestSq)) { 
-                //     this.currentMesh.position = this.startingPoint; 
-                //     this.startingPoint = null;
-                // } else {
-                //     var current = this.squares[closestSq].coords
-                //     this.currentMesh.position = new BABYLON.Vector3(current.x, this.currentMesh.position.y, current.z)
-                //     this.startingPoint = current;
-                //     this.startingPoint = null;
-                // }
-
-                var current = this.squares[closestSq].coords
-                this.currentMesh.position = new BABYLON.Vector3(current.x, this.currentMesh.position.y, current.z)
-                this.startingPoint = current;
-                this.startingPoint = null;
-
-
-                return;
-            }
+    onPointerUp(evt) {
+        if (!( this.isSelecting && this.startingPos )) return;
+        var boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
+        var closestSq = this.getClosestSq(boardPos);
+        if (!( closestSq && boardPos )) { 
+            this.resetMove(true)
+            return; 
         }
+        // todo: check if legal move or pointerup was right click
+        // if (!legalPieceMoves.includes(closestSq)) { 
+        //     this.currentPiece.position = this.startingPos; 
+        //     this.startingPos = null;
+        // } else {
+        //     var current = this.squares[closestSq].coords
+        //     this.currentPiece.position = new BABYLON.Vector3(current.x, this.currentPiece.position.y, current.z)
+        //     this.startingPos = current;
+        //     this.startingPos = null;
+        // }
+        var squarePos = this.squares[closestSq.sqName].coords
+        this.currentPiece.position = new BABYLON.Vector3(squarePos.x, this.currentPiece.position.y, squarePos.z)
+        
+        if (closestSq != this.startingSq) this.resetMove()
+        else this.isDragging = false 
+        // todo: if not legal move highlight square red for .5 secs
+        // todo: set new current square indicator (change tile material diffuse)
+        return;
     }
 
-    onPointerMove (scene, ground) {
-        return(evt)=>{
-            if (!this.startingPoint) {
-                return;
-            }
-    
-            var current = this.getGroundPosition(scene, ground);
-    
-            if (!current) {
-                return;
-            }
-    
-            var diff = current.subtract(this.startingPoint);
-            this.currentMesh.position.addInPlace(diff);
-    
-            this.startingPoint = current;
-        }
+    onPointerMove (evt) {
+        if (!( this.isDragging && this.startingPos )) return;
+        var boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
+        if (!boardPos) return;
+        // console.log('currentPiece',this.currentPiece)
+        var diff = boardPos.subtract(this.dragPos || this.startingPos);
+        var moveVector = new BABYLON.Vector3(diff.x, 0, diff.z)
+        var newPos = this.currentPiece.position.addInPlace(moveVector);
+        this.dragPos = newPos;
     }
 
-    getNearestSqCenter(scene, ground){
-        let pickedPoint = this.getGroundPosition(scene, ground)
-        var closest = {sq:'a1', dist:99}; // why 99
-        for (const sq in this.squares) {
-            let dist = BABYLON.Vector3.Distance(pickedPoint, this.squares[sq].coords)
+    resetMove(goBack){
+        if (goBack) this.currentPiece.position = this.startingPos
+        this.startingPos = null;
+        this.startingSq = null;
+        this.currentPiece = null;
+        this.dragPos = null;
+        this.isSelecting = false;
+        this.legalSquares = null;
+        this.selectedHighlightLayer.removeAllMeshes();
+    }
+
+    getClosestSq(startingPos){
+        let pickedPoint = startingPos || this.pickWhere().pickedPoint
+        if (!pickedPoint) return
+        var closest = { sqName: '', dist: 999 }; 
+        for (const sqName in this.squares) {
+            let dist = BABYLON.Vector3.Distance(pickedPoint, this.squares[sqName].coords)
+            // console.log('dist', dist)
             if (dist < closest.dist){
-                closest = {sq: sq, dist: dist}
+                closest = { sqName: sqName, dist: dist }
             }            
         }
-        console.log('closest point', closest)
-        return closest
+        // console.log('closest sq', closest)
+        return this.squares[closest.sqName]
     }
 
-    getGroundPosition (scene, ground) {
-        // Use a predicate to get position on the ground
-        var pickinfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh == ground; });
-        if (pickinfo.hit) {
-            return pickinfo.pickedPoint;
-        }
-
-        return null;
+    pickWhere (predicate) {
+        return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
     }
 
-    calcDistance(p1,p2){
-        return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
-    }
-
-
+    // calcDistance(p1, p2){
+    //     return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+    // }
 
     createBoard(){
-        const tiledGround = new BABYLON.MeshBuilder.CreateTiledGround("Tiled Ground", {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: this.grid});
         const whiteMaterial = new BABYLON.StandardMaterial("White");
         whiteMaterial.diffuseColor = new BABYLON.Color3(0.97, 0.98, 0.85);
         whiteMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-
+        // whiteMaterial.backFaceCulling = false
         const blackMaterial = new BABYLON.StandardMaterial("Black");
         blackMaterial.diffuseColor = new BABYLON.Color3(0.50, 0.64, 0.35);
         blackMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        // blackMaterial.backFaceCulling = false
 
-        tiledGround.position = new BABYLON.Vector3(0,.33,0)
-
-        var box = BABYLON.Mesh.CreateBox("box", 16, this.scene);
-        box.position = new BABYLON.Vector3(0, 0, 0);
-        box.scaling.y = .04;
-        box.material = whiteMaterial;
+        var board = BABYLON.Mesh.CreateBox("board", 16, this.scene); // should be an invisible ground under Tiled Ground
+        board.position = new BABYLON.Vector3(0, 0, 0);
+        board.scaling.y = .04;
+        board.material = whiteMaterial;
+        board.isPickable = false; // if falseget from scene.pick(x,y,null)
 
         const multimat = new BABYLON.MultiMaterial("multi", this.scene);
-
+        multimat.subMaterials.push(blackMaterial);
+        multimat.subMaterials.push(whiteMaterial);
         // multimat.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
         // multimat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
         // multimat.specularPower = 32;
 
-        multimat.subMaterials.push(blackMaterial);
-        multimat.subMaterials.push(whiteMaterial);
-        tiledGround.material = multimat;
-       
-        // Needed variables to set subMeshes
-        const verticesCount = tiledGround.getTotalVertices();
-        const tileIndicesLength = tiledGround.getIndices().length / (this.grid.w * this.grid.h);
-        // Set subMeshes of the tiled ground
-        tiledGround.subMeshes = [];
+        // dynamic/programmatically generate grid & coordinates
+        let grid = { 'h' : 8, 'w' : 8 }
+        const boardTiles = new BABYLON.MeshBuilder.CreateTiledGround("Chess_Board", {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: grid});
+        boardTiles.position = new BABYLON.Vector3(0,.33,0)
+        boardTiles.material = multimat;
+        const verticesCount = boardTiles.getTotalVertices(); // Needed variables to set subMeshes
+        const tileIndicesLength = boardTiles.getIndices().length / (grid.w * grid.h);
+        boardTiles.subMeshes = [];
         let base = 0;
-        let logs = 0
+        let tilesCreated = 0
         let yCoord = -7
-        for (let row = 0; row < this.grid.h; row++) {
+        for (let row = 0; row < grid.h; row++) {
             let xCoord = -7
-            for (let col = 0; col < this.grid.w; col++) {
-                let square = new BABYLON.SubMesh(row % 2 ^ col % 2,  0, verticesCount, base , tileIndicesLength, tiledGround)
-                this.squares[`${String.fromCharCode(col + 97)}${row}`] = {coords:new BABYLON.Vector3(xCoord, 0, yCoord), subMesh:square}
-                tiledGround.subMeshes.push(square);
+            for (let col = 0; col < grid.w; col++) {
+                let sqName = `${String.fromCharCode(col + 97)}${row + 1}`
+                let squareDef =  new BABYLON.SubMesh(row % 2 ^ col % 2,  0, verticesCount, base, tileIndicesLength, boardTiles)
+                let square = boardTiles.clone(sqName)
+                square.subMeshes = [squareDef.clone(square, square)] // could deconstruct mesh alternatively https://doc.babylonjs.com/toolsAndResources/utilities/Deconstruct_Mesh
+                square.isPickable = false
+                // square.materialIndex = materials[row % 2 ^ col % 2]
+                // let square = boardTiles.subMeshes[tiles]
+                this.squares[sqName] = { sqName, coords:new BABYLON.Vector3(xCoord, 0, yCoord), mesh:square}
                 base += tileIndicesLength;
-                logs += 1
-                // console.log('(col,row)', `(${col},${row})`,)
-                // console.log('file-rank',`${String.fromCharCode(col + 97)}${row}`)
-                // console.log(`coords ${xCoord},${yCoord}`)
+                tilesCreated += 1
+                // console.log('Sq Name(col, row)',`${sqName}(${col}, ${row})`)
+                // console.log(`Sq coords ${xCoord}, ${yCoord}`)
                 // console.log('______________________')
                 xCoord += 2
             }
             yCoord += 2
         }
+       
+        setTimeout(()=>{ boardTiles.dispose() },100)
 
-        console.log('squares',this.squares)
-        return tiledGround
+        console.log('board',this.squares)
+        return boardTiles
     }
     
 
