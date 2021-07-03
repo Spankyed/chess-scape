@@ -1,7 +1,8 @@
 export default class Board {
-    constructor(scene, canvas){
+    constructor(scene, canvas, game){
         this.scene = scene;  
         this.canvas = canvas;  
+        this.game = game;
         this.squares = {}
         this.startingPos; 
         this.startingSq 
@@ -11,31 +12,37 @@ export default class Board {
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_piece", this.scene);
         this.board = this.createBoard()
         this.setupEventListeners(scene,canvas)
-        return this.board
+        return this
     }
     
     setupEventListeners(scene, canvas) {
         const listeners =  {   
-            onPointerDown: (evt)=> this.onPointerDown(evt),
-            onPointerUp: (evt)=> this.onPointerUp(evt),
-            onPointerMove: (evt)=> this.onPointerMove(evt)
+            onPointerDown: (evt) => this.onPointerDown(evt),
+            onPointerUp: (evt) => this.onPointerUp(evt),
+            onPointerMove: (evt) => this.onPointerMove(evt),
+            onRightPointerDown: (evt) => { if (evt.button == 2) this.resetMove(true) }
         }
+        // todo: use rxjs fromEvent here
         canvas.addEventListener("pointerdown", listeners.onPointerDown, false);
         canvas.addEventListener("pointerup", listeners.onPointerUp, false);
         canvas.addEventListener("pointermove", listeners.onPointerMove, false);
+        canvas.addEventListener("contextmenu", listeners.onRightPointerDown, false);
         scene.onDispose = function () {
             canvas.removeEventListener("pointerdown", listeners.onPointerDown);
             canvas.removeEventListener("pointerup", listeners.onPointerUp);
             canvas.removeEventListener("pointermove", listeners.onPointerMove);
+            canvas.removeEventListener("contextmenu", listeners.onRightPointerDown);
         }
         return scene;
     };
+
+    move(){
+        // {"H7":"H5"}
+        this.game.move()
+    }
+
     // remove scene and ground
     onPointerDown(evt) {
-        if (evt.button == 2) { // reset on right click
-            this.resetMove(true)
-            return;
-        }
         if (evt.button !== 0) return;
         var pickInfo = this.pickWhere((mesh) => mesh.isPickable);
         if (!pickInfo.hit)  return;
@@ -63,33 +70,33 @@ export default class Board {
     }
 
     onPointerUp(evt) {
+        if (evt.button == 2) return;
         if (!( this.isSelecting && this.startingPos )) return;
         var boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
         var closestSq = this.getClosestSq(boardPos);
-        if (!( closestSq && boardPos )) { 
+        if (!( closestSq && boardPos )) { // boardPos is false if user clicked off board
             this.resetMove(true)
             return; 
         }
-        // todo: check if legal move or pointerup was right click
-        // if (!legalPieceMoves.includes(closestSq)) { 
-        //     this.currentPiece.position = this.startingPos; 
-        //     this.startingPos = null;
-        // } else {
-        //     var current = this.squares[closestSq].coords
-        //     this.currentPiece.position = new BABYLON.Vector3(current.x, this.currentPiece.position.y, current.z)
-        //     this.startingPos = current;
-        //     this.startingPos = null;
-        // }
         var squarePos = this.squares[closestSq.sqName].coords
         this.currentPiece.position = new BABYLON.Vector3(squarePos.x, this.currentPiece.position.y, squarePos.z)
-        
-        if (closestSq != this.startingSq) this.resetMove()
+        if (closestSq != this.startingSq) {
+            // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`
+            let move = `B${closestSq.sqName}`
+            let valid = this.game.moves().includes(move) 
+            console.log('valid '+ move,valid)
+
+            // todo: check if gameover, if so how 'time/checkmate/3foldrep..'
+            // todo: if not valid move highlight square red for .5 secs
+            if (valid) this.game.move(move)
+            this.resetMove() // go back if !valid
+        }
         else this.isDragging = false 
-        // todo: if not legal move highlight square red for .5 secs
         // todo: set new current square indicator (change tile material diffuse)
         return;
     }
 
+    // todo: this function needs to run in a renderLoop(throttled)
     onPointerMove (evt) {
         if (!( this.isDragging && this.startingPos )) return;
         var boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
@@ -102,7 +109,7 @@ export default class Board {
     }
 
     resetMove(goBack){
-        if (goBack) this.currentPiece.position = this.startingPos
+        if (goBack && this.currentPiece) this.currentPiece.position = this.startingPos
         this.startingPos = null;
         this.startingSq = null;
         this.currentPiece = null;
@@ -139,10 +146,13 @@ export default class Board {
         const whiteMaterial = new BABYLON.StandardMaterial("White");
         whiteMaterial.diffuseColor = new BABYLON.Color3(0.97, 0.98, 0.85);
         whiteMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+
         // whiteMaterial.backFaceCulling = false
+
         const blackMaterial = new BABYLON.StandardMaterial("Black");
         blackMaterial.diffuseColor = new BABYLON.Color3(0.50, 0.64, 0.35);
         blackMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+
         // blackMaterial.backFaceCulling = false
 
         var board = BABYLON.Mesh.CreateBox("board", 16, this.scene); // should be an invisible ground under Tiled Ground
@@ -152,8 +162,7 @@ export default class Board {
         board.isPickable = false; // if falseget from scene.pick(x,y,null)
 
         const multimat = new BABYLON.MultiMaterial("multi", this.scene);
-        multimat.subMaterials.push(blackMaterial);
-        multimat.subMaterials.push(whiteMaterial);
+        multimat.subMaterials.push(blackMaterial, whiteMaterial);
         // multimat.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
         // multimat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
         // multimat.specularPower = 32;
@@ -177,6 +186,8 @@ export default class Board {
                 let square = boardTiles.clone(sqName)
                 square.subMeshes = [squareDef.clone(square, square)] // could deconstruct mesh alternatively https://doc.babylonjs.com/toolsAndResources/utilities/Deconstruct_Mesh
                 square.isPickable = false
+                square.id = sqName
+                square.name = sqName
                 // square.materialIndex = materials[row % 2 ^ col % 2]
                 // let square = boardTiles.subMeshes[tiles]
                 this.squares[sqName] = { sqName, coords:new BABYLON.Vector3(xCoord, 0, yCoord), mesh:square}

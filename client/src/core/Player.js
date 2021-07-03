@@ -14,14 +14,20 @@ export default class player {
         let callback = (meshes, particleSystems, skeletons)=>{
             let player = meshes[0]; // bishop
             console.log('pieces',meshes)
-            player.position = new BABYLON.Vector3(1, 1, -3);
+
+            console.log('player pos', player.position.clone())
+            console.log('differnce test', (new BABYLON.Vector3(-3, 1, -7)).subtract(new BABYLON.Vector3(-3, 1, -9)) )
+            console.log('differnce', player.position.subtract(new BABYLON.Vector3(-3, 1, -7)))
+
+
+            player.position = new BABYLON.Vector3(-3, 0.3, -7);
             // meshes[0].name = 'bishop 1'
             // meshes[0].id = 'bishop 1'
             // player.showBoundingBox = true;
             var material = new BABYLON.StandardMaterial(scene);
             material.alpha = 1;
-            material.diffuseColor = new BABYLON.Color3(0.90, 0.82, 0.63); //white
-            // material.diffuseColor = new BABYLON.Color3(0.37, 0.29, 0.28); //black
+            material.diffuseColor = new BABYLON.Color3(0.90, 0.82, 0.63); // white rgb(229,209,160)
+            // material.diffuseColor = new BABYLON.Color3(0.37, 0.29, 0.28); // black rgb(94,77,71)
             player.material = material;
 
 
