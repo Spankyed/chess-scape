@@ -1,5 +1,6 @@
 export default class Board {
     constructor(scene, canvas, game){
+        // Board class depends on game class have being instantiated
         this.scene = scene;  
         this.canvas = canvas;  
         this.game = game;
@@ -7,7 +8,7 @@ export default class Board {
         this.startingPos; 
         this.startingSq 
         this.currentPiece;  
-        this.dragPos;
+        // this.dragPos;
         this.isSelecting = false;
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_piece", this.scene);
         this.board = this.createBoard()
@@ -79,19 +80,40 @@ export default class Board {
             return; 
         }
         var squarePos = this.squares[closestSq.sqName].coords
-        this.currentPiece.position = new BABYLON.Vector3(squarePos.x, this.currentPiece.position.y, squarePos.z)
         if (closestSq != this.startingSq) {
             // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`
-            let move = `B${closestSq.sqName}`
-            let valid = this.game.moves().includes(move) 
-            console.log('valid '+ move,valid)
+            // let pieceAbbrev = this.getPieceNameAbbrev(this.currentPiece)
+            let potentialMove = { from: this.startingSq.sqName, to: closestSq.sqName }
+            console.log('potential move ', potentialMove)
+            // let validMove = this.game.moves().find((move) => {
+            //     if (pieceAbbrev == '') 
+            //     {    // not good enough, if pawn captures, its starting sq changes file, but is still same file pawn
+            //         return move.startsWith(`${this.startingSq.charAt(0)}x${closestSq.sqName}`) 
+            //     }
+            //     else 
+            //         return move.startsWith(potentialMove) 
+            // }) 
 
-            // todo: check if gameover, if so how 'time/checkmate/3foldrep..'
-            // todo: if not valid move highlight square red for .5 secs
-            if (valid) this.game.move(move)
+            let validMove = this.game.move(potentialMove)
+
+            console.log('valid move ', validMove)
+            console.log('possible moves '+ this.game.moves())
+            
+            if (validMove) {
+                this.currentPiece.position = new BABYLON.Vector3(squarePos.x, this.currentPiece.position.y, squarePos.z)
+                // this.game.move(validMove)
+                // todo: after move, check if gameover, if so how 'time/checkmate/3foldrep..'
+            } else {
+                // todo: if not valid move highlight square red for .5 secs
+                this.resetMove(true)
+            }
+
             this.resetMove() // go back if !valid
         }
-        else this.isDragging = false 
+        else {
+            this.currentPiece.position = this.startingPos // if on same sq, dont reset move, but go back to starting pos on sq
+            this.isDragging = false 
+        }
         // todo: set new current square indicator (change tile material diffuse)
         return;
     }
@@ -102,10 +124,13 @@ export default class Board {
         var boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
         if (!boardPos) return;
         // console.log('currentPiece',this.currentPiece)
-        var diff = boardPos.subtract(this.dragPos || this.startingPos);
-        var moveVector = new BABYLON.Vector3(diff.x, 0, diff.z)
-        var newPos = this.currentPiece.position.addInPlace(moveVector);
-        this.dragPos = newPos;
+        // var diff = boardPos.subtract(this.dragPos || this.startingPos);
+        // var moveVector = new BABYLON.Vector3(diff.x, 0, diff.z)
+        // var newPos = this.currentPiece.position.addInPlace(moveVector);
+
+        this.currentPiece.position = boardPos
+
+        // this.dragPos = boardPos;
     }
 
     resetMove(goBack){
@@ -113,7 +138,7 @@ export default class Board {
         this.startingPos = null;
         this.startingSq = null;
         this.currentPiece = null;
-        this.dragPos = null;
+        // this.dragPos = null;
         this.isSelecting = false;
         this.legalSquares = null;
         this.selectedHighlightLayer.removeAllMeshes();
@@ -134,6 +159,11 @@ export default class Board {
         return this.squares[closest.sqName]
     }
 
+    getPieceNameAbbrev(piece){
+        let abbrev = piece.name.charAt(0)
+        return (abbrev != 'P') ? abbrev : ''
+    }
+
     pickWhere (predicate) {
         return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
     }
@@ -146,13 +176,10 @@ export default class Board {
         const whiteMaterial = new BABYLON.StandardMaterial("White");
         whiteMaterial.diffuseColor = new BABYLON.Color3(0.97, 0.98, 0.85);
         whiteMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-
         // whiteMaterial.backFaceCulling = false
-
         const blackMaterial = new BABYLON.StandardMaterial("Black");
         blackMaterial.diffuseColor = new BABYLON.Color3(0.50, 0.64, 0.35);
         blackMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-
         // blackMaterial.backFaceCulling = false
 
         var board = BABYLON.Mesh.CreateBox("board", 16, this.scene); // should be an invisible ground under Tiled Ground

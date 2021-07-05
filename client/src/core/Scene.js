@@ -10,6 +10,7 @@ const Scene = new class {
         this.uiActions = {};   
         this.game; 
         this.board; 
+        this.assetsManager;
     }
 
     setup(canvas, actions, path, file){
@@ -20,14 +21,14 @@ const Scene = new class {
         let scene = SceneManager.CreateScene(engine, true)
         this.scene = scene
 
-        let player2 = new Player("./assets/", 'Chesspieces.babylon', scene)
+        this.loadPieces()
+
+        // let player2 = new Player("./assets/", 'Chesspieces.babylon', scene)
         // let player2 = await player2()
 
         this.game = new Game(scene, canvas);
 
-        this.game.move('b4')
-        this.game.move('b6')
-        console.log('moves', this.game.moves())
+
         
         // new Game([player1,player2])
         this.board = new Board(scene, canvas, this.game);
@@ -40,6 +41,48 @@ const Scene = new class {
         });
     }
     
+    loadPieces(){
+        this.assetsManager = new BABYLON.AssetsManager(this.scene)
+        var meshTask = this.assetsManager.addContainerTask("pieces task", "", "./assets/", 'Chesspieces.babylon');
+        console.log('erm')
+        meshTask.onError = (err) => console.log(err)
+        meshTask.onSuccess = (task) => {
+            console.log('erm2')
+            this.piecesContainer = task.loadedContainer
+            // this.piecesContainer.addAllToScene()
+            // this.piecesContainer.instantiateModelsToScene(name => name + "white", false);
+            this.modelsLoaded = true;
+
+
+            this.pieces = {
+                white: this.piecesContainer.instantiateModelsToScene(name => name + "_white", false),
+                black: this.piecesContainer.instantiateModelsToScene(name => name + "_black", false)
+            }
+            let materials = this.getPieceMaterials()
+
+            this.pieces.white.rootNodes.forEach(piece => piece.material = materials.white);
+            this.pieces.black.rootNodes.forEach(piece => {
+                let newPos = piece.position.clone()
+                piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z)
+                piece.material = materials.black
+                piece.material.metallicTexture = null
+            });
+        }
+
+        this.assetsManager.load()
+    }
+
+    getPieceMaterials(){
+        var white = new BABYLON.StandardMaterial(this.scene);
+        white.alpha = 1;
+        white.diffuseColor = new BABYLON.Color3(0.90, 0.82, 0.63); // white rgb(229,209,160)
+        white.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+        white.specularPower = 25;
+        let black = white.clone();
+        black.diffuseColor = new BABYLON.Color3(0.37, 0.29, 0.28); // black rgb(94,77,71)
+        return { white, black}
+    }
+
     openChat(character){
         //character needs img url, and perhaps name to send to watson to pick convo workspace
         this.uiActions.showChat(character); //will cause all Chat.js component code to run
@@ -47,5 +90,14 @@ const Scene = new class {
     
 
 }
+
+
+// assetsManager.onFinish = function (tasks) {
+//     engine.runRenderLoop(function () {
+//         scene.render();
+//     });
+// };
+
+
 
 export default Scene;

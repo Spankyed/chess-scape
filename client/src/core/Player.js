@@ -6,6 +6,13 @@ export default class player {
     constructor(path, fileName, scene) {
         this.id = 'player';
         this.scene = scene;
+        this.isPresent = false;
+        this.isCurrentTurn = false;
+        this.pieces = [];
+        this.pieceColor = 'white';
+        this.iswinner = [];
+
+
         this.importMesh(path, fileName, scene); //sets this.mesh
 
     }
@@ -15,9 +22,9 @@ export default class player {
             let player = meshes[0]; // bishop
             console.log('pieces',meshes)
 
-            console.log('player pos', player.position.clone())
-            console.log('differnce test', (new BABYLON.Vector3(-3, 1, -7)).subtract(new BABYLON.Vector3(-3, 1, -9)) )
-            console.log('differnce', player.position.subtract(new BABYLON.Vector3(-3, 1, -7)))
+            // console.log('player pos', player.position.clone())
+            // console.log('differnce test', (new BABYLON.Vector3(-3, 1, -7)).subtract(new BABYLON.Vector3(-3, 1, -9)) )
+            // console.log('differnce', player.position.subtract(new BABYLON.Vector3(-3, 1, -7)))
 
 
             player.position = new BABYLON.Vector3(-3, 0.3, -7);

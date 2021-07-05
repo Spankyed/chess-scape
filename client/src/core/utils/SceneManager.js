@@ -127,42 +127,13 @@ export default class SceneManager {
     }
 
     createLightCamera(canvas){
-        // var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, 1.1, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
-        // camera.attachControl(canvas, true);
-        // camera.lowerBetaLimit = 0.1;
-        // camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        // this._scene.clearColor = new BABYLON.Color3(0, 0, .2);
-        // this._scene.ambientColor = new BABYLON.Color3(0.8, 0.8, 0.8);
-
-        const light1 = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0.2, 1, 0), this._scene);
-        light1.groundColor = new BABYLON.Color3(0, 0, 0);
-        light1.diffuse = new BABYLON.Color3(0.9, 0.9, 0.9);
-        light1.specular = new BABYLON.Color3(0, 0, 0);
-
-        const light2 = new BABYLON.DirectionalLight("DirectionalLight", new BABYLON.Vector3(0.3, -1, 0.3), this._scene);
-        light2.position = new BABYLON.Vector3(0, 60, 0);
-        light2.diffuse = new BABYLON.Color3(1, 1, 1);
-        light2.specular = new BABYLON.Color3(0, 0, 0);
-        light2.intensity = 0.2;
-
-
-        // var sg = new BABYLON.ShadowGenerator(1024, light1);
-
-        // sg.getShadowMap().renderList.push(sphere);
-    
-        // light1.shadowMinZ = 0;
-        // light1.shadowMaxZ = 3;
-        var material = new BABYLON.StandardMaterial();
-        material.alpha = 1;
-        material.diffuseColor = new BABYLON.Color3(0, 0, 0); 
-
-        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50}, this.scene);
-        ground.position = new BABYLON.Vector3(0, -.01, 0);
-        
-        ground.material = material;
-
-        ground.receiveShadows = true;
-        return light1
+        this._scene.createDefaultCameraOrLight(true, true, true);
+		this._scene.activeCamera.lowerRadiusLimit = 7;
+		this._scene.activeCamera.upperRadiusLimit = 5;
+		this._scene.activeCamera.alpha = 4;
+        this._scene.activeCamera.beta = 2.5;
+        this._scene.activeCamera.wheelPrecision = 5;
+		this._scene.activeCamera.upperBetaLimit=1.5; //Math.PI*(0)/180;
     }
 
         /** TODO: Switch between players/characters */
