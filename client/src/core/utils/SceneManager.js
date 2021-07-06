@@ -111,8 +111,8 @@ export default class SceneManager {
 
         this._scene.activeCamera = camera
 
-
-        let spotLight = new BABYLON.SpotLight("SpotLight", new BABYLON.Vector3(0, 100, 0), new BABYLON.Vector3(0, -1, 0), 0.8, 0, this._scene);
+        let spotLight = new BABYLON.SpotLight("SpotLight", new BABYLON.Vector3(0, 50, 0), new BABYLON.Vector3(0, -1, 0), 0.8, 40, this._scene);
+        // let spotLight = new BABYLON.SpotLight("SpotLight", new BABYLON.Vector3(0, 100, 0), new BABYLON.Vector3(0, -1, 0), 0.8, 0, this._scene);
         spotLight.intensity = 0.5;
         spotLight.exponent = 5;
         spotLight.diffuse = new BABYLON.Color3(0.8, 0.95, 1.000);
@@ -125,7 +125,7 @@ export default class SceneManager {
         var light2 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1,10,-5), this._scene);
         light2.intensity = 0.35;
 
-        return new BABYLON.ShadowGenerator(1024, spotLight);
+        // return new BABYLON.ShadowGenerator(1024, spotLight);
     }
 
     createLightCamera(canvas){

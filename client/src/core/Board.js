@@ -189,14 +189,14 @@ export default class Board {
         board.isPickable = false; // if falseget from scene.pick(x,y,null)
         console.log('board',board)
 
-        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 200, height: 200}, this.scene);
-        ground.material = new BABYLON.StandardMaterial("ground_texture", this.scene);
-        ground.material.diffuseColor = new BABYLON.Color3(0.19, 0.18, 0.17);
-        ground.material.specularColor = new BABYLON.Color3(0, 0, 0);
-        ground.material.metallicTexture = null;
-        ground.isPickable = false; 
-        ground.position = new BABYLON.Vector3(0, -.7, 0);
-        ground.receiveShadows = true;
+        // var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 200, height: 200}, this.scene);
+        // ground.material = new BABYLON.StandardMaterial("ground_texture", this.scene);
+        // ground.material.diffuseColor = new BABYLON.Color3(0.19, 0.18, 0.17);
+        // ground.material.specularColor = new BABYLON.Color3(0, 0, 0);
+        // ground.material.metallicTexture = null;
+        // ground.isPickable = false; 
+        // ground.position = new BABYLON.Vector3(0, -.7, 0);
+        // ground.receiveShadows = true;
 
         const multimat = new BABYLON.MultiMaterial("multi", this.scene);
         multimat.subMaterials.push(blackMaterial, whiteMaterial);
@@ -238,7 +238,7 @@ export default class Board {
             yCoord += 2
         }
        
-        // setTimeout(()=>{ boardTiles.dispose() },100)
+        setTimeout(()=>{ boardTiles.dispose() },100)
 
         console.log('board',this.squares)
         return board

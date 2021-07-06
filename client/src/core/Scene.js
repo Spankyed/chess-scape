@@ -22,8 +22,8 @@ const Scene = new class {
         this.scene = scene
 
         this.loadPieces()
-        let shadowGenerator = this.scene.manager.setEnv(canvas)
-        // this.scene.manager.setEnv(canvas)
+        // let shadowGenerator = this.scene.manager.setEnv(canvas)
+        this.scene.manager.setEnv(canvas)
 
         // let player2 = new Player("./assets/", 'Chesspieces.babylon', scene)
         // let player2 = await player2()
@@ -33,8 +33,8 @@ const Scene = new class {
         this.board = new Board(scene, canvas, this.game);
         
         // shadowGenerator.getShadowMap().renderList.push(this.board.board);
-        shadowGenerator.addShadowCaster(this.board.board);
-        shadowGenerator.useExponentialShadowMap = true;
+        // shadowGenerator.addShadowCaster(this.board.board);
+        // shadowGenerator.useExponentialShadowMap = true;
 
         // this.scene.manager.createLightCamera(canvas)
         engine.runRenderLoop(function(){
