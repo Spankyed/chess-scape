@@ -12,9 +12,9 @@ export default class SceneManager {
         if(!SceneManager._scene){
             scene = new BABYLON.Scene(engine);
             scene.manager = new SceneManager(scene)
-            for (var i = 0; i < scene.meshes.length; i++) {
-                scene.meshes[i].convertToFlatShadedMesh();
-            }
+            // for (var i = 0; i < scene.meshes.length; i++) {
+            //     scene.meshes[i].convertToFlatShadedMesh();
+            // }
             scene.debugLayer.show({ embedMode: true }).then(() => {
                 // scene.debugLayer.select(light);
             });
@@ -83,8 +83,8 @@ export default class SceneManager {
         // camera.attachControl(canvas, true);
         //this._scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
         //camera.applyGravity = true;
-    
 
+        this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
         var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.attachControl(canvas, true);
         camera.inputs.attached.pointers.detachControl();
@@ -92,9 +92,9 @@ export default class SceneManager {
         camera.inputs.attached.mousewheel.detachControl();
         // console.log('inputs',camera.inputs)
         // camera.inputs.add(new FreeCameraKeyboardRotateInput());
-        camera.lowerBetaLimit = 0.1;
-        camera.upperBetaLimit = (Math.PI / 2) * 0.99;
-        camera.inertia = 0.4;
+        camera.lowerBetaLimit = 0.4;
+        camera.upperBetaLimit = (Math.PI / 2) * .80;
+        camera.inertia = 0.55;
         camera.fov=.7
 
         // camera.keysUp = [87]; // w
@@ -112,7 +112,7 @@ export default class SceneManager {
         this._scene.activeCamera = camera
 
 
-        let spotLight = new BABYLON.SpotLight("SpotLight", new BABYLON.Vector3(0, 30, 0), new BABYLON.Vector3(0, -1, 0), 0.8, 20, this._scene);
+        let spotLight = new BABYLON.SpotLight("SpotLight", new BABYLON.Vector3(0, 100, 0), new BABYLON.Vector3(0, -1, 0), 0.8, 0, this._scene);
         spotLight.intensity = 0.5;
         spotLight.exponent = 5;
         spotLight.diffuse = new BABYLON.Color3(0.8, 0.95, 1.000);
@@ -124,6 +124,8 @@ export default class SceneManager {
         light.groundColor = new BABYLON.Color3(.5, 1, 1);
         var light2 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1,10,-5), this._scene);
         light2.intensity = 0.35;
+
+        return new BABYLON.ShadowGenerator(1024, spotLight);
     }
 
     createLightCamera(canvas){

@@ -35,12 +35,11 @@ export default class player {
             material.alpha = 1;
             material.diffuseColor = new BABYLON.Color3(0.90, 0.82, 0.63); // white rgb(229,209,160)
             // material.diffuseColor = new BABYLON.Color3(0.37, 0.29, 0.28); // black rgb(94,77,71)
+            material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+            material.specularPower = 32;
             player.material = material;
-
-
             // player.material.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
-            player.material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-            player.material.specularPower = 32;
+
 
             this.mesh = player; //set entity.mesh
             // this.skeleton = skeleton; //set entity.skeleton

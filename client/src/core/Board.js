@@ -11,9 +11,9 @@ export default class Board {
         // this.dragPos;
         this.isSelecting = false;
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_piece", this.scene);
-        this.board = this.createBoard()
         this.setupEventListeners(scene,canvas)
-        return this
+        this.board = this.createBoard()
+        return 
     }
     
     setupEventListeners(scene, canvas) {
@@ -101,7 +101,7 @@ export default class Board {
             
             if (validMove) {
                 this.currentPiece.position = new BABYLON.Vector3(squarePos.x, this.currentPiece.position.y, squarePos.z)
-                // this.game.move(validMove)
+                // this.whitesTurn = !this.whitesTurn                
                 // todo: after move, check if gameover, if so how 'time/checkmate/3foldrep..'
             } else {
                 // todo: if not valid move highlight square red for .5 secs
@@ -183,10 +183,20 @@ export default class Board {
         // blackMaterial.backFaceCulling = false
 
         var board = BABYLON.Mesh.CreateBox("board", 16, this.scene); // should be an invisible ground under Tiled Ground
-        board.position = new BABYLON.Vector3(0, 0, 0);
-        board.scaling.y = .04;
+        board.scaling.y = .033;
+        board.position = new BABYLON.Vector3(0, -.3, 0);
         board.material = whiteMaterial;
         board.isPickable = false; // if falseget from scene.pick(x,y,null)
+        console.log('board',board)
+
+        var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 200, height: 200}, this.scene);
+        ground.material = new BABYLON.StandardMaterial("ground_texture", this.scene);
+        ground.material.diffuseColor = new BABYLON.Color3(0.19, 0.18, 0.17);
+        ground.material.specularColor = new BABYLON.Color3(0, 0, 0);
+        ground.material.metallicTexture = null;
+        ground.isPickable = false; 
+        ground.position = new BABYLON.Vector3(0, -.7, 0);
+        ground.receiveShadows = true;
 
         const multimat = new BABYLON.MultiMaterial("multi", this.scene);
         multimat.subMaterials.push(blackMaterial, whiteMaterial);
@@ -197,7 +207,7 @@ export default class Board {
         // dynamic/programmatically generate grid & coordinates
         let grid = { 'h' : 8, 'w' : 8 }
         const boardTiles = new BABYLON.MeshBuilder.CreateTiledGround("Chess_Board", {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: grid});
-        boardTiles.position = new BABYLON.Vector3(0,.33,0)
+        boardTiles.position = new BABYLON.Vector3(0,0,0)
         boardTiles.material = multimat;
         const verticesCount = boardTiles.getTotalVertices(); // Needed variables to set subMeshes
         const tileIndicesLength = boardTiles.getIndices().length / (grid.w * grid.h);
@@ -228,10 +238,10 @@ export default class Board {
             yCoord += 2
         }
        
-        setTimeout(()=>{ boardTiles.dispose() },100)
+        // setTimeout(()=>{ boardTiles.dispose() },100)
 
         console.log('board',this.squares)
-        return boardTiles
+        return board
     }
     
 

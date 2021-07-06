@@ -1,17 +1,15 @@
-function startEngine(canvas){
-	let engine = 
-	engine.runRenderLoop(function(){
-		scene.render();
-	});
+function mapChessPieces(meshes){
 
-	scene.debugLayer.show({ embedMode: true }).then(() => {
-		// scene.debugLayer.select(light);
-	});
+	return {
+		pawns:  [],
+		rooks: [],
 
+	}
 
-	
-	return engine
 }
+
+
+
 export default {
-	startEngine
+	mapChessPieces
 };
