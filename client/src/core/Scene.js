@@ -9,28 +9,32 @@ const Scene = new class {
         this.scene = null;
         this.uiActions = {};   
         this.game; 
-        this.board; 
+        this.Board; 
         this.assetsManager;
     }
 
     setup(canvas, actions, path, file){
         if(!canvas) console.warn('no canvas found')
         this.uiActions = actions;
-        let that = this;
+        let _this = this;
         let engine = new BABYLON.Engine(canvas, true);
         let scene = SceneManager.CreateScene(engine, true)
         this.scene = scene
+        this.canvas = canvas
 
         this.loadPieces()
         // let shadowGenerator = this.scene.manager.setEnv(canvas)
-        this.scene.manager.setEnv(canvas)
+        this.scene.manager.setEnv(this.canvas)
 
-        // let player2 = new Player("./assets/", 'Chesspieces.babylon', scene)
-        // let player2 = await player2()
-        // new Game([player1,player2])
-        this.game = new Game(scene, canvas);
-
-        this.board = new Board(scene, canvas, this.game);
+        // let whitePlayer = new Player(this.pieces.white)
+        // let blackPlayer = 
+        // let players =  { 
+        //     white: new Player(this.pieces.white), 
+        //     black: new Player(this.pieces.black)
+        // }
+        // new Game(whitePlayer,blackPlayer)
+        this.game = new Game(this);
+        this.board = new Board(this);
         
         // shadowGenerator.getShadowMap().renderList.push(this.board.board);
         // shadowGenerator.addShadowCaster(this.board.board);
@@ -43,30 +47,46 @@ const Scene = new class {
     }
     
     loadPieces(){
+
         this.assetsManager = new BABYLON.AssetsManager(this.scene)
         var meshTask = this.assetsManager.addContainerTask("pieces task", "", "./assets/", 'Chesspieces.babylon');
         meshTask.onError = (err) => console.log(err)
         meshTask.onSuccess = (task) => {
             this.piecesContainer = task.loadedContainer
-            // this.piecesContainer.addAllToScene()
-            // this.piecesContainer.instantiateModelsToScene(name => name + "white", false);
             this.modelsLoaded = true;
             this.pieces = {
-                white: this.piecesContainer.instantiateModelsToScene(name => name + "_white", false),
-                black: this.piecesContainer.instantiateModelsToScene(name => name + "_black", false)
+                white: this.piecesContainer.instantiateModelsToScene(name => name + "_white", false).rootNodes,
+                black: this.piecesContainer.instantiateModelsToScene(name => name + "_black", false).rootNodes
             }
             let materials = this.getPieceMaterials()
-
-            this.pieces.white.rootNodes.forEach(piece => {
-                if (piece.name.startsWith('Knight') ) piece.rotation = new BABYLON.Vector3(0, Math.PI, 0)
-                piece.material = materials.white
+            
+            // var kingGlowLayer = new BABYLON.GlowLayer("glow", this.scene);
+            // kingGlowLayer.intensity = .02;
+            this.pieces.white.forEach(piece => {
+                if (piece.name.startsWith('Knight')) piece.rotation = new BABYLON.Vector3(0, Math.PI, 0)
+                if (piece.name.startsWith('King')){
+                    piece.material = materials.white.clone()
+                    // kingGlowLayer.addIncludedOnlyMesh(piece)
+                    // piece.material.emissiveColor = new BABYLON.Color3(0.37, 0.29, 0.28)
+                } else {
+                    piece.material = materials.white
+                }
+                piece.addPickingBox()
             });
-            this.pieces.black.rootNodes.forEach(piece => {
+            this.pieces.black.forEach(piece => {
+                
                 let newPos = piece.position.clone()
                 piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z)
-                piece.material = materials.black
-                piece.material.metallicTexture = null
-                if (piece.name.startsWith('Knight') ) piece.rotation = new BABYLON.Vector3(0, 0, 0)
+                if (piece.name.startsWith('Knight')) piece.rotation = new BABYLON.Vector3(0, 0, 0)
+                if (piece.name.startsWith('King')) {
+                    piece.material = materials.black.clone()
+                    // kingGlowLayer.addIncludedOnlyMesh(piece)
+                    // piece.material.emissiveColor = piece.material.diffuseColor
+                } else {
+                    piece.material = materials.black
+                    piece.material.metallicTexture = null
+                }
+                piece.addPickingBox()
             });
         }
 

@@ -94,7 +94,7 @@ export default class SceneManager {
         // camera.inputs.add(new FreeCameraKeyboardRotateInput());
         camera.lowerBetaLimit = 0.4;
         camera.upperBetaLimit = (Math.PI / 2) * .80;
-        camera.inertia = 0.55;
+        camera.inertia = 0.65;
         camera.fov=.7
 
         // camera.keysUp = [87]; // w
