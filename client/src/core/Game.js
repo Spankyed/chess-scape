@@ -1,4 +1,5 @@
 import { Chess } from 'chess.js';
+import Api from '../api/Api'; 
 
 export default class Game {
     constructor(Scene){
@@ -10,25 +11,31 @@ export default class Game {
         this.isVsComputer = true;
         this.computerColor = 'black';
         this.game_over = false;
-
         this.engine = new Chess()
         // this.move('b4')
         // this.move('b6')
+        this.setupWebhookHandlers()
         console.log('moves', this.moves())
+        
         return this
+    }
+
+    setupWebhookHandlers() {
+        Api.setMessageHandlers({
+            // join: this.onJoin, 
+            move: this.onMove, 
+            // chat: this.onChat,
+        })
+    }
+
+    onMove({move}){
+        if (move) this.Scene.board.moveOpponentPiece(move)
     }
 
     moves(sq) {
         return this.engine.moves(sq)
     }
 
-    setupWebhook(scene, canvas) {
-        return scene;
-    }
-
-    handleOpponentMove(){
-        
-    }
 
     handleMove (move) {
         var validMove = this.engine.move(move);

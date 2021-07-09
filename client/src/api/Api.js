@@ -1,96 +1,54 @@
 // The Api module is designed to handle all interactions with the server
-var Api = (function() {
-  var requestPayload;
-  var responsePayload;
-  var messageEndpoint = '/api/message';
-  var sessionEndpoint = '/api/session';
-  var sessionId = null;
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
-  // Publicly accessible methods defined
-  return {
-    sendRequest: sendRequest,
-    getSessionId: getSessionId,
+let clientId,
+handlers = {
+	create: _=>_, join: _=>_, move: _=>_, chat: _=>_,
+	connect = msg => clientId = msg.clientId
+}
 
-    // The request/response getters/setters are defined here to prevent internal methods
-    // from calling the methods without any of the callbacks that are added elsewhere.
-    getRequestPayload: function() {
-      return requestPayload;
-    },
-    setRequestPayload: function(newPayloadStr) {
-      requestPayload = JSON.parse(newPayloadStr);
-    },
-    getResponsePayload: function() {
-      return responsePayload;
-    },
-    setResponsePayload: function(newPayloadStr) {
-      responsePayload = JSON.parse(newPayloadStr);
-    },
-    setErrorPayload: function() {
-    }
-  };
+const rws = new ReconnectingWebSocket('ws://my.site.com', {
+	startClosed: true,
+	debug: true
+});
 
-  function getSessionId(callback) {
-    var http = new XMLHttpRequest();
-    http.open('GET', sessionEndpoint, true);
-    http.setRequestHeader('Content-type', 'application/json');
-    http.onreadystatechange = function () {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        var res = JSON.parse(http.responseText);
-        sessionId = res.session_id;
-        callback();
-      }
-    };
-    http.send();
-  }
+rws.addEventListener('message', msg => { // handle incoming messages from connected client 
+	// console.log('incoming request', request)
+	const message = JSON.parse(msg)
+	if (!message) return
+	// console.log('message', message)
+	const messageHandler = handlers[message.method]
+	if (messageHandler) messageHandler(message)
+})
 
-  // Send a message request to the server
-  function sendRequest(text, context) {
-    // Build request payload
-    var payloadToWatson = {
-      session_id: sessionId
-    };
+function setMessageHandlers(newHandlers) {
+	Object.assign(handlers, newHandlers)
+	console.log('new handlers', handlers)
+}
 
-    payloadToWatson.input = {
-      message_type: 'text',
-      text: text,
-    };
+function startConnection(){
+	return rws.reconnect()
+}
 
-    /*if (context) {
-      payloadToWatson.context = context;
-    }*/
+function joinGame(gameId){
+	const message = { gameId, clientId }
+	rws.send(message)
+}
 
-    // Built http request
-    var http = new XMLHttpRequest();
-    http.open('POST', messageEndpoint, true);
-    http.setRequestHeader('Content-type', 'application/json');
-    http.onreadystatechange = function() {
-      if (http.readyState === XMLHttpRequest.DONE && http.status === 200 && http.responseText) {
-        Api.setResponsePayload(http.responseText);
-      } else if (http.readyState === XMLHttpRequest.DONE && http.status !== 200) {
-        Api.setErrorPayload({
-          'output': {
-            'generic': [
-              {
-                'response_type': 'text',
-                'text': 'I\'m having trouble connecting to the server, please refresh the page'
-              }
-            ],
-          }
-        });
-      }
-    };
+function sendMove(move, gameId){
+	const message = { move, gameId }
+	rws.send(message)
+}
 
-    var params = JSON.stringify(payloadToWatson);
-    // Store request (publicly visible through Api.getRequestPayload)
-    // to be used throughout the application
-    if (Object.getOwnPropertyNames(payloadToWatson).length !== 0) {
-      Api.setRequestPayload(params);
-    }
+function sendChat(text, gameId){
+	const message = { text, gameId }
+	rws.send(message)
+}
 
-    // Send request
-    http.send(params);
-  }
-}());
-
-
-export default Api;
+export default {
+	startConnection,
+	joinGame,
+	sendMove,
+	sendChat,
+	setMessageHandlers
+};

@@ -22,22 +22,22 @@ export default class Board {
     }
     
     setupEventListeners() {
-        const listeners =  {   
+        const handlers =  {   
             onPointerDown: (evt) => this.onPointerDown(evt),
             onPointerUp: (evt) => this.onPointerUp(evt),
             onPointerMove: (evt) => this.onPointerMove(evt),
             onRightPointerDown: (evt) => { if (evt.button == 2) this.resetMove(true) }
         }
         // todo: use rxjs fromEvent here
-        this.canvas.addEventListener("pointerdown", listeners.onPointerDown, false);
-        this.canvas.addEventListener("pointerup", listeners.onPointerUp, false);
-        this.canvas.addEventListener("pointermove", listeners.onPointerMove, false);
-        this.canvas.addEventListener("contextmenu", listeners.onRightPointerDown, false);
+        this.canvas.addEventListener("pointerdown", handlers.onPointerDown, false);
+        this.canvas.addEventListener("pointerup", handlers.onPointerUp, false);
+        this.canvas.addEventListener("pointermove", handlers.onPointerMove, false);
+        this.canvas.addEventListener("contextmenu", handlers.onRightPointerDown, false);
         this.scene.onDispose = function () {
-            this.canvas.removeEventListener("pointerdown", listeners.onPointerDown);
-            this.canvas.removeEventListener("pointerup", listeners.onPointerUp);
-            this.canvas.removeEventListener("pointermove", listeners.onPointerMove);
-            this.canvas.removeEventListener("contextmenu", listeners.onRightPointerDown);
+            this.canvas.removeEventListener("pointerdown", handlers.onPointerDown);
+            this.canvas.removeEventListener("pointerup", handlers.onPointerUp);
+            this.canvas.removeEventListener("pointermove", handlers.onPointerMove);
+            this.canvas.removeEventListener("contextmenu", handlers.onRightPointerDown);
         }
         return this.scene;
     };
@@ -201,22 +201,22 @@ export default class Board {
         return this.squares[closest.sqName]
     }
 
-    isMoveValid(from, to){
-        let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
-        return !!this.game.moves({ square: from }).find((move) => {
-            if (pieceAbbrev == '') 
-            {    // todo: in pgn, check when pawn captures, if its starting sq changes file
-                return move.startsWith(`${from.charAt(0)}x${to}`) 
-            }
-            else 
-                return move.startsWith(`${this.selectedPiece.name.charAt(0)}${to}`) 
-        }) 
-    }
+    // isMoveValid(from, to){
+    //     let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
+    //     return !!this.game.moves({ square: from }).find((move) => {
+    //         if (pieceAbbrev == '') 
+    //         {    // todo: in pgn, check when pawn captures, if its starting sq changes file
+    //             return move.startsWith(`${from.charAt(0)}x${to}`) 
+    //         }
+    //         else 
+    //             return move.startsWith(`${this.selectedPiece.name.charAt(0)}${to}`) 
+    //     }) 
+    // }
 
-    getPieceNameAbbrev(piece){
-        let abbrev = piece.name.charAt(0)
-        return (abbrev != 'P') ? abbrev : ''
-    }
+    // getPieceNameAbbrev(piece){
+    //     let abbrev = piece.name.charAt(0)
+    //     return (abbrev != 'P') ? abbrev : ''
+    // }
 
     pickWhere (predicate) {
         return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)

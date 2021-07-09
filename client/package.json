@@ -25,6 +25,7 @@
     "chess.js": "^0.12.0",
     "hyperapp": "1.2.9",
     "lodash": "^4.17.11",
+    "reconnecting-websocket": "^4.4.0",
     "rxjs": "^6.3.3",
     "utilities": "^1.0.5"
   },
