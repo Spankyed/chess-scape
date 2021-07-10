@@ -1,25 +1,25 @@
 // The Api module is designed to handle all interactions with the server
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-let clientId,
+let webSocket, clientId,
 handlers = {
 	create: _=>_, join: _=>_, move: _=>_, chat: _=>_,
-	connect = msg => clientId = msg.clientId
+	connect: msg => clientId = msg.clientId
 }
 
-const rws = new ReconnectingWebSocket('ws://my.site.com', {
-	startClosed: true,
-	debug: true
-});
-
-rws.addEventListener('message', msg => { // handle incoming messages from connected client 
-	// console.log('incoming request', request)
-	const message = JSON.parse(msg)
-	if (!message) return
-	// console.log('message', message)
-	const messageHandler = handlers[message.method]
-	if (messageHandler) messageHandler(message)
-})
+function createConnection(){
+	const protocol = { automaticOpen: false, debug: true }
+	webSocket = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
+	webSocket.addEventListener('message', event => { // handle incoming messages from connected client 
+		// console.log('incoming request', request)
+		const message = JSON.parse(event.data)
+		if (!message) return
+		console.log('server message', message)
+		const messageHandler = handlers[message.method]
+		if (messageHandler) messageHandler(message)
+	})
+	
+}
 
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers)
@@ -27,22 +27,22 @@ function setMessageHandlers(newHandlers) {
 }
 
 function startConnection(){
-	return rws.reconnect()
+	return webSocket.reconnect()
 }
 
 function joinGame(gameId){
 	const message = { gameId, clientId }
-	rws.send(message)
+	webSocket.send(message)
 }
 
 function sendMove(move, gameId){
 	const message = { move, gameId }
-	rws.send(message)
+	webSocket.send(message)
 }
 
 function sendChat(text, gameId){
 	const message = { text, gameId }
-	rws.send(message)
+	webSocket.send(message)
 }
 
 export default {

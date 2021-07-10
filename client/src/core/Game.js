@@ -2,7 +2,7 @@ import { Chess } from 'chess.js';
 import Api from '../api/Api'; 
 
 export default class Game {
-    constructor(Scene){
+    constructor(Scene, gameId){
         // Game class depends on players/pieces being created
         // super()
         // this.mainPlayer = scene;  
@@ -12,35 +12,34 @@ export default class Game {
         this.computerColor = 'black';
         this.game_over = false;
         this.engine = new Chess()
-        // this.move('b4')
-        // this.move('b6')
-        this.setupWebhookHandlers()
-        console.log('moves', this.moves())
-        
+        // console.log('moves', this.engine.moves())
+
+        // this.setupWebhookHandlers()
+        this.gameId = gameId
+
         return this
     }
 
     setupWebhookHandlers() {
         Api.setMessageHandlers({
             // join: this.onJoin, 
-            move: this.onMove, 
+            move: this.onServerMove, 
             // chat: this.onChat,
         })
     }
 
-    onMove({move}){
+    onServerMove({move}){
         if (move) this.Scene.board.moveOpponentPiece(move)
     }
 
-    moves(sq) {
-        return this.engine.moves(sq)
-    }
-
-
     handleMove (move) {
         var validMove = this.engine.move(move);
-
-        if (validMove && this.isVsComputer) this.makeComputerMove()
+        if (!validMove) return
+        if (this.isVsComputer) {
+            this.makeComputerMove()
+        } else {
+            Api.sendMove(move, this.gameId)
+        }
         
         if (this.engine.game_over()) this.game_over = true
         // if (move === null)  return 'snapback';
@@ -51,19 +50,20 @@ export default class Game {
     makeComputerMove(){
         // console.log('turn', this.engine.turn())
         if(this.engine.turn() != 'b') return
-        const moves = this.moves()
+        const moves = this.engine.moves()
         const move = moves[Math.floor(Math.random() * moves.length)]
         var validMove = this.engine.move(move, { verbose: true })
-        console.log('computer move',validMove)
-        if (validMove) this.Scene.board.moveOpponentPiece(validMove)
+        if (validMove) setTimeout(()=> this.Scene.board.moveOpponentPiece(validMove), 10)
     }
 
-
-    // remove scene and ground
     getValidMoves() {
         //should never return an opponent move
         return validMoves
     }
+
+    // getMovesFromSq(sq) {
+    //     return this.engine.moves(sq)
+    // }
 
     handleGameOver(){
         this.piecesContainer.removeAllFromScene()

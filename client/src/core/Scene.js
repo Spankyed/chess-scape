@@ -10,10 +10,11 @@ const Scene = new class {
         this.uiActions = {};   
         this.game; 
         this.Board; 
+        this.pieces = {white:[],black:[]}
         this.assetsManager;
     }
 
-    setup(canvas, actions, path, file){
+    setup(canvas, actions, gameId){
         if(!canvas) console.warn('no canvas found')
         this.uiActions = actions;
         let _this = this;
@@ -33,7 +34,7 @@ const Scene = new class {
         //     black: new Player(this.pieces.black)
         // }
         // new Game(whitePlayer,blackPlayer)
-        this.game = new Game(this);
+        this.game = new Game(this, gameId);
         this.board = new Board(this);
         
         // shadowGenerator.getShadowMap().renderList.push(this.board.board);
@@ -59,7 +60,6 @@ const Scene = new class {
                 black: this.piecesContainer.instantiateModelsToScene(name => name + "_black", false).rootNodes
             }
             let materials = this.getPieceMaterials()
-            
             // var kingGlowLayer = new BABYLON.GlowLayer("glow", this.scene);
             // kingGlowLayer.intensity = .02;
             this.pieces.white.forEach(piece => {
@@ -88,6 +88,8 @@ const Scene = new class {
                 }
                 piece.addPickingBox()
             });
+            
+            this.board.mapPiecesToSquares(this.pieces)// reconsider this flow
         }
 
         this.assetsManager.load()

@@ -75,7 +75,7 @@ export default class SceneManager {
 
     
     setEnv(canvas){
-        console.log('the scene',this._scene)
+        // console.log('the scene',this._scene)
         //var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(3, 2, 3), scene);
         // var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(-1.5, 2, 6), this._scene);
         // camera.setTarget( new BABYLON.Vector3(-1.580, 7, 9.649));
