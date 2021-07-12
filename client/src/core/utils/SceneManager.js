@@ -15,9 +15,9 @@ export default class SceneManager {
             // for (var i = 0; i < scene.meshes.length; i++) {
             //     scene.meshes[i].convertToFlatShadedMesh();
             // }
-            scene.debugLayer.show({ embedMode: true }).then(() => {
-                // scene.debugLayer.select(light);
-            });
+            // scene.debugLayer.show({ embedMode: true }).then(() => {
+            //     // scene.debugLayer.select(light);
+            // });
             window.addEventListener("resize", function () { 
                 engine.resize();
             });

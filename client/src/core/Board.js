@@ -131,7 +131,7 @@ export default class Board {
         let closestSqPiece = this.getClosestSq(boardPos).piece
         if(closestSqPiece && closestSqPiece != this.selectedPiece){
             this.restoreFadedPieces()
-            closestSqPiece.visibility = 0.2
+            closestSqPiece.visibility = 0.35
             this.fadedPieces.push(closestSqPiece)
         }else if(this.fadedPieces.length > 0){
             this.restoreFadedPieces()
