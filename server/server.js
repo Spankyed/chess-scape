@@ -2,11 +2,14 @@
 // require('dotenv').config()
 // let cfenv = require('cfenv')
 import fastify from 'fastify'
+import fastifyCors from 'fastify-cors'
 import fastifyWebsocket from 'fastify-websocket'
 import functions from './functions.mjs'
 
 let server = fastify()
-server.register(fastifyWebsocket,{ options: { clientTracking: true }})
+
+server.register(fastifyCors, { origin: '*' })
+server.register(fastifyWebsocket,{ options: { clientTracking: true, maxPayload: 1048576 }})
 // fastify.register(require('fastify-sensible'))
 
 // server.websocketServer.clients.forEach((client)=>{
@@ -18,13 +21,19 @@ server.register(fastifyWebsocket,{ options: { clientTracking: true }})
 // })
 
 const {    
+	handleRoomsHttp,
     handleRoomWebSocket,
-    getGameRooms,
-    getClients
+    // getGameRooms,
+    // getClients
 } = functions
 
 
-server.get('/room', { websocket: true }, handleRoomWebSocket)
+// server.get('/room', { websocket: true }, handleRoomWebSocket)
+
+server.route({ method: 'GET', url: '/rooms',
+	handler: handleRoomsHttp,
+	wsHandler: handleRoomWebSocket
+})
 
 const port = 5000
 server.listen(port, err => {
@@ -32,7 +41,7 @@ server.listen(port, err => {
 	if (err) {
 		console.log(err)
 		server.log.error(err)
-		process.exit(1)
+		process.exit(1) // remove this line in production
 	}
 })
 

@@ -4,12 +4,26 @@ const { Chess } = ChessLib;
 const clients = {};
 const gameRooms = {};
 
+function mapRooms(){
+    return Object.values(gameRooms).map( room => {
+        const { match, whitePlayerId, blackPlayerId, // omitted properties
+            ...roomModel } = room;
+        return roomModel
+    })
+}
+
+function handleRoomsHttp(req, reply) {
+    reply.send(JSON.stringify(mapRooms()))
+}
+
 function handleRoomWebSocket(connection /* SocketStream */, req /* FastifyRequest */) {
     // connection.socket.on('open', _ => console.log('~opened!'))
     // connection.socket.on('close', _ => console.log('~closed!'))
 	connection.socket.on('message', request => { // handle incoming messages from connected client 
-		// console.log('incoming request', request)
+		console.log('incoming requests', request)
 		const message = JSON.parse(request)
+		console.log('incoming message', message)
+		// const message = request
         if (!message) return
 		// console.log('message', message)
         const methods = { create, join, move, chat }
@@ -34,7 +48,7 @@ function generateNewGameRoom(clientId) {
         // "matchParams": { "color_player_1": 'whites' },
         // "state": {},
         "host": clientId,
-        "clients": [{ clientId, isPlayer: true }],
+        "clients": [clientId],
         "match": new Chess(),
         "whitePlayerId":'',
         "blackPlayerId":'',
@@ -47,15 +61,20 @@ function generateNewGameRoom(clientId) {
 //     "clientId" : "<guid>"
 // }
 function create(message){
+    console.log('creating')
     const clientId = message.clientId;
+    if (!clients[clientId]) return
     // const matchParams = message.matchParams;
     const gameId = generateNewGameRoom(clientId)
     const response = {
         "method": "create",
-        "gameId" : gameId
+        "gameId" : gameId,
+        "gameRooms" : mapRooms(),
     }
-    const clientConn = clients[clientId].connection;
-    if (clientConn) clientConn.socket.send(JSON.stringify(response));
+    Object.values(clients).forEach( client => {
+        const clientConn = client.connection;
+        if (clientConn) clientConn.socket.send(JSON.stringify(response));
+    })
 }
 
 function join(message){ //a client want to join
@@ -64,21 +83,40 @@ function join(message){ //a client want to join
     const gameRoom = gameRooms[gameId];
     if (gameRoom.clients.length >= 2) return; // max players reached
     // const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
-    gameRoom.clients.push({ clientId, isPlayer: true })
+    gameRoom.clients.push(clientId)
     if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // start the game
     const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
     // notify all clients new client has joined
-    gameRoom.clients.forEach( ({clientId}) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+}
+
+function leave(message){ //a client want to leave
+    const clientId = message.clientId;
+    const gameId = message.gameId;
+    const gameRoom = gameRooms[gameId];
+
+    arr.includes(val) && arr.splice(arr.indexOf(val), 1)
+
+    const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
+    // notify all clients new client has joined
+    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 
 function move(message) { // a user plays
     const gameId = message.gameId;
     const match = gameRooms[gameId].match
-    if (!match || match.game_over()) return
-    const move = match.move(message.move, { verbose: true })
-    // todo: if not valid move, send game state to sync client
-    const response = { "method": "move", move }
-    gameRoom.clients.forEach( ({clientId}) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    if (!match) return
+    if (match.game_over()){
+        const response = { "method": "endGame", move }
+        gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+        socket.emit('gameOver', roomId)
+    }
+    else {
+        const move = match.move(message.move, { verbose: true })
+        // todo: if not valid move, send game state to sync client
+        const response = { "method": "move", move }
+        gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    }
 }
 
 function chat(message) {
@@ -87,7 +125,7 @@ function chat(message) {
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
     const response = { "method": "chat", text }
-    gameRoom.clients.forEach( ({clientId}) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 
 function getGameRooms() { return gameRooms }
@@ -109,6 +147,7 @@ function guid() {
 // }
 
 export default {
+    handleRoomsHttp,
     handleRoomWebSocket,
     getGameRooms,
     getClients
