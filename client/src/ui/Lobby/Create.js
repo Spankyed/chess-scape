@@ -1,5 +1,6 @@
 import { h } from 'hyperapp';
 // todo: if in game and websocket disconnects, reconnect 
+import Api from '../../api/Api';
 
 export default initial => ({
 	state: {
@@ -15,8 +16,14 @@ export default initial => ({
 	view: ({gameTypes}, actions) => ({ showCreate, toggleCreate }) => {
 
 		const toggle = (ev) => {
-			console.log('clicked')
 			ev.stopPropagation();
+			toggleCreate()
+		};
+		
+		const create = (ev) => {
+			console.log('creating')
+			ev.stopPropagation();
+			Api.createGame()
 			toggleCreate()
 		};
 		
@@ -95,7 +102,7 @@ export default initial => ({
 					</div>
 
 					{/* <!--Footer--> */}
-					<div class="modal-footer bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse ">
+					<div onclick={create} class="modal-footer bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse ">
 						<button type="button" class="w-full inline-flex justify-center rounded-sm border border-transparent shadow-sm px-4 py-2  text-base font-medium text-white bg-indigo-500 hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
 							Create Match
 						</button>

@@ -8,22 +8,23 @@ export default class Game {
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         this.Scene = Scene
-        this.isVsComputer = true;
+        this.isVsComputer = false;
         this.computerColor = 'black';
         this.game_over = false;
         this.engine = new Chess()
         // console.log('moves', this.engine.moves())
 
-        // this.setupWebhookHandlers()
+        this.setupWebhookHandlers()
         this.gameId = gameId
 
         return this
     }
 
     setupWebhookHandlers() {
+        console.log('setting up webhh')
         Api.setMessageHandlers({
             // join: this.onJoin, 
-            move: this.onServerMove, 
+            move: this.onServerMove.bind(this), 
             // chat: this.onChat,
         })
     }
@@ -69,5 +70,16 @@ export default class Game {
         this.piecesContainer.removeAllFromScene()
     }
 
+    isPromoting(fen, move) {
+        const chess = new Chess(fen);
+        const piece = chess.get(move.from);
+        if (piece?.type !== "p") return false;
+        if (piece.color !== chess.turn()) return false;
+        if (!["1", "8"].some((it) => move.to.endsWith(it))) return false;
+        return chess
+          .moves({ square: move.from, verbose: true })
+          .map((it) => it.to)
+          .includes(move.to);
+    }
 }
 

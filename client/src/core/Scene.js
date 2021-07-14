@@ -14,7 +14,7 @@ const Scene = new class {
         this.assetsManager;
     }
 
-    setup(canvas, actions, gameId){
+    setupGame(canvas, actions, gameId){
         if(!canvas) console.warn('no canvas found')
         this.uiActions = actions;
         let _this = this;
@@ -106,9 +106,8 @@ const Scene = new class {
         return { white, black}
     }
 
-    openChat(character){
-        //character needs img url, and perhaps name to send to watson to pick convo workspace
-        this.uiActions.showChat(character); //will cause all Chat.js component code to run
+    openPromotionUI(){
+        this.uiActions.showPromotionUI(); 
     }
     
 

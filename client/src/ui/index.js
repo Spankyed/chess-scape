@@ -3,7 +3,7 @@ import { app } from 'hyperapp';
 // import { withLogger } from "@hyperapp/logger";
 
 import Lobby from './Lobby/Lobby';
-import GameRoom from './GameRoom/';
+import GameRoom from './GameRoom/GameRoom';
 import './index.scss';
 
 const lobby = Lobby()
@@ -12,13 +12,14 @@ const gameRoom = GameRoom()
 const state = {
     lobby: lobby.state,
     gameRoom: gameRoom.state,
-    inGame: false
+    inGame: false,
+	gameId: '',
 }
 
 const actions = {
     lobby: lobby.actions,
     gameRoom: gameRoom.actions,
-    joinGame: () => ({ inGame: true  }),
+    joinGame: (gameId) => ({ inGame: true, gameId }),
     leaveGame: () => ({ inGame: false  })
 }
 
@@ -29,8 +30,8 @@ const view = ( state, actions ) => {
 	return (
 		<div class="">
 			{	!state.inGame ?
-				<LobbyView/>  :
-				<GameRoomView leaveGame={ actions.leaveGame }/>  
+				<LobbyView joinGame={actions.joinGame}/>  :
+				<GameRoomView gameId={state.gameId} leaveGame={actions.leaveGame}/>  
 			}
 		</div>
 	)
