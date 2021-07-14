@@ -103,8 +103,10 @@ function leave(message){ //a client want to leave
 }
 
 function move(message) { // a user plays
+    // todo: verify player is same color as move made
     const gameId = message.gameId;
-    const match = gameRooms[gameId].match
+    const gameRoom = gameRooms[gameId];
+    const match = gameRoom.match
     if (!match) return
     if (match.game_over()){
         const response = { "method": "endGame", move }
@@ -112,7 +114,8 @@ function move(message) { // a user plays
         socket.emit('gameOver', roomId)
     }
     else {
-        const move = match.move(message.move, { verbose: true })
+        const move = match.move(message.move)
+        // const move = match.move(message.move, { verbose: true })
         // todo: if not valid move, send game state to sync client
         const response = { "method": "move", move }
         gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
