@@ -50,71 +50,94 @@ export default initial => ({
 
 				<div class="col-span-12">
 					{/* Header */}
-					<div class="px-4 md:px-10 py-5">
+					<div class="px-4 md:px-10 py-5" style='height:18vh'>
 						<div class="sm:flex items-center justify-between">
 							<h1 tabindex="0" class="title px-5 focus:outline-none text-base font-bold leading-normal text-gray-100">
 								Game Rooms
 							</h1>
 							<div>
-								<button onclick={actions.toggleCreate} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded ">
+								<button onclick={actions.toggleCreate} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none ">
 									<p class="text-xl font-medium leading-none text-white">New Game</p>
 								</button>
 							</div>
 						</div>
 					</div>
-					
-					<div class="overflow-auto lg:overflow-visible shadow-md rounded-lg bg-gray-700 ">
-						<table class="table text-gray-400 border-separate space-y-6 text-sm">
-							<thead class="bg-gray-800 text-gray-300 text-center  rounded uppercase text-lg font-large tracking-wider">
-								<tr>
-									<th scope="col" class="px-6 py-3 ">Challenger</th>
-									<th class="p-3">Game Type</th>
-									<th class="p-3">Time</th>
-									<th class="p-3">Players</th>
-									<th class="p-3"></th>
-								</tr>
-							</thead>
-							{/* Room List */}
-							<tbody>
-							{/* if not game rooms, show some other ui */}
-							{	state.gameRooms.map( room => (
-									<tr class="bg-gray-800 rounded-lg border-b border-gray-500  text-lg font-large">
-										<td class="py-3 px-6 text-left border-b border-gray-500">
-											<div class="flex items-center font-lg">
-												<div class="mr-2">
-													<img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg"/>
-												</div>
-												<span>Eshal Rosas</span>
-											</div>
-										</td>
-										<td class="p-3 px-6  border-b border-gray-500">
-											Blitz 1 (lightning bolt)
-										</td>
-										<td class="p-3 px-6  font-bold  border-b border-gray-500">
-											10:00
-										</td>
-										<td class="py-3 px-6 text-center border-b border-gray-500">
-											<span class={`${room.clients.length >= 2 ? 'bg-red-200 text-red-900' : 'bg-green-200 text-green-900'} py-1 px-3 rounded-full  font-semibold`}>
-												{`${room.clients.length >= 2 ? 'Full':'Open'} `} ({room.clients.length}/2)
+					<div class="p-10 bg-gray-700">
+						<div class="table_wrapper overflow-auto flex flex-column pr-3" style='height:55vh'>
+							<table class="border-collapse table text-gray-400 text-sm">
+								<thead class="text-gray-300 text-center uppercase text-lg font-large tracking-wider">
+									<tr class="">
+										<th scope="col" class="py-3 bg-gray-700 border-b border-gray-500">
+											<span class='block bg-gray-700 h-full w-full'>
+												Challenger
 											</span>
-										</td>
-										<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 border-b border-gray-500  font-semibold ">
-											<button onclick={join(room.id)} class="px-5 py-2 border-blue-700 border text-white rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
-											{`${room.clients.length >= 2 ? 'Spectate':'Join'} `}
-											</button>
-										</td>
+										</th>
+										<th scope="col" class="py-3 bg-gray-700 border-b border-gray-500">
+											<span class='block bg-gray-700 h-full w-full'>
+											Game Type
+											</span>
+										</th>
+										<th scope="col" class="py-3 bg-gray-700 border-b border-gray-500">
+											<span class='block bg-gray-700 h-full w-full'>
+											Time
+											</span>
+										</th>
+										<th scope="col" class="py-3 bg-gray-700 border-b border-gray-500">
+											<span class='block bg-gray-700 h-full w-full'>
+											Players
+											</span>
+										</th>
+										<th scope="col" class="py-3 bg-gray-700 border-b border-gray-500">
+											<span class='block bg-gray-700 h-full w-full'>
+											&#8203;
+											</span>
+										</th>
 									</tr>
-								))
-							}
-							</tbody>
-						</table>
+								</thead>
+								{/* Room List */}
+								<tbody class=" border-b border-gray-500">
+								{/* if not game rooms, show some other ui */}
+								{	state.gameRooms.map( (room, idx) => (
+										// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
+										<tr class={` my-3 text-lg font-large`}>
+											<td class="py-3 px-6 text-left">
+												<div class="flex items-center font-lg">
+													<div class="mr-2">
+														<img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg"/>
+													</div>
+													<span>Eshal Rosas</span>
+												</div>
+											</td>
+											<td class="p-3 px-6">
+												Blitz 1 (lightning bolt)
+											</td>
+											<td class="p-3 px-6 font-bold">
+												10:00
+											</td>
+											<td class="py-3 px-6 text-center">
+												<span class={`${room.clients.length >= 2 ? 'bg-red-200 text-red-900' : 'bg-green-200 text-green-900'} py-1 px-3 rounded-full  font-semibold`}>
+													<span class="hidden lg:inline">
+														{`${room.clients.length >= 2 ? 'Full':'Open'} `} 
+													</span>
+													({room.clients.length}/2)
+												</span>
+											</td>
+											<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
+												<button onclick={join(room.id)} class="px-5 py-2 border-blue-700 bg-blue-600 border text-white rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
+												{`${room.clients.length >= 2 ? 'Spectate':'Join'} `}
+												</button>
+											</td>
+										</tr>
+									))
+								}
+								</tbody>
+							</table>
+						</div>
 					</div>
+
 				</div>
 			</div>
 		)
 	}
 })
 
-function isTwoOrMore(arr){
-	arr.length >= 2
-}
