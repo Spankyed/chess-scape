@@ -18,11 +18,12 @@ const Scene = new class {
         if(!canvas) console.warn('no canvas found')
         this.uiActions = actions;
         let _this = this;
-        let engine = new BABYLON.Engine(canvas, true);
-        let scene = SceneManager.CreateScene(engine, true)
-        this.scene = scene
+        this.engine = new BABYLON.Engine(canvas, true);
+        this.scene = SceneManager.CreateScene(this.engine, true)
         this.canvas = canvas
 
+        this.setupLoader()
+        this.engine.displayLoadingUI()
         this.loadPieces()
         // let shadowGenerator = this.scene.manager.setEnv(canvas)
         this.scene.manager.setEnv(this.canvas)
@@ -42,14 +43,15 @@ const Scene = new class {
         // shadowGenerator.useExponentialShadowMap = true;
 
         // this.scene.manager.createLightCamera(canvas)
-        engine.runRenderLoop(function(){
-            scene.render();
+        this.engine.runRenderLoop(()=>{
+            this.scene.render();
         });
     }
     
     loadPieces(){
 
         this.assetsManager = new BABYLON.AssetsManager(this.scene)
+        this.assetsManager.useDefaultLoadingScreen = false
         var meshTask = this.assetsManager.addContainerTask("pieces task", "", "./assets/", 'Chesspieces.babylon');
         meshTask.onError = (err) => console.log(err)
         meshTask.onSuccess = (task) => {
@@ -90,6 +92,8 @@ const Scene = new class {
             });
             
             this.board.mapPiecesToSquares(this.pieces)// reconsider this flow
+            this.hideLoader()
+            // todo: signal to server player is ready. Used for syncing start timing
         }
 
         this.assetsManager.load()
@@ -110,6 +114,34 @@ const Scene = new class {
         this.uiActions.showPromotionUI(); 
     }
     
+    setupLoader(){
+        let customLoader = {
+            displayLoadingUI: ()=>{ 
+                this.uiActions.displayLoadingUI(); this.uiActions.displayLoadingUI()  
+            },
+            hideLoadingUI: ()=>{ 
+                console.log('hiding')
+                this.uiActions.hideLoadingUI() 
+            },
+        }
+        // function customLoader() {
+        //     console.log("customLoader created",this.uiActions)
+        // }
+        // customLoader.prototype.displayLoadingUI = function () {
+        //     console.log("scene loading")
+        //     this.uiActions.displayLoadingUI(); 
+        // };
+        // customLoader.prototype.hideLoadingUI = function () {
+        //     console.log("scene loaded")
+        //     this.uiActions.hideLoadingUI(); 
+        // };
+        // var loadingScreen = new customLoader();
+        this.engine.loadingScreen = customLoader;
+    }
+
+    hideLoader(){
+        this.engine.hideLoadingUI()
+    }
 
 }
 

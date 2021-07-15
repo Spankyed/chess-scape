@@ -7,11 +7,12 @@ import Scene from './scene.js';
 // todo: if leave game remove clientId from game.clients 
 export default initial => ({
 	state: { 
-		isLoading: false,
+		isLoading: true,
 		chatting: false
 	},
 
 	actions: { 
+		displayLoadingUI: () => () => ({isLoading: true}),
 		hideLoadingUI: () => () => ({isLoading: false})
 	},
 
@@ -19,7 +20,7 @@ export default initial => ({
 		/* todo: on destroy, breakdown websocket and game */
 		return ( 
 			<div style="positon:relative;">
-				{ state.isLoading && <Loader/> }
+				<Loader isLoading={state.isLoading}/> 
 				<Scene gameId={gameId} state={state} actions={actions}></Scene> 
 				{ state.chatting && <Chat state={state} actions={actions}></Chat> }
 			</div>

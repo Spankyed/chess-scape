@@ -3,9 +3,10 @@ import { h } from 'hyperapp';
 // designs based off following code pens
 // https://codepen.io/_fbrz/pen/KvwIF
 // https://codepen.io/crayon-code/pen/eYdVLJo
-export default () => {
+
+export default ({isLoading}) => {
 	return (
-		<div class="mosaic absolute top-0 left-0 w-full h-full" style="background-color:#302E2B; z-index:999;">
+		<div class={`${!isLoading && 'hidden'} mosaic absolute top-0 left-0 w-full h-full`} style="background-color:#302E2B; z-index:999;">
 			<div class="relative"  style="height:50px">
 				<div id="container">
 					<div id="loader"></div>
