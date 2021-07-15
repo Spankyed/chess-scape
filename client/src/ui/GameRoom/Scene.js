@@ -5,7 +5,7 @@ import Scene from '../../core/Scene';
 export default ({gameId, state, actions}) => {
 
 	const init = (canvas) => {
-		Scene.setupGame(canvas, actions, gameId);
+		setTimeout(()=> Scene.setupGame(canvas, actions, gameId) , 0)
 		canvas.focus();
 	};
 	

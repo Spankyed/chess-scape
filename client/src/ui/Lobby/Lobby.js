@@ -65,7 +65,7 @@ export default initial => ({
 					<div class="p-10 bg-gray-700">
 						<div class="table_wrapper overflow-auto flex flex-column pr-3" style='height:55vh'>
 							<table class="border-collapse table text-gray-400 text-sm">
-								<thead class="text-gray-300 text-center uppercase text-lg font-large tracking-wider">
+								<thead class="text-gray-400 text-center uppercase text-lg font-large tracking-wider">
 									<tr class="">
 										<th scope="col" class="py-3 bg-gray-700 border-b border-gray-500">
 											<span class='block bg-gray-700 h-full w-full'>
@@ -95,7 +95,7 @@ export default initial => ({
 									</tr>
 								</thead>
 								{/* Room List */}
-								<tbody class=" border-b border-gray-500">
+								<tbody class="text-gray-300 border-b border-gray-500">
 								{/* if not game rooms, show some other ui */}
 								{	state.gameRooms.map( (room, idx) => (
 										// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
