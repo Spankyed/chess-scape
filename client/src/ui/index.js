@@ -28,7 +28,7 @@ const view = ( state, actions ) => {
 	const GameRoomView = gameRoom.view(state.gameRoom, actions.gameRoom)
 
 	return (
-		<div class="">
+		<div class="h-full">
 			{	!state.inGame ?
 				<LobbyView joinGame={actions.joinGame}/>  :
 				<GameRoomView gameId={state.gameId} leaveGame={actions.leaveGame}/>  

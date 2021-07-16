@@ -116,26 +116,9 @@ const Scene = new class {
     
     setupLoader(){
         let customLoader = {
-            displayLoadingUI: ()=>{ 
-                this.uiActions.displayLoadingUI(); this.uiActions.displayLoadingUI()  
-            },
-            hideLoadingUI: ()=>{ 
-                console.log('hiding')
-                this.uiActions.hideLoadingUI() 
-            },
+            displayLoadingUI: _ => this.uiActions.showLoader(),
+            hideLoadingUI: _ => this.uiActions.hideLoader() 
         }
-        // function customLoader() {
-        //     console.log("customLoader created",this.uiActions)
-        // }
-        // customLoader.prototype.displayLoadingUI = function () {
-        //     console.log("scene loading")
-        //     this.uiActions.displayLoadingUI(); 
-        // };
-        // customLoader.prototype.hideLoadingUI = function () {
-        //     console.log("scene loaded")
-        //     this.uiActions.hideLoadingUI(); 
-        // };
-        // var loadingScreen = new customLoader();
         this.engine.loadingScreen = customLoader;
     }
 

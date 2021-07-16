@@ -1,6 +1,6 @@
 import { h } from 'hyperapp';
-import Scene from '../../core/Scene';
-import Api from '../../api/Api';
+import Scene from '../../../core/Scene';
+import Api from '../../../api/Api';
 
 // const chatState = {
 //     chatting: false,

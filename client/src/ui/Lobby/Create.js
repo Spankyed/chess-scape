@@ -5,10 +5,10 @@ import Api from '../../api/Api';
 export default initial => ({
 	state: {
 		gameTypes: [
-			{ id: 1, name: 'Bullet', time: '1 min', src: `./assets/bullet.svg` },
-			{ id: 2, name: 'Blitz', time: '5 min', src: `./assets/fighter_jet.svg` },
-			{ id: 3, name: 'Rapid', time: '10 min', src: `./assets/lightning.svg` },
-			{ id: 4, name: 'Custom', time: '--', src: `./assets/custom.svg` },
+			{ id: 1, name: 'Bullet', time: '1 min', src: `./assets/create/bullet.svg` },
+			{ id: 2, name: 'Blitz', time: '5 min', src: `./assets/create/fighter_jet.svg` },
+			{ id: 3, name: 'Rapid', time: '10 min', src: `./assets/create/lightning.svg` },
+			{ id: 4, name: 'Custom', time: '--', src: `./assets/create/custom.svg` },
 		]
 	},
 	actions: { 
@@ -44,9 +44,9 @@ export default initial => ({
 					</div> */}
 
 					<div style="display: flex; justify-content: center; align-items: center" class="chooseColorNewGame">
-						<img id="startingColor1" onclick="selectColor(1)" src="./assets/queen_w.png" style="max-height: 90px;"/>
-						<img id="startingColor0" onclick="selectColor(0)" class="selected" src="./assets/queen_bw.png" style="max-height: 120px;"/>
-						<img id="startingColor2" onclick="selectColor(2)" src="./assets/queen_b.png" style="max-height: 90px;"/>
+						<img id="startingColor1" onclick="selectColor(1)" src="./assets/create/queen_w.png" style="max-height: 90px;"/>
+						<img id="startingColor0" onclick="selectColor(0)" class="selected" src="./assets/create/queen_bw.png" style="max-height: 120px;"/>
+						<img id="startingColor2" onclick="selectColor(2)" src="./assets/create/queen_b.png" style="max-height: 90px;"/>
 					</div>
 
 					{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
@@ -87,7 +87,7 @@ export default initial => ({
 						<div class="flex mt-6">
 							<label class="flex items-start">
 								<input type="checkbox" class="form-checkbox h-6 w-6"/>
-								<span class="ml-2">VS Computer</span>
+								<span class="ml-2">vs Computer</span>
 							</label>
 						</div>
 						<div class="flex mt-6">

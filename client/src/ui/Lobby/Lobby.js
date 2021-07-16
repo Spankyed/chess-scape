@@ -115,7 +115,7 @@ export default initial => ({
 												<div class="mr-2">
 													<img class="w-6 h-6 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg"/>
 												</div>
-												<span>Eshal Rosas</span>
+												<span>John Doe</span>
 											</div>
 										</td>
 										<td class="p-3 px-6">
@@ -133,7 +133,7 @@ export default initial => ({
 											</span>
 										</td>
 										<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
-											<button onclick={join(room.id)} class="px-5 py-2 border-blue-700 bg-blue-600 border text-white rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
+											<button onclick={join(room.id)} class="px-5 py-2 border-indigo-700 bg-indigo-600 border text-white rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
 											{`${room.clients.length >= 2 ? 'Spectate':'Join'} `}
 											</button>
 										</td>

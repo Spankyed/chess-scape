@@ -5,7 +5,6 @@ import Scene from '../../core/Scene';
 export default ({gameId, state, actions}) => {
 
 	const init = (canvas) => {
-		console.log('hash and  ass',window.location.hash)
 		window.location.hash = `#${gameId}`
 		setTimeout(()=> Scene.setupGame(canvas, actions, gameId) , 500)
 		canvas.focus();
