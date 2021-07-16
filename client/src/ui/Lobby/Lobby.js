@@ -31,8 +31,9 @@ export default initial => ({
 				join: (msg) => console.log('some1 joined', msg),
 				// join: joinGame,
 			})
+			// todo retry 3 times delayed if no rooms retrieved
 			Api.fetchRooms().then( rooms => {
-				console.log('eskkitit',rooms)
+				// console.log('eskkitit',rooms)
 				actions.updateRooms({gameRooms: rooms})
 			})
 		}

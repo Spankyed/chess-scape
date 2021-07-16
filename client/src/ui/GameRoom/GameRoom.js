@@ -12,14 +12,16 @@ export default initial => ({
 	state: { 
 		controls: controls.state,
 		isLoading: true,
-		isChatting: false
+		isChatting: false,
+		gameOver: false,
 	},
 
 	actions: { 
 		controls: controls.actions,
 		showLoader: () => () => ({isLoading: true}),
 		toggleChat: (ev) => (state) => ({isChatting: !state.isChatting}),
-		hideLoader: () => () => ({isLoading: false})
+		hideLoader: () => () => ({isLoading: false}),
+		endGame: () => () => ({gameOver: true}),
 	},
 
 	view: (state, actions) => ({gameId, leaveGame}) => {
@@ -28,7 +30,7 @@ export default initial => ({
 		return ( 
 			<div class="h-full">
 				<Loader isLoading={state.isLoading}/>
-				<ControlsView isLoading={state.isLoading} toggleChat={actions.toggleChat}/>
+				<ControlsView isLoading={state.isLoading} gameOver={state.gameOver} toggleChat={actions.toggleChat}/>
 				<Scene gameId={gameId} state={state} actions={actions}/> 
 				{ state.isChatting && 
 					<Chat state={state} actions={actions}/> 

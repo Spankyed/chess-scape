@@ -2,15 +2,13 @@ import { h } from 'hyperapp';
 
 export default initial => ({
 	state: { 
-		isLoading: true,
-		chatting: false
+		// isLoading: true,
 	},
 
 	actions: { 
-		displayLoadingUI: () => () => ({isLoading: true}),
-		hideLoadingUI: () => () => ({isLoading: false})
+		// hideLoadingUI: () => () => ({isLoading: false})
 	},
-	view: (state, actions) => ({isLoading , toggleChat}) => {
+	view: (state, actions) => ({isLoading, toggleChat, gameOver}) => {
 		return ( 
 			<div class={`${isLoading && 'hidden'} absolute top-0 left-0 w-full h-full pointer-events-none`} style="z-index:999;">
 				<div class="relative w-full h-full">
@@ -19,7 +17,7 @@ export default initial => ({
 						<div class="px-3 w-56">
 							<Challenger/>
 						</div>
-						<div class="match-message mx-auto text-center justify-center items-center">
+						<div class={`${ gameOver  ? 'visible': 'invisible'} match-message mx-auto text-center justify-center items-center`}>
 							<MatchMessage/>
 						</div>
 						<div class="px-3 w-56">

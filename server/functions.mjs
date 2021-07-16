@@ -81,12 +81,14 @@ function join(message){ //a client want to join
     const clientId = message.clientId;
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId];
+    if(!gameRoom) return
     if (gameRoom.clients.length >= 2) return; // max players reached
     // const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
     gameRoom.clients.push(clientId)
     if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // start the game
     const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
     // notify all clients new client has joined
+    // todo: check if client is still connected before trying to send message
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 
@@ -117,6 +119,7 @@ function move(message) { // a user plays
         const move = match.move(message.move)
         // const move = match.move(message.move, { verbose: true })
         // todo: if not valid move, send game state to sync client
+        if(!move) return
         const response = { "method": "move", move }
         gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
     }

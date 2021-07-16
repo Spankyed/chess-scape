@@ -16,7 +16,7 @@ function createConnection(){
 		// console.log('incoming request', request)
 		const message = JSON.parse(event.data)
 		if (!message) return
-		console.log('server message', message)
+		console.log('message recieved ', {message})
 		const messageHandler = handlers[message.method]
 		if (messageHandler) messageHandler(message)
 	})

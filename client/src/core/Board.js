@@ -142,7 +142,7 @@ export default class Board {
 
     attemptGameMove(potentialMove){
         this.playerCanMove = false
-        let validMove = this.game.handleMove(potentialMove)
+        let validMove = this.game.handleUserMove(potentialMove)
         if (!validMove) this.playerCanMove = true
         return validMove
     }

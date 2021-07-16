@@ -21,31 +21,12 @@ export default class Game {
     }
 
     setupWebhookHandlers() {
-        console.log('setting up webhh')
+        console.log('bind socket handlers')
         Api.setMessageHandlers({
             // join: this.onJoin, 
             move: this.onServerMove.bind(this), 
             // chat: this.onChat,
         })
-    }
-
-    onServerMove({move}){
-        if (move) this.Scene.board.moveOpponentPiece(move)
-    }
-
-    handleMove (move) {
-        var validMove = this.engine.move(move);
-        if (!validMove) return
-        if (this.isVsComputer) {
-            this.makeComputerMove()
-        } else {
-            Api.sendMove(move, this.gameId)
-        }
-        
-        if (this.engine.game_over()) this.game_over = true
-        // if (move === null)  return 'snapback';
-        // else socket.emit('move', move);
-        return validMove
     }
 
     makeComputerMove(){
@@ -55,6 +36,39 @@ export default class Game {
         const move = moves[Math.floor(Math.random() * moves.length)]
         var validMove = this.engine.move(move, { verbose: true })
         if (validMove) setTimeout(()=> this.Scene.board.moveOpponentPiece(validMove), 10)
+        this.checkGameOver()
+    }
+
+    onServerMove({move}){
+        if (!move) return
+        var validMove = this.engine.move(move);
+        console.log('server move', validMove)
+        if (!validMove) return
+        this.Scene.board.moveOpponentPiece(move)
+        this.checkGameOver()
+    }
+
+    handleUserMove (move) {
+        var validMove = this.engine.move(move);
+        if (!validMove) return
+        if (this.isVsComputer) {
+            this.makeComputerMove()
+        } else {
+            Api.sendMove(move, this.gameId)
+        }
+        
+        this.checkGameOver()
+        // if (move === null)  return 'snapback';
+        // else socket.emit('move', move);
+        return validMove
+    }
+
+    checkGameOver(){
+        if (this.engine.game_over()) {
+            this.game_over = true
+            this.Scene.uiActions.endGame()
+            // this.piecesContainer.removeAllFromScene()
+        }
     }
 
     getValidMoves() {
@@ -66,9 +80,6 @@ export default class Game {
     //     return this.engine.moves(sq)
     // }
 
-    handleGameOver(){
-        this.piecesContainer.removeAllFromScene()
-    }
 
     isPromoting(fen, move) {
         const chess = new Chess(fen);
