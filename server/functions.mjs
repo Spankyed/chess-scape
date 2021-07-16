@@ -113,7 +113,7 @@ function move(message) { // a user plays
     if (match.game_over()){
         const response = { "method": "endGame", move }
         gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
-        socket.emit('gameOver', roomId)
+        // socket.emit('gameOver', roomId)
     }
     else {
         const move = match.move(message.move)

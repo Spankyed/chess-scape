@@ -8,12 +8,14 @@ export default class Board {
         this.squares = {}
         this.pieces = Scene.pieces
         this.fadedPieces = []
-        this.mainPlayer = 'white'
+        this.playerColor = 'white'
         this.playerCanMove = true;
         // this.pieces = []
         this.isMoving = false;
-        this.selectedPiece;  
-        this.startingSq 
+        this.fromSq = {};
+        this.toSq = {};
+        // this.selectedPiece;  
+        // this.startingSq 
         // this.dragPos;
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
         this.setupEventHandlers()
@@ -46,39 +48,42 @@ export default class Board {
     onPointerDown(evt) {
         if (this.game.game_over || !this.playerCanMove) return;
         if (evt.button !== 0) return;
-        let pickInfo = this.pickWhere((mesh) => mesh._isPickingBox);
+        let pickInfo = this.pickWhere((mesh) => mesh.isPickable);
+        console.log('picked sq',pickInfo.pickedMesh)
         if (!pickInfo.hit)  return;
-        if (this.selectedPiece == pickInfo.pickedMesh.parent){
+        if (this.fromSq.mesh == pickInfo.pickedMesh){
             this.resetMove(true)
             return
         }
-        // todo: check if pickedMesh is enemy piece, then ignore event (let pointerUp handle the possible eat move)
-        this.selectedPiece = pickInfo.pickedMesh.parent;
-        if (!this.selectedPiece) return;
+
+        let piece = this.squares[pickInfo.pickedMesh.name].piece
+        if (!piece) return
+        let pieceColor = this.getColorFromPiece(piece)
+        if (pieceColor !== this.playerColor) return // check if pickedsq piece is enemy piece, then ignore event; pointerUp will handle if it is an eat move
+
+        this.fromSq = this.squares[pickInfo.pickedMesh.name]; // pick new piece
+        if (!(this.fromSq && this.fromSq.piece)) return; // if no piece on square, return
         // set piece starting Sq and highlight the square underneath the piece yellow
-        this.startingSq = this.getClosestSq(this.selectedPiece.position.clone());
-        // console.log('starting point', this.selectedPiece.position)
+        // this.startingSq = this.fromSq;
         this.selectedHighlightLayer.removeAllMeshes();
-        this.selectedHighlightLayer.addMesh(this.startingSq.mesh, BABYLON.Color3.Yellow());
+        this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow());
         this.isMoving = true;
         this.isDragging = true
-        // console.log('mesh',this.selectedPiece)
     }
 
     onPointerUp(evt) {
         if (evt.button == 2) return;
-        if (!( this.isMoving && this.startingSq )) return;
-        let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
-        let closestSq = this.getClosestSq(boardPos);
-        if (!( closestSq && boardPos )) { // boardPos is false if user clicked off board
+        if (!( this.isMoving && this.fromSq )) return;
+        let pickInfo = this.pickWhere(mesh => mesh.isPickable)
+        if (!pickInfo.hit) { // boardPos is false if user clicked off board
             this.resetMove(true)
             return; 
         }
-        let squarePos = this.squares[closestSq.sqName].coords
-        if (closestSq != this.startingSq) {
+        this.toSq = this.squares[pickInfo.pickedMesh.name];
+        if (this.toSq != this.fromSq) {
             // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`
             // let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
-            let potentialMove = { from: this.startingSq.sqName, to: closestSq.sqName }
+            let potentialMove = { from: this.fromSq.sqName, to: this.toSq.sqName }
             // console.log('potential move ', potentialMove)
             // let validMove = this.game.moves().find((move) => {
             //     if (pieceAbbrev == '') 
@@ -101,8 +106,7 @@ export default class Board {
                 //     select 
                 // }
                 console.log('player move', validMove)
-                this.movePiece(this.selectedPiece, squarePos, potentialMove)
-                // this.selectedPiece.position = new BABYLON.Vector3(squarePos.x, this.selectedPiece.position.y, squarePos.z)
+                this.movePiece(this.fromSq.piece, this.toSq.coords, potentialMove)
                 // this.whitesTurn = !this.whitesTurn                
                 // todo: after move, check if gameover, if so how 'time/checkmate/3foldrep..'
             } else {
@@ -114,7 +118,7 @@ export default class Board {
         }
         else {
             // if release mouse click on same sq, dont completely reset move, but pos piece at center of starting sq
-            this.movePiece(this.selectedPiece, this.startingSq.coords)
+            this.movePiece(this.fromSq.piece, this.fromSq.coords.clone())
             this.isDragging = false 
         }
         // todo: set prev move indicator on square (change tile material diffuse)
@@ -123,13 +127,14 @@ export default class Board {
 
     // todo: this function needs to run in a renderLoop(throttled)
     onPointerMove (evt) {
-        if (!( this.isDragging && this.startingSq )) return;
+        if (!( this.isDragging && this.fromSq )) return;
+        // todo drag piece along sides of board if mouse is off board
         let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
         if (!boardPos) return;
         // console.log('selectedPiece',this.selectedPiece)
 
         let closestSqPiece = this.getClosestSq(boardPos).piece
-        if(closestSqPiece && closestSqPiece != this.selectedPiece){
+        if(closestSqPiece && closestSqPiece != this.fromSq.piece){
             this.restoreFadedPieces()
             closestSqPiece.visibility = 0.35
             this.fadedPieces.push(closestSqPiece)
@@ -137,9 +142,13 @@ export default class Board {
             this.restoreFadedPieces()
         }
 
-        this.movePiece(this.selectedPiece, boardPos)
+        this.movePiece(this.fromSq.piece, boardPos.clone())
     }
 
+    pickWhere (predicate) {
+        return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
+    }
+    
     attemptGameMove(potentialMove){
         this.playerCanMove = false
         let validMove = this.game.handleUserMove(potentialMove)
@@ -163,10 +172,11 @@ export default class Board {
     }
     
     resetMove(goBack){
-        if (goBack && this.selectedPiece) this.movePiece(this.selectedPiece, this.startingSq.coords)
+        if (goBack && this.fromSq.piece) this.movePiece(this.fromSq.piece, this.fromSq.coords)
         if (this.fadedPieces.length > 0) this.restoreFadedPieces()
-        this.startingSq = null;
-        this.selectedPiece = null;
+        this.fromSq = {};
+        this.toSq = {}
+        // this.selectedPiece = null;
         // this.dragPos = null;
         this.isMoving = false;
         this.legalSquares = null;
@@ -193,6 +203,9 @@ export default class Board {
         return this.squares[closest.sqName]
     }
     
+    getColorFromPiece(piece){
+        return piece.name.endsWith('white') ? 'white' : 'black'
+    }
     // getPieceBySq(sqName){
     //     let square = this.squares[sqName]
     //     if (!square) return
@@ -226,9 +239,7 @@ export default class Board {
     //     return (abbrev != 'P') ? abbrev : ''
     // }
 
-    pickWhere (predicate) {
-        return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
-    }
+
 
     // calcDistance(p1, p2){
     //     return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
@@ -308,12 +319,12 @@ export default class Board {
                 let squareDef =  new BABYLON.SubMesh(row % 2 ^ col % 2,  0, verticesCount, base, tileIndicesLength, boardTiles)
                 let square = boardTiles.clone(sqName)
                 square.subMeshes = [squareDef.clone(square, square)] // could deconstruct mesh alternatively https://doc.babylonjs.com/toolsAndResources/utilities/Deconstruct_Mesh
-                square.isPickable = false
+                square.isPickable = true
                 square.id = sqName
                 square.name = sqName
                 // square.materialIndex = materials[row % 2 ^ col % 2]
                 // let square = boardTiles.subMeshes[tiles]
-                this.squares[sqName] = { sqName, coords:new BABYLON.Vector3(xCoord, 0, yCoord), mesh:square}
+                this.squares[sqName] = { sqName, coords: new BABYLON.Vector3(xCoord, 0, yCoord), mesh: square, piece: null } // change mesh to tile
                 base += tileIndicesLength;
                 tilesCreated += 1
                 // console.log('Sq Name(col, row)',`${sqName}(${col}, ${row})`)
@@ -326,7 +337,7 @@ export default class Board {
        
         setTimeout(()=>{ boardTiles.dispose() },100)
 
-        // console.log('squares', this.squares)
+        console.log('squares', this.squares)
         return board
     }
     

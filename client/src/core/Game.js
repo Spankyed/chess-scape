@@ -21,7 +21,7 @@ export default class Game {
     }
 
     setupWebhookHandlers() {
-        console.log('bind socket handlers')
+        // console.log('bind socket handlers')
         Api.setMessageHandlers({
             // join: this.onJoin, 
             move: this.onServerMove.bind(this), 

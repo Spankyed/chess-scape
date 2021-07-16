@@ -16,7 +16,7 @@ function createConnection(){
 		// console.log('incoming request', request)
 		const message = JSON.parse(event.data)
 		if (!message) return
-		console.log('message recieved ', {message})
+		console.log('%c Message received ',"color:orange;", {message})
 		const messageHandler = handlers[message.method]
 		if (messageHandler) messageHandler(message)
 	})
@@ -29,40 +29,36 @@ function startConnection(){
 }
 
 function sendMessage(connection, message){
+	console.log(`%c ${message.method}`,"color:green;", {message})
 	connection.send(JSON.stringify(message))
 }
 
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers)
 	// handlers = {...handlers, ...newHandlers}
-	console.log('new handlers', handlers)
+	// console.log('new handlers', handlers)
 }
 
-
 function createGame(params){
-	// console.log('creating', params)
 	const message = { method: "create", ...params, clientId }
-	console.log('creating', message)
 	sendMessage(connection, message)
 }
 
 function joinGame(gameId){
-	console.log('joining', gameId)
 	const message = { method: "join", gameId, clientId }
 	sendMessage(connection, message)
 }
 
 function sendMove(move, gameId){
-	console.log('sending move', {move, gameId})
 	const message = { method: "move", move, gameId }
 	sendMessage(connection, message)
 }
 
 function sendChat(text, gameId){
-	console.log('sending chat', { text, gameId })
 	const message = { method: "chat", text, gameId }
 	sendMessage(connection, message)
 }
+
 async function fetchRooms(){
 	const method = 'GET';
 	const headers = {'Content-Type': 'application/json; charset=utf-8' };
@@ -70,11 +66,10 @@ async function fetchRooms(){
 	const response = await fetch(url, { method, headers })
 	if (response.ok) {
 		const data = await response.json()
-		console.log('room data ',data)
+		console.log('%c Room List',"color:orange;",data)
 		return data
 	}
 }
-
 
 
 export default {

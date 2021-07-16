@@ -73,7 +73,8 @@ const Scene = new class {
                 } else {
                     piece.material = materials.white
                 }
-                piece.addPickingBox()
+                piece.isPickable = false
+                // piece.addPickingBox()
             });
             this.pieces.black.forEach(piece => {
                 
@@ -88,7 +89,8 @@ const Scene = new class {
                     piece.material = materials.black
                     piece.material.metallicTexture = null
                 }
-                piece.addPickingBox()
+                piece.isPickable = false
+                // piece.addPickingBox()
             });
             
             this.board.mapPiecesToSquares(this.pieces)// reconsider this flow

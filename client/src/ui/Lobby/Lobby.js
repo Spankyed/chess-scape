@@ -39,7 +39,7 @@ export default initial => ({
 		}
 
 		const join = (id) => () => {
-			console.log('joining', id)
+			// console.log('joining  ', id)
 			Api.joinGame(id)
 			joinGame(id)
 		}
