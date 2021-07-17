@@ -2,10 +2,12 @@ import { h } from 'hyperapp';
 
 export default initial => ({
 	state: { 
+		menuOpen: false,
 		// isLoading: true,
 	},
 
 	actions: { 
+		toggleMenu: (ev) => (state) => ({menuOpen: !state.menuOpen}),
 		// hideLoadingUI: () => () => ({isLoading: false})
 	},
 	view: (state, actions) => ({isLoading, toggleChat, gameOver}) => {
@@ -32,16 +34,46 @@ export default initial => ({
 						</button>
 					</div>
 					<div class="absolute right-0 bottom-0 p-5 flex flex-row flex-wrap">
+					<div class="grid grid-cols-2">
+						<div class="relative col-start-2 col-span-1">
+							<button onclick={actions.toggleMenu} class="inline-block text-left
+								bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
+							">
+								<img class="h-12" src="./assets/controls/menu.svg"></img>
+							</button>
+							{ state.menuOpen && <Menu/> }
+						</div>	
 						<button class="
 							bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
 						">
-							<img class="h-12" src="./assets/controls/menu.svg"></img>
+							<img class="h-12" src="./assets/controls/camera.svg"></img>
 						</button>
 						<button onclick={toggleChat} class="
 							bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
 						">
 							<img class="h-12" src="./assets/controls/chat.svg"></img>
 						</button>
+					</div>
+
+						{/* <div class="float-right">
+							<button class=" block
+								bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
+							">
+								<img class="h-12" src="./assets/controls/menu.svg"></img>
+							</button>
+							<div>
+								<button class="
+									bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
+								">
+									<img class="h-12" src="./assets/controls/menu.svg"></img>
+								</button>
+								<button onclick={toggleChat} class="
+									bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
+								">
+									<img class="h-12" src="./assets/controls/chat.svg"></img>
+								</button>
+							</div>
+						</div> */}
 					</div>
 				</div>
 			</div>
@@ -98,6 +130,25 @@ function MatchMessage(){
 			<div id="topic-1" class="message-topic">MATCH</div>
 			<div id="message-1" class="message-content">
 				<span>White is Victorious</span>
+			</div>
+		</div>
+	)
+}
+
+function Menu(){
+	return (
+		<div style="margin-bottom: 4.5rem;" class="origin-top-right absolute bottom-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+			<div class="py-1" role="none">
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Resign</a>
+			</div>
+			<div class="py-1" role="none">
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">Offer Draw</a>
+			</div>
+			<div class="py-1" role="none">
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-4">Play Music</a>
+			</div>
+			<div class="py-1" role="none">
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-6">Play Video</a>
 			</div>
 		</div>
 	)
