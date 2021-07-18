@@ -45,7 +45,7 @@ export default initial => ({
 		}
 
 		return ( 
-			<div oncreate={init} class="flex pt-10 justify-center min-h-screen bg-gray-900 font-sans">
+			<div oncreate={init} class="lobby flex pt-10 justify-center min-h-screen bg-gray-900 font-sans">
 
 				{ showCreate && <CreateView showCreate={showCreate} toggleCreate={actions.toggleCreate}/> }
 
@@ -72,7 +72,7 @@ export default initial => ({
 								<div class="w-full text-center text-gray-300 text-xl font-medium leading-none">Nothing to see here</div>
 							</div>
 							:
-							<table class="border-collapse table text-gray-400 text-sm">
+							<table class="table border-collapse table text-gray-400 text-sm">
 								<thead class="text-gray-400 text-center uppercase text-lg font-large tracking-wider">
 									<tr class="">
 										<th scope="col" class="px-5 py-3 bg-gray-700 border-b border-gray-500">

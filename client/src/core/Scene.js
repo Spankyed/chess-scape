@@ -19,7 +19,8 @@ const Scene = new class {
         this.uiActions = actions;
         let _this = this;
         this.engine = new BABYLON.Engine(canvas, true);
-        this.scene = SceneManager.CreateScene(this.engine, true)
+        this.scene = SceneManager.CreateScene(this.engine, canvas, true)
+        // this.scene = SceneManager.CreateScene(this.engine, canvas, true)
         this.canvas = canvas
 
         this.setupLoader()

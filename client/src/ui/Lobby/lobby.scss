@@ -1,3 +1,33 @@
+.lobby {
+    .table{
+        
+    }
+    // scroll bar styling courtesy of  https://jsfiddle.net/vsj6qb8c/6/
+    ::-webkit-scrollbar {
+        width: 20px;
+        border-width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+        margin-top:3.2rem;
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        --container-background-color: rgba(55,65,81,1);
+        background-color: #ebedf5;
+        // border-radius: 8px;
+        border-color: var(--container-background-color);
+        border-style: solid;
+        border-width: 1px 7px 1px 7px;
+    }
+    ::-webkit-scrollbar-track-piece {
+        --container-background-color: rgba(55,65,81,1);
+        background-color: #8f8f8f;
+        border-color: var(--container-background-color);
+        border-width: 2px 9px 2px 9px;
+        border-style: solid;
+    }
+}
+
 .modal{
     z-index: 999;
 }
@@ -30,27 +60,3 @@ thead{
 }
 
 
-// scroll bar styling courtesy of  https://jsfiddle.net/vsj6qb8c/6/
-::-webkit-scrollbar {
-	width: 20px;
-    border-width: 5px;
-}
-::-webkit-scrollbar-track {
-    margin-top:3.2rem;
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    --container-background-color: rgba(55,65,81,1);
-	background-color: #ebedf5;
-    // border-radius: 8px;
-    border-color: var(--container-background-color);
-    border-style: solid;
-    border-width: 1px 7px 1px 7px;
-}
-::-webkit-scrollbar-track-piece {
-    --container-background-color: rgba(55,65,81,1);
-    background-color: #8f8f8f;
-    border-color: var(--container-background-color);
-    border-width: 2px 9px 2px 9px;
-    border-style: solid;
-}

@@ -7,7 +7,7 @@ export default class SceneManager {
      * Create a new scene and registers a manager instance
      * @param engine 
      */
-    static CreateScene(engine) {
+    static CreateScene(engine, canvas) {
         let scene;
         if(!SceneManager._scene){
             scene = new BABYLON.Scene(engine);
@@ -18,9 +18,10 @@ export default class SceneManager {
             // scene.debugLayer.show({ embedMode: true }).then(() => {
             //     // scene.debugLayer.select(light);
             // });
-            window.addEventListener("resize", function () { 
-                engine.resize();
-            });
+
+            window.addEventListener("resize", _ => engine.resize() );
+            // const resize$ = new ResizeObserver( _ => engine.resize() ); // todo: make sure this gets disposed
+            // resize$.observe(canvas)
         }
 
         return scene;

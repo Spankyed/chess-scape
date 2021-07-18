@@ -17,13 +17,13 @@ export default initial => ({
 
 					<div class="w-full flex"> 
 						<div class="px-3 w-56">
-							<Challenger/>
+							{/* <Challenger/> */}
 						</div>
 						<div class={`${ gameOver  ? 'visible': 'invisible'} match-message mx-auto text-center justify-center items-center`}>
 							<MatchMessage/>
 						</div>
 						<div class="px-3 w-56">
-							<Opponent/>
+							{/* <Opponent/> */}
 						</div>
 					</div>
 					<div class="absolute left-0 bottom-0 p-5">
@@ -137,7 +137,8 @@ function MatchMessage(){
 
 function Menu(){
 	return (
-		<div style="margin-bottom: 4.5rem;" class="origin-top-right absolute bottom-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+		// needs pointer events
+		<div style="margin-bottom: 4.5rem;" class="mr-1 origin-top-right absolute bottom-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
 			<div class="py-1" role="none">
 				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Resign</a>
 			</div>
