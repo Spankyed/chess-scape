@@ -40,9 +40,8 @@ export default initial => ({
 					<Scene gameId={gameId} state={state} actions={actions}/> 
 				</div>
 
-				{ state.isChatting && 
-					<ChatView state={state} actions={actions}/> 
-				}
+				<ChatView isChatting={state.isChatting} state={state} actions={actions}/> 
+
 			</div>
 
 		)

@@ -18,7 +18,7 @@ export default initial => ({
 		addMessage: message => state => ({ messages: [...state.messages, message] }),
 	},
 
-	view: (state, actions) => ({gameId, leaveGame}) => {
+	view: (state, actions) => ({isChatting}) => {
 		var { messages } = state;
 		
 		function init() {
@@ -40,7 +40,7 @@ export default initial => ({
 		};
 		
 		return (
-			<div oncreate={init} class="h-full w-1/4">
+			<div oncreate={init} class={`chat ${ !isChatting && 'chat-hidden' } h-full`}>
 				<div class="chat-window flex flex-col-reverse items-end">
 				{	messages.slice(0).reverse().map((message, i) => 
 						<Message message={message}/>

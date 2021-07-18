@@ -19,9 +19,11 @@ export default class SceneManager {
             //     // scene.debugLayer.select(light);
             // });
 
-            // window.addEventListener("resize", _ => engine.resize() );
-            const resize$ = new ResizeObserver( _ => engine.resize() ); // todo: make sure this gets disposed
-            resize$.observe(canvas)
+            // window.addEventListener("resize", _ =>  );
+            // const resize$ = new ResizeObserver( _ => engine.resize() ); // todo: make sure this gets disposed
+            // resize$.observe(canvas)
+            const resize$ = utils.fromResize(canvas)
+            resize$.subscribe(_ => engine.resize(false)) // add this observable & others to a cleanup method, and call on dispose
         }
 
         return scene;

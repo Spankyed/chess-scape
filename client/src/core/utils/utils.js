@@ -1,11 +1,34 @@
-function mapChessPieces(meshes){
+import { Observable } from 'rxjs';
+import { debounceTime, filter, map, pairwise, startWith } from 'rxjs/operators';
 
+
+
+let count = 0
+// https://github.com/twig-it/from-resize/blob/main/projects/from-resize/src/resize/resize.ts
+const fromResize = (element) => {
+	let resize$ = new Observable(subscriber => {
+		const resizeObserver = new ResizeObserver(entries => {
+			// console.log('count',count++)
+			subscriber.next();
+		});
+		resizeObserver.observe(element);
+		// resizeObserver.observe(element, { box: 'border-box' });
+		return () => {
+			// resizeObserver.unobserve(element);
+			resizeObserver.disconnect();
+		};
+	}
+	)
+	return resize$.pipe(debounceTime(100));
+}
+
+
+function mapChessPieces(meshes){
 	return {
 		pawns:  [],
 		rooks: [],
 
 	}
-
 }
 
 BABYLON.AbstractMesh.prototype.addPickingBox = function(){
@@ -44,5 +67,6 @@ BABYLON.AbstractMesh.prototype.addPickingBox = function(){
 
 
 export default {
-	mapChessPieces
+	mapChessPieces,
+	fromResize
 };
