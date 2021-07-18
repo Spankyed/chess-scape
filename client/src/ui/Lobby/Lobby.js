@@ -64,7 +64,7 @@ export default initial => ({
 						</div>
 					</div>
 					<div class="p-10 bg-gray-700">
-						<div class="table_wrapper overflow-auto flex flex-column pr-3" style='height:55vh'>
+						<div class="table_wrapper overflow-auto pr-3" style='height:55vh'>
 						{	!state.gameRooms.length > 0 ? 
 							<div class="w-full h-64 text-center" style="justify-content: center; align-items: center">
 								{/* <img class="w-full" src="./assets/empty.svg" style="max-height: 150px;"/> */}
@@ -72,7 +72,7 @@ export default initial => ({
 								<div class="w-full text-center text-gray-300 text-xl font-medium leading-none">Nothing to see here</div>
 							</div>
 							:
-							<table class="table border-collapse table text-gray-400 text-sm">
+							<table class="table border-collapse text-gray-400 text-sm">
 								<thead class="text-gray-400 text-center uppercase text-lg font-large tracking-wider">
 									<tr class="">
 										<th scope="col" class="px-5 py-3 bg-gray-700 border-b border-gray-500">
