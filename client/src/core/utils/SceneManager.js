@@ -19,9 +19,9 @@ export default class SceneManager {
             //     // scene.debugLayer.select(light);
             // });
 
-            window.addEventListener("resize", _ => engine.resize() );
-            // const resize$ = new ResizeObserver( _ => engine.resize() ); // todo: make sure this gets disposed
-            // resize$.observe(canvas)
+            // window.addEventListener("resize", _ => engine.resize() );
+            const resize$ = new ResizeObserver( _ => engine.resize() ); // todo: make sure this gets disposed
+            resize$.observe(canvas)
         }
 
         return scene;
