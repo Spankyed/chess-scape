@@ -2,17 +2,17 @@ import { h } from 'hyperapp';
 import Loader from './loader/loader'; 
 import Controls from './controls/Controls'; 
 import Scene from './scene.js';
-import Chat from './sidePanel/Chat'; 
+import SidePanel from './sidePanel/sidePanel'; 
 
 const controls = Controls()
-const chat = Chat()
+const sidePanel = SidePanel()
 
 // todo: if in game and websocket disconnects, reconnect 
 // todo: if leave game remove clientId from game.clients 
 export default initial => ({
 	state: { 
 		controls: controls.state,
-		chat: chat.state,
+		sidePanel: sidePanel.state,
 		isLoading: true,
 		isChatting: false,
 		gameOver: false,
@@ -20,7 +20,7 @@ export default initial => ({
 
 	actions: { 
 		controls: controls.actions,
-		chat: chat.actions,
+		sidePanel: sidePanel.actions,
 		showLoader: () => () => ({isLoading: true}),
 		toggleChat: (ev) => (state) => ({isChatting: !state.isChatting}),
 		hideLoader: () => () => ({isLoading: false}),
@@ -29,7 +29,7 @@ export default initial => ({
 
 	view: (state, actions) => ({gameId, leaveGame}) => {
 		const ControlsView = controls.view(state.controls, actions.controls)
-		const ChatView = chat.view(state.chat, actions.chat)
+		const SidePanelView = sidePanel.view(state.sidePanel, actions.sidePanel)
 		/* todo: on destroy, breakdown websocket and game */
 		return ( 
 			<div class="h-full flex">
@@ -40,10 +40,9 @@ export default initial => ({
 					<Scene gameId={gameId} state={state} actions={actions}/> 
 				</div>
 
-				<ChatView isChatting={state.isChatting} state={state} actions={actions}/> 
+				<SidePanelView isChatting={state.isChatting} state={state} actions={actions}/> 
 
 			</div>
-
 		)
 	}
 })

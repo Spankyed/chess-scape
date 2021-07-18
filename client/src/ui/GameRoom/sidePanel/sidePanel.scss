@@ -1,0 +1,20 @@
+@import './chat/chat.scss'; 
+@import './moves/moves.scss'; 
+
+.side-panel { 
+    background-color: #989695;
+    width: 25%;
+    // transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
+
+    li {
+        cursor: pointer;
+        .active {
+        background-color: #989695;
+        }
+    }
+}
+.panel-hidden{
+    width: 0%;
+    // transform: translateX(25vw);
+}
+

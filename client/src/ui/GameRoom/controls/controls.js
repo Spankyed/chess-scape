@@ -12,18 +12,19 @@ export default initial => ({
 	},
 	view: (state, actions) => ({isLoading, toggleChat, gameOver}) => {
 		return ( 
-			<div class={`${isLoading && 'hidden'} absolute top-0 left-0 w-full h-full pointer-events-none`} style="z-index:999;">
+			// pointer-events-none
+			<div class={`${isLoading && 'hidden'} absolute top-0 left-0 w-full h-full`} style="z-index:999;">
 				<div class="relative w-full h-full">
 
 					<div class="w-full flex"> 
 						<div class="px-3 w-56">
-							{/* <Challenger/> */}
+							<Challenger/>
 						</div>
 						<div class={`${ gameOver  ? 'visible': 'invisible'} match-message mx-auto text-center justify-center items-center`}>
 							<MatchMessage/>
 						</div>
 						<div class="px-3 w-56">
-							{/* <Opponent/> */}
+							<Opponent/>
 						</div>
 					</div>
 					<div class="absolute left-0 bottom-0 p-5">
