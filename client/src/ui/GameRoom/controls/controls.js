@@ -10,20 +10,27 @@ export default initial => ({
 		toggleMenu: (ev) => (state) => ({menuOpen: !state.menuOpen}),
 		// hideLoadingUI: () => () => ({isLoading: false})
 	},
-	view: (state, actions) => ({isLoading, toggleChat, gameOver}) => {
+	view: (state, actions) => ({isLoading, toggleSidePanel, gameOver}) => {
+
 		return ( 
 			// pointer-events-none
-			<div class={`${isLoading && 'hidden'} absolute top-0 left-0 w-full h-full`} style="z-index:999;">
+			<div class={`${isLoading && 'hidden'} absolute top-0 left-0 w-full h-full`} style="z-index:99;">
 				<div class="relative w-full h-full">
-
-					<div class="w-full flex"> 
-						<div class="px-3 w-56">
+					{ gameOver  &&
+						<div class="absolute top-0 pt-1" style="z-index:999;left: 50%;transform: translate(-50%);">
+							<div class='match-message mx-auto text-center justify-center items-center'>
+								<MatchMessage/>
+							</div>
+						</div>
+					}
+					<div class="w-full"> 
+						<div class="px-3 lg:w-56" style="float:left;">
 							<Challenger/>
 						</div>
-						<div class={`${ gameOver  ? 'visible': 'invisible'} match-message mx-auto text-center justify-center items-center`}>
+						{/* <div class={`${ gameOver  ? 'visible': 'invisible'} match-message mx-auto text-center justify-center items-center`}>
 							<MatchMessage/>
-						</div>
-						<div class="px-3 w-56">
+						</div> */}
+						<div class="px-3 lg:w-56" style="float:right;">
 							<Opponent/>
 						</div>
 					</div>
@@ -49,7 +56,7 @@ export default initial => ({
 						">
 							<img class="h-12" src="./assets/controls/camera.svg"></img>
 						</button>
-						<button onclick={toggleChat} class="
+						<button onclick={_=> toggleSidePanel("chat")} class="
 							bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
 						">
 							<img class="h-12" src="./assets/controls/chat.svg"></img>
@@ -68,7 +75,7 @@ export default initial => ({
 								">
 									<img class="h-12" src="./assets/controls/menu.svg"></img>
 								</button>
-								<button onclick={toggleChat} class="
+								<button onclick={toggleSidePanel} class="
 									bg-gray-600  text-white active:bg-pink-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150
 								">
 									<img class="h-12" src="./assets/controls/chat.svg"></img>
@@ -84,15 +91,15 @@ export default initial => ({
 
 function Challenger(){
 	return (
-		<div class="mt-2 rounded-md shadow-lg bg-gray-600 w-full flex flex-row flex-wrap p-2 antialiased">
-			<div class="md:w-1/3 w-full">
-				<img style="height: 64px;" class="rounded-sm shadow-lg antialiased" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>  
+		<div class="winner relative mt-2 rounded-md shadow-lg bg-gray-600 w-full flex flex-row flex-wrap p-2 ">
+			<div class="w-1/3 hidden md:inline-block">
+				<img style="height: 64px;" class="rounded-sm shadow-lg " src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>  
 			</div>
 			<div class="md:w-2/3 w-full flex flex-row flex-wrap">
-				<div class=" pl-1 w-full text-left text-gray-700 font-semibold relative pt-3 md:pt-0">
-					<div class="text-2xl text-white leading-tight">John Doe</div>
+				<div class=" pl-1 w-full text-left text-gray-700 font-semibold relative">
+					<div class="text-2xl text-white leading-tight overflow-ellipsis whitespace-nowrap overflow-hidden" style="max-width: 14rem;">John Dossssssssssssssssssssse</div>
 					<div class="clock flex rounded-sm">
-						<img class="pl-3 p-1 inline h-8" src="./assets/controls/clock.svg"></img>
+						<img class=" p-1 inline h-8" src="./assets/controls/clock.svg"></img>
 						<span class="text-xl w-full text-center justify-center items-center">10:00</span>
 					</div>
 					{/* <div class="text-normal text-gray-300 hover:text-gray-400 cursor-pointer"><span class="border-b border-dashed border-gray-500 pb-1">Administrator</span></div> */}
@@ -104,21 +111,21 @@ function Challenger(){
 }
 function Opponent(){
 	return (
-		<div class="mt-2 rounded-md shadow-lg bg-gray-600 w-full flex flex-row flex-wrap p-2 antialiased">
+		<div class="mt-2 rounded-md shadow-lg bg-gray-600 w-full flex flex-row flex-wrap p-2 ">
 
 			<div class="md:w-2/3 w-full flex flex-row flex-wrap">
-				<div class=" pr-1 w-full text-right text-gray-700 font-semibold relative pt-3 md:pt-0">
-					<div class="text-2xl text-white leading-tight">Jane Doe</div>
+				<div class=" pr-1 w-full text-right text-gray-700 font-semibold relative">
+					<div class="text-2xl text-white leading-tight overflow-ellipsis whitespace-nowrap overflow-hidden">Jane Doe</div>
 					<div class="clock flex rounded-sm">
-						<span class="text-xl w-full text-center justify-center items-center">10:00</span>
-						<img class="pl-3 p-1 inline h-8" src="./assets/controls/clock.svg"></img>
+						<span class="text-xl w-full text-center justify-center items-center" style="max-width: 14rem;">10:00</span>
+						<img class="p-1 inline h-8" src="./assets/controls/clock.svg"></img>
 					</div>
 					{/* <div class="text-normal text-gray-300 hover:text-gray-400 cursor-pointer"><span class="border-b border-dashed border-gray-500 pb-1">Administrator</span></div> */}
 					{/* <div class="text-sm text-gray-300 hover:text-gray-400 cursor-pointer md:absolute pt-3 md:pt-0 bottom-0 right-0">Last Seen: <b>2 days ago</b></div> */}
 				</div>
 			</div>
-			<div class="md:w-1/3 w-full">
-				<img style="height: 64px;" class="rounded-sm shadow-lg antialiased" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>  
+			<div class="w-1/3 hidden md:inline-block">
+				<img style="height: 64px;" class="rounded-sm shadow-lg " src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>  
 			</div>
 		</div>
 	)
@@ -141,16 +148,24 @@ function Menu(){
 		// needs pointer events
 		<div style="margin-bottom: 4.5rem;" class="mr-1 origin-top-right absolute bottom-0 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
 			<div class="py-1" role="none">
-				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Resign</a>
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">
+					Resign
+				</a>
 			</div>
 			<div class="py-1" role="none">
-				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">Offer Draw</a>
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">
+					Offer Draw
+				</a>
 			</div>
 			<div class="py-1" role="none">
-				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-4">Play Music</a>
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-2">
+					Review Moves
+				</a>
 			</div>
-			<div class="py-1" role="none">
-				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-6">Play Video</a>
+			<div class="py-1" role="none" onclick={_=> toggleSidePanel("media")}>
+				<a href="#" class="text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-4">
+					Play Media
+				</a>
 			</div>
 		</div>
 	)

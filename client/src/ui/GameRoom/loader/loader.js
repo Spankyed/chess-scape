@@ -6,7 +6,8 @@ import { h } from 'hyperapp';
 
 export default ({isLoading}) => {
 	return (
-		<div class={`${!isLoading && 'hidden'} mosaic absolute top-0 left-0 w-full h-full`} style="background-color:#302E2B; z-index:999;">
+		<div class={`mosaic absolute top-0 left-0 w-full h-full ${!isLoading && 'hidden'}`} 
+		style="background-color:#302E2B; z-index:8;">
 			<div class="relative"  style="height:50px">
 				<div id="container">
 					<div id="loader"></div>

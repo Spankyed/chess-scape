@@ -28,8 +28,12 @@
         background: #f7f6f5;
         line-height: 2.07em;
         color: #b3b3b3;
-    }
+    }    
     move {
+        cursor: pointer;
+        .active {
+            background-color: #989695;
+        }
         sans {
             font-family: 'noto-chess';
         }

@@ -14,7 +14,7 @@ export default initial => ({
 		controls: controls.state,
 		sidePanel: sidePanel.state,
 		isLoading: true,
-		isChatting: false,
+		sidePanelOpen: false,
 		gameOver: false,
 	},
 
@@ -22,7 +22,11 @@ export default initial => ({
 		controls: controls.actions,
 		sidePanel: sidePanel.actions,
 		showLoader: () => () => ({isLoading: true}),
-		toggleChat: (ev) => (state) => ({isChatting: !state.isChatting}),
+		toggleSidePanel: (tab, isOpen) => ({sidePanel}) => {
+			let newState = { sidePanel: {...sidePanel, isVisible:  isOpen || !sidePanel.isVisible}}
+			if (tab) newState.sidePanel.currTab = tab
+			return newState
+		},
 		hideLoader: () => () => ({isLoading: false}),
 		endGame: () => () => ({gameOver: true}),
 	},
@@ -36,12 +40,11 @@ export default initial => ({
 				<Loader isLoading={state.isLoading}/>
 
 				<div class="relative flex-grow">
-					<ControlsView isLoading={state.isLoading} gameOver={state.gameOver} toggleChat={actions.toggleChat}/>
-					<Scene gameId={gameId} state={state} actions={actions}/> 
+					<ControlsView isLoading={state.isLoading} gameOver={state.gameOver} toggleSidePanel={actions.toggleSidePanel}/>
+					<Scene gameId={gameId} state={state} actions={actions} /> 
 				</div>
 
-				<SidePanelView isChatting={state.isChatting} state={state} actions={actions}/> 
-
+				<SidePanelView/> 
 			</div>
 		)
 	}

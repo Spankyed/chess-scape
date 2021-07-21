@@ -2,19 +2,57 @@
 @import './moves/moves.scss'; 
 
 .side-panel { 
-    background-color: #989695;
-    width: 25%;
+    // background-color: #989695;
+    z-index: 100;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    // width: 25%;
     // transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
+}
+.content-wrapper{
+    background-color: #989695;
+}
 
-    li {
-        cursor: pointer;
-        .active {
-        background-color: #989695;
-        }
-    }
+.panel-wrapper{
+    // background-color: #989695;
+    float:right;
+    width: 75%;
+    height: 100%;
+    position: absolute;
+    right: 0%;
+    top: 0%;
 }
 .panel-hidden{
-    width: 0%;
+    display:none;
+    // width: 0%;
     // transform: translateX(25vw);
 }
 
+@media (min-width: 1280px) {
+    .panel-wrapper { 
+        position: static;
+        width: 100%;
+    }
+    .side-panel { 
+        width: 25%;
+        position: relative;
+        background-color: transparent;
+    }
+}
+
+
+//   'sm': '640px',
+  // => @media (min-width: 640px) { ... }
+
+//   'md': '768px',
+  // => @media (min-width: 768px) { ... }
+
+//   'lg': '1024px',
+  // => @media (min-width: 1024px) { ... }
+
+//   'xl': '1280px',
+  // => @media (min-width: 1280px) { ... }
+
+//   '2xl': '1536px',
+  // => @media (min-width: 1536px) { ... }

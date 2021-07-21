@@ -1,5 +1,5 @@
 import { h } from 'hyperapp';
-import Create from './Create';
+import Create from './create';
 // import './lobby.scss';
 import Api from '../../api/Api';
 
@@ -45,7 +45,7 @@ export default initial => ({
 		}
 
 		return ( 
-			<div oncreate={init} class="lobby flex pt-10 justify-center min-h-screen bg-gray-900 font-sans">
+			<div oncreate={init} class="lobby flex pt-10 justify-center min-h-screen font-sans" ondestroy={_=>console.log('destroyed!!!')}>
 
 				{ showCreate && <CreateView showCreate={showCreate} toggleCreate={actions.toggleCreate}/> }
 
@@ -57,7 +57,7 @@ export default initial => ({
 								Game Rooms
 							</h1>
 							<div>
-								<button onclick={actions.toggleCreate} class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none ">
+								<button onclick={actions.toggleCreate} class="ring-2 ring-offset-2 focus:ring-indigo-900 px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none">
 									<p class="text-xl font-medium leading-none text-white">New Game</p>
 								</button>
 							</div>
@@ -134,7 +134,7 @@ export default initial => ({
 											</span>
 										</td>
 										<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
-											<button onclick={join(room.id)} class="px-5 py-2 border-indigo-700 bg-indigo-600 border text-white rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
+											<button onclick={join(room.id)} class="focus:outline-none">
 											{`${room.clients.length >= 2 ? 'Spectate':'Join'} `}
 											</button>
 										</td>

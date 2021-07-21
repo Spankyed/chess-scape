@@ -88,7 +88,10 @@ export default class SceneManager {
         //camera.applyGravity = true;
 
         this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
-        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, 25, new BABYLON.Vector3(0, 0, 0), this._scene);
+
+        const narrowDevice = (window.innerWidth/window.innerHeight) < 1.1
+        let cameraDistance = narrowDevice ? 35 : 25
+        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.attachControl(canvas, true);
         camera.inputs.attached.pointers.detachControl();
         // camera.inputs.attached.keyboard.detachControl();

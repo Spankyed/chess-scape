@@ -39,25 +39,13 @@ function setMessageHandlers(newHandlers) {
 	// console.log('new handlers', handlers)
 }
 
-function createGame(params){
-	const message = { method: "create", ...params, clientId }
-	sendMessage(connection, message)
-}
+function createGame(params){ sendMessage(connection, { method: "create", ...params, clientId }) }
 
-function joinGame(gameId){
-	const message = { method: "join", gameId, clientId }
-	sendMessage(connection, message)
-}
+function joinGame(gameId){ sendMessage(connection, { method: "join", gameId, clientId }) }
 
-function sendMove(move, gameId){
-	const message = { method: "move", move, gameId }
-	sendMessage(connection, message)
-}
+function sendMove(move, gameId){ sendMessage(connection, { method: "move", move, gameId }) }
 
-function sendChat(text, gameId){
-	const message = { method: "chat", text, gameId }
-	sendMessage(connection, message)
-}
+function sendChat(text, gameId){ sendMessage(connection, { method: "chat", text, gameId }) }
 
 async function fetchRooms(){
 	const method = 'GET';
@@ -70,7 +58,6 @@ async function fetchRooms(){
 		return data
 	}
 }
-
 
 export default {
 	fetchRooms,

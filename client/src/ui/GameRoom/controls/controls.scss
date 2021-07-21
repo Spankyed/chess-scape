@@ -18,6 +18,97 @@ button {
 //     );
 // }
 
+/*Button Two*/
+.button-two {
+  border-radius: 4px;
+  background-color:#d35400;
+  border: none;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+}
+
+
+.button-two span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button-two span:after {
+   font-size: smaller;
+  content: '⇡';
+  position: absolute;
+  opacity: 0;
+  top: 8px;
+  right: 0;
+  left: 0;
+  transition: 0.5s ease;
+}
+
+.button-two:hover span {
+  padding-top: 5px;
+}
+
+.button-two:hover span:after {
+  opacity: .8;
+  top: -13px;
+  right: 0;
+  left: 0;
+}
+// --------------
+.winner{
+  overflow:   hidden;
+
+  &:after {
+    animation: shine 2s ease-in-out  infinite;
+    animation-fill-mode: forwards;  
+    content: "";
+    position: absolute;
+    top: -110%;
+    left: -210%;
+    width: 100px;
+    height: 200%;
+    opacity: 0;
+    transform: rotate(30deg);
+    
+    background: rgba(255, 255, 255, 0.13);
+    background: linear-gradient(
+      to right, 
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.13) 77%,
+      rgba(255, 255, 255, 0.5) 92%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+  }
+  
+}
+// .winner:hover {
+//   &:after {
+//     left: 120%;
+//     width: 20px;
+//     transition: all 550ms cubic-bezier(0.19, 1, 0.22, 1);
+//   }
+// }
+
+@keyframes shine {
+  10% {
+    opacity: .6;
+    top: -90%;
+    left: -90%;
+    transition-property: left, top, opacity;
+    transition-duration: 0.1s, 0.7s, 0.15s;
+    transition-timing-function: ease;
+  }
+  100% {
+    opacity: 0;
+    top: -90%;
+    left: 50%;
+    transition-property: left, top, opacity;
+  }
+}
+
 // ---------------------------------------
 //  win banner courtesy of https://codepen.io/1bruddah/pen/ERjWxg
 .match-message{
