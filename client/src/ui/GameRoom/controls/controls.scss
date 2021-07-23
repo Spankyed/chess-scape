@@ -1,6 +1,19 @@
 // 989695
 
 // 383633 darker
+.player {
+  padding-left: 0.75rem/* 12px */;
+  padding-right: 0.75rem/* 12px */;
+  width: 40%;
+  &.one { float:left; }
+  &.two { float:right; }
+}
+@media (min-width: 1024px) {
+  .player {
+      width: 14rem/* 224px */;
+  }
+}
+
 .clock {
   background-color: #989695;
 }

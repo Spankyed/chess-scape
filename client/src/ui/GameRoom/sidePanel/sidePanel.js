@@ -10,11 +10,12 @@ const media = Media()
 
 export default initial => ({
 	state: { 
-		isVisible: false,
+		isVisible: true,
 		chat: chat.state,
 		moves: moves.state,
 		media: media.state,
-		currTab: "chat",
+		// currTab: "chat",
+		currTab: "media",
 	},
 
 	actions: {

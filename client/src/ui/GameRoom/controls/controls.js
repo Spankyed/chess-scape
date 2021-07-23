@@ -24,13 +24,13 @@ export default initial => ({
 						</div>
 					}
 					<div class="w-full"> 
-						<div class="px-3 lg:w-56" style="float:left;">
+						<div class="player one">
 							<Challenger/>
 						</div>
 						{/* <div class={`${ gameOver  ? 'visible': 'invisible'} match-message mx-auto text-center justify-center items-center`}>
 							<MatchMessage/>
 						</div> */}
-						<div class="px-3 lg:w-56" style="float:right;">
+						<div class="player two">
 							<Opponent/>
 						</div>
 					</div>

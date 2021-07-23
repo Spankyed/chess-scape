@@ -97,6 +97,11 @@ export default initial => ({
 										</th>
 										<th scope="col" class="px-5 py-3 bg-gray-700 border-b border-gray-500">
 											<span class='block bg-gray-700 h-full w-full'>
+											Opp. Color
+											</span>
+										</th>
+										<th scope="col" class="px-5 py-3 bg-gray-700 border-b border-gray-500">
+											<span class='block bg-gray-700 h-full w-full'>
 											&#8203;
 											</span>
 										</th>
@@ -132,6 +137,9 @@ export default initial => ({
 												</span>
 												({room.clients.length}/2)
 											</span>
+										</td>
+										<td class="p-3 px-6 font-bold">
+											Black
 										</td>
 										<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
 											<button onclick={join(room.id)} class="focus:outline-none">

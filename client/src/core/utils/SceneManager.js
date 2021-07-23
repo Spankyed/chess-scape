@@ -90,7 +90,7 @@ export default class SceneManager {
         this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
 
         const narrowDevice = (window.innerWidth/window.innerHeight) < 1.1
-        let cameraDistance = narrowDevice ? 35 : 25
+        let cameraDistance = narrowDevice ? 33 : 25
         var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.attachControl(canvas, true);
         camera.inputs.attached.pointers.detachControl();
