@@ -57,6 +57,31 @@ function MusicItem(){
 	)
 }
 
+function showTime({captions},{setCaption}) {
+	let start = 0
+	let last = 0
+	const update = (now) => {
+		let msElapsed = now - start
+	   
+		if (!last || now - last >= 1000) {
+  
+		  if (player && player.getCurrentTime){
+			
+			let time = player.getCurrentTime()
+			
+			// let index = getCaptionIndex(time, captions)
+			// let id = index.toString()
+			// let el = document.getElementById(id)
+			// if(el) el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" })
+			last = now;
+			//console.log(time, captions, index)
+			setCaption(index)
+		  }      
+		}
+		return requestAnimationFrame(update);
+	}
+	let cancelTimer = update(start)
+  }
 
 
 const everything = function(element) {  
