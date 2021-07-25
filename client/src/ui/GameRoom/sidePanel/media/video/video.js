@@ -1,8 +1,9 @@
 import { h } from 'hyperapp';
 // import Api from '../../../../api/Api';
 // import Plyr from 'plyr';
- import LazyYoutubeEmbed from './ytLoad';
+import LazyYoutubeEmbed from './ytLazyLoad';
 
+var lazyYoutubeEmbed;
 export default initial => ({
 	state: { 
 		isValidUrl: true,
@@ -17,7 +18,7 @@ export default initial => ({
 		// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
 
 		function initVideo(){
-			new LazyYoutubeEmbed()
+			lazyYoutubeEmbed = new LazyYoutubeEmbed()
 		}
 
 		return (
@@ -65,13 +66,20 @@ function VideoForm ({isValidUrl, setValidity, submit}){
 		if (!parsedUrl.valid) return false
 		// submit(parsedUrl)
 		console.log('submitting', url)
+		// lazyYoutubeEmbed.setThumb(parsedUrl.video_id)
 		e.target.reset()
 		return true
+	}
+	const setThumb = (e) => {
+		console.log('setting thumb')
+		const parsedUrl = parseUrl(e.target.value)
+		setValidity(parsedUrl.valid)
+		if(parsedUrl.valid) lazyYoutubeEmbed.setThumb(parsedUrl.video_id)
 	}
 	return(
 		<form action="" id="translate-form" class="w-full mx-auto  pt-2" onsubmit={attemptSubmit}>
 			<div class="flex py-2 justify-center">
-				<input type='submit' oninput={(e)=> setValidity(parseUrl(e.target.value).valid)} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
+				<input type='submit' oninput={setThumb} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
 				<button type='submit' class="h-10 flex shadow-md bg-green-600 p-3 text-white">
 					<span class="float-left">Play</span>
 					<img class="h-5 float-right" src="./assets/sidePanel/controls/play_button.svg"/>
