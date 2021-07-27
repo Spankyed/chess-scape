@@ -57,8 +57,8 @@ export default initial => ({
 		};
 
 		return (
-			// root needs key to fix grammarly breaking textarea
-			<div oncreate={init} class="h-full" key={nanoid()}> 
+			// root el needs key to fix grammarly breaking textarea
+			<div oncreate={init} class="h-full" key={ nanoid() }> 
 				<div class="chat-window flex flex-col items-end">
 					<ul class="w-full">
 					{	messages.map((message, i) => 
