@@ -1,5 +1,6 @@
 import { h } from 'hyperapp';
 import Api from '../../../../api/Api';
+import { nanoid } from 'nanoid/non-secure'
 
 export default initial => ({
 	state: { 
@@ -56,7 +57,8 @@ export default initial => ({
 		};
 
 		return (
-			<div oncreate={init} class="h-full">
+			// root needs key to fix grammarly breaking textarea
+			<div oncreate={init} class="h-full" key={nanoid()}> 
 				<div class="chat-window flex flex-col items-end">
 					<ul class="w-full">
 					{	messages.map((message, i) => 
@@ -65,7 +67,7 @@ export default initial => ({
 					}
 					</ul>
 				</div>
-				<div class="chat-footer bg-gray-600 clearfix">
+				<div class="chat-footer bg-gray-600">
 					<div class="input-wrapper">
 						<textarea class="resize-none w-full px-3 py-1 text-gray-700 border rounded-sm focus:outline-none" rows="2" autocomplete="off"
 							placeholder="Type here and press enter"
@@ -74,7 +76,7 @@ export default initial => ({
 							style="white-space: pre-wrap;overflow-wrap: break-word;"
 							// oninput={e => actions.modify({ message: e.target.value })} 
 							// value={state.message}
-						></textarea>
+						/>
 						{/* <input class="chat-input" id="chat" placeholder="Type here and press enter" autocomplete="off"
 								onkeyup={e => (e.keyCode === 13 ? add(e) : null)}
 							/> */}

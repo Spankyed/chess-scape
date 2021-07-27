@@ -39,47 +39,51 @@ export default class LazyYoutubeEmbed {
       };
       let observer = new IntersectionObserver(loadThumb, options);
       
-      const v = document.getElementsByClassName('lazy-youtube-embed')[0];
-      let split = v.getAttribute("href").split("/");
-      if (split.length > 0) {
-        observer.observe(v);
-        let ytId = split[split.length - 1];
-        
-        v.addEventListener('click', function(evt){
-          evt.preventDefault();
-          let embed = document.createElement('iframe');
+      const v = document.getElementsByClassName('lazy-youtube-embed');
 
-          // embed.onload = () => {
-          //   console.log('iframe is completely loaded');
-            
-          //   let video = embed.getElementsByTagName('video')
-          //   console.log('video', video, video.getVideoData().title)
-          // }
-          embed.onload = function() { 
-            let video = embed.getElementsByTagName('video')
-            console.log('video', video, video.getVideoData().title)
-            alert('myframe is loaded'); 
-          };
-          embed.onreadystatechange = function() {
-            alert('testing 2')
-            if ( embed.readyState == 'complete' ) {
+      
+      for (let n = 0, len = v.length; n < len; n++) {
+        let split = v[n].getAttribute("href").split("/");
+        
+        if (split.length > 0) {
+          observer.observe(v[n]);
+          let ytId = split[split.length - 1];
+          
+          v[n].addEventListener('click', function(evt){
+            evt.preventDefault();
+            let embed = document.createElement('iframe');
+
+            // embed.onload = () => {
+            //   console.log('iframe is completely loaded');
+              
+            //   let video = embed.getElementsByTagName('video')
+            //   console.log('video', video, video.getVideoData().title)
+            // }
+            embed.onload = function() { 
               let video = embed.getElementsByTagName('video')
               console.log('video', video, video.getVideoData().title)
+              alert('myframe is loaded'); 
+            };
+            embed.onreadystatechange = function() {
+              alert('testing 2')
+              if ( embed.readyState == 'complete' ) {
+                let video = embed.getElementsByTagName('video')
+                console.log('video', video, video.getVideoData().title)
+              }
             }
-          }
-          embed.setAttribute('src', `https://www.youtube.com/embed/${ytId}?autoplay=1&fs=1&rel=0&modestbranding=1`);
-          embed.setAttribute('frameborder', '0');
-          embed.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
-          console.log('this?',this)
-          embed.setAttribute('width', this.offsetWidth);
-          embed.setAttribute('height', this.offsetHeight);
-          // embed.style.maxWidth = "514px";
-          // embed.classList.add('responsive')
-          this.innerHTML = '';
-          console.log('iframe',embed)
-          this.appendChild(embed);
+            embed.setAttribute('src', `https://www.youtube.com/embed/${ytId}?autoplay=1&fs=1&rel=0&modestbranding=1`);
+            embed.setAttribute('frameborder', '0');
+            embed.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
+            embed.setAttribute('width', this.offsetWidth);
+            embed.setAttribute('height', this.offsetHeight);
+            // embed.style.maxWidth = "514px";
+            // embed.classList.add('responsive')
+            this.innerHTML = '';
+            console.log('iframe',embed)
+            this.appendChild(embed);
 
-        }, false)
+          }, false)
+        }
       }
     }
     setThumb(ytId){

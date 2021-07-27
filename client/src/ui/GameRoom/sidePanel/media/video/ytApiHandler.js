@@ -57,3 +57,30 @@ addYoutubeEventListener(document.getElementById("player"), function(e) {
             break;
     }
 });
+
+
+
+var frame = document.querySelector('iframe');
+var controls = document.querySelectorAll('.video-control');
+
+var message = function(func) {
+  return JSON.stringify({
+    event: 'command',
+    func: func,
+    args: []
+  });
+};
+var execCommand = function(frame) {
+  return (func) => () => frame.contentWindow.postMessage(message(func), '*') 
+};
+var frameCommand = execCommand(frame);
+
+var configControl = function(vc) {
+  console.log('vc',vc)
+  var func = vc.getAttribute('data-func');
+  var handler = frameCommand(func);
+  vc.tabIndex = 0;
+  vc.addEventListener('click', handler, false);
+};
+
+[].forEach.call(controls, configControl);

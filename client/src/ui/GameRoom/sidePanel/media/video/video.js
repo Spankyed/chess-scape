@@ -1,48 +1,73 @@
 import { h } from 'hyperapp';
 // import Api from '../../../../api/Api';
-// import Plyr from 'plyr';
-import LazyYoutubeEmbed from './ytLazyLoad';
+// import LazyYoutubeEmbed from './ytLazyLoad';
+const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+var quality = 'sd';
+if (connection) {
+	switch(connection.effectiveType) {
+		case '4g': quality = 'maxres'; break;
+		case '3g': quality = 'sd'; break;
+		case '2g': quality = 'sd'; break;
+		default: quality = 'hq';
+	}
+}
 
-var lazyYoutubeEmbed;
 export default initial => ({
 	state: { 
 		isValidUrl: true,
-		videPlaylist: [],
+		notFound: false,
+		videoList: [],
 		currVideoIdx: 0,
+		videoReady: false,
+		autoPlay: true,
+		videoId: '',
+		// thumbnail: '',
 	},
 	actions: { 
+    	setVideoId: (videoId) => state => ({videoId}),
     	setValidity: (bool) => state => ({isValidUrl: bool}),
-		showMedia: (type, force) => (state) => ({mediaOpen: type}),
+		submit: (videoId) => (state) => 
+		({videoReady: true, videoList: [...state.videoList, videoId], 
+		  videoId: state.autoPlay ? videoId : state.videoId}) // if autoplay, change videoID on submit
+			
 	},
 	view: (state, actions) => ({}) => {
 		// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
 
-		function initVideo(){
-			lazyYoutubeEmbed = new LazyYoutubeEmbed()
-		}
+		// function initVideo(){
+		// 	lazyYoutubeEmbed = new LazyYoutubeEmbed()
+		// }
+
+
 
 		return (
 			<div class="pt-3 text-sm text-neutral">
-				<a oncreate={initVideo} href="https://youtu.be/3vBwRfQbXkg" class="lazy-youtube-embed ">HOW TO FUNK IN TWO MINUTES</a>
+				{/* <a oncreate={initVideo} href="https://youtu.be/3vBwRfQbXkg" class="lazy-youtube-embed">HOW TO FUNK IN TWO MINUTES</a> */}
+				
+				<div class="lazy-youtube-embed">
+				{ state.videoId && state.videoReady ?
+					<iframe src={`https://www.youtube.com/embed/${state.videoId}?autoplay=1&fs=1&rel=0&modestbranding=1`} frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'/>
 
-				<VideoForm setValidity={actions.setValidity} isValidUrl={state.isValidUrl}/>
-				{/* <label for="price" class="block text-sm font-medium text-gray-700 text-xs md:text-base">Price</label>
-				<div class="mt-1 relative rounded-md shadow-sm">
-					<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-						<span class="text-gray-500 sm:text-sm">
-						$
-						</span>
+					:
+					<div class="thumb-wrapper absolute top-0 left-0 h-full w-full">
+					{ (state.videoId) && 
+						<Thumbnail ytId={state.videoId}/>
+					}
+						<div class={`ytlight__play ${ !state.videoId && 'pointer-events-none'}`}>
+							<svg height="100%" version="1.1" viewBox="0 0 68 48" width="100%"><path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#FF0000"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>
+						</div>			
 					</div>
-					<input type="text" name="price" id="price" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00"/>
-					<div class="absolute inset-y-0 right-0 flex items-center">
-						<label for="currency" class="sr-only">Currency</label>
-						<select id="currency" name="currency" class="focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
-						<option>USD</option>
-						<option>CAD</option>
-						<option>EUR</option>
-						</select>
-					</div>
-				</div> */}
+				}
+				</div>
+
+
+
+				{/* <iframe>
+
+				</iframe> */}
+
+				<VideoInput setValidity={actions.setValidity} isValidUrl={state.isValidUrl} setVideoId={actions.setVideoId} submit={actions.submit}/>
+
 				{/* <div oncreate={initVideo} class='video'></div> */}
 				{/* <div class="plyr__video-embed" id="player">
 					<iframe
@@ -57,32 +82,41 @@ export default initial => ({
 	}
 })
 
+function Thumbnail({ytId}){
 
-function VideoForm ({isValidUrl, setValidity, submit}){
+	let handleBadImage = (e) => {
+		// e.target
+		console.log('bad image')
+	}
+
+	return (
+		<img onerror={handleBadImage} src={`https://img.youtube.com/vi/${ytId}/${quality}default.jpg`}/>
+	)
+}
+
+function VideoInput ({isValidUrl, setValidity, setVideoId, submit}){
 	const attemptSubmit = (e) => {
 		e.preventDefault();
 		let url = e.target[0].value
-		const parsedUrl = parseUrl(url)
-		if (!parsedUrl.valid) return false
-		// submit(parsedUrl)
+		const videoId = parseYoutubeUrl(url)
+		if (!videoId) return false
 		console.log('submitting', url)
-		// lazyYoutubeEmbed.setThumb(parsedUrl.video_id)
+		submit(videoId, true)
 		e.target.reset()
 		return true
 	}
-	const setThumb = (e) => {
-		console.log('setting thumb')
-		const parsedUrl = parseUrl(e.target.value)
-		setValidity(parsedUrl.valid)
-		if(parsedUrl.valid) lazyYoutubeEmbed.setThumb(parsedUrl.video_id)
+	const setThumbPreviewIfValid = (e) => {
+		const videoId = parseYoutubeUrl(e.target.value)
+		setValidity(!!videoId)
+		setVideoId(videoId || '')
 	}
 	return(
 		<form action="" id="translate-form" class="w-full mx-auto  pt-2" onsubmit={attemptSubmit}>
 			<div class="flex py-2 justify-center">
-				<input type='submit' oninput={setThumb} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
+				<input type='submit' oninput={setThumbPreviewIfValid} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
 				<button type='submit' class="h-10 flex shadow-md bg-green-600 p-3 text-white">
-					<span class="float-left">Play</span>
-					<img class="h-5 float-right" src="./assets/sidePanel/controls/play_button.svg"/>
+					<span class="float-left">Watch</span>
+					{/* <img class="h-5 float-right" src="./assets/sidePanel/controls/play_button.svg"/> */}
 				</button>
 
 				{/* <Button langs={state.languages} lang_list={state.lang_list} filter={actions.filter} drop={state.dropdown} toggle={actions.toggle} validate={actions.validate}></Button> */}
@@ -99,13 +133,14 @@ function VideoList ({isValidUrl, setValidity, submit}){
 	const selectVideo = (e) => {
 	}
 	return(
-		<form action="" id="translate-form" class="w-full mx-auto  pt-2" onsubmit={attemptSubmit}>
+		<form action="" id="translate-form" class="w-full mx-auto  pt-2">
 
 		</form>
 	)
 }	
 
-function Video({video}){
+function VideoItem({video}){
+	//  get video title/author/thumb
 	return(
 		<div class="music-row h-7">
 			<img class="music-img h-full" src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`}/>
@@ -121,15 +156,36 @@ function Video({video}){
 function parseUrl(url){
 	let parse = { valid: false }
 	if (url && url.length > 10){
-	  if(url.includes('youtube')){
+		if(url.includes('youtube')){
 		parse.valid = true
 		parse.video_id = url.split("v=")[1];
-	  }
-	  else if(url.includes('youtu.be')){
+		}
+		else if(url.includes('youtu.be')){
 		parse.valid = true
 		parse.video_id = url.split("be/")[1];
-	  }
+		}
 	}
 	return parse
-  }
+}
 
+function getIdFromUrl(url){
+	url = url.split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+	return (url[2] !== undefined) ? url[2].split(/[^0-9a-z_\-]/i)[0] : url[0];
+}
+
+const doesImageExist = (url) => new Promise((resolve) => {
+	const img = new Image();
+	img.src = url;
+	img.onload = () => resolve(true);
+	img.onerror = () => resolve(false);
+});
+
+function parseYoutubeUrl(url) {
+	var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+	let urlMatch = url.match(p)
+	if(urlMatch) return urlMatch[1];
+	return false; // not a valid url
+}
+
+
+// .getVideoData()

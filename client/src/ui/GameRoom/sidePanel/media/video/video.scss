@@ -20,6 +20,7 @@
   }
 
   .lazy-youtube-embed iframe {
+    background: rgb(0,0,0);
     position: absolute;
     top: 0;
     left: 0;
@@ -32,7 +33,7 @@
     left: calc(50% - 6%);
     top: calc(50% - 6%);
     width: 12%;
-    filter: saturate(0);
+    filter: saturate(5%);
     opacity: .8;
   }
 
