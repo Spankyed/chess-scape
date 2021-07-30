@@ -41,3 +41,49 @@
     filter: saturate(100%);
     opacity: 1;
   }
+
+.video-table {
+  
+}
+.border{
+    border-color: rgb(53,53,53,.5);
+    border-style:dashed; border-width:2.5px;
+}
+.video-row {
+    display: flex;
+    cursor: pointer;
+    background-color: #E4E6E7;
+    border: 1px solid rgb(75,85,99);
+}
+.video-img {
+    object-fit: cover;
+    flex: 0 0 30%;
+    justify-content: center;
+    // border-right: 1px solid #d9d9d9;
+    background: #f7f6f5;
+    // line-height: 2.07em;
+    // color: #b3b3b3;
+}    
+.video-info {
+    // flex: 0 0 70%;
+    display: flex;
+    &.active {
+    }
+    // flex: 0 0 50%;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+}
+
+  .now-playing{
+    background-color: #e8e8e8;
+  }
+  svg{
+    color: #409b6b;
+  }
+  .checkmark{
+    color: #ffffff;
+    background: #409b6b;
+  }

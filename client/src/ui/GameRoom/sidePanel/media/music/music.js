@@ -2,13 +2,10 @@ import { h } from 'hyperapp';
 
 export default initial => ({
 	state: { 
-		currMoveIdx: 0,
 	},
 	actions: { 
-		showMedia: (type, force) => (state) => ({mediaOpen: type}),
 	},
 	view: (state, actions) => ({}) => {
-		// const isOpen = (type) => state.mediaOpen == type
 		return (
 			<div class="music pt-3 text-sm text-neutral">
 				<div class="add-music border h-64 text-center" style="justify-content: center; align-items: center">
