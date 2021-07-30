@@ -15,6 +15,7 @@ if (connection) {
 export default initial => ({
 	state: { 
 		isValidUrl: true,
+		// isLoading: false,
 		notFound: false,
 		videoList: {}, // indexed list
 		videoReady: false,
@@ -28,7 +29,7 @@ export default initial => ({
 			videoReady: true, videoList: {...state.videoList, [videoId]: { isLoading: true }}, 
 			currVideoId: state.autoPlay ? videoId : state.currVideoId // if autoplay, change current video
 		}), 
-		setVideoData: (videoData) =>  (state) => ({
+		setVideoData: videoData => state => ({
 			videoList: {...state.videoList, [videoData.video_id]: videoData}
 		})
 	},
@@ -57,7 +58,7 @@ export default initial => ({
 					<ul class="video-table overflow-auto flex flex-col">
 						{
 							Object.values(state.videoList).map((video, i)=>(
-								<VideoItem video={video} currVideoId={state.currVideoId}/>
+								<VideoItem video={video} currVideoId={state.currVideoId} setCurrVideo={actions.setCurrVideo}/>
 							))
 						}
 						<li class="flex video-row h-14 mb-1"><img class="video-img w-1/6" src="https://img.youtube.com/vi/1-rPwDTqwkM/mqdefault.jpg"/><div class="false flex-grow video-info hover:bg-gray-400  flex flex-col justify-center overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">This Chess Hustler Called Me A Clown…</h1></div></li>
@@ -72,22 +73,25 @@ export default initial => ({
 	}
 })
 
-function VideoItem({video, currVideoId}){
-	console.log('vide',video)
+function VideoItem({video, currVideoId, setCurrVideo}){
 	function isPlaying (){ return video.video_id == currVideoId }
-	// {/* <img class="video-img h-full" src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`}/> */}
+	function onClick(e){
+		console.log('clicked')
+		e.target.scrollIntoView()
+		setCurrVideo(video.video_id)
+	}
 	return(
-		<li class="flex video-row h-14 mb-1" style={`${ isPlaying()?'border-style: dashed;':''}`}>
-			{	video.isLoading ?
+		<li onclick={onClick} class="flex video-row h-14 mb-1" style={`${ isPlaying()?'border-style: dashed;':''}`}>
+			{/* {	video.dataReady ?
 				// <img class="video-img" src="https://placekitten.com/g/100/100"/> :
-				<img class="video-img w-1/6" src="https://i.ytimg.com/vi/0/mqdefault.jpg"/> :
-				<img class="video-img w-1/6" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
-			}
+				// <img class="video-img w-1/6" src="https://i.ytimg.com/vi/0/mqdefault.jpg"/> :
+			} */}
+			<img class="video-img w-1/6" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
 			<div class={`${ isPlaying() && 'bg-gray-300'} flex-grow video-info hover:bg-gray-400 flex flex-col justify-center overflow-hidden`}>
-				{ (!video.isLoading && isPlaying()) &&
+				{ (!video.dataReady && isPlaying()) &&
 					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4>
 				}
-				{ video.isLoading &&
+				{ video.dataReady &&
 					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4> 
 				}
 				<h1 class='mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden'>{video.title}</h1>

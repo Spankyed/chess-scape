@@ -133,7 +133,7 @@ export default initial => ({
 										<td class="py-3 px-6 text-center">
 											<span class={`${room.clients.length >= 2 ? 'bg-red-200 text-red-900' : 'bg-green-200 text-green-900'} py-1 px-3 rounded-full  font-semibold`}>
 												<span class="hidden lg:inline">
-													{`${room.clients.length >= 2 ? 'Full':'Open'} `} 
+													{`${room.clients.length >= 2 ? 'Max':'Open'} `} 
 												</span>
 												({room.clients.length}/2)
 											</span>
