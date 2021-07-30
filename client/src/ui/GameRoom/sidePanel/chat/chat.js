@@ -35,6 +35,7 @@ export default initial => ({
 
 		var keys = {}
 		var handleKeyPress = (evt) => {
+			// console.log('keypress event',evt)
 			let { keyCode, type } = evt || Event; // to deal with IE
 			if(keyCode != 13 && keyCode != 16) return
 			let isKeyDown = (type == 'keydown')
@@ -42,13 +43,10 @@ export default initial => ({
 			// if key down event & enter key is pressed down & shift isn't currently being pressed down 
 			if(isKeyDown && keys[13] && !keys[16]){
 				let message = evt.target.value
-				console.log('evt.target',evt.target)
+				// console.log('evt.target',evt.target)
 				message = { text: message, user: 'Kathie M.', img: 'https://www.w3schools.com//w3images/avatar_g2.jpg',time: '11:26'}
 				actions.addMessage(message) 
-				setTimeout(_=> evt.target.value = "",0)
-				
-				// debugger
-
+				setTimeout(_=> evt.target.value = "", 0)
 				// Api.sendChat(message)
 				// actions.modify({ message: '' })
 				// scrollBottom();
@@ -59,7 +57,7 @@ export default initial => ({
 		return (
 			// root el needs key to fix grammarly breaking textarea
 			<div oncreate={init} class="h-full" key={ nanoid() }> 
-				<div class="chat-window flex flex-col items-end">
+				<div class="chat-window flex flex-col items-end" style="overflow-anchor: none;">
 					<ul class="w-full">
 					{	messages.map((message, i) => 
 							<Message message={message}/>
