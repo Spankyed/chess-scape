@@ -35,7 +35,7 @@ export default initial => ({
 		return (
 			<div class={`side-panel ${ !state.isVisible && 'panel-hidden' } flex`}>
 				<div onclick={actions.hideSidePanel} class="modal-overlay absolute top-0 block lg:hidden w-full h-full bg-gray-900 opacity-50"></div>
-				<div class="panel-wrapper pointer-events-none">
+				<div class="panel-wrapper pointer-events-none flex flex-col">
 					<Tabs currTab={currTab} changeTab={actions.changeTab} />
 						<div class='content-wrapper h-full w-full pointer-events-auto'>
 						{	currTab === 'chat' &&

@@ -12,6 +12,8 @@
     // transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
 }
 .content-wrapper{
+    min-height: 0;
+    flex: 1 0 0;
     background-color: #989695;
 }
 

@@ -24,8 +24,8 @@ export default initial => ({
 
 		const isOpen = (type) => state.mediaOpen == type
 		return (
-			<div class="media h-auto md:h-96">
-				<div class="p-5 border-b border-divider">
+			<div class="media w-full h-full overflow-hidden flex flex-col">
+				<div class="p-5 border-b border-divider overflow-hidden flex flex-col">
 					{/* <div @click="isOpen = !isOpen" class="flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover" :class="{'font-bold' : isOpen}"> */}
 					<div onclick={_=> actions.showMedia('music')} class={`${isOpen('music') && 'font-bold'}  flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover`} >
 						<span class="text-xs md:text-base">Play a song</span>
@@ -40,7 +40,7 @@ export default initial => ({
 					}
 				</div>
 				{/* <!-- end of item --> */}
-				<div class="p-5 border-b border-divider">
+				<div class="p-5 border-b border-divider overflow-hidden flex flex-col">
 					{/* <div @click="isOpen = !isOpen" class="flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover" :class="{'font-bold' : isOpen}"> */}
 					<div onclick={_=> actions.showMedia('video')} class={`${isOpen('video') && 'font-bold'} flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover`} >
 						<span class="text-xs md:text-base">Play a video</span>

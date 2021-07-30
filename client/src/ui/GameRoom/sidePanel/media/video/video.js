@@ -34,7 +34,7 @@ export default initial => ({
 	},
 	view: (state, actions) => ({}) => {
 		return (
-			<div class="pt-3 text-sm text-neutral">
+			<div class="pt-3 text-sm text-neutral h-full overflow-hidden flex flex-col">
 				{/* <a oncreate={initVideo} href="https://youtu.be/3vBwRfQbXkg" class="lazy-youtube-embed">HOW TO FUNK IN TWO MINUTES</a> */}
 				
 				<div class="lazy-youtube-embed">
@@ -54,14 +54,19 @@ export default initial => ({
 
 				<VideoInput {...actions} {...state}/>
 
-				{ Object.values(state.videoList).length > 0 &&
-					<div class="video-table">
+				{/* { Object.values(state.videoList).length > 0 && */}
+				{ true &&
+					<ul class="video-table overflow-auto flex flex-col">
 						{
 							Object.values(state.videoList).map((video, i)=>(
 								<VideoItem video={video} currVideoId={state.currVideoId}/>
 							))
 						}
-					</div>
+						<li class="flex video-row h-14 mb-1"><img class="video-img w-1/6" src="https://img.youtube.com/vi/1-rPwDTqwkM/mqdefault.jpg"/><div class="false flex-grow video-info hover:bg-gray-400  flex flex-col justify-center overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">This Chess Hustler Called Me A Clown…</h1></div></li>
+						<li class="flex video-row h-14 mb-1"><img class="video-img w-1/6" src="https://img.youtube.com/vi/1-rPwDTqwkM/mqdefault.jpg"/><div class="false flex-grow video-info hover:bg-gray-400  flex flex-col justify-center overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">This Chess Hustler Called Me A Clown…</h1></div></li>
+						<li class="flex video-row h-14 mb-1"><img class="video-img w-1/6" src="https://img.youtube.com/vi/1-rPwDTqwkM/mqdefault.jpg"/><div class="false flex-grow video-info hover:bg-gray-400  flex flex-col justify-center overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">This Chess Hustler Called Me A Clown…</h1></div></li>
+						<li class="flex video-row h-14 mb-1"><img class="video-img w-1/6" src="https://img.youtube.com/vi/1-rPwDTqwkM/mqdefault.jpg"/><div class="false flex-grow video-info hover:bg-gray-400  flex flex-col justify-center overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">This Chess Hustler Called Me A Clown…</h1></div></li>
+					</ul>
 				}
 
 		  </div>
@@ -69,36 +74,31 @@ export default initial => ({
 	}
 })
 
-function Thumbnail({currVideoId}){
-	// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
-	let handleBadImage = (e) => {
-		// e.target
-		console.log('bad image')
-	}
-	return (
-		<img onerror={handleBadImage} src={`https://img.youtube.com/vi/${currVideoId}/${quality}default.jpg`}/>
+function VideoItem({video, currVideoId}){
+	console.log('vide',video)
+	function isPlaying (){ return video.video_id == currVideoId }
+	// {/* <img class="video-img h-full" src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`}/> */}
+	return(
+		<li class="flex video-row h-14 mb-1" style={`${ isPlaying()?'border-style: dashed;':''}`}>
+			{	video.isLoading ?
+				// <img class="video-img" src="https://placekitten.com/g/100/100"/> :
+				<img class="video-img w-1/6" src="https://i.ytimg.com/vi/0/mqdefault.jpg"/> :
+				<img class="video-img w-1/6" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
+			}
+			<div class={`${ isPlaying() && 'bg-gray-300'} flex-grow video-info hover:bg-gray-400 flex flex-col justify-center overflow-hidden`}>
+				{ (!video.isLoading && isPlaying()) &&
+					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4>
+				}
+				{ video.isLoading &&
+					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4> 
+				}
+				<h1 class='mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden'>{video.title}</h1>
+				{/* <p class="text-gray-600 mb-2 text-sm">With J. Cole, Quavo, Ty Dollar $ign</p> */}
+				{/* <p class="text-gray-600 text-sm">Created by <a>Spotify</a> - 50 songs, 3 hr 2 min</p> */}
+			</div>
+		</li>
 	)
 }
-
-function Embed({currVideoId, setVideoData}){
-	function setDataHandler(){
-		window.onmessage = (e) => { // add Api listener to retrieve YT video info
-			const {event, id, info} = JSON.parse(e.data)
-			// console.log(JSON.parse(e.data))
-			if (event == 'initialDelivery' && id == 1) setVideoData(info.videoData)
-		}
-	}
-	function listen(e){
-		let embed = e.target
-		var message = JSON.stringify({ event: 'listening', id: 1, channel: 'widget' });
-		embed.contentWindow.postMessage(message, 'https://www.youtube.com');
-	}
-	return (
-		<iframe id='player' oncreate={setDataHandler} onload={listen} src={`https://www.youtube.com/embed/${currVideoId}?enablejsapi=1&widgetid=1&amp;gesture=media&autoplay=1`} frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen allowtransparency seamless/>
-	)
-}
-
-
 
 function VideoInput ({isValidUrl, setValidity, setCurrVideo, submit}){
 	const attemptSubmit = (e) => {
@@ -134,27 +134,32 @@ function VideoInput ({isValidUrl, setValidity, setCurrVideo, submit}){
 	)
 }	
 
-function VideoItem({video, currVideoId}){
-	console.log('vide',video)
-	function isPlaying (){ return video.video_id == currVideoId }
-	// {/* <img class="video-img h-full" src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`}/> */}
-	return(
-		<div class="flex video-row h-14">
-			{	video.isLoading ?
-				// <img class="video-img" src="https://placekitten.com/g/100/100"/> :
-				<img class="video-img" src="https://i.ytimg.com/vi/0/mqdefault.jpg"/> :
-				<img class="video-img" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
-			}
-			<div class={`${ isPlaying() && 'bg-gray-300'} flex-grow video-info hover:bg-gray-400  flex flex-col justify-center overflow-hidden`}>
-				{ (!video.isLoading && isPlaying() ) ?
-					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4> :
-					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4> 
-				}
-				<h1 class='mt-0 pl-3 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden'>{video.title}</h1>
-				{/* <p class="text-gray-600 mb-2 text-sm">With J. Cole, Quavo, Ty Dollar $ign</p> */}
-				{/* <p class="text-gray-600 text-sm">Created by <a>Spotify</a> - 50 songs, 3 hr 2 min</p> */}
-			</div>
-		</div>
+function Embed({currVideoId, setVideoData}){
+	function setDataHandler(){
+		window.onmessage = (e) => { // add Api listener to retrieve YT video info
+			const {event, id, info} = JSON.parse(e.data)
+			// console.log(JSON.parse(e.data))
+			if (event == 'initialDelivery' && id == 1) setVideoData(info.videoData)
+		}
+	}
+	function listen(e){
+		let embed = e.target
+		var message = JSON.stringify({ event: 'listening', id: 1, channel: 'widget' });
+		embed.contentWindow.postMessage(message, 'https://www.youtube.com');
+	}
+	return (
+		<iframe id='player' oncreate={setDataHandler} onload={listen} src={`https://www.youtube.com/embed/${currVideoId}?enablejsapi=1&widgetid=1&amp;gesture=media&autoplay=1`} frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen allowtransparency seamless/>
+	)
+}
+
+function Thumbnail({currVideoId}){
+	// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
+	let handleBadImage = (e) => {
+		// e.target
+		console.log('bad image')
+	}
+	return (
+		<img onerror={handleBadImage} src={`https://img.youtube.com/vi/${currVideoId}/${quality}default.jpg`}/>
 	)
 }
 
