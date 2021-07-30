@@ -22,7 +22,7 @@ export default initial => ({
 		const MusicView = music.view(state.music, actions.music)
 		const VideoView = video.view(state.video, actions.video)
 
-		const isOpen = (type) => state.mediaOpen == type
+		function isOpen(type){ return state.mediaOpen == type }
 		return (
 			<div class="media w-full h-full overflow-hidden flex flex-col">
 				<div class="p-5 border-b border-divider overflow-hidden flex flex-col">

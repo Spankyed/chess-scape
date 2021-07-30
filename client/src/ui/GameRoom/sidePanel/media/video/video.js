@@ -35,8 +35,6 @@ export default initial => ({
 	view: (state, actions) => ({}) => {
 		return (
 			<div class="pt-3 text-sm text-neutral h-full overflow-hidden flex flex-col">
-				{/* <a oncreate={initVideo} href="https://youtu.be/3vBwRfQbXkg" class="lazy-youtube-embed">HOW TO FUNK IN TWO MINUTES</a> */}
-				
 				<div class="lazy-youtube-embed">
 				{ state.currVideoId && state.videoReady ?
 					<Embed currVideoId={state.currVideoId} setVideoData={actions.setVideoData}/>
@@ -101,7 +99,7 @@ function VideoItem({video, currVideoId}){
 }
 
 function VideoInput ({isValidUrl, setValidity, setCurrVideo, submit}){
-	const attemptSubmit = (e) => {
+	function attemptSubmit(e){
 		e.preventDefault();
 		let url = e.target[0].value
 		const videoId = parseYoutubeUrl(url)
@@ -111,13 +109,13 @@ function VideoInput ({isValidUrl, setValidity, setCurrVideo, submit}){
 		e.target.reset() // reset form
 		return true
 	}
-	const setThumbPreviewIfValid = (e) => {
+	function setThumbPreviewIfValid(e){
 		const videoId = parseYoutubeUrl(e.target.value)
 		setValidity(!!videoId)
 		setCurrVideo(videoId || 0)
 	}
 	return(
-		<form action="" id="translate-form" class="w-full mx-auto  pt-2" onsubmit={attemptSubmit}>
+		<form onsubmit={attemptSubmit} class="w-full mx-auto pt-2" action="">
 			<div class="flex py-2 justify-center">
 				<input type='submit' oninput={setThumbPreviewIfValid} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
 				<button type='submit' class="h-10 flex shadow-md bg-green-600 p-3 text-white">
@@ -154,13 +152,8 @@ function Embed({currVideoId, setVideoData}){
 
 function Thumbnail({currVideoId}){
 	// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
-	let handleBadImage = (e) => {
-		// e.target
-		console.log('bad image')
-	}
-	return (
-		<img onerror={handleBadImage} src={`https://img.youtube.com/vi/${currVideoId}/${quality}default.jpg`}/>
-	)
+	let handleBadImage = (e) => console.log('bad image') 
+	return (  <img onerror={handleBadImage} src={`https://img.youtube.com/vi/${currVideoId}/${quality}default.jpg`}/> )
 }
 
 function parseYoutubeUrl(url) {
