@@ -25,7 +25,7 @@ export default initial => ({
 	actions: { 
 		submit: videoId => state => ({
 			isLoading: true,
-			videoList: {...state.videoList, [videoId]: { video_id: videoId, dataReady: false }}, 
+			videoList: {[videoId]: { video_id: videoId, dataReady: false }, ...state.videoList}, 
 			currVideoId: state.autoPlay ? videoId : state.currVideoId // if autoplay, change current video
 		}), 
 		setVideoData: videoData => state => ({
@@ -40,7 +40,7 @@ export default initial => ({
 	view: (state, actions) => ({}) => {
 		const isPlaying = _=> state.currVideoId && !state.isLoading
 		return (
-			<div class="pt-3 text-sm text-neutral h-full overflow-hidden flex flex-col">
+			<div class="video-area text-sm text-neutral h-full overflow-hidden flex flex-col">
 				<div class="youtube-embed">
 				{ !isPlaying() && 
 					<Thumbnail {...actions} {...state}/>
@@ -48,7 +48,7 @@ export default initial => ({
 					<Embed isPlaying={isPlaying()} currVideoId={state.currVideoId} setVideoData={actions.setVideoData} stopLoading={actions.stopLoading}/>
 				</div>
 				<VideoInput {...actions} {...state}/>
-				<ul class="video-table overflow-auto flex flex-col-reverse">
+				<ul class="video-table overflow-auto flex flex-col">
 				{ Object.values(state.videoList).map((video, i)=>(
 					<VideoItem video={video} currVideoId={state.currVideoId} setCurrVideo={actions.setCurrVideo}/>
 				))}
@@ -62,22 +62,27 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 	const isPlaying = _=> video.video_id == currVideoId 
 	const isLoading = _=> video.dataReady === false 
 	const onClick = (e) => {
+		if (currVideoId == video.video_id) return false
 		e.target.scrollIntoView()
 		setCurrVideo(video.video_id)
 	}
+	console.log('vide',video)
 	return(
-		<li onclick={onClick} class={`${ isPlaying() && 'selected-border'} video-row h-14 mb-1`}>
+		<li onclick={onClick} class={`video-row ${ isPlaying() && 'selected'} h-14 mb-2`} title={video.title}>
 			{/* {	video.dataReady ?
 				// <img class="video-img" src="https://placekitten.com/g/100/100"/> :
 				// <img class="video-img w-1/6" src="https://i.ytimg.com/vi/0/mqdefault.jpg"/> :
 			} */}
 			<img class="video-img w-1/6" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
-			<div class={`${ isPlaying() && 'bg-gray-300'} flex-grow video-info hover:bg-gray-400 flex flex-col justify-center overflow-hidden`}>
+			<div class='flex-grow video-info flex flex-col justify-end overflow-hidden'>
 				{ (!isLoading() && isPlaying()) &&
 					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4>
 				}
 				{ isLoading() &&
-					<h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4> 
+					<h4 class="pr-1 uppercase text-gray-500 tracking-widest text-xs text-right">Loading...</h4> 
+				}
+				{ (!isLoading() && !isPlaying()) &&
+					<h4 class="pl-3 uppercase text-gray-100 tracking-widest text-xs text-left overflow-ellipsis whitespace-nowrap overflow-hidden">{video.author}</h4>
 				}
 				<h1 class='mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden'>{video.title}</h1>
 				{/* <p class="text-gray-600 mb-2 text-sm">With J. Cole, Quavo, Ty Dollar $ign</p> */}
@@ -87,15 +92,15 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 	)
 }
 
-function VideoInput ({isValidUrl, setValidity, setVideoThumb, submit}){
+function VideoInput ({isValidUrl, currVideoId, setValidity, setVideoThumb, submit, isLoading}){
 	const attemptSubmit = (e) =>{
 		e.preventDefault();
 		let url = e.target[0].value
 		const videoId = parseYoutubeUrl(url)
-		if (!videoId) return false
+		e.target.reset() // reset form
+			if (!videoId || currVideoId == videoId) return false
 		// console.log('submitting', url)
 		submit(videoId, true)
-		e.target.reset() // reset form
 		return true
 	}
 	const setThumbPreviewIfValid = (e) =>{
@@ -107,7 +112,7 @@ function VideoInput ({isValidUrl, setValidity, setVideoThumb, submit}){
 	return(
 		<form onsubmit={attemptSubmit} class="w-full mx-auto pt-2" action="">
 			<div class="flex py-2 justify-center">
-				<input type='submit' oninput={setThumbPreviewIfValid} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
+				<input disabled={isLoading} type='submit' oninput={setThumbPreviewIfValid} name="url" class="h-10 bg-white flex-grow text-sm shadow-md appearance-none bg-transparent border-2 w-full text-gray-700 py-2 px-2 leading-tight focus:outline-none" type="text" placeholder="Paste YouTube video URL" aria-label="Video URL"></input>
 				<button type='submit' class="h-10 flex shadow-md bg-green-600 p-3 text-white">
 					<span class="float-left">Watch</span>
 					{/* <img class="h-5 float-right" src="./assets/sidePanel/controls/play_button.svg"/> */}

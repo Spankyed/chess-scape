@@ -1,11 +1,3 @@
-// @import "~plyr/src/sass/plyr";
-
-.media {
-	font-family: Arial, Helvetica, sans-serif;
-}
-
-
-
 .youtube-embed {
 	display: block;
 	background: #CCC;
@@ -63,17 +55,51 @@
 }
 
 .video-table {
-
+	// background-color: #E4E6E7;
+	// background-color: #CCCCCC;
+	&::-webkit-scrollbar{
+		width: 12px;
+		// width: 20px;
+		// background-color: #F5F5F5;
+	}
+	&::-webkit-scrollbar-track{
+		// -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+		// background-color: #F5F5F5;
+		background-color: transparent;
+	}
+	
+	&::-webkit-scrollbar-thumb{
+		// background-color: #d6dee1;
+		background-color: #C7C7C7;
+		border-radius: 20px;
+		// border-left: 2px solid transparent;
+		border: 3px solid transparent;
+		background-clip: content-box;
+		// border: 2px solid #555555;
+	}
+	&::-webkit-scrollbar-thumb:hover {
+		// background-color: #a8bbbf;
+		background-color: #5C5252;
+	}
 }
+
+
+
 
 .video-row {
 	display: flex;
 	cursor: pointer;
-	background-color: #E4E6E7;
-	border: 1px solid rgb(75,85,99);
-	&.selected-border{
+	// border-bottom: 1px solid rgb(75,85,99);
+	border-bottom: 1px solid #989695;
+	border-right: 1px solid #989695;
+	&.selected{
 		border-color: rgb(53,53,53,.5);
 		border-style:dashed; border-width:2.5px;
+		background-color: rgba(209, 213, 219, 1) !important;
+		cursor: default !important;
+	}
+	&:hover{
+		background-color: rgba(156,163,175,1);
 	}
 }
 .video-img {
@@ -107,4 +133,7 @@ svg{
 .checkmark{
 	color: #ffffff;
 	background: #409b6b;
+}
+
+.no-pointer{
 }
