@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="53px" height="53px" viewBox="0 0 53 53" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <path d="M0 0L49 0L49 49L0 49L0 0Z" id="path_1" />
+    <path d="M0 0L48 0L48 48L0 48L0 0L0 0Z" id="path_2" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+    <clipPath id="mask_2">
+      <use xlink:href="#path_2" />
+    </clipPath>
+  </defs>
+  <g id="sidePanel" transform="translate(2 2)">
+    <path d="M0 0L49 0L49 49L0 49L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+    <g clip-path="url(#mask_1)">
+      <g id="2403262_expand_panel_right_window_configuration_icon" transform="translate(0.47500038 0.5)">
+        <path d="M0 0L48 0L48 48L0 48L0 0L0 0Z" transform="translate(0.024999619 0)" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+        <g id="Mask-group" transform="translate(0 0.012500763)">
+          <path d="M0 0L48 0L48 48L0 48L0 0L0 0Z" id="path_1" fill="none" fill-rule="evenodd" stroke="none" />
+          <g clip-path="url(#mask_2)">
+            <g id="Group" transform="translate(2.0999985 4.7701683)">
+              <g id="icon">
+                <g id="Group">
+                  <path d="M41.8198 39L1.94576 39C0.871393 39 0 38.1264 0 37.0493L0 1.9507C0 0.873604 0.871393 0 1.94576 0L41.8181 0C42.8925 0 43.7638 0.873606 43.7638 1.9507L43.7638 37.0493C43.7638 38.1264 42.8942 39 41.8198 39L41.8198 39L41.8198 39Z" id="Shape" fill="none" fill-rule="evenodd" stroke="#F3F4F6" stroke-width="4" stroke-linejoin="round" />
+                  <path d="M1 0L1 39" transform="translate(31.300003 0.029830933)" id="Line#1" fill="none" fill-rule="evenodd" stroke="#F3F4F6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M0 6.41346L12.6422 6.41346M12.9414 6.41872L6.4637 12.855M12.9414 6.41872L6.4637 0" transform="translate(12.993031 12.529816)" id="Shape#1" fill="none" fill-rule="evenodd" stroke="#F3F4F6" stroke-width="3" stroke-linecap="round" />
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
