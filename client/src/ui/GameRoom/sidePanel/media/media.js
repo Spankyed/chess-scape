@@ -41,7 +41,7 @@ export default initial => ({
 					}
 					</div>
 				</div>
-				<div class="overflow-hidden flex flex-col">
+				<div class="overflow-hidden flex flex-col flex-grow">
 					<div onclick={_=> actions.showMedia('video')} class={`${isOpen('video') && 'font-bold'} media-dropdown border-b border-divider p-5 flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover`} >
 						<span class="text-xs md:text-base">Play a video</span>
 						<div>
