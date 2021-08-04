@@ -48,15 +48,10 @@ export default initial => ({
 					<Embed isPlaying={isPlaying()} currVideoId={state.currVideoId} setVideoData={actions.setVideoData} stopLoading={actions.stopLoading}/>
 				</div>
 				<VideoInput {...actions} {...state}/>
-				<ul class="video-table overflow-auto flex flex-col">
+				<ul class="video-table overflow-auto">
 				{ Object.values(state.videoList).map((video, i)=>(
 					<VideoItem video={video} currVideoId={state.currVideoId} setCurrVideo={actions.setCurrVideo}/>
 				))}
-					<li class="video-row selected h-14 mb-2" title="HOW TO FUNK IN TWO MINUTES"><img class="video-img w-1/6" src="https://img.youtube.com/vi/3vBwRfQbXkg/mqdefault.jpg"/><div class="flex-grow video-info flex flex-col justify-end overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">HOW TO FUNK IN TWO MINUTES</h1></div></li>
-					<li class="video-row selected h-14 mb-2" title="HOW TO FUNK IN TWO MINUTES"><img class="video-img w-1/6" src="https://img.youtube.com/vi/3vBwRfQbXkg/mqdefault.jpg"/><div class="flex-grow video-info flex flex-col justify-end overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">HOW TO FUNK IN TWO MINUTES</h1></div></li>
-					<li class="video-row selected h-14 mb-2" title="HOW TO FUNK IN TWO MINUTES"><img class="video-img w-1/6" src="https://img.youtube.com/vi/3vBwRfQbXkg/mqdefault.jpg"/><div class="flex-grow video-info flex flex-col justify-end overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">HOW TO FUNK IN TWO MINUTES</h1></div></li>
-					<li class="video-row selected h-14 mb-2" title="HOW TO FUNK IN TWO MINUTES"><img class="video-img w-1/6" src="https://img.youtube.com/vi/3vBwRfQbXkg/mqdefault.jpg"/><div class="flex-grow video-info flex flex-col justify-end overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">HOW TO FUNK IN TWO MINUTES</h1></div></li>
-					<li class="video-row selected h-14 mb-2" title="HOW TO FUNK IN TWO MINUTES"><img class="video-img w-1/6" src="https://img.youtube.com/vi/3vBwRfQbXkg/mqdefault.jpg"/><div class="flex-grow video-info flex flex-col justify-end overflow-hidden"><h4 class="pr-2 uppercase text-gray-500 tracking-widest text-xs text-right">Now Playing</h4><h1 class="mt-0 pl-3 pr-1 text-lg overflow-ellipsis whitespace-nowrap overflow-hidden">HOW TO FUNK IN TWO MINUTES</h1></div></li>
 				</ul>
 		  </div>
 		)

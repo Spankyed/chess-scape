@@ -18,42 +18,36 @@ export default initial => ({
 		video: video.actions,
 		showMedia: (type, force) => (state) => ({mediaOpen: force ? type : (state.mediaOpen == type ? '' : type)}),
 	},
-	view: (state, actions) => ({}) => {
+	view: (state, {showMedia,...actions}) => ({}) => {
 		const MusicView = music.view(state.music, actions.music)
 		const VideoView = video.view(state.video, actions.video)
 
 		function isOpen(type){ return state.mediaOpen == type }
 		return (
-			<div class="media w-full h-full overflow-hidden flex flex-col">
-				<div class="overflow-hidden flex flex-col">
-					{/* <div @click="isOpen = !isOpen" class="flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover" :class="{'font-bold' : isOpen}"> */}
-					<div onclick={_=> actions.showMedia('music')} class={`${isOpen('music') && 'font-bold'} media-dropdown border-b border-divider p-5 flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover`} >
-						<span class="text-xs md:text-base">Play a song</span>
-						<div>
-						{/* <img class="mb-1 duration-300" :class="{'transform rotate-180' : isOpen}" src="images/icon-arrow-down.svg" alt="missing"> */}
-						<img class={`${isOpen('music') && 'transform rotate-180'} h-3 mb-1 duration-300 float-right`} src="./assets/sidePanel/icon-arrow-down.svg" alt="missing"/>
-						</div>
+			<div class="media">
+				<section class="music-section">
+					<div onclick={_=> showMedia('music')} class={`${isOpen('music') && 'active'} media-dropdown ribbon`} >
+						<h2>Play a song</h2>
+						<img class={`arrow-up ${isOpen('music') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play music dropdown"/>
+
 					</div>
-					<div class='media-area'>
-					{/* <div x-show.transition.duration.300ms.origin.bottom="isOpen" @click.away="isOpen = false" class="pt-3 text-sm text-neutral" style="display: none;"> */}
+					<div class='section-content'>
 					{	isOpen('music') &&
 						<MusicView/>
 					}
 					</div>
-				</div>
-				<div class="overflow-hidden flex flex-col flex-grow">
-					<div onclick={_=> actions.showMedia('video')} class={`${isOpen('video') && 'font-bold'} media-dropdown border-b border-divider p-5 flex items-center justify-between cursor-pointer text-neutral-darker hover:text-primary-hover`} >
-						<span class="text-xs md:text-base">Play a video</span>
-						<div>
-						<img class={`${isOpen('video') && 'transform rotate-180'} h-3 mb-1 duration-300 float-right`} src="./assets/sidePanel/icon-arrow-down.svg" alt="missing"/>
-						</div>
+				</section>
+				<section class="video-section">
+					<div onclick={_=> showMedia('video')} class={`${isOpen('video') && 'font-bold'} media-dropdown`} >
+						<h2>Play a video</h2>
+						<img class={`arrow-up ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
 					</div>
-					<div class='media-area'>
+					<div class='section-content'>
 					{	isOpen('video') &&
 						<VideoView/>
 					}
 					</div>
-				</div>
+				</section>
 			</div>
 		);
 	}

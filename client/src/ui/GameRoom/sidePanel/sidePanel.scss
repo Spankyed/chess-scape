@@ -2,47 +2,98 @@
 @import './moves/moves.scss'; 
 @import './media/media.scss'; 
 
+// $panel-color: #272522;
+// $panel-heading-color: #21201D;
+$panel-color: #464341;
+$tabs-color: #272522;
+$text-color: #D4D3D3;
+
+
 .side-panel { 
+    color: $text-color;
+    --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     // background-color: #989695;
     z-index: 100;
     position: absolute;
     height: 100%;
     width: 100%;
+    display: flex;
     // width: 25%;
     // transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
-}
-.content-wrapper{
-    min-height: 0;
-    flex: 1 0 0;
-    background-color: #989695;
+    &.panel-hidden{
+        display:none;
+        // width: 0%;
+        // transform: translateX(25vw);
+    }
+    .bg-overlay  {
+      background-color: rgba(17, 24, 39, 1);
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      top: 0px;
+      opacity: 0.5; // remove and  set bg color opacity
+      display: block;
+    }
+    .panel-wrapper {
+        // background-color: #989695;
+        pointer-events: none;
+        position: absolute;
+        float:right;
+        width: 70%;
+        height: 100%;
+        right: 0%;
+        top: 0%;
+        display: flex;
+        flex-direction: column;
+        .tabs{
+          pointer-events: none;
+          justify-content: flex-start;
+          display: flex;
+          .tab{
+            // @apply  mt-1 bg-white inline-block py-2 px-4 font-semibold text-blue-600 hover:text-blue-800 uppercase;
+            cursor: pointer;
+            pointer-events: auto;
+            // background-color:#989695;
+            background-color: $tabs-color;
+            margin-right: 0.25rem/* 4px */;
+            margin-top: 0.25rem/* 4px */;
+            padding-top: 0.5rem/* 8px */;
+            padding-bottom: 0.5rem/* 8px */;
+            padding-left: 1rem/* 16px */;
+            padding-right: 1rem/* 16px */;
+            font-weight: 600;
+            color: $text-color;
+            // ------
+            // background-color: rgba(255, 255, 255, 1;
+            display: inline-block;
+            text-transform: uppercase;
+            &:hover {
+              background-color: $panel-color;
+            }
+            &.active {
+              background-color: $panel-color;
+              color: #fff;
+              // color: rgba(30, 64, 175, 1);
+            }
+          }
+        }
+        .content-wrapper {
+          pointer-events: auto;
+          // background-color: #989695;
+          background-color: $panel-color;
+          height: 100%;
+          width: 100%;
+          min-height: 0;
+          flex: 1 0 0;
+      }
+    }
+
 }
 
-.panel-wrapper{
-    // background-color: #989695;
-    float:right;
-    width: 75%;
-    height: 100%;
-    position: absolute;
-    right: 0%;
-    top: 0%;
-}
-.panel-hidden{
-    display:none;
-    // width: 0%;
-    // transform: translateX(25vw);
-}
 
-@media (min-width: 1280px) {
-    .panel-wrapper { 
-        position: static;
-        width: 100%;
-    }
-    .side-panel { 
-        width: 25%;
-        position: relative;
-        background-color: transparent;
-    }
-}
+
+
 
 
 //   'sm': '640px',
@@ -52,10 +103,22 @@
   // => @media (min-width: 768px) { ... }
 
 //   'lg': '1024px',
-  // => @media (min-width: 1024px) { ... }
+@media (min-width: 1024px) {
+  .panel-wrapper { 
+    position: static !important;
+    width: 100% !important;
+  }
+  .side-panel { 
+      width: 25%;
+      position: relative;
+      background-color: transparent;
+  }
+  .bg-overlay {
+      display: none !important;
+  }
+}
 
 //   'xl': '1280px',
-  // => @media (min-width: 1280px) { ... }
-
+  // @media (min-width: 1280px) {}
 //   '2xl': '1536px',
   // => @media (min-width: 1536px) { ... }

@@ -13,8 +13,7 @@ export default initial => ({
 			// pointer-events-none controls-wrapper
 			<div class={`controls-wrapper ${isLoading && 'hidden'}`}>
 				<div class="controls">
-					{ true  &&
-					// { gameOver  &&
+					{ gameOver  &&
 						<div class="message-wrapper">
 							<div class='match-message'>
 								<MatchMessage/>
@@ -40,7 +39,7 @@ export default initial => ({
 							</button>
 						</div>	
 						{/* sidePanel button */}
-						<button onclick={_=> toggleSidePanel("chat")} class="control-btn">
+						<button onclick={_=> toggleSidePanel()} class="control-btn">
 							<img src="./assets/controls/sidePanel.svg"></img>
 						</button>
 					</div>
@@ -53,7 +52,7 @@ export default initial => ({
 function Player(){
 	let defaultSrc = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
 	return (
-		<div class="player left">
+		<div class="player left winner">
 			<img class="picture" src={defaultSrc}/>  
 			<div class="tagline left">
 				<div class="name">John Dossssssssssssssssssssse</div>
