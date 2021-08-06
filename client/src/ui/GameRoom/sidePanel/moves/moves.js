@@ -29,7 +29,7 @@ export default initial => ({
 function Move({move,idx}){
 	return (
 		<row>
-			<index>{move.idx + 1}</index>
+			<index><span>{move.idx + 1}</span></index>
 			<move class='pl-3'>
 				<sans> {move.piece} </sans>
 				to {move.to}

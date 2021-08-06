@@ -1,5 +1,6 @@
 import { h } from 'hyperapp';
 // import Api from '../../../../api/Api';
+import { nanoid } from 'nanoid/non-secure'
 
 const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
 var quality = 'sd';
@@ -18,24 +19,36 @@ export default initial => ({
 		isLoading: false,
 		notFound: false,
 		videoList: {}, // indexed list
+		share: true,
 		autoPlay: true,
 		currVideoId: 0,
 		thumbVideoId: 0,
 	},
 	actions: { 
-		submit: videoId => state => ({
-			isLoading: true,
-			videoList: {[videoId]: { video_id: videoId, dataReady: false }, ...state.videoList}, 
-			currVideoId: state.autoPlay ? videoId : state.currVideoId // if autoplay, change current video
-		}), 
+		toggle: option => state => ({
+			[option]: !state[option], 
+			isLoading: option == 'autoPlay' && !!state.currVideoId,
+			thumbVideoId: state.currVideoId || state.thumbVideoId
+		}),
+		submit: videoId => state => {
+			if (state.videoList[videoId]) return {}
+			let autoPlay = state.autoPlay || !state.currVideoId 
+			return {
+				isLoading: autoPlay,
+				videoList: { [videoId]: { video_id: videoId, dataReady: false }, ...state.videoList }, 
+				currVideoId: autoPlay ? videoId : state.currVideoId // if autoplay, change current video
+			}
+		}
+		, 
 		setVideoData: videoData => state => ({
-			videoList: {...state.videoList, [videoData.video_id]: videoData}
+			videoList: {...state.videoList, [videoData.video_id]: {dataReady: true, ...videoData}}
 		}),
     	setValidity: bool => _=> ({isValidUrl: bool}),
 		setCurrVideo: (videoId) => _=> ({currVideoId: videoId, thumbVideoId: videoId, isLoading: true}),
 		setVideoThumb: (videoId) => _=> ({thumbVideoId: videoId}),
 		clickThumbPlay: _=> state => ({currVideoId: state.thumbVideoId}),
 		stopLoading: _=> _=> ({isLoading: false}),
+		play: video => state => ({ currVideoId:  video ? video.video_id : state.currVideoId})
 	},
 	view: (state, actions) => ({}) => {
 		const isPlaying = _=> state.currVideoId && !state.isLoading
@@ -45,8 +58,9 @@ export default initial => ({
 				{ !isPlaying() && 
 					<Thumbnail {...actions} {...state}/>
 				}
-					<Embed isPlaying={isPlaying()} currVideoId={state.currVideoId} setVideoData={actions.setVideoData} stopLoading={actions.stopLoading}/>
+					<Embed isPlaying={isPlaying()} {...actions} {...state}/>
 				</div>
+				<Options {...state} toggle={actions.toggle}/>
 				<VideoInput {...actions} {...state}/>
 				<ul class="video-table">
 				{ Object.values(state.videoList).map((video, i)=>(
@@ -58,9 +72,31 @@ export default initial => ({
 	}
 })
 
+function Options({share, autoPlay, toggle}){
+	const options = [{text:'Share', id: 'share', value: share}, {text:'Auto-Play', id: 'autoPlay', value: autoPlay}]
+	return (
+		<div class="options w-full flex text-white justify-end">
+		{	
+		options.map( (option) => (
+			<div class="option-item mr-3 flex items-center">
+				<label for={option.id} class="flex items-center cursor-pointer" >
+					<span class="label-text"> {option.text} </span>
+					<div class="relative">
+						<input id={option.id} type="checkbox" checked={option.value} onchange={_=> toggle(option.id)}/>
+						<div class={`line ${ option.value && 'checked'}`}></div>
+						<div class="dot"></div>
+					</div>
+				</label>
+			</div>
+		))
+		}
+		</div>
+	)
+}
+
 function VideoItem({video, currVideoId, setCurrVideo}){
 	const isPlaying = _=> video.video_id == currVideoId 
-	const isLoading = _=> video.dataReady === false 
+	const dataReady = _=> video.dataReady
 	const onClick = (e) => {
 		if (currVideoId == video.video_id) return false
 		e.target.scrollIntoView()
@@ -74,13 +110,16 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 			 */}
 			<img class="video-img" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
 			<div class='video-info'>
-				{ (!isLoading() && isPlaying()) &&
+				{ (dataReady() && isPlaying()) &&
 					<h4 class="isPlaying">Now Playing</h4>
 				}
-				{ isLoading() &&
+				{ (!dataReady() && isPlaying()) &&
 					<h4 class="isLoading">Loading...</h4> 
 				}
-				{ (!isLoading() && !isPlaying()) &&
+				{ (!dataReady() && !isPlaying()) &&
+					<h4 class="isLoading">Click to load</h4> 
+				}
+				{ (dataReady() && !isPlaying()) &&
 					<h4 class="video-author">{video.author}</h4>
 				}
 				<h1 class='video-title'>{video.title}</h1>
@@ -120,12 +159,14 @@ function VideoInput ({isValidUrl, currVideoId, setValidity, setVideoThumb, submi
 	)
 }	
 
-function Embed({currVideoId, setVideoData, isPlaying, stopLoading}){
-	const addDataListener = _=>{
-		window.onmessage = (e) => { // adds an iframe Api listener to retrieve YT video info
+function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, autoPlay, play}){
+	const addDataListener = _=> { //  adds an iframe Api listener to retrieve YT video info
+		window.onmessage = (e) => { // no cleanup needed, overrides existing message handler
 			const {event, id, info} = JSON.parse(e.data)
-			// console.log(JSON.parse(e.data))
-			if (event == 'initialDelivery' && id == 1 && info.videoData.title) setVideoData(info.videoData)
+			console.log(JSON.parse(e.data))
+			if (id != 1) return
+			if (event == 'initialDelivery' && info.videoData.title) setVideoData(info.videoData)
+			if (autoPlay && event == 'infoDelivery' && info.playerState === 0) play(next(videoList, currVideoId))
 		}
 	}
 	const handleLoad = (e) =>{
@@ -137,11 +178,11 @@ function Embed({currVideoId, setVideoData, isPlaying, stopLoading}){
 	}
 	const videoSrc = _=>{
 		return !currVideoId ? '' :
-		`https://www.youtube.com/embed/${currVideoId}?enablejsapi=1&widgetid=1&amp;gesture=media&autoplay=1`
+		`https://www.youtube.com/embed/${currVideoId}?enablejsapi=1&widgetid=1&amp;gesture=media&autoplay=${autoPlay ? 1 : 0}`
 	}
 	// todo: generate key for iframe element to fix potential render issues
 	return (
-		<iframe class={`${!isPlaying && 'hidden'}`} oncreate={addDataListener} onload={handleLoad} src={videoSrc()} frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen allowtransparency seamless/>
+		<iframe oncreate={addDataListener} onload={handleLoad} onerror={stopLoading} src={videoSrc()} class={`${!isPlaying && 'hidden'}`} frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen allowtransparency seamless/>
 	)
 }
 
@@ -179,5 +220,11 @@ function parseYoutubeUrl(url) {
 	return false; // not a valid url
 }
 
-
+// Return next object key
+function next(obj, key) {
+	var keys = Object.keys(obj), 
+	i = keys.indexOf(key);
+	console.log('next',i !== -1 && keys[i + 1] && obj[keys[i + 1]])
+	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
+};
 
