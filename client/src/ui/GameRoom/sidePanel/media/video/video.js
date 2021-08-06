@@ -178,7 +178,7 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 	}
 	const videoSrc = _=>{
 		return !currVideoId ? '' :
-		`https://www.youtube-nocookie.com/embed/${currVideoId}?autoplay=${autoPlay ? 1 : 0}&enablejsapi=1&widgetid=1&amp;gesture=media&showinfo=1&modestbranding=1`
+		`https://www.youtube.com/embed/${currVideoId}?autoplay=${autoPlay ? 1 : 0}&widgetid=1&enablejsapi=1&amp;gesture=media&modestbranding=1`
 	}
 	// todo: generate key for iframe element to fix potential render issues
 	return (
