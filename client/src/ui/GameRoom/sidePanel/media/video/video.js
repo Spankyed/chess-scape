@@ -54,13 +54,13 @@ export default initial => ({
 		const isPlaying = _=> state.currVideoId && !state.isLoading
 		return (
 			<div class="video-area">
+				<Options {...state} toggle={actions.toggle}/>
 				<div class="youtube-embed">
 				{ !isPlaying() && 
 					<Thumbnail {...actions} {...state}/>
 				}
 					<Embed isPlaying={isPlaying()} {...actions} {...state}/>
 				</div>
-				<Options {...state} toggle={actions.toggle}/>
 				<VideoInput {...actions} {...state}/>
 				<ul class="video-table">
 				{ Object.values(state.videoList).map((video, i)=>(
@@ -178,7 +178,8 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 	}
 	const videoSrc = _=>{
 		return !currVideoId ? '' :
-		`https://www.youtube.com/embed/${currVideoId}?autoplay=${autoPlay ? 1 : 0}&widgetid=1&enablejsapi=1&amp;gesture=media&modestbranding=1`
+		// `https://www.youtube.com/embed/${currVideoId}?autoplay=${autoPlay ? 1 : 0}&widgetid=1&enablejsapi=1&amp;gesture=media&modestbranding=1`
+		`https://www.youtube.com/embed/${currVideoId}?widgetid=1&enablejsapi=1&amp;gesture=media&modestbranding=1`
 	}
 	// todo: generate key for iframe element to fix potential render issues
 	return (
