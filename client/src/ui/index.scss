@@ -16,14 +16,25 @@ html, body {
     padding: 0;
     touch-action: none;
     -ms-touch-action: none;
-    // background-color: #0002;
     background-color: #302E2B;
-    font-family: "Calibri", "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    font-family:'Segoe UI';
+    // font-family: "Calibri", "Roboto", sans-serif;
+    // font-family:'Segoe UI';
+    font-family: 'Quattrocento Sans', sans-serif;
 }
+
+h2 {
+    margin-top:5px;
+    display: block;
+    color: white;
+    font-weight: 100;
+    //margin-right: 2rem;
+    text-align: center;
+    letter-spacing: 5px;
+    color: #fff;
+}
+
 p {
     margin: 1em;
     font-size: 18px;

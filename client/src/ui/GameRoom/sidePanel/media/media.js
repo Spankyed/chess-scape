@@ -1,5 +1,4 @@
 import { h } from 'hyperapp';
-// import Api from '../../../../api/Api';
 import Music from './music/music'; 
 import Video from './video/video'; 
 
@@ -31,22 +30,22 @@ export default initial => ({
 						<img class={`dropdown-arrow ${isOpen('music') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play music dropdown"/>
 
 					</div>
-					<div class='section-content'>
 					{	isOpen('music') &&
-						<MusicView/>
+						<div class='section-content'>
+							<MusicView/>
+						</div>
 					}
-					</div>
 				</section>
-				<section class="video-section">
-					<div onclick={_=> showMedia('video')} class={`${isOpen('video') && 'font-bold'} media-dropdown`} >
+				<section class={`video-section ${!isOpen('video') && 'inactive'} `}>
+					<div onclick={_=> showMedia('video')} class={`${isOpen('video') && 'active'} media-dropdown`} >
 						<h2>Play a video</h2>
 						<img class={`dropdown-arrow ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
 					</div>
-					<div class='section-content'>
 					{	isOpen('video') &&
-						<VideoView/>
+						<div class='section-content'>
+							<VideoView/>
+						</div>
 					}
-					</div>
 				</section>
 			</div>
 		);

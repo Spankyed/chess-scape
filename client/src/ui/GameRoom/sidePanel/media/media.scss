@@ -63,7 +63,13 @@ $dropdown-icon-color:#7D7C7A;
                 }
             }
         }
-        &.video-section{ flex-grow: 1; }
+        &.music-section{ flex-shrink: 0; }
+        &.video-section{ 
+            flex-grow: 1; 
+            &.inactive{
+                // margin-top: 0.5rem;
+            }
+        }
         .section-content {
             padding: 0.5rem;
             min-height: 0;
