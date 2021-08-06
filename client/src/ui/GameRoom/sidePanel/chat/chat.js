@@ -65,7 +65,7 @@ export default initial => ({
 					}
 					</ul>
 				</div>
-				<div class="chat-footer bg-gray-600">
+				<div class="chat-footer">
 					<div class="input-wrapper">
 						<textarea class="resize-none w-full px-3 py-1 text-gray-700 border rounded-sm focus:outline-none" rows="2" autocomplete="off"
 							placeholder="Type here and press enter"

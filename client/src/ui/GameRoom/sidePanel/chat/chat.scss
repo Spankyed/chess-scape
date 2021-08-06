@@ -1,4 +1,6 @@
 
+$chat-footer-color: #525357;
+
 .chat-window { 
     overflow: auto;
     overflow-x: hidden;
@@ -7,6 +9,7 @@
     transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
 }
 .chat-footer { 
+    background-color: $chat-footer-color;
     bottom: 0;
     position: relative;
     width: 100%;

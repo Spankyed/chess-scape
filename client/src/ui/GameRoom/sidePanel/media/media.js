@@ -28,7 +28,7 @@ export default initial => ({
 				<section class="music-section">
 					<div onclick={_=> showMedia('music')} class={`${isOpen('music') && 'active'} media-dropdown ribbon`} >
 						<h2>Play a song</h2>
-						<img class={`arrow-up ${isOpen('music') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play music dropdown"/>
+						<img class={`dropdown-arrow ${isOpen('music') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play music dropdown"/>
 
 					</div>
 					<div class='section-content'>
@@ -40,7 +40,7 @@ export default initial => ({
 				<section class="video-section">
 					<div onclick={_=> showMedia('video')} class={`${isOpen('video') && 'font-bold'} media-dropdown`} >
 						<h2>Play a video</h2>
-						<img class={`arrow-up ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
+						<img class={`dropdown-arrow ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
 					</div>
 					<div class='section-content'>
 					{	isOpen('video') &&
