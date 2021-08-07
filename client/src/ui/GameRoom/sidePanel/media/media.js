@@ -30,22 +30,18 @@ export default initial => ({
 						<img class={`dropdown-arrow ${isOpen('music') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play music dropdown"/>
 
 					</div>
-					{	isOpen('music') &&
-						<div class='section-content'>
-							<MusicView/>
-						</div>
-					}
+					<div class={`section-content ${isOpen('music') && 'open'} `}>
+						<MusicView/>
+					</div>
 				</section>
-				<section class={`video-section ${!isOpen('video') && 'inactive'} `}>
+				<section class="video-section">
 					<div onclick={_=> showMedia('video')} class={`${isOpen('video') && 'active'} media-dropdown`} >
 						<h2>Play a video</h2>
 						<img class={`dropdown-arrow ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
 					</div>
-					{	isOpen('video') &&
-						<div class='section-content'>
-							<VideoView/>
-						</div>
-					}
+					<div class={`section-content ${isOpen('video') && 'open'} `}>
+						<VideoView/>
+					</div>
 				</section>
 			</div>
 		);

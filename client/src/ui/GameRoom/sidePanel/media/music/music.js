@@ -7,7 +7,7 @@ export default initial => ({
 	},
 	view: (state, actions) => ({}) => {
 		return (
-			<div class="music pt-3 text-sm text-neutral">
+			<div class="music-area pt-3 text-sm text-neutral">
 				<div class="add-music border h-64 text-center" style="justify-content: center; align-items: center">
 					<img style="height:75%" class="pt-8 mx-auto" src="./assets/sidePanel/controls/add_music.svg"/>	
 					<span>Add or drag music file here</span>
