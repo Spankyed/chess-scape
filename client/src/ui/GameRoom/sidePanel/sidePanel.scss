@@ -19,11 +19,17 @@ $text-color: #D4D3D3;
     height: 100%;
     width: 100%;
     display: flex;
+    transition: all .25s ease-in-out;
+    transform: translateX(0);
     // width: 25%;
     // transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
     &.panel-hidden{
-        display:none;
-        // width: 0%;
+      transform: translateX(100%) !important;
+      // display:none;
+        .bg-overlay  {
+          transform: translateX(100%) !important;
+          opacity: 0; 
+        }
         // transform: translateX(25vw);
     }
     .bg-overlay  {
@@ -34,6 +40,8 @@ $text-color: #D4D3D3;
       top: 0px;
       opacity: 0.5; // remove and  set bg color opacity
       display: block;
+      transform: translateX(0);
+      transition: all .1s ease-in-out, opacity 2s ease;
     }
     .panel-wrapper {
         // background-color: #989695;
@@ -107,11 +115,15 @@ $text-color: #D4D3D3;
   .panel-wrapper { 
     position: static !important;
     width: 100% !important;
+
   }
   .side-panel { 
       width: 25%;
       position: relative;
       background-color: transparent;
+      &.panel-hidden{
+        width: 0%;
+      }
   }
   .bg-overlay {
       display: none !important;
