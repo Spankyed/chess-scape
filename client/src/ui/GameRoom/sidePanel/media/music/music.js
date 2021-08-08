@@ -1,11 +1,12 @@
 import { h } from 'hyperapp';
+import Api from '../../../../../api/Api';
 
 export default initial => ({
 	state: { 
 	},
 	actions: { 
 	},
-	view: (state, actions) => ({}) => {
+	view: (state, actions) => ({gameId}) => {
 		return (
 			<div class="music-area pt-3 text-sm text-neutral">
 				<div class="add-music border h-64 text-center" style="justify-content: center; align-items: center">

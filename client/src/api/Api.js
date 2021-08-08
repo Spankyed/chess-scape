@@ -5,9 +5,8 @@ let baseAPIUrl = 'http://localhost:5000'
 let connection, clientId,
 handlers = {
 	connect: msg => clientId = msg.clientId,
-	create: _=>_, join: _=>_, move: _=>_, chat: _=>_
+	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, share: _=>_
 }
-
 function createConnection(){
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
@@ -22,17 +21,14 @@ function createConnection(){
 	})
 	
 }
-
 function startConnection(){
 	if (connection) return
 	else createConnection()
 }
-
 function sendMessage(connection, message){
 	console.log(`%c ${message.method}`,"color:green;", {message})
 	connection.send(JSON.stringify(message))
 }
-
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers)
 	// handlers = {...handlers, ...newHandlers}
@@ -40,12 +36,11 @@ function setMessageHandlers(newHandlers) {
 }
 
 function createGame(params){ sendMessage(connection, { method: "create", ...params, clientId }) }
-
 function joinGame(gameId){ sendMessage(connection, { method: "join", gameId, clientId }) }
-
 function sendMove(move, gameId){ sendMessage(connection, { method: "move", move, gameId }) }
-
 function sendChat(text, gameId){ sendMessage(connection, { method: "chat", text, gameId }) }
+function shareVideo(videoId, gameId){ sendMessage(connection, { method: "share", type: "video", videoId, gameId }) }
+function shareMusic(file, gameId){ sendMessage(connection, { method: "share", type: "music", file, gameId }) }
 
 async function fetchRooms(){
 	const method = 'GET';
@@ -67,5 +62,7 @@ export default {
 	createGame,
 	joinGame,
 	sendMove,
-	sendChat
+	sendChat,
+	shareVideo,
+	shareMusic
 };

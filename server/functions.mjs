@@ -26,7 +26,7 @@ function handleRoomWebSocket(connection /* SocketStream */, req /* FastifyReques
 		// const message = request
         if (!message) return
 		// console.log('message', message)
-        const methods = { create, join, move, chat }
+        const methods = { create, join, move, chat, share}
         const messageHandler = methods[message.method]
         if (messageHandler) messageHandler(message)
 	})
@@ -133,6 +133,30 @@ function chat(message) {
     const response = { "method": "chat", text }
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
+
+function share(message){
+    let mediaHandlers = { 'video': shareVideo, 'music': shareMusic  } 
+    mediaHandlers[message.type](message)
+}
+
+function shareVideo(message) {
+    const videoId = message.videoId;
+    const gameId = message.gameId;
+    const gameRoom = gameRooms[gameId]
+    if (!gameRoom) return
+    const response = { "method": "shareVideo", videoId }
+    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+}
+
+function shareMusic(message) {
+    const text = message.text;
+    const gameId = message.gameId;
+    const gameRoom = gameRooms[gameId]
+    if (!gameRoom) return
+    const response = { "method": "chat", text }
+    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+}
+
 
 function getGameRooms() { return gameRooms }
 

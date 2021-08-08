@@ -7,8 +7,8 @@ import SidePanel from './sidePanel/sidePanel';
 const controls = Controls()
 const sidePanel = SidePanel()
 
-// todo: if in game and websocket disconnects, reconnect 
-// todo: if leave game remove clientId from game.clients 
+// todo: reconnect if websocket disconnects in game,  
+// todo: when user leaves game remove clientId from game.clients 
 export default initial => ({
 	state: { 
 		controls: controls.state,
@@ -40,11 +40,11 @@ export default initial => ({
 				<Loader isLoading={state.isLoading}/>
 
 				<div class="relative flex-grow">
-					<ControlsView isLoading={state.isLoading} gameOver={state.gameOver} toggleSidePanel={actions.toggleSidePanel}/>
+					<ControlsView gameId={gameId} isLoading={state.isLoading} gameOver={state.gameOver} toggleSidePanel={actions.toggleSidePanel}/>
 					<Scene gameId={gameId} state={state} actions={actions} /> 
 				</div>
 
-				<SidePanelView/> 
+				<SidePanelView gameId={gameId}/> 
 			</div>
 		)
 	}

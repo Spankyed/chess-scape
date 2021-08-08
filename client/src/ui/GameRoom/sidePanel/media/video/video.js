@@ -1,5 +1,5 @@
 import { h } from 'hyperapp';
-// import Api from '../../../../api/Api';
+import Api from '../../../../../api/Api';
 import { nanoid } from 'nanoid/non-secure'
 
 const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -15,20 +15,20 @@ if (connection) {
 
 export default initial => ({
 	state: { 
-		isValidUrl: true,
-		isLoading: false,
-		notFound: false,
-		videoList: {}, // indexed list
-		share: true,
+		canShare: true,
 		autoPlay: true,
+		videoFound: true,
+		invalidUrl: false,
+		isLoading: false,
+		videoList: {}, // indexed list
 		currVideoId: 0,
 		thumbVideoId: 0,
 	},
 	actions: { 
 		toggle: option => state => ({
 			[option]: !state[option], 
-			isLoading: option == 'autoPlay' && !!state.currVideoId,
-			thumbVideoId: state.currVideoId || state.thumbVideoId
+			isLoading: option == 'autoPlay' && !!state.currVideoId, // iframe force reloads everytime autplay set
+			thumbVideoId: state.currVideoId || state.thumbVideoId // if user input url while video playing, show correct reloading thumb
 		}),
 		submit: videoId => state => {
 			if (state.videoList[videoId]) return {}
@@ -36,32 +36,33 @@ export default initial => ({
 			return {
 				isLoading: autoPlay,
 				videoList: { [videoId]: { video_id: videoId, dataReady: false }, ...state.videoList }, 
-				currVideoId: autoPlay ? videoId : state.currVideoId // if autoplay, change current video
+				currVideoId: autoPlay ? videoId : state.currVideoId // if autoplay, play new video
 			}
-		}
-		, 
+		}, 
 		setVideoData: videoData => state => ({
 			videoList: {...state.videoList, [videoData.video_id]: {dataReady: true, ...videoData}}
 		}),
-    	setValidity: bool => _=> ({isValidUrl: bool}),
-		setCurrVideo: (videoId) => _=> ({currVideoId: videoId, thumbVideoId: videoId, isLoading: true}),
-		setVideoThumb: (videoId) => _=> ({thumbVideoId: videoId}),
+    	setValidity: bool => _=> ({invalidUrl: bool}),
+    	setVideoFound: bool => _=> ({videoFound: bool}),
+		setVideoThumb: videoId => _=> ({thumbVideoId: videoId}),
+		setCurrVideo: videoId => _=> ({currVideoId: videoId, thumbVideoId: videoId, isLoading: true, videoFound: true,}),
 		clickThumbPlay: _=> state => ({currVideoId: state.thumbVideoId}),
 		stopLoading: _=> _=> ({isLoading: false}),
 		play: video => state => ({ currVideoId:  video ? video.video_id : state.currVideoId})
 	},
-	view: (state, actions) => ({}) => {
+	view: (state, actions) => ({gameId}) => {
 		const isPlaying = _=> state.currVideoId && !state.isLoading
+		const submit = handleSubmit(gameId, actions, state.canShare)
 		return (
 			<div class="video-area">
 				<Options {...state} toggle={actions.toggle}/>
 				<div class="youtube-embed">
 				{ !isPlaying() && 
-					<Thumbnail {...actions} {...state}/>
+					<Thumbnail {...actions} {...state} submit={submit}/>
 				}
-					<Embed isPlaying={isPlaying()} {...actions} {...state}/>
+					<Embed {...actions} {...state} isPlaying={isPlaying()}/>
 				</div>
-				<VideoInput {...actions} {...state}/>
+				<VideoInput {...actions} {...state} submit={submit}/>
 				<ul class="video-table">
 				{ Object.values(state.videoList).map((video, i)=>(
 					<VideoItem video={video} currVideoId={state.currVideoId} setCurrVideo={actions.setCurrVideo}/>
@@ -72,17 +73,19 @@ export default initial => ({
 	}
 })
 
-function Options({share, autoPlay, toggle}){
-	const options = [{text:'Share', id: 'share', value: share}, {text:'Auto-Play', id: 'autoPlay', value: autoPlay}]
+function Options({canShare, autoPlay, toggle}){
+	const options = 
+	[{text:'Share', name: 'canShare', value: canShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
 	return (
-		<div class="options w-full flex text-white justify-end">
+		<div class="options">
 		{	
 		options.map( (option) => (
-			<div class="option-item mr-3 flex items-center">
-				<label for={option.id} class="flex items-center cursor-pointer" >
-					<span class="label-text"> {option.text} </span>
-					<div class="relative">
-						<input id={option.id} type="checkbox" checked={option.value} onchange={_=> toggle(option.id)}/>
+			<div class="option-item">
+				<label for={option.id} class="toggle-wrapper"
+					title={option.text == 'Share' ? 'Allow video sharing with room' : 'Auto-play new/next video in queue'}>
+					<span class="toggle-text"> {option.text} </span>
+					<div class="toggle">
+						<input onchange={_=> toggle(option.name)} checked={option.value} id={option.id} type="checkbox"/>
 						<div class={`line ${ option.value && 'checked'}`}></div>
 						<div class="dot"></div>
 					</div>
@@ -128,7 +131,9 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 	)
 }
 
-function VideoInput ({isValidUrl, currVideoId, setValidity, setVideoThumb, submit, isLoading}){
+function VideoInput (props){
+	let { invalidUrl, currVideoId, setValidity, 
+		setVideoThumb, setVideoFound, submit, isLoading, videoFound } = props
 	const attemptSubmit = (e) =>{
 		e.preventDefault();
 		let url = e.target[0].value
@@ -136,25 +141,30 @@ function VideoInput ({isValidUrl, currVideoId, setValidity, setVideoThumb, submi
 		e.target.reset() // reset form
 		if (!videoId || currVideoId == videoId) return false
 		// console.log('submitting', url)
-		submit(videoId, true)
+		submit(videoId, e.target)
 		return true
 	}
-	const setThumbPreviewIfValid = (e) =>{
+	const onInput = (e) =>{
+		// check/set url validity & set video Thumbnail preview 
 		// console.log('input', e.target)
 		const videoId = parseYoutubeUrl(e.target.value)
-		setValidity(!!videoId)
-		setVideoThumb(videoId || 0) // should begin loading video in iframe (doesn't)
+		setValidity(!videoId)
+		setVideoThumb(videoId || 0) // todo: begin preloading video in iframe?
+		if (!!videoId) setVideoFound(true) // oninput, resets found state if new video was found 
 	}
 	return(
 		<form onsubmit={attemptSubmit} class="video-form" action="">
 			<div class="input-wrapper">
-				<input disabled={isLoading} oninput={setThumbPreviewIfValid} class="input shadow-md" placeholder="Paste YouTube video URL" aria-label="Video URL" name="url" type='text' ></input>
+				<input disabled={isLoading} oninput={onInput} class="input shadow-md" placeholder="Paste YouTube video URL" aria-label="Video URL" name="url" type='text' ></input>
 				<button type='submit' class="submit-button"> Watch </button>
 			</div>   
-			{	!isValidUrl && 
-				<p class='invalid-message'>Invalid video URL</p>
+			{	invalidUrl ? 
+					<p class='invalid-message'>Invalid video URL</p> : 
+				!invalidUrl && !videoFound ?
+					<p class='invalid-message'>Video could not be found, check url or try a different video</p> : ''
 				// <p class='invalid-message'>Video could not be played, check url or try a different video</p>
 			}
+
 		</form>
 	)
 }	
@@ -163,7 +173,7 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 	const addDataListener = _=> { //  adds an iframe Api listener to retrieve YT video info
 		window.onmessage = (e) => { // no cleanup needed, overrides existing message handler
 			const {event, id, info} = JSON.parse(e.data)
-			console.log(JSON.parse(e.data))
+			// console.log(JSON.parse(e.data))
 			if (id != 1) return
 			if (event == 'initialDelivery' && info.videoData.title) setVideoData(info.videoData)
 			if (autoPlay && event == 'infoDelivery' && info.playerState === 0) play(next(videoList, currVideoId))
@@ -180,7 +190,7 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 		return !currVideoId ? '' :
 		`https://www.youtube.com/embed/${currVideoId}?autoplay=1&widgetid=1&enablejsapi=1&amp;gesture=media&modestbranding=1`
 	}
-	// todo: generate key for iframe element to fix potential render issues
+	// todo: generate key-id for iframe element to fix potential render issues?
 	return (
 		<iframe oncreate={addDataListener} onload={handleLoad} onerror={stopLoading} src={videoSrc()} class={`${!isPlaying && 'hidden'}`} frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen allowtransparency seamless/>
 	)
@@ -189,10 +199,7 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 function Thumbnail({thumbVideoId, currVideoId, isLoading, submit}){
 	// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
 	const handleBadImage = (e) => console.log('bad image') 
-	const onThumbPlayClick = e => {
-		submit(thumbVideoId)
-		document.getElementsByTagName('form')[0].reset()
-	}
+	const onThumbPlayClick = e => submit(thumbVideoId)
 	return (  
 		<div class="thumb-wrapper">
 		{ ((!!thumbVideoId && !currVideoId) || isLoading) &&
@@ -213,12 +220,34 @@ function Thumbnail({thumbVideoId, currVideoId, isLoading, submit}){
 	)
 }
 
+
+function handleSubmit(gameId, actions, canShare){
+	let {setVideoFound, submit} = actions
+	return async function (videoId, form){ 
+		// todo: wrap in try-catch & setVideoFound(false) ?
+		form = form || document.getElementsByTagName('form')[0]
+		form.reset()
+		let videoFound = await checkVideoId(videoId)
+		setVideoFound(videoFound)
+		if (!videoFound) return
+		submit(videoId)
+		if (canShare) Api.shareVideo(videoId, gameId)
+	}
+}
+
 function parseYoutubeUrl(url) {
 	var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
 	let urlMatch = url.match(p)
 	if(urlMatch) return urlMatch[1];
 	return false; // not a valid url
 }
+
+// https://stackoverflow.com/a/66362481/8723748
+async function checkVideoId(id) {
+	const { status } = await fetch("http://img.youtube.com/vi/" + id + "/mqdefault.jpg");
+	if (status === 404) return false;
+	return true;
+  }
 
 // Return next object key
 function next(obj, key) {

@@ -17,7 +17,7 @@ export default initial => ({
 		video: video.actions,
 		showMedia: (type, force) => (state) => ({mediaOpen: force ? type : (state.mediaOpen == type ? '' : type)}),
 	},
-	view: (state, {showMedia,...actions}) => ({}) => {
+	view: (state, {showMedia,...actions}) => ({gameId}) => {
 		const MusicView = music.view(state.music, actions.music)
 		const VideoView = video.view(state.video, actions.video)
 
@@ -31,7 +31,7 @@ export default initial => ({
 
 					</div>
 					<div class={`section-content ${isOpen('music') && 'open'} `}>
-						<MusicView/>
+						<MusicView gameId={gameId}/>
 					</div>
 				</section>
 				<section class="video-section">
@@ -40,7 +40,7 @@ export default initial => ({
 						<img class={`dropdown-arrow ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
 					</div>
 					<div class={`section-content ${isOpen('video') && 'open'} `}>
-						<VideoView/>
+						<VideoView gameId={gameId}/>
 					</div>
 				</section>
 			</div>
