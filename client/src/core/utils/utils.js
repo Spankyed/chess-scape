@@ -1,13 +1,11 @@
 import { Observable } from 'rxjs';
 // import { debounceTime, filter, map, pairwise, startWith } from 'rxjs/operators';
+import { debounceTime, map } from 'rxjs/operators';
 
-
-let count = 0
 // https://github.com/twig-it/from-resize/blob/main/projects/from-resize/src/resize/resize.ts
 const fromResize = (element) => {
 	let resize$ = new Observable(subscriber => {
 		const resizeObserver = new ResizeObserver(entries => {
-			// console.log('count',count++)
 			subscriber.next();
 		});
 		resizeObserver.observe(element);
@@ -16,9 +14,8 @@ const fromResize = (element) => {
 			// resizeObserver.unobserve(element);
 			resizeObserver.disconnect();
 		};
-	}
-	)
-	return resize$.pipe(debounceTime(100));
+	})
+	return resize$.pipe(debounceTime(1));
 }
 
 
@@ -26,7 +23,6 @@ function mapChessPieces(meshes){
 	return {
 		pawns:  [],
 		rooks: [],
-
 	}
 }
 
