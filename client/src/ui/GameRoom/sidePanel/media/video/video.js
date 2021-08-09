@@ -43,7 +43,7 @@ export default initial => ({
 			videoList: {...state.videoList, [videoData.video_id]: {dataReady: true, ...videoData}}
 		}),
     	setValidity: bool => _=> ({invalidUrl: bool}),
-    	setVideoFound: bool => _=> ({videoFound: bool}),
+    	setVideoFound: bool => state => ({videoFound: bool, thumbVideoId: !bool ? 0 : state.thumbVideoId}),
 		setVideoThumb: videoId => _=> ({thumbVideoId: videoId}),
 		setCurrVideo: videoId => _=> ({currVideoId: videoId, thumbVideoId: videoId, isLoading: true, videoFound: true,}),
 		clickThumbPlay: _=> state => ({currVideoId: state.thumbVideoId}),
@@ -101,7 +101,7 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 	const isPlaying = _=> video.video_id == currVideoId 
 	const dataReady = _=> video.dataReady
 	const onClick = (e) => {
-		if (currVideoId == video.video_id) return false
+		if (currVideoId == video.video_id) return false //already playing
 		e.target.scrollIntoView()
 		setCurrVideo(video.video_id)
 	}
@@ -161,7 +161,7 @@ function VideoInput (props){
 			{	invalidUrl ? 
 					<p class='invalid-message'>Invalid video URL</p> : 
 				!invalidUrl && !videoFound ?
-					<p class='invalid-message'>Video could not be found, check url or try a different video</p> : ''
+					<p class='invalid-message'>Video not be found, check url or try a different video</p> : ''
 				// <p class='invalid-message'>Video could not be played, check url or try a different video</p>
 			}
 
@@ -198,7 +198,7 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 
 function Thumbnail({thumbVideoId, currVideoId, isLoading, submit}){
 	// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
-	const handleBadImage = (e) => console.log('bad image') 
+	const handleBadImage = (e) => console.log('bad image') // not getting triggered 
 	const onThumbPlayClick = e => submit(thumbVideoId)
 	return (  
 		<div class="thumb-wrapper">

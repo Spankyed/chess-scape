@@ -20,12 +20,12 @@ function handleRoomWebSocket(connection /* SocketStream */, req /* FastifyReques
     // connection.socket.on('open', _ => console.log('~opened!'))
     // connection.socket.on('close', _ => console.log('~closed!'))
 	connection.socket.on('message', request => { // handle incoming messages from connected client 
-		console.log('incoming requests', request)
+		// console.log('incoming requests', request)
+		// const message = request
 		const message = JSON.parse(request)
 		console.log('incoming message', message)
-		// const message = request
-        if (!message) return
 		// console.log('message', message)
+        if (!message) return
         const methods = { create, join, move, chat, share}
         const messageHandler = methods[message.method]
         if (messageHandler) messageHandler(message)
@@ -96,9 +96,7 @@ function leave(message){ //a client want to leave
     const clientId = message.clientId;
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId];
-
-    arr.includes(val) && arr.splice(arr.indexOf(val), 1)
-
+    if (arr.includes(val)) arr.splice(arr.indexOf(val), 1)
     const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
     // notify all clients new client has joined
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )

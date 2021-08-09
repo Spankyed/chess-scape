@@ -7,7 +7,7 @@ import SidePanel from './sidePanel/sidePanel';
 const controls = Controls()
 const sidePanel = SidePanel()
 
-// todo: reconnect if websocket disconnects in game,  
+// todo: alert users & handle reconnect if player disconnects in game,  
 // todo: when user leaves game remove clientId from game.clients 
 export default initial => ({
 	state: { 

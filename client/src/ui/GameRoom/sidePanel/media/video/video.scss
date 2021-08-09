@@ -1,6 +1,7 @@
 // $submit-button-color: #82B64A; //409b6b
 // $submit-button-color: #4338CA; //409b6b
-$submit-button-color: #6B944C; //409b6b
+// $submit-button-color: #6B944C; //409b6b
+$submit-button-color: #2f855a; //409b6b
 $toggle-track-color: #959b90;
 $toggle-track-active-color: #4338CA;
 $toggle-dot-color: #4338CA;
@@ -196,11 +197,11 @@ $toggle-dot-color: #4338CA;
 		.invalid-message{
 			// @apply ml-1 mt-0 mb-2 text-xs text-red-800;
 			margin-left: 0.25rem/* 4px */;
-			margin-top: 0px;
-			margin-bottom: 0.5rem/* 8px */;
-			font-size: 0.75rem/* 12px */;
+			margin-top: 0.4rem;
+			margin-bottom: 0rem/* 8px */;
+			font-size: 0.84rem/* 12px */;
 			line-height: 1rem/* 16px */;
-			color: rgba(153, 27, 27, 1);
+			color: #ff8a8a;
 		}
 	}
 	.video-table {
