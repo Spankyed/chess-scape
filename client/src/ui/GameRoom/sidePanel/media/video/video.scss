@@ -3,8 +3,11 @@
 // $submit-button-color: #6B944C; //409b6b
 $submit-button-color: #2f855a; //409b6b
 $toggle-track-color: #959b90;
-$toggle-track-active-color: #4338CA;
-$toggle-dot-color: #4338CA;
+// $toggle-track-active-color: #4338CA;
+$toggle-dot-color: #3E5BB8;
+// $toggle-dot-color: #0075ff;
+// $toggle-dot-color: #3B82F6;
+// $toggle-dot-color: #4338CA;
 // $toggle-dot-color: #6B944C;
 // $toggle-dot-color: #F47B56; 
 
@@ -49,7 +52,7 @@ $toggle-dot-color: #4338CA;
 						border-width: 0;
 						&:checked ~ .dot {
 							transform: translateX(100%);
-							// background-color: $toggle-dot-color;
+							background-color: $toggle-dot-color;
 						}
 		
 					}
@@ -62,8 +65,7 @@ $toggle-dot-color: #4338CA;
 						border-radius: 9999px;
 						left: -0.25rem/* -4px */;
 						top: -0.4rem/* -4px */;
-						transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-						transition-duration: 150ms;
+						transition: all .3s ease-in-out, ;
 						--tw-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 						box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 					}
@@ -71,7 +73,8 @@ $toggle-dot-color: #4338CA;
 						// width: 2.25rem/* 36px */;
 						width: 2.15rem/* 36px */;
 						height: 0.45rem/* 12px */;
-						background-color: #bbb;;
+						// background-color: #bbb;
+						background-color: #737373;
 						--tw-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 						// border-radius: 9999px;
 						// border-radius: 2px;
@@ -79,8 +82,7 @@ $toggle-dot-color: #4338CA;
 						// box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 						box-shadow: 0 0 5px rgb(0 0 0 / 20%);
 						&.checked{
-							// background-color: $toggle-track-color;
-							background-color: $toggle-track-active-color;
+							// background-color: $toggle-track-active-color;
 						}
 					}
 				}

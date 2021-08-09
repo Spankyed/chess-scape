@@ -15,7 +15,7 @@ function createConnection(){
 		// console.log('incoming request', request)
 		const message = JSON.parse(event.data)
 		if (!message) return
-		console.log('%c Message received ',"color:orange;", {message})
+		console.log(`%c Message received [${message.method}]`,"color:green;", {message})
 		const messageHandler = handlers[message.method]
 		if (messageHandler) messageHandler(message)
 	})
@@ -26,7 +26,7 @@ function startConnection(){
 	else createConnection()
 }
 function sendMessage(connection, message){
-	console.log(`%c ${message.method}`,"color:green;", {message})
+	console.log(`%c Message sent [${message.method}]`,"color:orange;", {message})
 	connection.send(JSON.stringify(message))
 }
 function setMessageHandlers(newHandlers) {
@@ -49,7 +49,7 @@ async function fetchRooms(){
 	const response = await fetch(url, { method, headers })
 	if (response.ok) {
 		const data = await response.json()
-		console.log('%c Room List',"color:orange;",data)
+		console.log('%c Room List',"color:blue;",data)
 		return data
 	}
 }

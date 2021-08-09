@@ -1,11 +1,14 @@
 import { h } from 'hyperapp';
+import Game from './game.js';
 import Loader from './loader/loader'; 
 import Controls from './controls/Controls'; 
-import Scene from './scene.js';
 import SidePanel from './sidePanel/sidePanel'; 
+import Alert from '../Shared/Alert';
 
 const controls = Controls()
 const sidePanel = SidePanel()
+const alert = Alert()
+
 
 // todo: alert users & handle reconnect if player disconnects in game,  
 // todo: when user leaves game remove clientId from game.clients 
@@ -13,6 +16,7 @@ export default initial => ({
 	state: { 
 		controls: controls.state,
 		sidePanel: sidePanel.state,
+		alert: alert.state,
 		isLoading: true,
 		sidePanelOpen: false,
 		gameOver: false,
@@ -21,6 +25,7 @@ export default initial => ({
 	actions: { 
 		controls: controls.actions,
 		sidePanel: sidePanel.actions,
+		alert: alert.actions,
 		showLoader: () => () => ({isLoading: true}),
 		toggleSidePanel: (tab, isOpen) => ({sidePanel}) => {
 			let newState = { sidePanel: {...sidePanel, isVisible:  isOpen || !sidePanel.isVisible}}
@@ -34,17 +39,19 @@ export default initial => ({
 	view: (state, actions) => ({gameId, leaveGame}) => {
 		const ControlsView = controls.view(state.controls, actions.controls)
 		const SidePanelView = sidePanel.view(state.sidePanel, actions.sidePanel)
+		const AlertView = alert.view(alert.sidePanel, alert.sidePanel)
 		/* todo: on destroy, breakdown websocket and game */
 		return ( 
 			<div class="h-full flex">
-				<Loader isLoading={state.isLoading}/>
+				<Loader isLoading={state.isLoading} alert={actions.alert}/>
 
 				<div class="relative flex-grow">
 					<ControlsView gameId={gameId} isLoading={state.isLoading} gameOver={state.gameOver} toggleSidePanel={actions.toggleSidePanel}/>
-					<Scene gameId={gameId} state={state} actions={actions} /> 
+					<Game gameId={gameId} actions={actions} state={state}/> 
+					<AlertView/>
 				</div>
 
-				<SidePanelView gameId={gameId}/> 
+				<SidePanelView gameId={gameId} alert={actions.alert}/> 
 			</div>
 		)
 	}

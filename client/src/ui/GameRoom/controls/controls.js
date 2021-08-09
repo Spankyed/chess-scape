@@ -37,7 +37,7 @@ export default initial => ({
 							<button onclick={actions.toggleMenu} class="control-btn">
 								<img src="./assets/controls/menu.svg"></img>
 							</button>
-						</div>	
+						</div>
 						{/* sidePanel button */}
 						<button onclick={_=> toggleSidePanel()} class="control-btn">
 							<img src="./assets/controls/sidePanel.svg"></img>
@@ -71,7 +71,7 @@ function Opponent(){
 	return (
 		<div class="player right">
 			<div class="tagline right">
-				<div class="name">Jane Doe</div>
+				<div class="name">Jane⚔️Doe</div>
 				<div class="clock">
 					<span class="time">10:00</span>
 					<img class="icon" src="./assets/controls/clock.svg"></img>

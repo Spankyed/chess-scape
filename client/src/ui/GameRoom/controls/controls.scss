@@ -34,11 +34,14 @@ $controls-color: #464341;
     .btn-wrapper {
       position: absolute;
       bottom: 0px;
-      margin: .75rem;
+      margin: .5rem;
+      // margin-bottom: .5rem;
       &.left{
         left: 0px ;
       }
       &.right{
+        :first-child { margin-right: 0.25rem; }
+        // & > .control-btn:first-of-type  { margin-right: 0.5rem; }
         display: flex;
         right: 0px ;
       }
@@ -95,8 +98,8 @@ $controls-color: #464341;
       box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
       outline: 2px solid transparent;
       outline-offset: 2px;
-      margin-right: 0.25rem/* 4px */;
-      margin-bottom: 0.25rem/* 4px */;
+      // margin-right: 0.25rem/* 4px */;
+      // margin-bottom: 0.25rem/* 4px */;
       // transition-timing-function: linear;
       // transition-property: all;
       // transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -121,8 +124,8 @@ $controls-color: #464341;
     flex-wrap: wrap;
     padding: 0.5rem/* 8px */;
     // margin-top: 0.5rem/* 8px */;
-    margin-left: 0.75rem/* 12px */;
-    margin-right: 0.75rem/* 12px */;
+    margin-left: 0.5rem/* 12px */;
+    margin-right: 0.5rem/* 12px */;
     // border-radius: 0.375rem/* 6px */;
     border-radius: 0 0 .375rem .375rem;
     --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -322,7 +325,7 @@ $controls-color: #464341;
 }
 
 //  BREAKPOINTS 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
 
   .tagline {
     width: 66.666667% !important;
@@ -337,10 +340,13 @@ $controls-color: #464341;
     animation: slidein-1 7s infinite, pause-between-iterations 3s !important;
   }
   .btn-wrapper.right {
+    :first-child { margin-bottom: 0.25rem; }
+    // & > .control-btn:first-of-type  { margin-bottom: 0.5rem;}
     display: block !important;
   }
   .player {
-    width: 40% !important;
+    // width: 40% !important;
+    width: 14rem/* 224px */ !important;
     .tagline {
       &.left{
         padding-left: 0.5rem;
@@ -351,9 +357,8 @@ $controls-color: #464341;
     }
   }
 }
-@media (min-width: 1024px) {
-  .player {
-      width: 14rem/* 224px */ !important;
-  }
+
+@media (min-width: 768px) {
+
 }
 

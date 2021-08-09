@@ -1,0 +1,51 @@
+$border-color: #bdbdbd;
+
+.alert {
+    position: absolute;
+    // padding: 1.25rem/* 20px */;
+    left: 50%;
+    top: .5rem;
+    width: 94%;
+    display: flex;
+    // flex-direction: row;
+    // flex-wrap: wrap;
+    align-items: stretch;
+    // border-radius: 0.25rem/* 4px */;
+    border-left-width: 3px;
+    transform: translateX(-50%);
+    background-color: #e9e9e9;
+    // color: #737A87;
+    color: rgba(55, 65, 81, 1);
+    --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);
+
+    &.info {
+        // background-color: rgba(191, 219, 254, 1);
+        // border-color: #3B82F6;
+        border-color: #0075ff;
+    }
+    .alert-icon{
+        border-color: $border-color;
+    }
+    .alert-options{
+          // divider
+          border-color: $border-color;
+          border-left-width: 1px;
+          .alert-button{
+            flex-grow: 1;
+            font-weight: 600;
+          }
+          >:not([hidden])~:not([hidden]) {
+            --tw-divide-opacity: 1;
+            border-color: $border-color;
+            border-top-width: calc(1px * calc(1 - 0));
+            border-bottom-width: calc(1px * 0);
+          }
+    }
+}
+//  BREAKPOINTS 
+@media (min-width: 768px) {
+    .alert {
+        width: auto;
+    }
+}
