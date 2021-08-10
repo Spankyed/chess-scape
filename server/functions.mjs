@@ -82,7 +82,7 @@ function join(message){ //a client want to join
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId];
     if(!gameRoom) return
-    if (gameRoom.clients.length >= 2) return; // max players reached
+    // if (gameRoom.clients.length >= 2) return; // todo: max players instead of clients
     // const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
     gameRoom.clients.push(clientId)
     if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // start the game
@@ -142,7 +142,7 @@ function shareVideo(message) {
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
-    const response = { "method": "shareVideo", videoId }
+    const response = { method: "share", type:'video', videoId }
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 
@@ -151,7 +151,7 @@ function shareMusic(message) {
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
-    const response = { "method": "chat", text }
+    const response = { "method": "share", text }
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 

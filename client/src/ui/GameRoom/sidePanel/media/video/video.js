@@ -56,11 +56,10 @@ export default initial => ({
 		const isPlaying = _=> state.currVideoId && !state.isLoading
 		const submit = handleSubmit(gameId, actions, state.allowShare)
 		Api.setMessageHandlers({
-			video: (msg) => {
-				console.log('some1 shared', msg)
+			video: message => {
 				if (!state.allowShare) return
-				if (!state.persistShareSetting) promptShare(msg.video_id, alert, actions)
-				else actions.addVideo(msg.video_id)
+				if (!state.persistShareSetting) promptShare(message.videoId, alert, actions)
+				else actions.addVideo(message.videoId)
 			}
 		})
 

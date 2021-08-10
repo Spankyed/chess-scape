@@ -27,9 +27,8 @@ export default initial => ({
 			Api.createConnection() // create new connection everytime user visits lobby? should only connect once
 			Api.setMessageHandlers({
 				create: actions.updateRooms,
-				// create: (msg) => console.log('some1 created', msg),
-				join: (msg) => console.log('some1 joined', msg),
-				// join: joinGame,
+				// todo: update roomlist with new player count, for only players in lobby (not ingame rooms)
+				// join: (msg) => console.log('some1 joined', msg), 
 			})
 			// todo retry 3 times delayed if no rooms retrieved
 			Api.fetchRooms().then( rooms => {
