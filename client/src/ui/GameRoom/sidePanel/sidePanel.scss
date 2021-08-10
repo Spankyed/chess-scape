@@ -94,6 +94,12 @@ $text-color: #D4D3D3;
           width: 100%;
           min-height: 0;
           flex: 1 0 0;
+          .panel-section{
+              display: none;
+            &.visible {
+              display:initial;
+            }
+          }
       }
     }
 

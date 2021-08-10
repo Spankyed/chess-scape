@@ -39,15 +39,15 @@ export default initial => ({
 					<Tabs currTab={currTab} changeTab={actions.changeTab} />
 
 					<div class='content-wrapper'>
-					{	currTab === 'chat' &&
-						<ChatView gameId={gameId}/>
-					}
-					{	currTab === 'moves' &&
-						<MovesView/>
-					} 
-					{	currTab === 'media' &&
-						<MediaView gameId={gameId} alert={alert}/>
-					} 
+						<div class={`panel-section ${currTab === 'chat' && 'visible'}`}>
+							<ChatView gameId={gameId}/>
+						</div>
+						<div class={`panel-section ${currTab === 'moves' && 'visible'}`}>
+							<MovesView/>
+						</div>
+						<div class={`panel-section ${currTab === 'media' && 'visible'}`}>
+							<MediaView gameId={gameId} alert={alert}/>
+						</div>
 					</div>
 				</div>
 			</div>	

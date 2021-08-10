@@ -9,7 +9,6 @@ const controls = Controls()
 const sidePanel = SidePanel()
 const alert = Alert()
 
-
 // todo: alert users & handle reconnect if player disconnects in game,  
 // todo: when user leaves game remove clientId from game.clients 
 export default initial => ({
@@ -21,7 +20,6 @@ export default initial => ({
 		sidePanelOpen: false,
 		gameOver: false,
 	},
-
 	actions: { 
 		controls: controls.actions,
 		sidePanel: sidePanel.actions,
@@ -35,7 +33,6 @@ export default initial => ({
 		hideLoader: () => () => ({isLoading: false}),
 		endGame: () => () => ({gameOver: true}),
 	},
-
 	view: (state, actions) => ({gameId, leaveGame}) => {
 		const ControlsView = controls.view(state.controls, actions.controls)
 		const SidePanelView = sidePanel.view(state.sidePanel, actions.sidePanel)
