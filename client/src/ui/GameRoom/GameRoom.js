@@ -39,7 +39,7 @@ export default initial => ({
 	view: (state, actions) => ({gameId, leaveGame}) => {
 		const ControlsView = controls.view(state.controls, actions.controls)
 		const SidePanelView = sidePanel.view(state.sidePanel, actions.sidePanel)
-		const AlertView = alert.view(alert.sidePanel, alert.sidePanel)
+		const AlertView = alert.view(state.alert, actions.alert)
 		/* todo: on destroy, breakdown websocket and game */
 		return ( 
 			<div class="h-full flex">

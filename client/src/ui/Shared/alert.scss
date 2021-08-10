@@ -1,11 +1,16 @@
 $border-color: #bdbdbd;
 
+.alert-wrapper {
+    pointer-events: none;
+}
+
 .alert {
-    position: absolute;
-    // padding: 1.25rem/* 20px */;
-    left: 50%;
-    top: .5rem;
-    width: 94%;
+    pointer-events: initial;
+    max-width: fit-content;
+    // top: .5rem;
+    margin-top: .5rem;
+    // width: 94%;
+    width: auto;
     display: flex;
     // flex-direction: row;
     // flex-wrap: wrap;
@@ -42,10 +47,21 @@ $border-color: #bdbdbd;
             border-bottom-width: calc(1px * 0);
           }
     }
+
+    transform: scaleX(1);
+    transition: all .2s ease-in-out;
+    &.hidden {
+        // display: none;
+        visibility: hidden;
+        opacity: 0;
+        transform: scaleX(0);
+    }
 }
+
+
 //  BREAKPOINTS 
 @media (min-width: 768px) {
     .alert {
-        width: auto;
+        // width: auto;
     }
 }

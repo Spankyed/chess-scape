@@ -15,9 +15,10 @@ if (connection) {
 
 export default initial => ({
 	state: { 
-		canShare: true,
-		autoPlay: true,
 		videoFound: true,
+		autoPlay: true,
+		allowShare: true,
+		persistShareSetting: false, // if false prompts user when video is shared
 		invalidUrl: false,
 		isLoading: false,
 		videoList: {}, // indexed list
@@ -25,12 +26,13 @@ export default initial => ({
 		thumbVideoId: 0,
 	},
 	actions: { 
+		setShare: ({bool, persist}) => state => ({ allowShare: bool, persistShareSetting: persist}),
 		toggle: option => state => ({
 			[option]: !state[option], 
-			isLoading: option == 'autoPlay' && !!state.currVideoId, // iframe force reloads everytime autplay set
-			thumbVideoId: state.currVideoId || state.thumbVideoId // if user input url while video playing, show correct reloading thumb
+			isLoading: option == 'autoPlay' && !!state.currVideoId, // iframe force reloads every time auto-play set
+			thumbVideoId: state.currVideoId || state.thumbVideoId // if reload forced while video playing, show correct loading thumb
 		}),
-		submit: videoId => state => {
+		addVideo: videoId => state => {
 			if (state.videoList[videoId]) return {}
 			let autoPlay = state.autoPlay || !state.currVideoId 
 			return {
@@ -50,9 +52,18 @@ export default initial => ({
 		stopLoading: _=> _=> ({isLoading: false}),
 		play: video => state => ({ currVideoId:  video ? video.video_id : state.currVideoId})
 	},
-	view: (state, actions) => ({gameId}) => {
+	view: (state, actions) => ({gameId, alert}) => {
 		const isPlaying = _=> state.currVideoId && !state.isLoading
-		const submit = handleSubmit(gameId, actions, state.canShare)
+		const submit = handleSubmit(gameId, actions, state.allowShare)
+		Api.setMessageHandlers({
+			video: (msg) => {
+				console.log('some1 shared', msg)
+				if (!state.allowShare) return
+				if (!state.persistShareSetting) promptShare(msg.video_id, alert, actions)
+				else actions.addVideo(msg.video_id)
+			}
+		})
+
 		return (
 			<div class="video-area">
 				<Options {...state} toggle={actions.toggle}/>
@@ -73,9 +84,9 @@ export default initial => ({
 	}
 })
 
-function Options({canShare, autoPlay, toggle}){
+function Options({allowShare, autoPlay, toggle}){
 	const options = 
-	[{text:'Share', name: 'canShare', value: canShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
+	[{text:'Allow Share', name: 'allowShare', value: allowShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
 	return (
 		<div class="options">
 		{	
@@ -220,9 +231,28 @@ function Thumbnail({thumbVideoId, currVideoId, isLoading, submit}){
 	)
 }
 
+function promptShare(videoId, alert, actions){
+	let {setShare, addVideo} = actions
+	// videoId = '3vBwRfQbXkg'
+	alert.show({
+		icon: '',
+		heading: 'Video Shared',
+		message: 'A user wants to share a video with you.', 
+		actions: {
+			positive: { text: 'Allow', handler: (bool, persist) => {
+				setShare({bool, persist})
+				addVideo(videoId)
+			}},
+			negative: { text: 'Deny', handler: (bool, persist) => {
+				if (persist) setShare({bool, persist})
+			}}, 
+		},
+		dontAskAgain: false
+	})
+}
 
-function handleSubmit(gameId, actions, canShare){
-	let {setVideoFound, submit} = actions
+function handleSubmit(gameId, actions, allowShare){
+	let {setVideoFound, addVideo} = actions
 	return async function (videoId, form){ 
 		// todo: wrap in try-catch & setVideoFound(false) ?
 		form = form || document.getElementsByTagName('form')[0]
@@ -230,8 +260,8 @@ function handleSubmit(gameId, actions, canShare){
 		let videoFound = await checkVideoId(videoId)
 		setVideoFound(videoFound)
 		if (!videoFound) return
-		submit(videoId)
-		if (canShare) Api.shareVideo(videoId, gameId)
+		addVideo(videoId)
+		if (allowShare) Api.shareVideo(videoId, gameId)
 	}
 }
 

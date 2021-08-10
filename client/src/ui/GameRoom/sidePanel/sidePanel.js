@@ -25,7 +25,7 @@ export default initial => ({
 		changeTab: tab => state => ({ currTab: tab })
 	},
 
-	view: (state, actions) => ({gameId}) => {
+	view: (state, actions) => ({gameId, alert}) => {
 		const {currTab} = state
 		const ChatView = chat.view(state.chat, actions.chat)
 		const MovesView = moves.view(state.moves, actions.moves)
@@ -46,7 +46,7 @@ export default initial => ({
 						<MovesView/>
 					} 
 					{	currTab === 'media' &&
-						<MediaView gameId={gameId}/>
+						<MediaView gameId={gameId} alert={alert}/>
 					} 
 					</div>
 				</div>

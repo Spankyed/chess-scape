@@ -340,7 +340,10 @@ $controls-color: #464341;
     animation: slidein-1 7s infinite, pause-between-iterations 3s !important;
   }
   .btn-wrapper.right {
-    :first-child { margin-bottom: 0.25rem; }
+    :first-child { 
+      margin-bottom: 0.25rem; 
+      margin-right: 0 !important;
+    }
     // & > .control-btn:first-of-type  { margin-bottom: 0.5rem;}
     display: block !important;
   }

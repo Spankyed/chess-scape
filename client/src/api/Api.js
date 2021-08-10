@@ -2,15 +2,19 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 let baseAPIUrl = 'http://localhost:5000'
+let baseWSUrl = 'ws://localhost:5000'
 let connection, clientId,
 handlers = {
 	connect: msg => clientId = msg.clientId,
-	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, share: _=>_
+	// game handlers
+	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, 
+	// media handlers
+	share, video:_=>_, music:_=>_
 }
 function createConnection(){
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
-	connection = new ReconnectingWebSocket('ws://localhost:5000/rooms');
+	connection = new ReconnectingWebSocket(baseWSUrl + '/rooms');
 	connection.addEventListener('message', event => { // handle incoming messages from connected client 
 		// console.log('incoming request', request)
 		const message = JSON.parse(event.data)
@@ -35,12 +39,19 @@ function setMessageHandlers(newHandlers) {
 	// console.log('new handlers', handlers)
 }
 
+// message wrappers
 function createGame(params){ sendMessage(connection, { method: "create", ...params, clientId }) }
 function joinGame(gameId){ sendMessage(connection, { method: "join", gameId, clientId }) }
 function sendMove(move, gameId){ sendMessage(connection, { method: "move", move, gameId }) }
 function sendChat(text, gameId){ sendMessage(connection, { method: "chat", text, gameId }) }
 function shareVideo(videoId, gameId){ sendMessage(connection, { method: "share", type: "video", videoId, gameId }) }
 function shareMusic(file, gameId){ sendMessage(connection, { method: "share", type: "music", file, gameId }) }
+
+// share handler
+function share(message){
+	let handler = handlers[message.type]
+	if (handler) handler(message)
+}
 
 async function fetchRooms(){
 	const method = 'GET';
