@@ -1,17 +1,16 @@
 import { h } from 'hyperapp';
 // import Api from '../../../../api/Api';
 
+// todo: let players download game pgn/fen
 export default initial => ({
 	state: { 
 		currMoveIdx: 0,
 		moves: MockMoves()
 	},
-
 	actions: { 
 	},
-
 	view: (state, actions) => ({}) => {
-		console.log(state.moves)
+		// console.log(state.moves)
 		return (
 			<div class="moves h-full text-lg">
 				<div class="move-list">

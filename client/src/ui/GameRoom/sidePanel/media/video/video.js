@@ -67,7 +67,7 @@ export default initial => ({
 			<div class="video-area">
 				<Options {...state} toggle={actions.toggle}/>
 				<div class="youtube-embed">
-				{ !isPlaying() && 
+				{ (!isPlaying() && state.thumbVideoId) &&
 					<Thumbnail {...actions} {...state} submit={submit}/>
 				}
 					<Embed {...actions} {...state} isPlaying={isPlaying()}/>
@@ -85,7 +85,7 @@ export default initial => ({
 
 function Options({allowShare, autoPlay, toggle}){
 	const options = 
-	[{text:'Allow Share', name: 'allowShare', value: allowShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
+	[{text:['Allow ','Share'], name: 'allowShare', value: allowShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
 	return (
 		<div class="options">
 		{	
@@ -93,7 +93,13 @@ function Options({allowShare, autoPlay, toggle}){
 			<div class="option-item">
 				<label for={option.id} class="toggle-wrapper"
 					title={option.text == 'Share' ? 'Allow video sharing with room' : 'Auto-play new/next video in queue'}>
-					<span class="toggle-text"> {option.text} </span>
+					{	typeof option.text === "object" ?
+						<span class="toggle-text"> 
+							<span class='hide-mobile'>{option.text[0]}</span>
+							{option.text[1]} 
+						</span> :
+						<span class="toggle-text"> {option.text} </span>
+					}
 					<div class="toggle">
 						<input onchange={_=> toggle(option.name)} checked={option.value} id={option.id} type="checkbox"/>
 						<div class={`line ${ option.value && 'checked'}`}></div>

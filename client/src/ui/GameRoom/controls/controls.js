@@ -34,7 +34,7 @@ export default initial => ({
 						{/* menu */}
 						<div class="menu-wrapper">
 							{ state.menuOpen && <Menu/> }
-							<button onclick={actions.toggleMenu} class="control-btn">
+							<button onclick={actions.toggleMenu} class="control-btn first">
 								<img src="./assets/controls/menu.svg"></img>
 							</button>
 						</div>

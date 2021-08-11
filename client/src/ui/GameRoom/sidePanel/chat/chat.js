@@ -26,7 +26,8 @@ export default initial => ({
 	view: (state, actions) => ({}) => {
 		var { messages } = state;
 		function init() {
-			console.log('showing chat')
+			// todo: scroll to last chat
+			// console.log('showing chat')
 			// Api.getChat(function() {});
 			Api.setMessageHandlers({
 				chat: (msg) => console.log('some1 chatted', msg)
@@ -49,7 +50,7 @@ export default initial => ({
 				setTimeout(_=> evt.target.value = "", 0)
 				// Api.sendChat(message)
 				// actions.modify({ message: '' })
-				// scrollBottom();
+				// todo: scrollBottom();
 			}
 			return null;
 		};

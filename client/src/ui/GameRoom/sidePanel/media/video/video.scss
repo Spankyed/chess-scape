@@ -26,15 +26,23 @@ $toggle-dot-color: #3E5BB8;
 		justify-content: flex-end;
 		// padding-top: 0.5rem;
 		margin-bottom: 0.5rem/* 8px */;
-		.option-item {
-			display: flex;
-			align-items: center;
+		.option-item:nth-of-type(1){ 
 			margin-right: 0.75rem/* 12px */;
+		}
+		.option-item {
+			// width: 50%;
+			display: flex;
+			flex-grow: 1;
+			align-items: center;
 			.toggle-wrapper {
+				min-width: 100%;
 				display: flex;
+				justify-content: center;
 				align-items: center;
 				cursor: pointer;
 				.toggle-text {
+					.hide-mobile{ display:none ;}
+					// max-width: fit-content;
 					margin-right: 0.75rem/* 12px */;
 					font-weight: 500;
 				}
@@ -323,8 +331,9 @@ $toggle-dot-color: #3E5BB8;
 	
 }
 
-
-
+@media (min-width: 640px) {
+	.hide-mobile{ display:initial !important;}
+}
 
 
 
