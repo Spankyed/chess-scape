@@ -30,7 +30,16 @@ export default initial => ({
 			// console.log('showing chat')
 			// Api.getChat(function() {});
 			Api.setMessageHandlers({
-				chat: (msg) => console.log('some1 chatted', msg)
+				// chat: (msg) => console.log('some1 chatted', msg)
+				chat: (msg) => {
+					console.log('some1 chatted', msg)
+					addMessage({
+						user: 'kathie S.',
+						text: msg.text,
+						img: 'https://www.w3schools.com//w3images/bandmember.jpg',
+						time: '11:26'
+					})
+				}
 			})
 		}
 
@@ -48,7 +57,7 @@ export default initial => ({
 				message = { text: message, user: 'Kathie M.', img: 'https://www.w3schools.com//w3images/avatar_g2.jpg',time: '11:26'}
 				actions.addMessage(message) 
 				setTimeout(_=> evt.target.value = "", 0)
-				// Api.sendChat(message)
+				Api.sendChat(message)
 				// actions.modify({ message: '' })
 				// todo: scrollBottom();
 			}

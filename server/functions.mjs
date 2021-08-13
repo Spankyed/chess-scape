@@ -22,7 +22,7 @@ function handleRoomsWebSocket(connection, req) {
     let response = { method: 'connect', clientId }
 	connection.socket.send(JSON.stringify(response))
     // todo: notify lobby player has joined 
-    // console.log('client connected', {clients:clients[clientId]})
+    // console.log('client connected', {client:clients[clientId]})
     // set message handlers
     connection.socket.on('message', request => { // handle incoming messages from connected client 
 		// console.log('incoming request ', request)
