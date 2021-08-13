@@ -21,7 +21,8 @@ function handleRoomsWebSocket(connection, req) {
     if (clientId) setClientConnection(clientId, connection)
     let response = { method: 'connect', clientId }
 	connection.socket.send(JSON.stringify(response))
-    console.log('client connected', clients[clientId])
+    // todo: notify lobby player has joined 
+    // console.log('client connected', {clients:clients[clientId]})
     // set message handlers
     connection.socket.on('message', request => { // handle incoming messages from connected client 
 		// console.log('incoming request ', request)
@@ -72,8 +73,7 @@ function create(message){
     })
 }
 function join(message){ //a client want to join
-    const clientId = message.clientId;
-    const gameId = message.gameId;
+    const {gameId, clientId} = message;
     const gameRoom = gameRooms[gameId];
     if(!gameRoom) return
     // if (gameRoom.clients.length >= 2) return; // todo: max players instead of clients
@@ -86,20 +86,20 @@ function join(message){ //a client want to join
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 function leave(message){ //a client want to leave
-    const clientId = message.clientId;
-    const gameId = message.gameId;
+    const {gameId, clientId} = message;
     const gameRoom = gameRooms[gameId];
-    if (arr.includes(val)) arr.splice(arr.indexOf(val), 1)
+    // if (arr.includes(val)) arr.splice(arr.indexOf(val), 1)
     const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
-    // notify all clients new client has joined
+    // notify all clients that a player has left
     gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 function move(message) { // a user plays
-    // todo: verify player is same color as move made
+    // todo: verify player is actually same color as move made
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId];
+    if (!gameRoom) return   // todo: if gameroom not found send user error message to leave game
     const match = gameRoom.match
-    if (!match) return
+    if (!match) return  
     if (match.game_over()){
         const response = { "method": "endGame", move }
         gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
@@ -111,37 +111,35 @@ function move(message) { // a user plays
         // todo: if not valid move, send game state to sync client
         if(!move) return
         const response = { "method": "move", move }
+        // messageOtherClients(gameRoom, clientId, JSON.stringify(response))
         gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
     }
 }
 function chat(message) {
-    const text = message.text;
-    const gameId = message.gameId;
+    const {text, gameId, clientId} = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
     const response = { "method": "chat", text }
-    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    messageOtherClients(gameRoom, clientId, JSON.stringify(response))
 }
 function share(message){
     let mediaHandlers = { 'video': shareVideo, 'music': shareMusic  } 
     mediaHandlers[message.type](message)
 }
 function shareVideo(message) {
-    const videoId = message.videoId;
-    const gameId = message.gameId;
-    const sharedById = message.clientId;
+    const {videoId, gameId, clientId} = message;
     const gameRoom = gameRooms[gameId]
-    if (!gameRoom) return
+    if (!gameRoom) return   // todo: if gameroom not found send user error message to leave game
     const response = { method: "share", type:'video', videoId }
-    messageOtherClients(gameRoom, sharedById, JSON.stringify(response))
+    messageOtherClients(gameRoom, clientId, JSON.stringify(response))
 }
 function shareMusic(message) {
-    const text = message.text;
-    const gameId = message.gameId;
+    const {text, gameId, clientId} = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
     const response = { "method": "share", text }
-    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    messageOtherClients(gameRoom, clientId, JSON.stringify(response))
+    // gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
 }
 
 function addNewClient(username, ip) {

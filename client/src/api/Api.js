@@ -1,22 +1,24 @@
 // The Api module is designed to handle all interactions with the server
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { nanoid } from 'nanoid/non-secure'
 
-let baseAPIUrl = 'http://localhost:5000/api'
-let baseWSUrl = 'ws://localhost:5000/api'
-let clientId = localStorage.getItem('clientId'),
-connection,
-// message receive handlers
+const baseAPIUrl = 'http://localhost:5000/api'
+const baseWSUrl = 'ws://localhost:5000/api'
+const clientId = nanoid()//localStorage.getItem('clientId'),
+let connection,
+
+// Receive message handlers
 handlers = {
-	connect: msg => clientId = msg.clientId,
 	// reconnect: msg => clientId = msg.clientId,
+	connect: msg => clientId = msg.clientId,
 	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, 
-	share, video:_=>_, music:_=>_
+	share: msg => handlers[msg.type]?.(msg),
+	video:_=>_, music:_=>_
 }
-// share handler director
-function share(message){ if (handlers[message.type]) handler(message)}
-// message send wrappers
-function createGame(params){ sendMessage(connection, { method: "create", ...params, clientId }) }
-function joinGame(gameId){ sendMessage(connection, { method: "join", gameId, clientId }) }
+
+// Send message wrappers
+function createGame(params){ sendMessage(connection, { method: "create", ...params }) }
+function joinGame(gameId){ sendMessage(connection, { method: "join", gameId }) }
 function sendMove(move, gameId){ sendMessage(connection, { method: "move", move, gameId }) }
 function sendChat(text, gameId){ sendMessage(connection, { method: "chat", text, gameId }) }
 function shareMusic(file, gameId){ sendMessage(connection, { method: "share", type: "music", file, gameId }) }
@@ -26,7 +28,6 @@ function createConnection(){
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
 	connection = new ReconnectingWebSocket(baseWSUrl + '/rooms', clientId);
-	console.log('cnnecting')
 	connection.addEventListener('message', event => { // handle incoming messages from connected client 
 		// console.log('incoming request', request)
 		const message = JSON.parse(event.data)
@@ -43,8 +44,8 @@ function startConnection(){
 	else createConnection()
 }
 function sendMessage(connection, message){
-	connection.send(JSON.stringify(message))
-	console.log(`%c Message sent [${message.method}]`,"color:orange;", {message})
+	connection.send(JSON.stringify({...message, clientId}))
+	console.log(`%c Message sent [${message.method}]`,"color:orange;", {...message, clientId})
 }
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers)
