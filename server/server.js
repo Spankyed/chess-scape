@@ -3,40 +3,45 @@
 // let cfenv = require('cfenv')
 import fastify from 'fastify'
 import fastifyCors from 'fastify-cors'
+import fastifyCookie from 'fastify-cookie'
 import fastifyWebsocket from 'fastify-websocket'
 import functions from './functions.mjs'
 
 let server = fastify()
 
-server.register(fastifyCors, { origin: '*' })
-server.register(fastifyWebsocket,{ options: { clientTracking: true, maxPayload: 1048576 }})
 // fastify.register(require('fastify-sensible'))
+server.register(fastifyCors, { origin: '*' })
+server.register(fastifyWebsocket,{ options: {
+	// verifyClient: _=>{}, 
+	clientTracking: true, 
+	maxPayload: 1048576 
+}})
+server.register(fastifyCookie, {
+	secret: "my-secret", // for cookies signature
+	parseOptions: {}     // options for parsing cookies
+})
 
-// server.websocketServer.clients.forEach((client)=>{
-//   if(client.readyState == 1){ 
-//     console.log('client',client)
-//     // check client id, and only send move to opponent
-//     client.send()
-//   }
-// })
 
 const {    
+	handleUsersHttp,
 	handleRoomsHttp,
-    handleRoomWebSocket,
-    // getGameRooms,
-    // getClients
+	handleRoomsWebSocket
 } = functions
 
 
-// server.get('/room', { websocket: true }, handleRoomWebSocket)
+server.post('/api/user', handleUsersHttp)
 
-server.route({ method: 'GET', url: '/rooms',
+server.route({ 
+	method: 'GET', 
+	// prefix: '/api',
+	url: '/api/rooms',
 	handler: handleRoomsHttp,
-	wsHandler: handleRoomWebSocket
+	wsHandler: handleRoomsWebSocket
 })
 
+
 const port = 5000
-server.listen(port, err => {
+server.listen(port, '0.0.0.0', err => {
 	console.log('server listening on dort', port)
 	if (err) {
 		console.log(err)

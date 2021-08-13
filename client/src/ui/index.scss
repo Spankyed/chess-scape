@@ -2,8 +2,9 @@
 // @import "tailwindcss/components";
 // @import "tailwindcss/utilities";
 
-@import './Lobby/lobby.scss'; 
+@import './Entrance/entrance.scss'; 
 @import './GameRoom/gameRoom.scss'; 
+@import './Lobby/lobby.scss'; 
 @import './mixins.scss'; 
 
 html, body {
