@@ -12,39 +12,18 @@ function handleRoomsHttp(req, reply) {
 }
 function handleUsersHttp(req, reply) {
     const { username } = req.body
-    const clientCookie = req.cookies.clientId
-    console.log({clientCookie})
-    // const bCookie = req.unsignCookie(req.cookies.cookieSigned);
-    // console.log('bcookie', bCookie)
-    if (!clientCookie) { // todo: check for client in clients[] instead, if found user is reconnecting
-        let clientId = addNewClient(username, req.ip)
-        console.log('bicchh',clients)
-        let response = JSON.stringify({ action: 'client-added', clientId })
-        reply
-        .setCookie('clientId', clientId, {
-            path: '/',
-            // domain: '127.0.0.1',
-            // secure: this.config.NODE_ENV === 'production',
-            // sameSite: 'false',
-            // httpOnly: true,
-            // signed: true,
-            // maxAge: 60 * 60 * 24 * 7, // 1 week
-            // expires: new Date(Date.now() + 604800 * 1000)
-        })
-        .send(response)
-    }
+    let clientId = addNewClient(username, req.ip)
+    let response = JSON.stringify({ action: 'client-added', clientId })
+    reply.send(response)
 }
 function handleRoomsWebSocket(connection, req) {
-    console.log('trying to connect')
-    const clientId = req.cookies.clientId
-    // if (clientCookie)  
-    console.log('client connected', { clientId })
+    let clientId = req.headers['sec-websocket-protocol']
     if (clientId) setClientConnection(clientId, connection)
-    response = { method: 'connect', clientId }
+    let response = { method: 'connect', clientId }
 	connection.socket.send(JSON.stringify(response))
-
-    // set message handler
-	connection.socket.on('message', request => { // handle incoming messages from connected client 
+    console.log('client connected', clients[clientId])
+    // set message handlers
+    connection.socket.on('message', request => { // handle incoming messages from connected client 
 		// console.log('incoming request ', request)
 		// const message = request
 		const message = JSON.parse(request)
@@ -171,7 +150,7 @@ function addNewClient(username, ip) {
     return clientId
 }
 function setClientConnection(clientId, connection) {
-    clients[clientId].connection = connection
+    clients[clientId] = {...clients[clientId], connection}
 }
 
 function messageOtherClients(gameRoom, sender, message){

@@ -53,7 +53,6 @@ export default app(state, actions, view, document.body)
 
 
 function checkForId() {
-	let cookieString = document.cookie.match('clientId=[^;]+')
-	return cookieString ? cookieString[0] : cookieString
+	return localStorage.getItem('clientId');
 }
 

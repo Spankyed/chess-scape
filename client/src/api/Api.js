@@ -3,7 +3,8 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 
 let baseAPIUrl = 'http://localhost:5000/api'
 let baseWSUrl = 'ws://localhost:5000/api'
-let connection, clientId,
+let clientId = localStorage.getItem('clientId'),
+connection,
 // message receive handlers
 handlers = {
 	connect: msg => clientId = msg.clientId,
@@ -24,7 +25,8 @@ function shareVideo(videoId, gameId){ sendMessage(connection, { method: "share",
 function createConnection(){
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
-	connection = new ReconnectingWebSocket(baseWSUrl + '/rooms');
+	connection = new ReconnectingWebSocket(baseWSUrl + '/rooms', clientId);
+	console.log('cnnecting')
 	connection.addEventListener('message', event => { // handle incoming messages from connected client 
 		// console.log('incoming request', request)
 		const message = JSON.parse(event.data)
@@ -59,7 +61,6 @@ async function fetchRooms(){
 		return data
 	}
 }
-
 async function setUser(username){
 	const method = 'POST';
 	const headers = {'Content-Type': 'application/json; charset=utf-8' };
@@ -70,13 +71,13 @@ async function setUser(username){
 	if (response.ok) {
 		const data = await response.json()
 		console.log('%c User Data',"color:blue;", data)
+		localStorage.setItem('clientId', data.clientId);
+		clientId = data.clientId
 		return data
 	} else if (response.status === 401) {
 		clearSession();
 	}
-	function clearSession () {
-		document.cookie.replace(/(?<=^|;).+?(?=\=|;|$)/g, name => location.hostname.split('.').reverse().reduce(domain => (domain=domain.replace(/^\.?[^.]+/, ''),document.cookie=`${name}=;max-age=0;path=/;domain=${domain}`,domain), location.hostname));
-	};
+	function clearSession () { localStorage.removeItem('clientId') }
 }
 
 export default {
