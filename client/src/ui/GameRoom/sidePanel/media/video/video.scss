@@ -19,6 +19,9 @@ $toggle-dot-color: #3E5BB8;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	&.no-pointers{
+		pointer-events: none;
+	}
 	.options{
 		width: 100%;
 		display: flex;

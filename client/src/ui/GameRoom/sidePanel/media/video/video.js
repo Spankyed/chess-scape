@@ -52,8 +52,7 @@ export default initial => ({
 		stopLoading: _=> _=> ({isLoading: false}),
 		play: video => state => ({ currVideoId:  video ? video.video_id : state.currVideoId})
 	},
-	view: (state, actions) => ({gameId, alert}) => {
-		const isPlaying = _=> state.currVideoId && !state.isLoading
+	view: (state, actions) => ({gameId, alert, mediaOpen}) => {
 		const submit = handleSubmit(gameId, actions, state.allowShare)
 		Api.setMessageHandlers({
 			video: message => {
@@ -62,15 +61,13 @@ export default initial => ({
 				else actions.addVideo(message.videoId)
 			}
 		})
-
+		function isMediaOpen(type){ return mediaOpen == type }
 		return (
-			<div class="video-area">
+			<div class={`video-area ${ !isMediaOpen('video') && 'no-pointers'}`} >
 				<Options {...state} toggle={actions.toggle}/>
 				<div class="youtube-embed">
-				{ (!isPlaying() && state.thumbVideoId) &&
 					<Thumbnail {...actions} {...state} submit={submit}/>
-				}
-					<Embed {...actions} {...state} isPlaying={isPlaying()}/>
+					<Embed {...actions} {...state}/>
 				</div>
 				<VideoInput {...actions} {...state} submit={submit}/>
 				<ul class="video-table">
@@ -185,7 +182,8 @@ function VideoInput (props){
 	)
 }	
 
-function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, autoPlay, play}){
+function Embed({currVideoId, videoList, setVideoData, isLoading, stopLoading, autoPlay, play}){
+	const isPlaying = _=> currVideoId && !isLoading
 	const addDataListener = _=> { //  adds an iframe Api listener to retrieve YT video info
 		window.onmessage = (e) => { // no cleanup needed, overrides existing message handler
 			const {event, id, info} = JSON.parse(e.data)
@@ -214,25 +212,38 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 
 function Thumbnail({thumbVideoId, currVideoId, isLoading, submit}){
 	// thumbnail: https://img.youtube.com/vi/<video-id>/0.jpg
-	const handleBadImage = (e) => console.log('bad image') // not getting triggered 
+	const isPlaying = _=> currVideoId && !isLoading
+	const handleBadImage = e => console.log('bad image') // not getting triggered 
 	const onThumbPlayClick = e => submit(thumbVideoId)
+
+	// 
 	return (  
 		<div class="thumb-wrapper">
-		{ ((!!thumbVideoId && !currVideoId) || isLoading) &&
-			<img onerror={handleBadImage} class="thumb-img" src={`https://img.youtube.com/vi/${thumbVideoId}/hqdefault.jpg`}/> 
-			// <img onerror={handleBadImage} class="thumb-img" src={`https://img.youtube.com/vi/${thumbVideoId}/mqdefault.jpg`}/> 
-			// <img onerror={handleBadImage} class="thumb-img" src={`https://img.youtube.com/vi/${thumbVideoId}/${quality}default.jpg`}/> 
-		}
-		{ !isLoading ?
-			<div onclick={onThumbPlayClick} class={`middle-icon video-play-btn ${ !thumbVideoId && 'disabled'}`}>
+		{ !isPlaying() &&
+			<div class='middle-icon video-play-btn disabled'>
 				<svg height="100%" version="1.1" viewBox="0 0 68 48" width="100%"><path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#FF0000"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>
-			</div> :
-			<div class='middle-icon' style="top: calc(30%);">
-				{/* <svg height="100%" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"  x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40"><path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>		 */}
-				<svg class="loader" version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="70px" height="70px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;"><path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"/></path></svg>
+			</div>
+		}
+		{ (!isPlaying() && !!thumbVideoId) &&
+			<div>
+			{ ((!!thumbVideoId && !currVideoId) || isLoading) &&
+				<img onerror={handleBadImage} class="thumb-img" src={`https://img.youtube.com/vi/${thumbVideoId}/hqdefault.jpg`}/> 
+				// <img onerror={handleBadImage} class="thumb-img" src={`https://img.youtube.com/vi/${thumbVideoId}/mqdefault.jpg`}/> 
+				// <img onerror={handleBadImage} class="thumb-img" src={`https://img.youtube.com/vi/${thumbVideoId}/${quality}default.jpg`}/> 
+			}
+			{ !isLoading ?
+				<div onclick={onThumbPlayClick} class={`middle-icon video-play-btn ${ !thumbVideoId && 'disabled'}`}>
+					<svg height="100%" version="1.1" viewBox="0 0 68 48" width="100%"><path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#FF0000"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>
+				</div> :
+				<div class='middle-icon' style="top: calc(30%);">
+					{/* <svg height="100%" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"  x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40"><path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z"/><path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0C22.32,8.481,24.301,9.057,26.013,10.047z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s" repeatCount="indefinite"/></path></svg>		 */}
+					<svg class="loader" version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="70px" height="70px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;"><path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"><animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="0.6s" repeatCount="indefinite"/></path></svg>
+				</div>
+			}
 			</div>
 		}
 		</div>
+
 	)
 }
 
