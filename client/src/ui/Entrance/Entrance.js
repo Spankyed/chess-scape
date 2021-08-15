@@ -35,6 +35,7 @@ export default initial => ({
 		return ( 
 			<div class="entrance flex pt-10 justify-center min-h-screen bg-gray-900 font-sans">
 				<form onsubmit={attemptSubmit} class="video-form" action="">
+					<label for="username">Username</label>
 					<input oninput={actions.setUsername} value={state.username} class="" type="text" name="username" placeholder="Player 1" id="username" maxlength="12" minlength="1" autofocus="true" aria-label="username" required/>
 					<button type='submit' class="submit-button"> {state.submitText} </button>
 				</form>

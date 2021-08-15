@@ -1,6 +1,5 @@
 import { h } from 'hyperapp';
 import Api from '../../../../../api/Api';
-import { nanoid } from 'nanoid/non-secure'
 
 const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
 var quality = 'sd';
@@ -33,7 +32,7 @@ export default initial => ({
 			thumbVideoId: state.currVideoId || state.thumbVideoId // if reload forced while video playing, show correct loading thumb
 		}),
 		addVideo: videoId => state => {
-			if (state.videoList[videoId]) return {}
+			if (state.videoList[videoId]) return {} // already exists
 			let autoPlay = state.autoPlay || !state.currVideoId 
 			return {
 				isLoading: autoPlay,
@@ -149,7 +148,7 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 
 function VideoInput (props){
 	let { invalidUrl, currVideoId, setValidity, 
-		setVideoThumb, setVideoFound, submit, isLoading, videoFound } = props
+		setVideoThumb, setVideoFound, submit, isLoading, videoFound, autoPlay } = props
 	const attemptSubmit = (e) =>{
 		e.preventDefault();
 		let url = e.target[0].value
@@ -172,7 +171,7 @@ function VideoInput (props){
 		<form onsubmit={attemptSubmit} class="video-form" action="">
 			<div class="input-wrapper">
 				<input disabled={isLoading} oninput={onInput} class="input shadow-md" placeholder="Paste YouTube video URL" aria-label="Video URL" name="url" type='text' ></input>
-				<button type='submit' class="submit-button"> Watch </button>
+				<button type='submit' class="submit-button"> {autoPlay || !currVideoId ? "Watch" : 'Add'} </button>
 			</div>   
 			{	invalidUrl ? 
 					<p class='invalid-message'>Invalid video URL</p> : 

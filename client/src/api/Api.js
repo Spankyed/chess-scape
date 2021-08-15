@@ -9,8 +9,8 @@ let connection,
 
 // Receive message handlers
 handlers = {
-	// reconnect: msg => clientId = msg.clientId,
-	connect: msg => clientId = msg.clientId,
+	connect: msg => console.log(msg.clientId),
+	// connect: msg => clientId = msg.clientId, // can't set const
 	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, 
 	share: msg => handlers[msg.type]?.(msg),
 	video:_=>_, music:_=>_
@@ -66,7 +66,7 @@ async function setUser(username){
 	const method = 'POST';
 	const headers = {'Content-Type': 'application/json; charset=utf-8' };
 	const body = JSON.stringify({ username })
-	const url = `${baseAPIUrl}/user`  // http://localhost:5000/api/rooms
+	const url = `${baseAPIUrl}/user` 
 	// todo: wrap below in try catch?
 	const response = await fetch(url, { method, headers, body })
 	if (response.ok) {
@@ -80,8 +80,21 @@ async function setUser(username){
 	}
 	function clearSession () { localStorage.removeItem('clientId') }
 }
+async function searchImagePreview(title){
+	const method = 'POST';
+	const headers = {'Content-Type': 'application/json; charset=utf-8' };
+	const body = JSON.stringify({ title })
+	const url = `${baseAPIUrl}/search`
+	const response = await fetch(url, { method, headers, body })
+	if (response.ok) {
+		const data = await response.json()
+		console.log('%c Image preview',"color:blue;", data)
+		return data
+	}
+}
 
 export default {
+	searchImagePreview,
 	setUser,
 	fetchRooms,
 	createConnection,

@@ -10,7 +10,7 @@ export default initial => ({
 		music: music.state,
 		video: video.state,
 		currMoveIdx: 0,
-		mediaOpen: 'video'
+		mediaOpen: 'music'
 	},
 	actions: { 
 		music: music.actions,
@@ -40,7 +40,7 @@ export default initial => ({
 						<img class={`dropdown-arrow ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
 					</div>
 					<div class={`section-content ${isOpen('video') && 'open'} `}>
-						<VideoView gameId={gameId} alert={alert}/>
+						<VideoView gameId={gameId} alert={alert} mediaOpen={state.mediaOpen}/>
 					</div>
 				</section>
 			</div>

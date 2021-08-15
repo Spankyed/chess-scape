@@ -1,11 +1,30 @@
 // nodemon --inspect ./server.js
 
 import ChessLib  from 'chess.js';
+import fetch  from 'node-fetch';
+import HTMLParser from 'node-html-parser';
+
 const { Chess } = ChessLib;
 
 const clients = {}; // todo: change or copy to lobby.clients, move clients in/out of lobby when join/leave gameRooms
 const gameRooms = {};
     
+async function getGoogleImage(search){
+    // console.time('fetch')
+    const url = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(search)
+    let page = await fetch(url)
+    // console.timeEnd('fetch')
+    let html = await page.text()
+    let parsedPage = HTMLParser.parse(html)
+    let img = parsedPage.querySelectorAll('img')[1].attributes.src
+    return img
+}
+
+async function handleSearchHttp(req, reply) {
+    const { title } = req.body
+    const image = await getGoogleImage(title);
+    reply.send(JSON.stringify(image)) // get rooms list
+}
 
 function handleRoomsHttp(req, reply) {
     reply.send(JSON.stringify(mapRooms())) // get rooms list
@@ -57,7 +76,7 @@ function addNewGameRoom(clientId) {
 //     "clientId" : "<guid>"
 // }
 function create(message){
-    console.log('creating')
+    // console.log('creating')
     const clientId = message.clientId;
     if (!clients[clientId]) return
     // const matchParams = message.matchParams;
@@ -134,9 +153,11 @@ function shareVideo(message) {
     messageOtherClients(gameRoom, clientId, JSON.stringify(response))
 }
 function shareMusic(message) {
-    const {text, gameId, clientId} = message;
+    const {song, gameId, clientId} = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
+
+    // todo: check if song has image, otherwise scrap google
     const response = { "method": "share", text }
     messageOtherClients(gameRoom, clientId, JSON.stringify(response))
     // gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
@@ -179,5 +200,6 @@ function guid() {
 export default {
     handleRoomsHttp,
     handleUsersHttp,
+    handleSearchHttp,
     handleRoomsWebSocket
 }

@@ -52,7 +52,7 @@ export default initial => ({
 					<div class="px-4 md:px-10 py-5" style='height:18vh'>
 						<div class="sm:flex items-center justify-between">
 							<h1 tabindex="0" class="title px-5 focus:outline-none text-base font-bold leading-normal text-gray-100">
-								Game Rooms
+								Lobby
 							</h1>
 							<div>
 								<button onclick={actions.toggleCreate} class="ring-2 ring-offset-2 focus:ring-indigo-900 px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none">

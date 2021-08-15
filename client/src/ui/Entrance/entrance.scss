@@ -1,4 +1,7 @@
 .entrance {
 //BUTTON 3
-
+    /** EVEN BETTER */
+    input[type=email]:not(:placeholder-shown):invalid {
+        color: red;
+    }
 }

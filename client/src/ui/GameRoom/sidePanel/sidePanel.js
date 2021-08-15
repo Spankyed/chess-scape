@@ -30,7 +30,7 @@ export default initial => ({
 		const ChatView = chat.view(state.chat, actions.chat)
 		const MovesView = moves.view(state.moves, actions.moves)
 		const MediaView = media.view(state.media, actions.media)
-
+		const isCurrTab = tab => currTab === tab
 		return (
 			<div class={`side-panel ${ !state.isVisible && 'panel-hidden' }`}>
 				<div onclick={actions.hideSidePanel} class="bg-overlay"></div>
@@ -39,13 +39,13 @@ export default initial => ({
 					<Tabs currTab={currTab} changeTab={actions.changeTab} />
 
 					<div class='content-wrapper'>
-						<div class={`panel-section ${currTab === 'chat' && 'visible'}`}>
+						<div class={`panel-section ${isCurrTab('chat') && 'visible'}`}>
 							<ChatView gameId={gameId}/>
 						</div>
-						<div class={`panel-section ${currTab === 'moves' && 'visible'}`}>
+						<div class={`panel-section ${isCurrTab('moves') && 'visible'}`}>
 							<MovesView/>
 						</div>
-						<div class={`panel-section ${currTab === 'media' && 'visible'}`}>
+						<div class={`panel-section ${isCurrTab('media') && 'visible'}`}>
 							<MediaView gameId={gameId} alert={alert}/>
 						</div>
 					</div>

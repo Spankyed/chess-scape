@@ -25,11 +25,13 @@ server.register(fastifyCookie, {
 const {    
 	handleUsersHttp,
 	handleRoomsHttp,
+	handleSearchHttp,
 	handleRoomsWebSocket
 } = functions
 
 
 server.post('/api/user', handleUsersHttp)
+server.post('/api/search', handleSearchHttp)
 
 server.route({ 
 	method: 'GET', 
