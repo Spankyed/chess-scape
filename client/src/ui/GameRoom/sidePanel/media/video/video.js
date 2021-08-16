@@ -17,7 +17,7 @@ export default initial => ({
 		videoFound: true,
 		autoPlay: true,
 		allowShare: true,
-		persistShareSetting: false, // if false prompts user when video is shared
+		persistShareSetting: false, //et false prompts user every time video is shared
 		invalidUrl: false,
 		isLoading: false,
 		videoList: {}, // indexed list
@@ -266,7 +266,7 @@ function handleSubmit(gameId, actions, allowShare){
 	let {setVideoFound, addVideo} = actions
 	return async function (videoId, form){ 
 		// todo: wrap in try-catch & setVideoFound(false) ?
-		form = form || document.getElementsByTagName('form')[0]
+		form = form || document.getElementsByTagName('form')[0] // todo: reset only video forms
 		form.reset()
 		let videoFound = await checkVideoId(videoId)
 		setVideoFound(videoFound)

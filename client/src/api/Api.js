@@ -57,9 +57,9 @@ async function fetchRooms(){
 	const url = `${baseAPIUrl}/rooms`  // http://localhost:5000/api/rooms
 	const response = await fetch(url, { method, headers })
 	if (response.ok) {
-		const data = await response.json()
-		console.log('%c Room List',"color:blue;", data)
-		return data
+		const rooms = await response.json()
+		console.log('%c Room List',"color:blue;", {rooms})
+		return rooms
 	}
 }
 async function setUser(username){
@@ -70,17 +70,17 @@ async function setUser(username){
 	// todo: wrap below in try catch?
 	const response = await fetch(url, { method, headers, body })
 	if (response.ok) {
-		const data = await response.json()
-		console.log('%c User Data',"color:blue;", data)
-		localStorage.setItem('clientId', data.clientId);
-		clientId = data.clientId
-		return data
+		const userData = await response.json()
+		console.log('%c User Data',"color:blue;", {userData})
+		localStorage.setItem('clientId', userData.clientId);
+		clientId = userData.clientId
+		return userData
 	} else if (response.status === 401) {
 		clearSession();
 	}
 	function clearSession () { localStorage.removeItem('clientId') }
 }
-async function searchImagePreview(title){
+async function searchSongImage(title){
 	const method = 'POST';
 	const headers = {'Content-Type': 'application/json; charset=utf-8' };
 	const body = JSON.stringify({ title })
@@ -88,13 +88,13 @@ async function searchImagePreview(title){
 	const response = await fetch(url, { method, headers, body })
 	if (response.ok) {
 		const data = await response.json()
-		console.log('%c Image preview',"color:blue;", data)
+		console.log('%c Song image',"color:blue;", {data})
 		return data
 	}
 }
 
 export default {
-	searchImagePreview,
+	searchSongImage,
 	setUser,
 	fetchRooms,
 	createConnection,

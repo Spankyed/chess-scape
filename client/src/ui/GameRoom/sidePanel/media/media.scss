@@ -71,10 +71,8 @@ $dropdown-icon-color:#7D7C7A;
                 }
             }
         }
-        &.music-section{ flex-shrink: 0; }
-        &.video-section{ 
-            flex-grow: 1; 
-        }
+        &.music-section{ flex-shrink: 1; }
+        &.video-section{ flex-grow: 1; }
         .section-content {
             opacity: 0;
             max-height: 0;
