@@ -69,7 +69,6 @@ $controls-color: #464341;
           outline-offset: 2px;
           // divider
           >:not([hidden])~:not([hidden]) {
-            --tw-divide-opacity: 1;
             border-color: rgba(243,244,246,1 );
             border-top-width: calc(1px * calc(1 - 0));
             border-bottom-width: calc(1px * 0);

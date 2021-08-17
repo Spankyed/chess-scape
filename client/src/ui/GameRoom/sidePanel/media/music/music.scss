@@ -216,6 +216,12 @@
         overflow: auto;
         font-size: 0.975rem;
         // padding-top: 0.5rem;
+        border: 1px solid #989695;
+        >:not([hidden])~:not([hidden]) {
+            border-color: #989695;
+            border-top-width: calc(1px * calc(1 - 0));
+            border-bottom-width: calc(1px * 0);
+        }
         .music-row {
             overflow: hidden;
 			height: 2rem/* 56px */;
@@ -227,7 +233,6 @@
             font-size: 1.125rem/* 18px */;
             line-height: 1.75rem/* 28px */;
             // background-color: #E4E6E7;
-            border: 1px solid #989695;
             &.selected{
                 border-color: rgb(53,53,53,.5);
                 border-style:dashed; border-width:1px;
@@ -312,6 +317,7 @@
 			// background-color: #a8bbbf;
 			background-color: #5C5252;
 		}
+        
     }
     // https://codepen.io/aurer/pen/jEGbA
     .loader{
