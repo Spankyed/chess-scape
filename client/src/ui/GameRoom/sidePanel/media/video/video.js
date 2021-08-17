@@ -36,7 +36,7 @@ export default initial => ({
 			let autoPlay = state.autoPlay || !state.currVideoId 
 			return {
 				isLoading: autoPlay,
-				videoList: { [videoId]: { video_id: videoId, dataReady: false }, ...state.videoList }, 
+				videoList: { [videoId]: { video_id: videoId, dataReady: false }, ...state.videoList }, // todo: spread videolist first?
 				currVideoId: autoPlay ? videoId : state.currVideoId // if autoplay, play new video
 			}
 		}, 
@@ -191,7 +191,10 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 			// console.log(JSON.parse(e.data))
 			if (id != 1) return
 			if (event == 'initialDelivery' && info.videoData.title) setVideoData(info.videoData)
-			if (autoPlay && event == 'infoDelivery' && info.playerState === 0) play(next(videoList, currVideoId))
+			if (autoPlay && event == 'infoDelivery' && info.playerState === 0) {
+				let next = next(videoList, currVideoId)
+				if (next) play(next)
+			}
 		}
 	}
 	const handleLoad = (e) =>{

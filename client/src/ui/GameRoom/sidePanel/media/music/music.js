@@ -32,7 +32,7 @@ export default initial => ({
 			return {
 				// isLoading: autoPlay,
 				songPreview: {}, // clear preview
-				songList: { [songId]: { songId, ...song }, ...state.songList }, 
+				songList: {  ...state.songList, [songId]: { songId, ...song } }, 
 				currSongId: play ? songId : state.currSongId, // if autoplay, play new song
 				isPreviewing: false
 			}
@@ -47,6 +47,7 @@ export default initial => ({
 		cancelPreview: _ => _=> ({isPreviewing: false}),
 		setShare: ({bool, persist}) => state => ({ allowShare: bool, persistShareSetting: persist}),
 		toggle: option => state => ({ [option]: !state[option] }),
+		getState: _=>({songList, currSongId})=>({songList, currSongId})
 	},
 	view: (state, actions) => ({gameId}) => {
 		let notEmpty = Object.getOwnPropertyNames(state.songList).length > 0
@@ -71,7 +72,7 @@ export default initial => ({
 
 function SongPlayer({ state, actions }){
 	let {currSongId, isLoading, isPreviewing, songPreview, autoPlay} = state // should be consts
-	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview} = actions
+	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview, setCurrSong} = actions
 	let isPlaying = !!currSongId
 	const noop = _=>{}
 
@@ -122,14 +123,18 @@ function SongPlayer({ state, actions }){
 			}
 		</form>
 	)	
-	function Song({currSongId, songList}){
-		let song = songList[currSongId]
+	function Song({currSongId, songList, autoPlay, setCurrSong, getState}){
+		const song = songList[currSongId]
 		let imageStyle = `background-image: url(${song.image})` // todo: add default img?
 		function handleSongEnd(audio){
-			console.log('audio el',audio)
-			// audio.addEventListener('ended', () => { 
-			// 	playNext(currSongId)
-			// }, false);
+			// console.log('audio el',audio)
+			audio.addEventListener('ended', () => { 
+				if(autoPlay){
+					let {songList, currSongId} = getState()
+					let nextSong = next(songList, currSongId)
+					if (nextSong) setCurrSong(nextSong.songId)
+				}
+			}, false);
 		}
 		return(
 			<div class="song-container" style={imageStyle} title={song.title}>
@@ -287,3 +292,10 @@ function Loader(){
 	</div>
 	)
 }
+
+// Return next object key
+function next(obj, key) {
+	var keys = Object.keys(obj), 
+	i = keys.indexOf(key);
+	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
+};
