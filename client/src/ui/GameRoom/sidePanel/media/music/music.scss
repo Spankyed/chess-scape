@@ -38,7 +38,7 @@
                 background-color: rgba(78, 65, 65, 0.5);
                 font-variant: all-petite-caps;
                 font-style: italic;
-                // align-self: flex-end;
+                align-self: flex-end;
                 padding-left: 0.5rem;
                 font-size: 1.125rem/* 18px */;
                 line-height: 1.3rem;
@@ -48,6 +48,9 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
+                -moz-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+                -webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+                box-shadow: 1px 2px 3px rgba(0,0,0,.5);
             }
         }
         .song-input {
@@ -134,14 +137,16 @@
 
 
     .add-btn{
+        z-index:99;
         margin-top: 0.5rem;
+        margin-bottom: 2px;;
         // width: 13%;
         width: auto;
         // border: 1px solid #4b5563;
         height: 1.75rem/* 28px */;
         // height: 2.5rem;
         position: relative;
-        display: inline-flex;
+        display: flex;
         align-items: center;
         cursor: pointer;
         transition: 0.3s all ease-in-out;
@@ -161,13 +166,19 @@
             position: absolute;
             background-color: #82B64A;
             height: 100%;
-            width: 2.5rem;
+            // width: 2.5rem;
+            // width: 3.8rem;
+            width: 16.666667%;
             // padding-left: 20px;
             border-bottom: none;
             // margin-top: 0.5rem/* 20px */;
         }
         .add-text{
-            margin-left:40px;
+            // margin-left:40px;
+            // margin-left:3.8rem;
+            margin-left: 16.666667%;
+            max-width: fit-content;
+            width: 0;
             font-weight: 600;
             position: relative;
             display: flex;
@@ -177,7 +188,6 @@
             // z-index: 1;
             align-items: center;
             height: 100%;
-            width: 0;
             overflow: hidden;
             transition: 0.3s all ease;
         }
@@ -235,20 +245,21 @@
                 }
                 background-color: rgba(156,163,175,1);
             }
-            .music-img {
-				width: 16.666667%;
-				object-fit: cover;
+            .song-img {
+				min-width: 16.666667%;
+                width: 16.666667%;
+				object-fit: scale-down;;
                 justify-content: center;
-                border-right: 1px solid #d9d9d9;
+                // border-right: 1px solid #d9d9d9;
                 background: #f7f6f5;
                 // height: 100%;
                 // line-height: 2.07em;
                 // color: #b3b3b3;
             }    
-            .music-info {
+            .song-info {
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
-				padding-bottom: 0.25rem/* 4px */;
+				// padding-bottom: 0.25rem/* 4px */;
                 justify-content: space-between;
                 // align-items: center;
                 text-align: center;
@@ -270,7 +281,10 @@
                     // font-family: Helvetica, Arial, sans-serif;
                     // font-size: 40px;
                 }
-                .song-time{ width: 20%;  }
+                .song-time{ 
+                    position: relative;
+                    width: 20%;  
+                }
                 // flex: 0 0 50%;
             }
         }
@@ -301,16 +315,13 @@
     }
     // https://codepen.io/aurer/pen/jEGbA
     .loader{
+        padding:.5rem;
         position:absolute;
         top: 50%; /* Position Y halfway in */
         left: 50%; /* Position X halfway in */
         transform: translate(-50%,-50%); /* Move it halfway back(x,y) */
-        margin: 0 0 2em;
-        height: 100px;
-        width: 20%;
+        // width: 20%;
         text-align: center;
-        padding: 1em;
-        margin: 0 auto 1em;
         display: inline-block;
         vertical-align: top;
     }
@@ -322,4 +333,9 @@
     svg rect{
         fill: #FF6700;
     }
+}
+
+input[type=file], /* FF, IE7+, chrome (except button) */
+input[type=file]::-webkit-file-upload-button { /* chromes and blink button */
+    cursor: pointer; 
 }

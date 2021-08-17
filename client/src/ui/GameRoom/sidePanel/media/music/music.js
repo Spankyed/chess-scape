@@ -7,8 +7,7 @@ export default initial => ({
 	state: {
 		autoPlay: true,
 		allowShare: true,
-		persistShareSetting: false, // false prompts user every time song is shared
-
+		persistShareSetting: false, // if false prompts user every time song is shared
 		songList: {},
 		currSongId: 0,
 		isLoading: false,
@@ -71,7 +70,6 @@ function SongPlayer({ state, actions }){
 	let isPlaying = !!currSongId
 	const noop = _=>{}
 
-	function playPreviewedSong(){ addSong(songPreview) }
 	async function preview(e){
 		startLoading()
 		let file = e.target.files[0]
@@ -80,12 +78,11 @@ function SongPlayer({ state, actions }){
 		// todo: on error reset form
 	}
 	async function submit(){
-		let form = document.getElementsByTagName('form')[0] // todo: reset only video forms
-		console.log('form',{form, song: form.song})
+		let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
 		let song = songPreview
 		if (isPreviewing) addSong(song)
 		else song = processSong(form.song.files[0])
-		// if (allowShare) Api.shareMusic(song, gameId)
+		if (allowShare) Api.shareMusic(song, gameId)
 		form.reset()
 	}
 	return(
@@ -95,8 +92,7 @@ function SongPlayer({ state, actions }){
 				{ isPlaying ?
 					<Song {...actions} {...state}/> :
 					<div class="song-preview-wrapper h-full w-full">
-						{/* <input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file'/> */}
-						<input onchange={preview} class={`file-input ${isPreviewing && ''}`} id="song" name="song" type='file'/>
+						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file'/>
 						{/* <p class='invalid-message'>Song exceeds 10 mb file limit</p>  */}
 						{ isPreviewing ? 
 						<Preview song={songPreview}/> : 
@@ -105,22 +101,24 @@ function SongPlayer({ state, actions }){
 					</div> 
 				}
 			</div>
-			
-			<div onclick={isPlaying ? noop : playPreviewedSong} 
+
+			{ (isPreviewing || isPlaying) &&
+			<div onclick={!isPlaying ? submit : noop} 
 					class={`add-btn ${ ((!isLoading && isPreviewing) || (!isPlaying && isPreviewing)) && 'preview'}`}>
 				{ isPlaying && 
 				<input onchange={submit} class='file-input' id="song" name="song" type='file' />
 				}
 				<img class="add-icon" src="./assets/sidePanel/controls/plus_music.svg"/>
 				<span class='add-text'>
-					{autoPlay && !isPlaying ? "Listen" : 'Add Song'}
+					{autoPlay && !isPlaying ? "Play" : 'Add Song'}
 				</span>
 			</div>
+			}
 		</form>
 	)	
 	function Song({currSongId, songList}){
 		let song = songList[currSongId]
-		let imageStyle = `background-image: url(${song.image})` // todo: add default img
+		let imageStyle = `background-image: url(${song.image})` // todo: add default img?
 		function handleSongEnd(audio){
 			console.log('audio el',audio)
 			// audio.addEventListener('ended', () => { 
@@ -181,14 +179,15 @@ function SongPlayer({ state, actions }){
 		return {image, duration, dataReady: true}
 	}
 	function getSongDuration(file){
-		let toTimeString = seconds => `${seconds/60|0}:${Math.round(seconds%60)}`
-		// let toTimeString = seconds => `${seconds/60|0}:${seconds%60|0}`
+		// let toTimeString = seconds => `${seconds/60|0}:${Math.round(seconds%60)}`
+		let toTimeString = seconds => `${seconds/60|0}:${seconds%60|0}`
 		return new Promise((resolve, reject) => {
 			let reader = new FileReader();
 			reader.onload = function (event) {
 				let ctx = new (window.AudioContext || window.webkitAudioContext)();
 				ctx.decodeAudioData(event.target.result, function(buffer) {
 					let time = toTimeString(buffer.duration)
+					time += time.length === 3 ? 0 : ''
 					resolve(time);
 				})
 			}
@@ -201,14 +200,18 @@ function SongPlayer({ state, actions }){
 
 function MusicItem({song, currSongId, setCurrSong}){
 	const isPlaying = song.songId == currSongId
-	// console.log('song ',  song)
+	function select(){
+		console.log('song ', song)
+		setCurrSong(song.songId)
+	}
 	return(
-		<li onclick={_=>setCurrSong(song.songId)} class={`music-row ${isPlaying && 'selected'}`}>
-			<img class="music-img" src={song.image ? song.image : "./assets/sidePanel/controls/music_play.svg"}/>
-			<div class="music-info">
+		<li onclick={select} class={`music-row ${isPlaying && 'selected'}`} title={song.title}>
+			<img class="song-img" src={song.image ? song.image : "./assets/sidePanel/controls/music_play.svg"}/>
+			<div class="song-info">
 				{/* <div class="artist">Artist</div> */}
 				<div class="song-title">{song.title}</div>
-				<div class="time">
+				<div class="song-time">
+					{/* { true ?  */}
 				{!song.dataReady ? 
 					<Loader/>:
 					// 'loading...':
