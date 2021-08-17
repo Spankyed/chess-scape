@@ -5,7 +5,7 @@
 	flex-direction: column;
     // padding-top: 0.75rem/* 12px */;
     // font-family: Arial, Helvetica, sans-serif;
-	&.no-pointers{
+	.no-pointers{
 		pointer-events: none;
 	}
     form {
@@ -34,6 +34,8 @@
             flex-direction: column;
             // background: url(./assets/sidePanel/controls/add_music.svg) no-repeat center center fixed; 
             .song-title{
+                // max-width: fit-content;
+                max-width: -webkit-fill-available;
                 color: #fff;
                 background-color: rgba(78, 65, 65, 0.5);
                 font-variant: all-petite-caps;
@@ -43,7 +45,6 @@
                 font-size: 1.125rem/* 18px */;
                 line-height: 1.3rem;
                 // max-width: 95%;
-                max-width: fit-content;
                 padding-right:.5rem;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -51,6 +52,16 @@
                 -moz-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
                 -webkit-box-shadow: 1px 2px 3px rgba(0,0,0,.5);
                 box-shadow: 1px 2px 3px rgba(0,0,0,.5);
+            }
+            .trash-icon{
+                cursor: pointer;
+                height: 1.5rem;
+                border-radius: 8px;
+                filter: brightness(0) invert(1);
+                // background-color: rgb(124, 124, 124);
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
             }
         }
         .song-input {
@@ -107,7 +118,7 @@
 
                 border-radius: 0px;
                 // background-color: rgb(53,53,53,.5);
-                background-color: rgb(241,243,244,.9);
+                // background-color: rgb(241,243,244,.9);
                 // background-color: #c6c6ec;
             }
             ::-webkit-media-controls-current-time-display{
@@ -115,7 +126,7 @@
             }
 
             // https://chromium.googlesource.com/chromium/blink/+/72fef91ac1ef679207f51def8133b336a6f6588f/Source/core/css/mediaControls.css?autodive=0%2F%2F%2F
-            // &::-webkit-media-controls-panel {}
+            &::-webkit-media-controls-panel { z-index: 99;}
             // &::-webkit-media-controls-mute-button {}
             // &::-webkit-media-controls-play-button {}
             // &::-webkit-media-controls-timeline-container {}
@@ -276,7 +287,6 @@
                 // .song-artist{ width: 20%;  }
                 .song-title{ 
                     width: 80%;  
-                    max-width: -webkit-fill-available;
                     padding-left: 0.75rem/* 12px */;
 					padding-right: 0.25rem/* 4px */;
 					text-overflow: ellipsis;

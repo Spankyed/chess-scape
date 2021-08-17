@@ -44,21 +44,24 @@ export default initial => ({
 		),
 		setCurrSong: songId => _=> ({ currSongId: songId, isPreviewing: false}),
 		setSongPreview: (song) => state => ({ songPreview: song, isPreviewing: true }),
+		cancelPreview: _ => _=> ({isPreviewing: false}),
 		setShare: ({bool, persist}) => state => ({ allowShare: bool, persistShareSetting: persist}),
 		toggle: option => state => ({ [option]: !state[option] }),
 	},
 	view: (state, actions) => ({gameId}) => {
+		let isPlaying = !!state.currSongId
 		return (
 			<div class="music-area text-neutral">
 				<SongPlayer actions={actions} state={state}/>
-
-				<ul class="music-table">
-				{ Object.values(state.songList).map((song, i)=>(
-					<MusicItem song={song} setCurrSong={actions.setCurrSong} currSongId={state.currSongId}/>
-				))}
-					{/* <MusicItem/> */}
-					{/* <MusicItem/> */}
-				</ul>
+				{ isPlaying &&
+					<ul class="music-table">
+					{ Object.values(state.songList).map((song, i)=>(
+						<MusicItem song={song} setCurrSong={actions.setCurrSong} currSongId={state.currSongId}/>
+					))}
+						{/* <MusicItem/> */}
+						{/* <MusicItem/> */}
+					</ul>
+				}
 			</div>
 		)
 	}
@@ -66,11 +69,11 @@ export default initial => ({
 
 function SongPlayer({ state, actions }){
 	let {currSongId, isLoading, isPreviewing, songPreview, autoPlay} = state // should be consts
-	let {setSongPreview, addSong, setSongData, startLoading} = actions
+	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview} = actions
 	let isPlaying = !!currSongId
 	const noop = _=>{}
 
-	async function preview(e){
+	function preview(e){
 		startLoading()
 		let file = e.target.files[0]
 		processSong(file, true)
@@ -84,6 +87,7 @@ function SongPlayer({ state, actions }){
 		else song = processSong(form.song.files[0])
 		if (allowShare) Api.shareMusic(song, gameId)
 		form.reset()
+		form.song.value = [];
 	}
 	return(
 		<form name='song-form'>
@@ -95,7 +99,7 @@ function SongPlayer({ state, actions }){
 						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file'/>
 						{/* <p class='invalid-message'>Song exceeds 10 mb file limit</p>  */}
 						{ isPreviewing ? 
-						<Preview song={songPreview}/> : 
+						<Preview song={songPreview} cancelPreview={cancelPreview}/> : 
 						<Input/>
 						}
 					</div> 
@@ -134,13 +138,17 @@ function SongPlayer({ state, actions }){
 			</div>
 		)
 	}
-	function Preview({song}){
+	function Preview({song, cancelPreview}){
 		const previewImage = `background-image: url(${song.image})` // todo: add default img
+		const cancel = _=>{
+			let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
+			form.song.value = []
+			cancelPreview()
+		}
 		return(
-			<div class="song-container" style={previewImage} title={song.fileName}>
+			<div onclick={cancel} class="song-container" style={previewImage} title={song.fileName}>
 				<div class='song-title'>{song.title}</div>
-				{/* add play button */}
-				{/* add preview cancel X */}
+				<img class='trash-icon' src="../assets/sidePanel/controls/trash.svg"/>	
 			</div>
 		)
 	}
@@ -206,7 +214,7 @@ function MusicItem({song, currSongId, setCurrSong}){
 	}
 	return(
 		<li onclick={select} class={`music-row ${isPlaying && 'selected'}`} title={song.title}>
-			<img class="song-img" src={song.image ? song.image : "./assets/sidePanel/controls/music_play.svg"}/>
+			<img class="song-img" src={song.image ? song.image : "./assets/sidePanel/controls/music_icon.svg"}/>
 			<div class="song-info">
 				{/* <div class="artist">Artist</div> */}
 				<div class="song-title">{song.title}</div>
