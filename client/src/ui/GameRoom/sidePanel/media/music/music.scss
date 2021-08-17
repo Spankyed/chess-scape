@@ -276,9 +276,9 @@
                 // .song-artist{ width: 20%;  }
                 .song-title{ 
                     width: 80%;  
+                    max-width: -webkit-fill-available;
                     padding-left: 0.75rem/* 12px */;
 					padding-right: 0.25rem/* 4px */;
-
 					text-overflow: ellipsis;
 					white-space: nowrap;
 					overflow: hidden;
