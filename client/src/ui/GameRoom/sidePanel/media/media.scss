@@ -85,6 +85,84 @@ $dropdown-icon-color:#7D7C7A;
             }
         }
     }
+    .options{
+		width: 100%;
+		display: flex;
+		color:#fff;
+		justify-content: flex-end;
+		// padding-top: 0.5rem;
+		margin-bottom: 0.5rem/* 8px */;
+		.option-item:nth-of-type(1){ 
+			margin-right: 0.75rem/* 12px */;
+		}
+		.option-item {
+			// width: 50%;
+			display: flex;
+			flex-grow: 1;
+			align-items: center;
+			.toggle-wrapper {
+				min-width: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				cursor: pointer;
+				.toggle-text {
+					.hide-mobile{ display:none ;}
+					// max-width: fit-content;
+					margin-right: 0.75rem/* 12px */;
+					font-weight: 500;
+				}
+				.toggle {
+					position: relative;
+					input {
+						position: absolute;
+						width: 1px;
+						height: 1px;
+						padding: 0;
+						margin: -1px;
+						overflow: hidden;
+						clip: rect(0, 0, 0, 0);
+						white-space: nowrap;
+						border-width: 0;
+						&:checked ~ .dot {
+							transform: translateX(100%);
+							background-color: $toggle-dot-color;
+						}
+		
+					}
+					.dot{
+						// @apply absolute w-5 h-5 bg-white rounded-full shadow -left-1 -top-1 transition;
+						position: absolute;
+						width: 1.25rem/* 20px */;
+						height: 1.25rem/* 20px */;
+						background-color: #fff;
+						border-radius: 9999px;
+						left: -0.25rem/* -4px */;
+						top: -0.4rem/* -4px */;
+						transition: all .3s ease-in-out, ;
+						--tw-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+						box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+					}
+					.line{
+						// width: 2.25rem/* 36px */;
+						width: 2.15rem/* 36px */;
+						height: 0.45rem/* 12px */;
+						// background-color: #bbb;
+						background-color: #737373;
+						--tw-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+						// border-radius: 9999px;
+						// border-radius: 2px;
+						border-radius: 8px;
+						// box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+						box-shadow: 0 0 5px rgb(0 0 0 / 20%);
+						&.checked{
+							// background-color: $toggle-track-active-color;
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 // .ribbon {

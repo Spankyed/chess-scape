@@ -28,13 +28,13 @@ export default initial => ({
 			let songId = song.songId
 			if (songId && state.songList[songId]) return {} // not reachable ids always diff; compare names instead
 			// let {songList, currSongId, autoPlay, isPreviewing} = state
-			let play = state.autoPlay //|| !state.currSongId 
+			let play = state.autoPlay || !state.currSongId 
 			return {
 				// isLoading: autoPlay,
 				songPreview: {}, // clear preview
 				songList: { [songId]: { songId, ...song }, ...state.songList }, 
-				currSongId: play ? songId : state.currSongId, // if autoplay, play new video
-				isPreviewing: state.autoPlay ? false : state.isPreviewing, // if autoplay, clear preview, else keep it
+				currSongId: play ? songId : state.currSongId, // if autoplay, play new song
+				isPreviewing: false
 			}
 		}, 
 		setSongData: ({songId, data, preview}) => ({songList, songPreview}) => (
@@ -49,11 +49,13 @@ export default initial => ({
 		toggle: option => state => ({ [option]: !state[option] }),
 	},
 	view: (state, actions) => ({gameId}) => {
-		let isPlaying = !!state.currSongId
+		let notEmpty = Object.getOwnPropertyNames(state.songList).length > 0
 		return (
 			<div class="music-area text-neutral">
+				<Options {...state} toggle={actions.toggle}/>
 				<SongPlayer actions={actions} state={state}/>
-				{ isPlaying &&
+
+				{ notEmpty &&
 					<ul class="music-table">
 					{ Object.values(state.songList).map((song, i)=>(
 						<MusicItem song={song} setCurrSong={actions.setCurrSong} currSongId={state.currSongId}/>
@@ -114,7 +116,7 @@ function SongPlayer({ state, actions }){
 				}
 				<img class="add-icon" src="./assets/sidePanel/controls/plus_music.svg"/>
 				<span class='add-text'>
-					{autoPlay && !isPlaying ? "Play" : 'Add Song'}
+					{isPreviewing ? "Play" : 'Add Song'}
 				</span>
 			</div>
 			}
@@ -231,7 +233,35 @@ function MusicItem({song, currSongId, setCurrSong}){
 	)
 }
 
-
+function Options({allowShare, autoPlay, toggle}){
+	const options = 
+	[{text:['Allow ','Share'], name: 'allowShare', value: allowShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
+	return (
+		<div class="options">
+		{	
+		options.map( (option) => (
+			<div class="option-item">
+				<label for={option.id} class="toggle-wrapper"
+					title={option.text == 'Share' ? 'Allow music sharing with room' : 'Auto-play new/next song in queue'}>
+					{	typeof option.text === "object" ?
+						<span class="toggle-text"> 
+							<span class='hide-mobile'>{option.text[0]}</span>
+							{option.text[1]} 
+						</span> :
+						<span class="toggle-text"> {option.text} </span>
+					}
+					<div class="toggle">
+						<input onchange={_=> toggle(option.name)} checked={option.value} id={option.id} type="checkbox"/>
+						<div class={`line ${ option.value && 'checked'}`}></div>
+						<div class="dot"></div>
+					</div>
+				</label>
+			</div>
+		))
+		}
+		</div>
+	)
+}
 
 function Loader(){
 	return (
