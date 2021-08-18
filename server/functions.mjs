@@ -4,12 +4,12 @@ import ChessLib  from 'chess.js';
 import fetch  from 'node-fetch';
 import HTMLParser from 'node-html-parser';
 import BSON from 'bson';
+import fileType from 'file-type';
 
 const { Chess } = ChessLib;
 
 let clients = {}; // todo: change or copy to lobby.clients, move clients in/out of lobby when join/leave gameRooms
 let gameRooms = {};
-    
 async function getGoogleImage(search){
     // console.time('fetch')
     const url = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(search + ' song')
@@ -48,6 +48,7 @@ function handleRoomsWebSocket(connection, req) {
         let isBinary = Buffer.isBuffer(request)
         let message = isBinary ? BSON.deserialize(request, {promoteBuffers: true}) : JSON.parse(request)
         if (!message) return
+        if(!isValidFileType(message.rawData)) return
         // if (isBinary) console.log("bson", message)
         console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
         const methods = { create, join, move, chat, share}
@@ -158,7 +159,7 @@ function shareMusic({message, clientId}) { // todo: check if song has image, oth
     const response = BSON.serialize({ "method": "share", type:'music', song, rawData })
     // messageOtherClients(gameRoom, clientId, response)
     // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
-    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", response)
+    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", {response})
     gameRoom.clients.forEach( (clientId) => {
         clients[clientId].connection.socket.send(response)
     } )
@@ -182,7 +183,7 @@ function sendMessageAll(message, clientId){
 function sendMessage(clientId, message){
     // todo: check if client is still connected before trying to send messages
     clients[clientId].connection.socket.send(JSON.stringify(message))
-    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", message)
+    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", {message})
 }
 function messageOtherClients(gameRoom, sender, message){
     gameRoom.clients.forEach(clientId => { 
@@ -200,6 +201,15 @@ function guid() {
 	// Convert it to base 36 (numbers + letters), and grab the first 9 characters
 	return '_' + Math.random().toString(36).substr(2, 9);
 };
+
+
+async function isValidFileType(buffer){
+    // fileType.mime === 'image/jpeg'
+    // if (stream2.fileType && stream2.fileType.mime === 'image/jpeg') if (stream2.fileType && stream2.fileType.mime === 'image/jpeg') 
+    let {mime} = await fileType.fromBuffer(buffer) // todo: test/ensure that audio is on all audio mime types
+    console.log('mime', mime.indexOf('audio'))
+    return (mime.indexOf('audio') > -1)
+}
 
 
 // function guid() {

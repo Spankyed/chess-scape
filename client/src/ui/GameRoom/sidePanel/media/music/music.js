@@ -115,6 +115,7 @@ function SongPlayer({ state, actions }){
 		startLoading()
 		let file = setSelectedFile(e.target.files[0]).selectedFile
 		processSong(file, true)
+		// input.files[0].type.match('audio.*') // ensure theres file of type auido
 		// todo: set size limit err msg
 		// todo: on error reset form
 	}
@@ -141,7 +142,7 @@ function SongPlayer({ state, actions }){
 				{ isPlaying ?
 					<Song {...actions} {...state}/> :
 					<div class="song-preview-wrapper h-full w-full">
-						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file'/>
+						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file' accept="audio/*"/>
 						{/* <p class='invalid-message'>Song exceeds 10 mb file limit</p>  */}
 						{ isPreviewing ? 
 						<Preview song={songPreview} cancelPreview={cancelPreview}/> : 
@@ -155,7 +156,7 @@ function SongPlayer({ state, actions }){
 			<div onclick={!isPlaying ? submit : noop} 
 					class={`add-btn ${ ((!isLoading && isPreviewing) || (!isPlaying && isPreviewing)) && 'preview'}`}>
 				{ isPlaying && 
-				<input onchange={submit} class='file-input' id="song" name="song" type='file' />
+				<input onchange={submit} class='file-input' id="song" name="song" type='file' accept="audio/*"/>
 				}
 				<img class="add-icon" src="./assets/sidePanel/controls/plus_music.svg"/>
 				<span class='add-text'>

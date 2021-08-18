@@ -15,6 +15,7 @@ server.register(fastifyWebsocket,{ options: {
 	// verifyClient: _=>{}, 
 	clientTracking: true, 
 	// maxPayload: 1048576 
+	// maxPayload: 128 * 1024, // 128 KB
 }})
 server.register(fastifyCookie, {
 	secret: "my-secret", // for cookies signature
@@ -44,7 +45,7 @@ server.route({
 
 const port = 5000
 server.listen(port, '0.0.0.0', err => {
-	console.log('server listening on dort', port)
+	console.log('server listening on port', port)
 	if (err) {
 		console.log(err)
 		server.log.error(err)
