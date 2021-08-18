@@ -1,6 +1,7 @@
 import { h } from 'hyperapp';
 import Api from '../../../../../api/Api';
 import { nanoid } from 'nanoid/non-secure'
+import { serialize, deserialize } from 'bson';
 
 //todo: check mime type before sending any files
 export default initial => ({
@@ -56,11 +57,37 @@ export default initial => ({
 		let songList = Object.values(state.songList)
 		Api.setMessageHandlers({
 			music: message => {
+				// message = deserialize(message)
 				if (!state.allowShare) return
-				if (!state.persistShareSetting) promptShare(message.songId||0, alert, actions)
-				else console.log('add shared song', message.songId)//actions.addSong(message.songId)
+				if (!state.persistShareSetting) promptShare(message, alert, actions)
+				else addFromBinary(message)
 			}
 		})
+		function addFromBinary({song, rawData}){
+			let blob = new Blob([rawData], {type : 'audio/ogg'});
+			let blobUrl = URL.createObjectURL(blob);
+			console.log('adding shared', {...song, src: blobUrl}) //addSong(songId)
+			actions.addSong({...song, src: blobUrl})
+		}
+		function promptShare(message, alert, actions){
+			let {setShare, addVideo} = actions
+			// songId = '3vBwRfQbXkg'
+			alert.show({
+				icon: "./assets/sidePanel/controls/music_icon.svg",
+				heading: 'Music Shared',
+				message: 'A user wants to share a song with you.', 
+				actions: {
+					positive: { text: 'Allow', handler: (bool, persist) => {
+						setShare({bool, persist})
+						addFromBinary(message)
+					}},
+					negative: { text: 'Deny', handler: (bool, persist) => {
+						if (persist) setShare({bool, persist})
+					}}, 
+				},
+				dontAskAgain: false
+			})
+		}
 		return (
 			<div class="music-area text-neutral">
 				<Options {...state} toggle={actions.toggle}/>
@@ -86,24 +113,23 @@ function SongPlayer({ state, actions }){
 
 	function preview(e){
 		startLoading()
-		let {selectedFile} = setSelectedFile(e.target.files[0])
-		console.log('selfile',selectedFile)
-		processSong(selectedFile, true)
+		let file = setSelectedFile(e.target.files[0]).selectedFile
+		processSong(file, true)
 		// todo: set size limit err msg
 		// todo: on error reset form
 	}
 	async function submit(){
 		let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
 		let song = songPreview
+		let file = selectedFile;
 		if (isPreviewing) addSong(song)
 		else {
-			let {selectedFile} = setSelectedFile(form.song.files[0])
-			song = processSong(selectedFile)
+			file = setSelectedFile(form.song.files[0]).selectedFile
+			song = await processSong(file)
 		}
 		if (allowShare) {
-			let rawData = await getRawSongData(selectedFile)
-			Api.shareMusic(rawData)
-			// Api.shareMusic(selectedFile)
+			let rawData = await getRawSongData(file)
+			Api.shareMusic(song, rawData)
 		}
 		form.reset()
 		form.song.value = [];
@@ -232,7 +258,7 @@ function SongPlayer({ state, actions }){
 function MusicItem({song, currSongId, setCurrSong}){
 	const isPlaying = song.songId == currSongId
 	function select(){
-		console.log('song ', song)
+		// console.log('song ', song)
 		setCurrSong(song.songId)
 	}
 	return(
@@ -309,25 +335,7 @@ function Loader(){
 	)
 }
 
-function promptShare(songId, alert, actions){
-	let {setShare, addVideo} = actions
-	// songId = '3vBwRfQbXkg'
-	alert.show({
-		icon: "./assets/sidePanel/controls/music_icon.svg",
-		heading: 'Music Shared',
-		message: 'A user wants to share a song with you.', 
-		actions: {
-			positive: { text: 'Allow', handler: (bool, persist) => {
-				setShare({bool, persist})
-				console.log('add shared song', songId)//addSong(songId)
-			}},
-			negative: { text: 'Deny', handler: (bool, persist) => {
-				if (persist) setShare({bool, persist})
-			}}, 
-		},
-		dontAskAgain: false
-	})
-}
+
 
 // Return next object key
 function next(obj, key) {
@@ -343,9 +351,8 @@ function getRawSongData(file) {
 		reader.loadend = function() {}
 		reader.onload = function(e) {
 			rawData = e.target.result;
-			console.log('rawData ', {rawData})
+			// console.log('rawData ', {rawData})
 			resolve(rawData)
-			alert("the File has been transferred.")
 		}
 		reader.readAsArrayBuffer(file);
 	})

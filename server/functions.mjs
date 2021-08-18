@@ -3,6 +3,7 @@
 import ChessLib  from 'chess.js';
 import fetch  from 'node-fetch';
 import HTMLParser from 'node-html-parser';
+import BSON from 'bson';
 
 const { Chess } = ChessLib;
 
@@ -25,7 +26,6 @@ async function handleSearchHttp(req, reply) {
     const image = await getGoogleImage(title);
     reply.send(JSON.stringify(image)) // get rooms list
 }
-
 function handleRoomsHttp(req, reply) {
     reply.send(JSON.stringify(mapRooms())) // get rooms list
 }
@@ -45,13 +45,15 @@ function handleRoomsWebSocket(connection, req) {
     // set message handlers
     connection.socket.on('message', request => { // handle incoming messages from connected client 
 		// console.log('incoming request ', request)
-		// const message = request
-        const message = JSON.parse(request)
-        console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
+        let isBinary = Buffer.isBuffer(request)
+        let message = isBinary ? BSON.deserialize(request, {promoteBuffers: true}) : JSON.parse(request)
         if (!message) return
+        // if (isBinary) console.log("bson", message)
+        console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
         const methods = { create, join, move, chat, share}
         const messageHandler = methods[message.method]
         if (messageHandler) messageHandler({message, clientId})
+
 	})
     // connection.socket.on('open', _ => console.log('~opened: ', i++))
     // connection.socket.on('close', _ => delete clients[clientId])
@@ -138,9 +140,9 @@ function chat({message, clientId}) {
     const response = { "method": "chat", text }
     messageOtherClients(gameRoom, clientId, response)
 }
-function share({message, clientId}){
+function share(params){
     let mediaHandlers = { 'video': shareVideo, 'music': shareMusic  } 
-    mediaHandlers[message.type](message)
+    mediaHandlers[params.message.type](params)
 }
 function shareVideo({message, clientId}) {
     const {videoId, gameId} = message;
@@ -150,14 +152,15 @@ function shareVideo({message, clientId}) {
     messageOtherClients(gameRoom, clientId, response)
 }
 function shareMusic({message, clientId}) { // todo: check if song has image, otherwise scrap google?
-    const rawData = message;
+    const {gameId, song, rawData} = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
-    const response = { "method": "share", type:'music', rawData }
+    const response = BSON.serialize({ "method": "share", type:'music', song, rawData })
     // messageOtherClients(gameRoom, clientId, response)
     // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
+    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", response)
     gameRoom.clients.forEach( (clientId) => {
-        clients[clientId].connection.socket.send(rawData)
+        clients[clientId].connection.socket.send(response)
     } )
 }
 
