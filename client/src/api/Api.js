@@ -5,24 +5,35 @@ import { nanoid } from 'nanoid/non-secure'
 const baseAPIUrl = 'http://localhost:5000/api'
 const baseWSUrl = 'ws://localhost:5000/api'
 const clientId = nanoid()//localStorage.getItem('clientId'),
+let gameId = null
 let connection,
 
-// Receive message handlers
+// Message Received handlers
 handlers = {
-	connect: msg => console.log(msg.clientId),
+	connect: msg => console.log(msg.clientId), // already setting clientId onentrance
 	// connect: msg => clientId = msg.clientId, // can't set const
+	// join: msg => gameId ??= msg.gameId,
 	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, 
 	share: msg => handlers[msg.type]?.(msg),
 	video:_=>_, music:_=>_
 }
 
 // Send message wrappers
-function createGame(params){ sendMessage(connection, { method: "create", ...params }) }
-function joinGame(gameId){ sendMessage(connection, { method: "join", gameId }) }
-function sendMove(move, gameId){ sendMessage(connection, { method: "move", move, gameId }) }
-function sendChat(text, gameId){ sendMessage(connection, { method: "chat", text, gameId }) }
-function shareMusic(file, gameId){ sendMessage(connection, { method: "share", type: "music", file, gameId }) }
-function shareVideo(videoId, gameId){ sendMessage(connection, { method: "share", type: "video", videoId, gameId }) }
+function createGame(params){ sendMessage({ method: "create", ...params }) }
+function joinGame(id){ 
+	gameId ??= id; 
+	console.log('joining ', gameId)
+	sendMessage({ method: "join", gameId }) 
+}
+function leaveGame(id){ 
+	sendMessage({ method: "leave", gameId }) 
+	gameId = null; 
+}
+function sendMove(move){ sendMessage({ method: "move", move }) }
+function sendChat(text){ sendMessage({ method: "chat", text }) }
+// function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
+function shareMusic(rawData){ connection.send(rawData) }
+function shareVideo(videoId){ sendMessage({ method: "share", type: "video", videoId }) }
 
 function createConnection(){
 	// const protocol = { automaticOpen: false, debug: true }
@@ -43,9 +54,9 @@ function startConnection(){
 	if (connection) return
 	else createConnection()
 }
-function sendMessage(connection, message){
-	connection.send(JSON.stringify({...message, clientId}))
-	console.log(`%c Message sent [${message.method}]`,"color:orange;", {...message, clientId})
+function sendMessage(message){
+	connection.send(JSON.stringify({ ...(gameId && {gameId}), ...message}))
+	console.log(`%c Message sent [${message.method}]`,"color:orange;", {...message, clientId, gameId})
 }
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers)
@@ -87,9 +98,9 @@ async function searchSongImage(title){
 	const url = `${baseAPIUrl}/search`
 	const response = await fetch(url, { method, headers, body })
 	if (response.ok) {
-		const data = await response.json()
-		console.log('%c Song image',"color:blue;", {data})
-		return data
+		const imageSrc = await response.json()
+		console.log('%c Song image',"color:blue;", {imageSrc})
+		return imageSrc
 	}
 }
 

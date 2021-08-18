@@ -8,6 +8,7 @@ export default initial => ({
 		autoPlay: true,
 		allowShare: true,
 		persistShareSetting: false, // if false prompts user every time song is shared
+		selectedFile: null,
 		songList: {},
 		currSongId: 0,
 		isLoading: false,
@@ -24,6 +25,7 @@ export default initial => ({
 	actions: { 
 		startLoading: _=> _=> ({isLoading: true}),
 		stopLoading: _=> _=> ({isLoading: false}),
+		setSelectedFile: file => _ => ({selectedFile: file}),
 		addSong: song => state => {
 			let songId = song.songId
 			if (songId && state.songList[songId]) return {} // not reachable ids always diff; compare names instead
@@ -32,7 +34,7 @@ export default initial => ({
 			return {
 				// isLoading: autoPlay,
 				songPreview: {}, // clear preview
-				songList: {  ...state.songList, [songId]: { songId, ...song } }, 
+				songList: { [songId]: { songId, ...song },  ...state.songList }, 
 				currSongId: play ? songId : state.currSongId, // if autoplay, play new song
 				isPreviewing: false
 			}
@@ -49,8 +51,16 @@ export default initial => ({
 		toggle: option => state => ({ [option]: !state[option] }),
 		getState: _=>({songList, currSongId})=>({songList, currSongId})
 	},
-	view: (state, actions) => ({gameId}) => {
+	view: (state, actions) => ({alert}) => {
 		let notEmpty = Object.getOwnPropertyNames(state.songList).length > 0
+		let songList = Object.values(state.songList)
+		Api.setMessageHandlers({
+			music: message => {
+				if (!state.allowShare) return
+				if (!state.persistShareSetting) promptShare(message.songId||0, alert, actions)
+				else console.log('add shared song', message.songId)//actions.addSong(message.songId)
+			}
+		})
 		return (
 			<div class="music-area text-neutral">
 				<Options {...state} toggle={actions.toggle}/>
@@ -58,11 +68,9 @@ export default initial => ({
 
 				{ notEmpty &&
 					<ul class="music-table">
-					{ Object.values(state.songList).map((song, i)=>(
+					{ songList.map((song, i)=>(
 						<MusicItem song={song} setCurrSong={actions.setCurrSong} currSongId={state.currSongId}/>
 					))}
-						{/* <MusicItem/> */}
-						{/* <MusicItem/> */}
 					</ul>
 				}
 			</div>
@@ -71,15 +79,16 @@ export default initial => ({
 })
 
 function SongPlayer({ state, actions }){
-	let {currSongId, isLoading, isPreviewing, songPreview, autoPlay} = state // should be consts
-	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview, setCurrSong} = actions
+	let {currSongId, isLoading, isPreviewing, songPreview, allowShare, selectedFile} = state // should be consts
+	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview, setSelectedFile} = actions
 	let isPlaying = !!currSongId
 	const noop = _=>{}
 
 	function preview(e){
 		startLoading()
-		let file = e.target.files[0]
-		processSong(file, true)
+		let {selectedFile} = setSelectedFile(e.target.files[0])
+		console.log('selfile',selectedFile)
+		processSong(selectedFile, true)
 		// todo: set size limit err msg
 		// todo: on error reset form
 	}
@@ -87,8 +96,15 @@ function SongPlayer({ state, actions }){
 		let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
 		let song = songPreview
 		if (isPreviewing) addSong(song)
-		else song = processSong(form.song.files[0])
-		if (allowShare) Api.shareMusic(song, gameId)
+		else {
+			let {selectedFile} = setSelectedFile(form.song.files[0])
+			song = processSong(selectedFile)
+		}
+		if (allowShare) {
+			let rawData = await getRawSongData(selectedFile)
+			Api.shareMusic(rawData)
+			// Api.shareMusic(selectedFile)
+		}
 		form.reset()
 		form.song.value = [];
 	}
@@ -173,7 +189,7 @@ function SongPlayer({ state, actions }){
 		let song = parseMusicFile(file)
 		if (preview) setSongPreview(song)
 		else addSong(song)
-		let data = await getSongData(file, song)
+		let data = await getSongInfo(file, song)
 		setSongData({songId: song.songId, data, preview})
 		return song
 	}
@@ -186,7 +202,7 @@ function SongPlayer({ state, actions }){
 			title: file.name.split(".").slice(0, -1).join(".")
 		}
 	}
-	async function getSongData(file, song){
+	async function getSongInfo(file, song){
 		// console.time('songData')
 		let image = await Api.searchSongImage(song.title)
 		let duration = await getSongDuration(file) 
@@ -293,9 +309,60 @@ function Loader(){
 	)
 }
 
+function promptShare(songId, alert, actions){
+	let {setShare, addVideo} = actions
+	// songId = '3vBwRfQbXkg'
+	alert.show({
+		icon: "./assets/sidePanel/controls/music_icon.svg",
+		heading: 'Music Shared',
+		message: 'A user wants to share a song with you.', 
+		actions: {
+			positive: { text: 'Allow', handler: (bool, persist) => {
+				setShare({bool, persist})
+				console.log('add shared song', songId)//addSong(songId)
+			}},
+			negative: { text: 'Deny', handler: (bool, persist) => {
+				if (persist) setShare({bool, persist})
+			}}, 
+		},
+		dontAskAgain: false
+	})
+}
+
 // Return next object key
 function next(obj, key) {
 	var keys = Object.keys(obj), 
 	i = keys.indexOf(key);
 	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
 };
+
+function getRawSongData(file) {
+	return new Promise((resolve, reject)=>{
+		var reader = new FileReader();
+		var rawData = new ArrayBuffer();            
+		reader.loadend = function() {}
+		reader.onload = function(e) {
+			rawData = e.target.result;
+			console.log('rawData ', {rawData})
+			resolve(rawData)
+			alert("the File has been transferred.")
+		}
+		reader.readAsArrayBuffer(file);
+	})
+}
+
+
+// bufferToBase64: https://stackoverflow.com/a/52929849/8723748
+function convertDataURIToBinary(dataURI) {
+	var BASE64_MARKER = ';base64,';
+	var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+	var base64 = dataURI.substring(base64Index);
+	var raw = window.atob(base64);
+	var rawLength = raw.length;
+	var array = new Uint8Array(new ArrayBuffer(rawLength));
+  
+	for(i = 0; i < rawLength; i++) {
+		array[i] = raw.charCodeAt(i);
+	}
+	return array;
+}

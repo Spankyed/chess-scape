@@ -14,7 +14,7 @@ server.register(fastifyCors, { origin: '*' })
 server.register(fastifyWebsocket,{ options: {
 	// verifyClient: _=>{}, 
 	clientTracking: true, 
-	maxPayload: 1048576 
+	// maxPayload: 1048576 
 }})
 server.register(fastifyCookie, {
 	secret: "my-secret", // for cookies signature

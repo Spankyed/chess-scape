@@ -51,9 +51,18 @@ export default initial => ({
 		stopLoading: _=> _=> ({isLoading: false}),
 		play: video => state => ({ currVideoId:  video ? video.video_id : state.currVideoId})
 	},
-	view: (state, actions) => ({gameId, alert, mediaOpen}) => {
+	view: (state, actions) => ({alert, mediaOpen}) => {
 		const isPlaying = _=> state.currVideoId && !state.isLoading
-		const submit = handleSubmit(gameId, actions, state.allowShare)
+		const submit = async function (videoId, form){ 
+			// todo: wrap in try-catch & setVideoFound(false) ?
+			form = form || document.getElementsByTagName('form')[0] // todo: reset only video forms
+			form.reset()
+			let videoFound = await checkVideoId(videoId)
+			actions.setVideoFound(videoFound)
+			if (!videoFound) return
+			actions.addVideo(videoId)
+			if (state.allowShare) Api.shareVideo(videoId)
+		}
 		Api.setMessageHandlers({
 			video: message => {
 				if (!state.allowShare) return
@@ -192,8 +201,8 @@ function Embed({currVideoId, videoList, setVideoData, isPlaying, stopLoading, au
 			if (id != 1) return
 			if (event == 'initialDelivery' && info.videoData.title) setVideoData(info.videoData)
 			if (autoPlay && event == 'infoDelivery' && info.playerState === 0) {
-				let next = next(videoList, currVideoId)
-				if (next) play(next)
+				let nextVideo = next(videoList, currVideoId)
+				if (nextVideo) play(nextVideo)
 			}
 		}
 	}
@@ -249,7 +258,7 @@ function promptShare(videoId, alert, actions){
 	let {setShare, addVideo} = actions
 	// videoId = '3vBwRfQbXkg'
 	alert.show({
-		icon: '',
+		icon: "./assets/sidePanel/controls/yt_play.svg", 
 		heading: 'Video Shared',
 		message: 'A user wants to share a video with you.', 
 		actions: {
@@ -263,20 +272,6 @@ function promptShare(videoId, alert, actions){
 		},
 		dontAskAgain: false
 	})
-}
-
-function handleSubmit(gameId, actions, allowShare){
-	let {setVideoFound, addVideo} = actions
-	return async function (videoId, form){ 
-		// todo: wrap in try-catch & setVideoFound(false) ?
-		form = form || document.getElementsByTagName('form')[0] // todo: reset only video forms
-		form.reset()
-		let videoFound = await checkVideoId(videoId)
-		setVideoFound(videoFound)
-		if (!videoFound) return
-		addVideo(videoId)
-		if (allowShare) Api.shareVideo(videoId, gameId)
-	}
 }
 
 function parseYoutubeUrl(url) {

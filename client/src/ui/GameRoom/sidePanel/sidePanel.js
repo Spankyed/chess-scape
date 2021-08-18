@@ -40,13 +40,13 @@ export default initial => ({
 
 					<div class='content-wrapper'>
 						<div class={`panel-section ${isCurrTab('chat') && 'visible'}`}>
-							<ChatView gameId={gameId}/>
+							<ChatView/>
 						</div>
 						<div class={`panel-section ${isCurrTab('moves') && 'visible'}`}>
 							<MovesView/>
 						</div>
 						<div class={`panel-section ${isCurrTab('media') && 'visible'}`}>
-							<MediaView gameId={gameId} alert={alert}/>
+							<MediaView alert={alert}/>
 						</div>
 					</div>
 				</div>

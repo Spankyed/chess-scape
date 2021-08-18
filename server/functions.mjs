@@ -6,12 +6,12 @@ import HTMLParser from 'node-html-parser';
 
 const { Chess } = ChessLib;
 
-const clients = {}; // todo: change or copy to lobby.clients, move clients in/out of lobby when join/leave gameRooms
-const gameRooms = {};
+let clients = {}; // todo: change or copy to lobby.clients, move clients in/out of lobby when join/leave gameRooms
+let gameRooms = {};
     
 async function getGoogleImage(search){
     // console.time('fetch')
-    const url = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(search)
+    const url = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(search + ' song')
     let page = await fetch(url)
     // console.timeEnd('fetch')
     let html = await page.text()
@@ -46,12 +46,12 @@ function handleRoomsWebSocket(connection, req) {
     connection.socket.on('message', request => { // handle incoming messages from connected client 
 		// console.log('incoming request ', request)
 		// const message = request
-		const message = JSON.parse(request)
-		console.log('incoming message', message)
+        const message = JSON.parse(request)
+        console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
         if (!message) return
         const methods = { create, join, move, chat, share}
         const messageHandler = methods[message.method]
-        if (messageHandler) messageHandler(message)
+        if (messageHandler) messageHandler({message, clientId})
 	})
     // connection.socket.on('open', _ => console.log('~opened: ', i++))
     // connection.socket.on('close', _ => delete clients[clientId])
@@ -75,9 +75,9 @@ function addNewGameRoom(clientId) {
 //     "method": "create",
 //     "clientId" : "<guid>"
 // }
-function create(message){
+function create({message, clientId}){
     // console.log('creating')
-    const clientId = message.clientId;
+    // const clientId = message.clientId;
     if (!clients[clientId]) return
     // const matchParams = message.matchParams;
     const gameId = addNewGameRoom(clientId)
@@ -86,33 +86,30 @@ function create(message){
         "gameId" : gameId,
         "gameRooms" : mapRooms(),
     }
-    Object.values(clients).forEach( client => {
-        const clientConn = client.connection;
-        if (clientConn) clientConn.socket.send(JSON.stringify(response));
-    })
+    sendMessageAll(response)
+
 }
-function join(message){ //a client want to join
-    const {gameId, clientId} = message;
+function join({message, clientId}){ // client wants to join a game
+    // const {gameId, clientId} = message;
+    const {gameId} = message;
     const gameRoom = gameRooms[gameId];
     if(!gameRoom) return
-    // if (gameRoom.clients.length >= 2) return; // todo: max players instead of clients
     // const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
     gameRoom.clients.push(clientId)
-    if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // start the game
-    const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
+    if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // todo: check max players instead of clients
+    const response = { "method": "join", gameId, clientId, matchStarted: gameRoom.matchStarted }
     // todo: notify all clients in lobby a player has joined a gameRoom to update their room list 
-    // todo: check if client is still connected before trying to send message
-    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
 }
-function leave(message){ //a client want to leave
-    const {gameId, clientId} = message;
+function leave({message, clientId}){ //a client want to leave
+    const {gameId} = message;
     const gameRoom = gameRooms[gameId];
     // if (arr.includes(val)) arr.splice(arr.indexOf(val), 1)
     const response = { "method": "join", clientId, matchStarted: gameRoom.matchStarted }
     // notify all clients that a player has left
-    gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
 }
-function move(message) { // a user plays
+function move({message, clientId}) { // a user plays
     // todo: verify player is actually same color as move made
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId];
@@ -121,7 +118,7 @@ function move(message) { // a user plays
     if (!match) return  
     if (match.game_over()){
         const response = { "method": "endGame", move }
-        gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+        gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
         // socket.emit('gameOver', roomId)
     }
     else {
@@ -130,37 +127,38 @@ function move(message) { // a user plays
         // todo: if not valid move, send game state to sync client
         if(!move) return
         const response = { "method": "move", move }
-        // messageOtherClients(gameRoom, clientId, JSON.stringify(response))
-        gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+        // messageOtherClients(gameRoom, clientId, response)
+        gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
     }
 }
-function chat(message) {
-    const {text, gameId, clientId} = message;
+function chat({message, clientId}) {
+    const {text, gameId} = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
     const response = { "method": "chat", text }
-    messageOtherClients(gameRoom, clientId, JSON.stringify(response))
+    messageOtherClients(gameRoom, clientId, response)
 }
-function share(message){
+function share({message, clientId}){
     let mediaHandlers = { 'video': shareVideo, 'music': shareMusic  } 
     mediaHandlers[message.type](message)
 }
-function shareVideo(message) {
-    const {videoId, gameId, clientId} = message;
+function shareVideo({message, clientId}) {
+    const {videoId, gameId} = message;
     const gameRoom = gameRooms[gameId]
-    if (!gameRoom) return   // todo: if gameroom not found send user error message to leave game
+    if (!gameRoom) return   
     const response = { method: "share", type:'video', videoId }
-    messageOtherClients(gameRoom, clientId, JSON.stringify(response))
+    messageOtherClients(gameRoom, clientId, response)
 }
-function shareMusic(message) {
-    const {song, gameId, clientId} = message;
+function shareMusic({message, clientId}) { // todo: check if song has image, otherwise scrap google?
+    const rawData = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
-
-    // todo: check if song has image, otherwise scrap google
-    const response = { "method": "share", text }
-    messageOtherClients(gameRoom, clientId, JSON.stringify(response))
-    // gameRoom.clients.forEach( (clientId) => clients[clientId].connection.socket.send(JSON.stringify(response)) )
+    const response = { "method": "share", type:'music', rawData }
+    // messageOtherClients(gameRoom, clientId, response)
+    // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
+    gameRoom.clients.forEach( (clientId) => {
+        clients[clientId].connection.socket.send(rawData)
+    } )
 }
 
 function addNewClient(username, ip) {
@@ -172,9 +170,20 @@ function setClientConnection(clientId, connection) {
     clients[clientId] = {...clients[clientId], connection}
 }
 
+function sendMessageAll(message, clientId){
+    Object.values(clients).forEach( client => {
+        const clientConn = client.connection;
+        if (clientConn) clientConn.socket.send(JSON.stringify(message));
+    })
+}
+function sendMessage(clientId, message){
+    // todo: check if client is still connected before trying to send messages
+    clients[clientId].connection.socket.send(JSON.stringify(message))
+    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", message)
+}
 function messageOtherClients(gameRoom, sender, message){
     gameRoom.clients.forEach(clientId => { 
-        if (clientId != sender) clients[clientId].connection.socket.send(message)
+        if (clientId != sender) sendMessage(clientId, message)
     })
 }
 function mapRooms(){
