@@ -47,7 +47,7 @@ export default initial => ({
 		),
 		setCurrSong: songId => _=> ({ currSongId: songId, isPreviewing: false}),
 		setSongPreview: (song) => state => ({ songPreview: song, isPreviewing: true }),
-		cancelPreview: _ => _=> ({isPreviewing: false}),
+		cancelPreview: _ => _=> ({isPreviewing: false, isLoading: false}),
 		setShare: ({bool, persist}) => state => ({ allowShare: bool, persistShareSetting: persist}),
 		toggle: option => state => ({ [option]: !state[option] }),
 		getState: _=>({songList, currSongId})=>({songList, currSongId})
@@ -133,7 +133,7 @@ function SongPlayer({ state, actions }){
 			Api.shareMusic(song, rawData)
 		}
 		form.reset()
-		form.song.value = [];
+		setTimeout(_=> form.song.value = [], 500)
 	}
 	return(
 		<form name='song-form'>
@@ -142,7 +142,7 @@ function SongPlayer({ state, actions }){
 				{ isPlaying ?
 					<Song {...actions} {...state}/> :
 					<div class="song-preview-wrapper h-full w-full">
-						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file' accept="audio/*"/>
+						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file' accept="audio/*" disabled={isPreviewing}/>
 						{/* <p class='invalid-message'>Song exceeds 10 mb file limit</p>  */}
 						{ isPreviewing ? 
 						<Preview song={songPreview} cancelPreview={cancelPreview}/> : 
@@ -182,9 +182,11 @@ function SongPlayer({ state, actions }){
 		return(
 			<div class="song-container" style={imageStyle} title={song.title}>
 				<div class='song-title'>{song.title}</div>
-				<audio oncreate={handleSongEnd} src={song.src} controls autoplay>
-					<source src={song.src}/>
-				</audio>
+				<div class="audio-wrapper">
+					<audio oncreate={handleSongEnd} src={song.src} controls autoplay>
+						<source src={song.src}/>
+					</audio>
+				</div>
 			</div>
 		)
 	}
@@ -196,9 +198,9 @@ function SongPlayer({ state, actions }){
 			cancelPreview()
 		}
 		return(
-			<div onclick={cancel} class="song-container" style={previewImage} title={song.fileName}>
+			<div class="song-container" style={previewImage} title={song.fileName}>
 				<div class='song-title'>{song.title}</div>
-				<img class='trash-icon' src="../assets/sidePanel/controls/trash.svg"/>	
+				<img onclick={cancel} class='trash-icon' src="../assets/sidePanel/controls/trash.svg"/>	
 			</div>
 		)
 	}

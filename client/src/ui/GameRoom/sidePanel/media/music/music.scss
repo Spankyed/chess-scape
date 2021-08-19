@@ -110,12 +110,12 @@
             flex-grow:1;
             // box-shadow: 5px 5px 20px rgba(0,0, 0, 0.4);
             // transform: scale(.85);
-            filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(92%);
             // width: 200px;
             // height: 25px;
             &::-webkit-media-controls-enclosure {
+                filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(92%);
+                z-index: 1;
                 font-weight: 700 !important;
-
                 border-radius: 0px;
                 // background-color: rgb(53,53,53,.5);
                 // background-color: rgb(241,243,244,.9);

@@ -48,7 +48,7 @@ function handleRoomsWebSocket(connection, req) {
         let isBinary = Buffer.isBuffer(request)
         let message = isBinary ? BSON.deserialize(request, {promoteBuffers: true}) : JSON.parse(request)
         if (!message) return
-        if(!isValidFileType(message.rawData)) return
+        if(isBinary && !isValidFileType(message.rawData)) return
         // if (isBinary) console.log("bson", message)
         console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
         const methods = { create, join, move, chat, share}
