@@ -179,11 +179,16 @@ function SongPlayer({ state, actions }){
 				}
 			}, false);
 		}
+		function togglePlay(){
+			var audio = document.getElementById("song-audio");
+			console.log('paused',audio.paused)
+			audio.paused ? audio.play() : audio.pause();
+		}
 		return(
-			<div class="song-container" style={imageStyle} title={song.title}>
+			<div onclick={togglePlay} class="song-container" style={imageStyle} title={song.title}>
 				<div class='song-title'>{song.title}</div>
 				<div class="audio-wrapper">
-					<audio oncreate={handleSongEnd} src={song.src} controls autoplay>
+					<audio oncreate={handleSongEnd} src={song.src} id="song-audio" controls autoplay>
 						<source src={song.src}/>
 					</audio>
 				</div>
