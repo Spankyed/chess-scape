@@ -2,7 +2,7 @@
 // import ReconnectingWebSocket from 'reconnecting-websocket';
 import { nanoid } from 'nanoid/non-secure'
 import { serialize, deserialize } from 'bson';
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
 
 const baseAPIUrl = 'http://localhost:5000/api'
 const baseWSUrl = 'ws://localhost:5000/api'

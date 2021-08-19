@@ -1,9 +1,7 @@
 import { h } from 'hyperapp';
 import Api from '../../../../../api/Api';
 import { nanoid } from 'nanoid/non-secure'
-import { serialize, deserialize } from 'bson';
 
-//todo: check mime type before sending any files
 export default initial => ({
 	state: {
 		autoPlay: true,
@@ -57,7 +55,6 @@ export default initial => ({
 		let songList = Object.values(state.songList)
 		Api.setMessageHandlers({
 			music: message => {
-				// message = deserialize(message)
 				if (!state.allowShare) return
 				if (!state.persistShareSetting) promptShare(message, alert, actions)
 				else addFromBinary(message)
@@ -66,7 +63,7 @@ export default initial => ({
 		function addFromBinary({song, rawData}){
 			let blob = new Blob([rawData], {type : 'audio/ogg'});
 			let blobUrl = URL.createObjectURL(blob);
-			console.log('adding shared', {...song, src: blobUrl}) //addSong(songId)
+			// console.log('adding shared', {...song, src: blobUrl}) //addSong(songId)
 			actions.addSong({...song, src: blobUrl})
 		}
 		function promptShare(message, alert, actions){
@@ -181,7 +178,6 @@ function SongPlayer({ state, actions }){
 		}
 		function togglePlay(){
 			var audio = document.getElementById("song-audio");
-			console.log('paused',audio.paused)
 			audio.paused ? audio.play() : audio.pause();
 		}
 		return(
@@ -260,8 +256,6 @@ function SongPlayer({ state, actions }){
 		})
 	}
 }
-
-
 
 function MusicItem({song, currSongId, setCurrSong}){
 	const isPlaying = song.songId == currSongId
@@ -343,8 +337,6 @@ function Loader(){
 	)
 }
 
-
-
 // Return next object key
 function next(obj, key) {
 	var keys = Object.keys(obj), 
@@ -364,20 +356,4 @@ function getRawSongData(file) {
 		}
 		reader.readAsArrayBuffer(file);
 	})
-}
-
-
-// bufferToBase64: https://stackoverflow.com/a/52929849/8723748
-function convertDataURIToBinary(dataURI) {
-	var BASE64_MARKER = ';base64,';
-	var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-	var base64 = dataURI.substring(base64Index);
-	var raw = window.atob(base64);
-	var rawLength = raw.length;
-	var array = new Uint8Array(new ArrayBuffer(rawLength));
-  
-	for(i = 0; i < rawLength; i++) {
-		array[i] = raw.charCodeAt(i);
-	}
-	return array;
 }

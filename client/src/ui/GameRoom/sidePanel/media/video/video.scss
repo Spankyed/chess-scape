@@ -1,7 +1,7 @@
 // $submit-button-color: #82B64A; //409b6b
 // $submit-button-color: #4338CA; //409b6b
 // $submit-button-color: #6B944C; //409b6b
-$submit-button-color: #2f855a; //409b6b
+$submit-button-color: #82B64A; //409b6b
 $toggle-track-color: #959b90;
 // $toggle-track-active-color: #4338CA;
 $toggle-dot-color: #3E5BB8;
@@ -125,6 +125,7 @@ $toggle-dot-color: #3E5BB8;
 				height: 2.5rem/* 40px */;
 				display: flex;
 				background-color: $submit-button-color;
+				letter-spacing: 0.05em;
 				padding: 0.55rem/* 12px */;
 				color: #fff;;
 				font-weight: 600;

@@ -1,1 +1,15 @@
-<?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg height="32px" id="Layer_1" style="enable-background:new 0 0 32 32;" version="1.1" viewBox="0 0 32 32" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28,14H18V4c0-1.104-0.896-2-2-2s-2,0.896-2,2v10H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h10v10c0,1.104,0.896,2,2,2  s2-0.896,2-2V18h10c1.104,0,2-0.896,2-2S29.104,14,28,14z"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <path d="M0 0L32 0L32 32L0 32L0 0Z" id="path_1" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+  </defs>
+  <g id="plus_music">
+    <path d="M0 0L32 0L32 32L0 32L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+    <g clip-path="url(#mask_1)">
+      <path d="M26 12L16 12L16 2C16 0.896 15.104 0 14 0C12.896 0 12 0.896 12 2L12 12L2 12C0.896 12 0 12.896 0 14C0 15.104 0.896 16 2 16L12 16L12 26C12 27.104 12.896 28 14 28C15.104 28 16 27.104 16 26L16 16L26 16C27.104 16 28 15.104 28 14C28 12.896 27.104 12 26 12L26 12Z" transform="translate(2 2)" id="Shape" fill="#303C42" fill-rule="evenodd" stroke="none" />
+    </g>
+  </g>
+</svg>
