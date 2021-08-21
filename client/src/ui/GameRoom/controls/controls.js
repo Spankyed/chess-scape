@@ -11,7 +11,7 @@ export default initial => ({
 
 		return ( 
 			// pointer-events-none controls-wrapper
-			<div class={`controls-wrapper ${isLoading && 'hidden'}`}>
+			<div class={`controls-wrapper pointer-events-none ${isLoading && 'hidden'}`}>
 				<div class="controls">
 					{ gameOver  &&
 						<div class="message-wrapper">

@@ -8,14 +8,19 @@ export default class Game {
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         this.Scene = Scene
-        this.isVsComputer = false;
-        this.computerColor = 'black';
+        this.board = Scene.board
+        this.gameId = gameId
+        this.isVsComputer = true;
+        // this.computerColor = 'black';
+        this.playerColor = 'black';
         this.game_over = false;
         this.engine = new Chess()
         // console.log('moves', this.engine.moves())
+        this.inReview = false;
+        this.pausedPgn = null;
 
         this.setupWebhookHandlers()
-        this.gameId = gameId
+        window.interact = {engine: this.engine, scene: this.Scene, game:this}
 
         return this
     }
@@ -35,7 +40,7 @@ export default class Game {
         const moves = this.engine.moves()
         const move = moves[Math.floor(Math.random() * moves.length)]
         var validMove = this.engine.move(move, { verbose: true })
-        if (validMove) setTimeout(()=> this.Scene.board.moveOpponentPiece(validMove), 10)
+        if (validMove) setTimeout(()=> this.Scene.board().moveOpponentPiece(validMove), 10)
         this.checkGameOver()
     }
 
@@ -44,13 +49,50 @@ export default class Game {
         var validMove = this.engine.move(move);
         console.log('server move', validMove)
         if (!validMove) return
-        this.Scene.board.moveOpponentPiece(move)
+        this.Scene.board().moveOpponentPiece(move)
         this.checkGameOver()
     }
 
+    resumePlay(){
+        this.engine.load_pgn(this.pausedPgn)
+        this.Scene.setBoard(chess.board())
+        this.inReview = false
+        his.pausedPgn = null
+    }
+    setReview(sq) {
+        return this.engine.moves(sq)
+        this.pausedPgn = this.engine.pgn()
+    }
+    
+    // mapBoard(matrix){
+    //     let map = {}
+    //     let cols = ['a','b','c','d','e','f','g','h']
+    //     matrix.forEach((row, i)=>{
+    //         col.forEach((piece, j)=>{
+    //             let sq = cols[j] + (8-i)
+    //             if (piece)
+    //             map[]
+    //             rook
+    //             knight
+    //         })
+    //     })
+
+    //     let col = 0
+    //     for (let row = 8; row < 0; row--) {
+    //         let sq = letters[col] + row
+    //         col++
+    //     }
+    //     for (let row = 0; row < grid.h; row++) {
+    //         let xCoord = -7
+
+    //     }
+
+    // }
+
+
     handleUserMove (move) {
         var validMove = this.engine.move(move);
-        if (!validMove) return
+        // if (!validMove) return
         if (this.isVsComputer) {
             this.makeComputerMove()
         } else {

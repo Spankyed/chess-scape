@@ -1,16 +1,14 @@
 export default class Board {
-    constructor(Scene){
+    constructor(current, scene, canvas){
         // Board class depends on game class have being instantiated
         // this.Scene = Scene
-        this.scene = Scene.scene;  
-        this.canvas = Scene.canvas;  
-        this.game = Scene.game;
+        this.scene = scene;  
+        this.pieces = current.pieces
+        this.game = current.game
         this.squares = {}
-        this.pieces = Scene.pieces
         this.fadedPieces = []
         this.playerColor = 'white'
         this.playerCanMove = true;
-        // this.pieces = []
         this.isMoving = false;
         this.fromSq = {};
         this.toSq = {};
@@ -18,12 +16,12 @@ export default class Board {
         // this.startingSq 
         // this.dragPos;
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
-        this.setupEventHandlers()
+        this.setupEventHandlers(canvas)
         this.board = this.createBoard()
         // this.mapPiecesToSquares()
         return 
     }
-    setupEventHandlers() {
+    setupEventHandlers(canvas) {
         const handlers =  {   
             onPointerDown: (evt) => this.onPointerDown(evt),
             onPointerUp: (evt) => this.onPointerUp(evt),
@@ -31,25 +29,25 @@ export default class Board {
             onRightPointerDown: (evt) => { if (evt.button == 2) this.resetMove(true) }
         }
         // todo: use rxjs fromEvent here
-        this.canvas.addEventListener("pointerdown", handlers.onPointerDown, false);
-        this.canvas.addEventListener("pointerup", handlers.onPointerUp, false);
-        this.canvas.addEventListener("pointermove", handlers.onPointerMove, false);
-        this.canvas.addEventListener("contextmenu", handlers.onRightPointerDown, false);
+        canvas.addEventListener("pointerdown", handlers.onPointerDown, false);
+        canvas.addEventListener("pointerup", handlers.onPointerUp, false);
+        canvas.addEventListener("pointermove", handlers.onPointerMove, false);
+        canvas.addEventListener("contextmenu", handlers.onRightPointerDown, false);
         this.scene.onDispose = function () {
-            this.canvas.removeEventListener("pointerdown", handlers.onPointerDown);
-            this.canvas.removeEventListener("pointerup", handlers.onPointerUp);
-            this.canvas.removeEventListener("pointermove", handlers.onPointerMove);
-            this.canvas.removeEventListener("contextmenu", handlers.onRightPointerDown);
+            canvas.removeEventListener("pointerdown", handlers.onPointerDown);
+            canvas.removeEventListener("pointerup", handlers.onPointerUp);
+            canvas.removeEventListener("pointermove", handlers.onPointerMove);
+            canvas.removeEventListener("contextmenu", handlers.onRightPointerDown);
         }
         return this.scene;
     };
 
     // remove scene and ground
     onPointerDown(evt) {
-        if (this.game.game_over || !this.playerCanMove) return;
+        if (this.game().game_over || !this.playerCanMove) return;
         if (evt.button !== 0) return;
         let pickInfo = this.pickWhere((mesh) => mesh.isPickable);
-        console.log('picked sq',pickInfo.pickedMesh)
+        // console.log('picked sq',pickInfo.pickedMesh)
         if (!pickInfo.hit)  return;
         if (this.fromSq.mesh == pickInfo.pickedMesh){
             this.resetMove(true)
@@ -85,7 +83,7 @@ export default class Board {
             // let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
             let potentialMove = { from: this.fromSq.sqName, to: this.toSq.sqName }
             // console.log('potential move ', potentialMove)
-            // let validMove = this.game.moves().find((move) => {
+            // let validMove = this.game().moves().find((move) => {
             //     if (pieceAbbrev == '') 
             //     {    // todo: in pgn, check when pawn captures, if its starting sq changes file
             //         return move.startsWith(`${this.startingSq.charAt(0)}x${closestSq.sqName}`) 
@@ -96,11 +94,11 @@ export default class Board {
 
             let validMove = this.attemptGameMove(potentialMove)
             // console.log('valid move ', validMove)
-            // console.log('possible moves '+ this.game.moves())
+            // console.log('possible moves '+ this.game().moves())
             if (validMove) {
                 // if(validMove.isPromoting){
                 //     this.actions()
-                //     this.game.selectPiece
+                //     this.game().selectPiece
                 // }
                 // if(validMove.isCastling){
                 //     select 
@@ -151,7 +149,7 @@ export default class Board {
     
     attemptGameMove(potentialMove){
         this.playerCanMove = false
-        let validMove = this.game.handleUserMove(potentialMove)
+        let validMove = this.game().handleUserMove(potentialMove)
         if (!validMove) this.playerCanMove = true
         return validMove
     }
@@ -240,7 +238,6 @@ export default class Board {
     // }
 
 
-
     // calcDistance(p1, p2){
     //     return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
     // }
@@ -250,13 +247,21 @@ export default class Board {
         // todo: if king moves two spaces, then castled: move & updateBoardPosition for rook to other side of king
         if (this.squares[to].piece) this.squares[to].piece.dispose() // move pieces off board instead of dispose
         this.squares[to].piece = this.squares[from].piece
+        this.squares[to].piece.sqName = this.squares[to].sqName
+        delete this.squares[from].piece
+    }
+    
+    setReviewPosition(state){
+        // name.charAt(0)
+        if (this.squares[to].piece) this.squares[to].piece.dispose() // move pieces off board instead of dispose
+        this.squares[to].piece = this.squares[from].piece
+        this.squares[to].piece.sqName = this.squares[to].sqName
         delete this.squares[from].piece
     }
 
     mapPiecesToSquares(pieces){
-        this.pieces = pieces
-        for (const color in this.pieces) {
-            let colorPieces = this.pieces[color]
+        for (const color in pieces) {
+            let colorPieces = pieces[color]
             colorPieces.forEach(piece => {
                 let closestSq = this.getClosestSq(piece.position)
                 this.squares[closestSq.sqName] = { ...closestSq, piece }

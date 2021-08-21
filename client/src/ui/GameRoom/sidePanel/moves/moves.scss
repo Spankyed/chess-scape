@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
 $submit-button-color: #82B64A;
+// $alt-color: #a0a0a0;
+$alt-color: #bf8b69;
 @font-face {
     font-family: 'noto-chess';
     src: url('../assets/noto-chess.ttf')  format('truetype');
@@ -74,7 +76,7 @@ $submit-button-color: #82B64A;
             }
             &> move:nth-child(odd){ 
                 color: #424141;
-                background-color: #a0a0a0; 
+                background-color: $alt-color; 
             }
             &> move:nth-child(even){ 
                 // background-color: #748c5a; 
