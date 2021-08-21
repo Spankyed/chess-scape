@@ -117,6 +117,7 @@ function SongPlayer({ state, actions }){
 		// todo: on error reset form
 	}
 	async function submit(){
+		// todo: https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
 		let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
 		let song = songPreview
 		let file = selectedFile;
@@ -265,6 +266,7 @@ function MusicItem({song, currSongId, setCurrSong}){
 	}
 	return(
 		<li onclick={select} class={`music-row ${isPlaying && 'selected'}`} title={song.title}>
+			{/* color: https://www.iconfinder.com/icons/3049253/button_audio_interface_music_play_sound_video_icon */}
 			<img class="song-img" src={song.image ? song.image : "./assets/sidePanel/controls/music_icon.svg"}/>
 			<div class="song-info">
 				{/* <div class="artist">Artist</div> */}

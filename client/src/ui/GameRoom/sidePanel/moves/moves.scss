@@ -1,46 +1,135 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
-
+$submit-button-color: #82B64A;
 @font-face {
     font-family: 'noto-chess';
     src: url('../assets/noto-chess.ttf')  format('truetype');
   }
+
+.header{
+    justify-content: flex-end;
+    background: #525357;
+    height: 2rem/* 28px */;
+    // border-bottom: 1px solid #777777;
+    .download-label{
+
+    }
+    .download-button{
+        padding: 0.4rem/* 12px */;
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+        // height: 2.5rem/* 40px */;
+        display: flex;
+        background-color: $submit-button-color;
+        letter-spacing: 0.05em;
+        color: #fff;;
+        font-weight: 600;
+        &:hover{
+            background-color: #517729;
+        }
+    }
+}
 .moves { 
     // display: flex;
     // flex-flow: row wrap;
+    // line-height: 5vh;
+    width:100%;
+    overflow: auto;
+    font-size: 1.125rem/* 18px */;
+    line-height: 1.75rem/* 28px */;
 
     row {
         display: flex;
         width: 100%;
-        height: 5vh;
-    }
-
-    .move-list{
-        width:100%;
-        overflow: auto;
-        transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
     }
 
     index {
         flex: 0 0 13%;
         display: flex;
-        justify-content: flex-end;
-        border-right: 1px solid #d9d9d9;
-        background: #f7f6f5;
+        // justify-content: flex-end;
+        border-right: 1px solid #777777;
+        // background: #f7f6f5;
+        // background: rgb(228,230,231);
+        background: #525357;
         line-height: 2.07em;
-        color: #b3b3b3;
+        // color: #616060;
+        // color: #b3b3b3;
         span{
-            padding-right: 0.25rem/* 4px */;
+            // border-bottom: 1px solid #777777;
+            text-align: right;
+            height: 5vh;
+            padding-right: 0.75rem/* 4px */;
         }
     }    
-    move {
-        cursor: pointer;
-        .active {
-            background-color: #989695;
+    .colors-moves{
+        border-top: 1px solid #777777;
+        &.white{
+            sans { 
+                color: #fff; 
+                text-shadow: 
+                0 1px 1px rgb(61, 61, 61),
+                // 0 2px 0 #555147, 
+                // 0 3px 0 #726c5e, 
+                // 0 4px 0 #99917c, 
+                // 0 5px 3px #c0b092;
+            }
+            &> move:nth-child(odd){ 
+                color: #424141;
+                background-color: #a0a0a0; 
+            }
+            &> move:nth-child(even){ 
+                // background-color: #748c5a; 
+            }
         }
-        sans {
-            font-family: 'noto-chess';
+        &.black{
+            sans { 
+                color: #000; 
+                text-shadow: 
+                0 1px 1px rgb(190, 190, 190),
+                // 0 2px 0 #928a7a, 
+                // 0 3px 0 #a39a87, 
+                // 0 4px 0 #726c5c, 
+                // 0 5px 3px #474136;
+            }
+            &> move:nth-child(odd){ 
+                // background-color: #67735a; 
+            }
+            &> move:nth-child(even){ 
+                color: #424141;
+                background-color: #a0a0a0; 
+            }
         }
-        // flex: 0 0 50%;
+
         flex: 0 0 43.5%;
+        move {
+            border-bottom-width: 1px;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            height: 5vh;
+            transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
+            .active {
+                background: #82B64A;
+                cursor: default;
+            }
+            sans {
+                font-weight: 300;
+                padding-right: .2em;
+                // padding-top: .1em;
+                font-size: 1.7rem/* 20px */;
+                line-height: 1.75rem/* 28px */;
+                // font-family: 'noto-chess';
+
+            }
+            &:hover{
+                color: #424141 !important;
+                background-color: #82B64A !important;
+                // background-color: #989695;
+            }
+            border: 10px #fff;
+            // flex: 0 0 50%;
+        }
     }
 }

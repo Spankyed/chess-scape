@@ -207,7 +207,6 @@ async function isValidFileType(buffer){
     // fileType.mime === 'image/jpeg'
     // if (stream2.fileType && stream2.fileType.mime === 'image/jpeg') if (stream2.fileType && stream2.fileType.mime === 'image/jpeg') 
     let {mime} = await fileType.fromBuffer(buffer) // todo: test/ensure that audio is on all audio mime types
-    console.log('mime', mime.indexOf('audio'))
     return (mime.indexOf('audio') > -1)
 }
 

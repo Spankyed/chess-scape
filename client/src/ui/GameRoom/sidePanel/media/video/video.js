@@ -258,6 +258,7 @@ function promptShare(videoId, alert, actions){
 	let {setShare, addVideo} = actions
 	// videoId = '3vBwRfQbXkg'
 	alert.show({
+		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		icon: "./assets/sidePanel/controls/yt_play.svg", 
 		heading: 'Video Shared',
 		message: 'A user wants to share a video with you.', 
