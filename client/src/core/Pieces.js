@@ -70,8 +70,8 @@ async function loadPieces(scene){
         // piece.addPickingBox()
     })
 
-    console.log('Piece Map ('+ Object.keys(pieceMap).length +') ', {pieceMap})
-    console.log('count', {piecesCount})
+    // console.log('Piece Map ('+ Object.keys(pieceMap).length +') ', {pieceMap})
+    // console.log('count', {piecesCount})
 
     return [pieces, pieceMap]
 }

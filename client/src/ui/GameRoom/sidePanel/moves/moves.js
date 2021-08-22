@@ -2,25 +2,36 @@ import { h } from 'hyperapp';
 
 // todo: let players download game pgn/fen
 // todo: alert that user is in review, option to cancel
+// todo: add list empty state
+
+// ['♟','♘','♝','♜','♛','♚']
+// ['♙','♘','♗','♖','♕','♔']
+const pieceSymbols = {p:'♟',r:'♖',n:'♘',b:'♗',q:'♕',k:'♔'}
 export default initial => ({
 	state: { 
-		currMoveIdx: 0,
-		moveCount: 10,
-		whiteMoves: [ 
-			{idx: 0, piece: "♔", to: "E1"},
-			{idx: 1, piece: "♚", to: "D4"},
-			{idx: 2, piece: "♖", to: "G7"}
-		],
-		blackMoves: [ 
-			{idx: 0, piece: "♔", to: "E1"},
-			{idx: 1, piece: "♚", to: "D4"},
-			{idx: 2, piece: "♖", to: "G7"}
-		],
-		// moves: MockMoves()
+		currMove: null,
+		// moveCount: 2,
+		moves: {
+			w:[],
+			b:[]
+		}
 	},
 	actions: { 
+		addMove: ({move, fen}) => ({moves}) => ({
+			moves: { ...moves, 
+				[move.color]:[ ...moves[move.color], 
+					{
+						piece: pieceSymbols[move.piece], 
+						to: move.san,
+						fen
+					}
+				]
+			}
+		}),
+		startReview: move => () => ({inReview: true, currMove: move}),
+		endReview: _=> _=> ({inReview: false, currMove: null}),
 	},
-	view: (state, actions) => ({}) => {
+	view: (state, actions) => ({alert}) => {
 		// console.log(state.moves)
 		return (
 			<div class="h-full w-full">
@@ -31,21 +42,23 @@ export default initial => ({
 				</div>
 				<div class="moves move-list flex flex-row h-full w-full">
 					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-col flex-wrap">
-						<span>1</span>
-						<span>2</span>
-						<span>3</span>
+						{
+							[...new Array(state.moves.w.length)].map((_,idx) => (
+								<span>{idx+1}</span>
+							))
+						}
 					</index>
 					<div class="white colors-moves h-full flex flex-col w-2/5">
 					{
-						state.whiteMoves.map((move,i)=>
-							<Move move={move} idx={i}/>
+						state.moves.w.map((move,i)=>
+							<Move move={move} {...actions} alert={alert} currMove={state.currMove}/>
 						)
 					}
 					</div>
 					<div class="black colors-moves h-full flex flex-col w-2/5">
 					{
-						state.blackMoves.map((move,i)=>
-							<Move move={move} idx={i}/>
+						state.moves.b.map((move,i)=>
+							<Move move={move} {...actions} alert={alert} currMove={state.currMove}/>
 						)
 					}
 					</div>
@@ -56,80 +69,30 @@ export default initial => ({
 	},
 })
 
-function Move({move,idx}){
+function Move({move, currMove, startReview, endReview, alert}){
+	function review(){
+		startReview(move)
+		// promptReview(alert, endReview)
+		interact.game.setReview(move.fen)
+	}
 	return (
-		<move class=''>
+		<move onclick={review} class={`${ currMove == move && ' active'}`}>
 			<sans> {move.piece} </sans>
 			to {move.to}
 		</move>
 	)
 }
 
-
-function MockMoves(){
-	let blackPieces = ['♟','♘','♝','♜','♛','♚',]
-	let whitePieces = ['♙','♘','♗','♖','♕','♔',]
-	let ranks = ['A','B','C','D','E','F','G','H']
-	let files = ['1','2','3','4','5','6','7','8']
-	return Array(16).fill().map((x,idx)=>{
-		if  (idx % 2 == 0) return {idx, piece: gRI(whitePieces), to:`${gRI(ranks)}${gRI(files)}`}
-		else return {idx, piece: gRI(blackPieces), to:`${gRI(ranks)}${gRI(files)}`}
+function promptReview(alert, endReview){
+	alert.show({
+		icon: "./assets/sidePanel/controls/review_icon.svg",
+		heading: 'In Review',
+		message: "You are currently reviewing moves. The board does not reflect current game state.", 
+		actions: {
+			cancel: { text: 'End', handler: _ => {
+				endReview()
+				interact.game.resumePlay()
+			}}
+		}
 	})
 }
-function gRI(arr) {
-	return arr[Math.floor(Math.random() * arr.length)];
-}
-
-
-
-
-
-
-
-{/* <div class="moves h-full text-lg">
-	<div class="move-list">
-	{
-		state.moves.map((move,i)=>
-			<Move move={move} idx={i}/>
-		)
-	}
-	</div>
-</div> */}
-
-
-
-
-
-// views: (state, actions) => ({}) => {
-// 	// console.log(state.moves)
-// 	return (
-// 		<table>
-// 			<colgroup>
-// 				<col class="grey" />
-// 				<col class="red" span="3" />
-// 				<col class="blue" />
-// 			</colgroup>
-// 			<thead>
-// 				<tr>
-// 					<th>#</th>
-// 					<th>color 1</th>
-// 					<th>color 2</th>
-// 				</tr>
-// 			</thead>
-// 			<tbody>
-// 				<tr>
-// 					<th>1</th>
-// 					<td><move class="pl-3"><sans> ♗ </sans>to H8</move></td>
-// 					<td><move class="pl-3"><sans> ♗ </sans>to H8</move></td>
-// 				</tr>
-// 				<tr>
-// 					<th>2</th>
-// 					<td>red</td>
-// 					<td>red</td>
-// 					<td>red</td>      
-// 					<td>blue</td>
-// 				</tr>
-// 			</tbody>
-// 		</table>
-// 	);
-// }

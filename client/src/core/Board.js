@@ -56,7 +56,8 @@ export default class Board {
         let piece = this.squares[pickInfo.pickedMesh.name].piece
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
-        if (pieceColor !== this.playerColor) return // exit if selected piece is enemy piece; pointerUp will handle if its an eat move
+        // if (pieceColor !== this.playerColor) return // exit if selected piece is enemy piece; pointerUp will handle if its an eat move
+        if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
         this.fromSq = this.squares[pickInfo.pickedMesh.name]; // set selected piece/sq
         if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides)
         this.selectedHighlightLayer.removeAllMeshes();

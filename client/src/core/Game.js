@@ -15,9 +15,9 @@ export default class Game {
         this.playerColor = 'black';
         this.game_over = false;
         this.engine = new Chess()
-        // this.tempEngine = new Chess()
+        this.tempEngine = new Chess()
         this.inReview = false;
-        this.beforeReview = null;
+        // this.beforeReview = null;
 
         this.setupWebhookHandlers()
 
@@ -27,45 +27,57 @@ export default class Game {
         // console.log('bind socket handlers')
         Api.setMessageHandlers({
             // join: this.onJoin, 
-            move: this.onServerMove.bind(this), 
+            move: this.handleServerMove.bind(this), 
             // chat: this.onChat,
         })
     }
+    makeMove(move){
+        let engine = this.inReview ? this.tempEngine : this.engine
+        let validMove = engine.move(move);
+        // let validMove = this.engine.move(move, { verbose: true });
+        // console.log('pgn/fen',{pgn:this.engine.pgn(),fen:this.engine.fen()})
+        if (validMove && !this.inReview) this.addMoveForReview(validMove)
+        return validMove
+    }
     handleUserMove (move) {
-        var validMove = this.engine.move(move);
-        // if (!validMove) return
+        let validMove = this.makeMove(move);
+        if (!validMove) return validMove
+        if (this.inReview) return validMove
         if (this.isVsComputer) {
-            this.makeComputerMove()
+            this.handleComputerMove()
+            // Api.getComputerMove()
         } else {
             Api.sendMove(move, this.gameId)
+            // Api.sendMove(validMove, this.gameId)
         }
         
-        // if(!this.inReview) this.Scene.uiActions.addMove(this.engine.pgn())
-        if(!this.inReview) console.log('pgn/fen',{pgn:this.engine.pgn(),fen:this.engine.fen()})
-        
-        // console.log('player move', validMove)
+        console.log('player move', validMove)
         this.checkGameOver()
         // if (move === null)  return 'snapback';
         // else socket.emit('move', move);
         return validMove
     }
-    makeComputerMove(){
+    handleComputerMove(){
         // console.log('turn', this.engine.turn())
         if (this.engine.turn() != 'b') return
         const moves = this.engine.moves()
         const move = moves[Math.floor(Math.random() * moves.length)] // get random move
-        var validMove = this.engine.move(move, { verbose: true })
-        if (validMove) setTimeout(()=> this.board().moveOpponentPiece(validMove), 10)
-        // console.log('computer move', move)
+        var validMove = this.makeMove(move)
+        if (validMove) setTimeout(_=> this.board().moveOpponentPiece(validMove), 10)
+        console.log('computer move', validMove)
         this.checkGameOver()
     }
-    onServerMove({move}){
+    handleServerMove({move}){
         if (!move) return
-        var validMove = this.engine.move(move);
+        if (this.inReview) this.resumePlay() 
+        var validMove = this.makeMove(move);
         if (!validMove) return
         // console.log('opponent move', validMove)
         this.board().moveOpponentPiece(move)
         this.checkGameOver()
+    }
+    addMoveForReview(move){
+        this.Scene.uiActions.sidePanel.moves.addMove({move, fen: this.engine.fen()})
     }
     mapBoard(matrix){
         let map = {}
@@ -90,17 +102,18 @@ export default class Game {
         return map
     }
     setReview(gamePosition) {
-        this.beforeReview = this.engine.pgn()
-        this.engine.load_pgn(gamePosition)
-        let boardMap = mapBoard(this.engine.board())
+        // this.beforeReview = this.engine.fen()
+        this.tempEngine.load(gamePosition)
+        let boardMap = this.mapBoard(this.tempEngine.board())
         this.board().setReviewBoard(boardMap)
+        this.inReview = true
     }
     resumePlay(){
-        this.engine.load_pgn(this.beforeReview)
+        // this.engine.load(this.beforeReview)
         this.board().setBoard(this.engine.board())
         this.inReview = false
-        this.beforeReview = null
-        this.Scene.uiActions.endReview()
+        // this.beforeReview = null
+        // this.Scene.uiActions.sidePanel.moves.endReview()
     }
     checkGameOver(){
         // todo: if gameover how 'time/checkmate/3foldrep...'

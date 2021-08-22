@@ -19,7 +19,7 @@ export default initial => ({
 
 	actions: {
 		chat: chat.actions,
-		moves: chat.actions,
+		moves: moves.actions,
 		media: media.actions,
 		hideSidePanel: () =>({isVisible: false}), 
 		changeTab: tab => state => ({ currTab: tab })

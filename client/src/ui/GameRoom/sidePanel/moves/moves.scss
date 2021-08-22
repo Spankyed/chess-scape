@@ -112,8 +112,8 @@ $alt-color: #bf8b69;
             cursor: pointer;
             height: 5vh;
             transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-            .active {
-                background: #82B64A;
+            &.active {
+                background: #82B64A!important;
                 cursor: default;
             }
             sans {
