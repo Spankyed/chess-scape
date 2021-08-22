@@ -3,8 +3,8 @@ export default class Board {
         // Board class depends on game class have being instantiated
         // this.Scene = Scene
         this.scene = scene;  
-        // this.pieces = current.pieces
         this.game = current.game
+        this.pieces = current.pieces
         this.squares = {}
         this.fadedPieces = []
         this.playerColor = 'white'
@@ -99,7 +99,6 @@ export default class Board {
                 // if(validMove.Castled){
                 // todo: move rook to other side of king
                 // }
-                console.log('player move', validMove)
                 this.movePiece(this.fromSq.piece, this.toSq.coords, potentialMove)
                 // this.whitesTurn = !this.whitesTurn                
             } else {
@@ -151,13 +150,12 @@ export default class Board {
 
     movePiece(piece, newPos, gameMove){
         // console.log('moving piece',piece)
-        if(gameMove) this.updateBoardPosition(gameMove)
+        if(gameMove) this.updateBoardState(gameMove)
         piece.position = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
     }
 
     moveOpponentPiece(move){
         // { from: 'a2', to: 'a4' }
-        console.log('opponent move', move)
         let piece = this.squares[move.from].piece
         // console.log('goturpiece',piece)
         if (piece) this.movePiece(piece, this.squares[move.to].coords, move)
@@ -196,9 +194,7 @@ export default class Board {
         return this.squares[closest.sqName]
     }
     
-    getColorFromPiece(piece){
-        return piece.name.endsWith('white') ? 'white' : 'black'
-    }
+
     // getPieceBySq(sqName){
     //     let square = this.squares[sqName]
     //     if (!square) return
@@ -236,23 +232,33 @@ export default class Board {
     // calcDistance(p1, p2){
     //     return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
     // }
-
-    updateBoardPosition({ from, to}){
+    getColorFromPiece(piece){
+        return piece.name.endsWith('white') ? 'white' : 'black'
+    }
+    updateBoardState({ from, to}){
         // todo: if pawn changes file, and there isnt a pawn on the "to" square, pawn ate enpessant, dispose pawn
-        // todo: if king moves two spaces, then castled: move & updateBoardPosition for rook to other side of king
-        if (this.squares[to].piece) this.squares[to].piece.dispose() // move pieces off board instead of dispose
+        // todo: if king moves two spaces, then castled: move & updateBoardState for rook to other side of king
+        if (this.squares[to].piece) this.squares[to].piece.dispose() // todo: move pieces off board instead of dispose
         this.squares[to].piece = this.squares[from].piece
         this.squares[to].piece.sqName = this.squares[to].sqName
         delete this.squares[from].piece
     }
-    
-    setReviewPosition(state){
-        if (this.squares[to].piece) this.squares[to].piece.dispose() // move pieces off board instead of dispose
-        this.squares[to].piece = this.squares[from].piece
-        this.squares[to].piece.sqName = this.squares[to].sqName
-        delete this.squares[from].piece
+    // interact.game.engine.load_pgn("1. d4 a6")
+    // let map = interact.game.mapBoard(interact.game.engine.board())
+    // interact.board.setReviewBoard(map)
+    setReviewBoard(boardMap){
+        Object.entries(boardMap).forEach(([sq, pieceId]) => {
+            if(!pieceId){
+                this.squares[sq].piece = null
+                return
+            }
+            let piece = this.pieces()[pieceId]
+            this.squares[sq].piece = piece
+            // console.log('mapped piece', piece)
+            piece.sqName = sq
+            this.movePiece(piece, this.squares[sq].coords)
+        })
     }
-
     mapPiecesToSquares(pieces){
         pieces.forEach( piece =>{
             let closestSq = this.getClosestSq(piece.position)

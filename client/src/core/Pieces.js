@@ -8,14 +8,13 @@ function getPieceMaterials(scene){
     white.specularPower = 25;
     let black = white.clone();
     black.diffuseColor = new BABYLON.Color3(0.37, 0.29, 0.28); // black rgb(94,77,71)
-    return { white, black}
+    return { white, black }
 }
-
 function getPiecesContainer(scene){
     let assetsManager = new BABYLON.AssetsManager(scene)
     assetsManager.useDefaultLoadingScreen = false
     let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/", 'Chesspieces.babylon');
-    return new  Promise((resolve, rej)=>{
+    return new Promise((resolve, rej) => {
         meshTask.onError = (err) => rej(err)
         meshTask.onSuccess = (task) => {
             resolve(task.loadedContainer)
@@ -23,10 +22,7 @@ function getPiecesContainer(scene){
         assetsManager.load()
     })
 }
-
-function rotateKnight(piece, right){
-    piece.rotation = new BABYLON.Vector3(0, right ? Math.PI : 0, 0)
-}
+function rotateKnight(piece, right){ piece.rotation = new BABYLON.Vector3(0, right ? Math.PI : 0, 0) }
 
 async function loadPieces(scene){
     let container = await getPiecesContainer(scene)
@@ -39,8 +35,13 @@ async function loadPieces(scene){
     // var kingGlowLayer = new BABYLON.GlowLayer("glow", this.scene);
     // kingGlowLayer.intensity = .02;
 
+    let piecesCount = { 
+        white: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0},
+        black: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0}
+    }
     let pieceMap = {}
     pieces.forEach( piece => {
+        piece.isPickable = false
         let isWhite = piece.name.endsWith('_white') ? true : false
         // if (piece.name.startsWith('King')){
         //     piece.material = isWhite ? materials.white.clone() : materials.black.clone()
@@ -49,15 +50,28 @@ async function loadPieces(scene){
         piece.material = isWhite ? materials.white : materials.black
         if (!isWhite){
             let newPos = piece.position.clone()
-            piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z) // invert z
+            piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z) // flip position
         }
-        if (piece.name.startsWith('Knight')) rotateKnight(piece, isWhite)
-        piece.isPickable = false
-        piece.id = piece.name.charAt(0).toLowerCase() + '_' +  (isWhite ? 'w':'b')
-        pieceMap[piece.id] = piece.id
+        if (piece.name.startsWith('Knight')) {
+            rotateKnight(piece, isWhite)
+            piece.id = 'n' + '_' +  (isWhite ? 'w':'b')
+        } else {
+            piece.id = piece.name.charAt(0).toLowerCase() + '_' +  (isWhite ? 'w':'b')
+        }
+
+        let count = ++piecesCount[isWhite ? 'white' : 'black'][piece.id.charAt(0)]
+        
+        if (count <= 1) pieceMap[piece.id] = piece
+        else {
+            piece.id += '_' + count
+            pieceMap[piece.id] = piece
+        }
+        
         // piece.addPickingBox()
     })
 
+    console.log('Piece Map ('+ Object.keys(pieceMap).length +') ', {pieceMap})
+    console.log('count', {piecesCount})
 
     return [pieces, pieceMap]
 }

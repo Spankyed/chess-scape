@@ -15,7 +15,7 @@ export default class Game {
         this.playerColor = 'black';
         this.game_over = false;
         this.engine = new Chess()
-        // console.log('moves', this.engine.moves())
+        // this.tempEngine = new Chess()
         this.inReview = false;
         this.beforeReview = null;
 
@@ -31,59 +31,6 @@ export default class Game {
             // chat: this.onChat,
         })
     }
-    makeComputerMove(){
-        // console.log('turn', this.engine.turn())
-        if (this.engine.turn() != 'b') return
-        const moves = this.engine.moves()
-        const move = moves[Math.floor(Math.random() * moves.length)]
-        var validMove = this.engine.move(move, { verbose: true })
-        if (validMove) setTimeout(()=> this.board().moveOpponentPiece(validMove), 10)
-        this.checkGameOver()
-    }
-    onServerMove({move}){
-        if (!move) return
-        var validMove = this.engine.move(move);
-        console.log('server move', validMove)
-        if (!validMove) return
-        this.board().moveOpponentPiece(move)
-        this.checkGameOver()
-    }
-    resumePlay(){
-        this.engine.load_pgn(this.beforeReview)
-        this.board().setBoard(this.engine.board())
-        this.inReview = false
-        this.beforeReview = null
-        this.Scene.uiActions.endReview()
-    }
-    setReview(gamePosition) {
-        this.beforeReview = this.engine.pgn()
-        this.engine.load_pgn(gamePosition)
-        this.board().setReviewPosition(this.engine.board())
-    }
-    mapBoard(matrix){
-        let map = {}
-        let cols = ['a','b','c','d','e','f','g','h']
-        matrix.forEach((row, i)=>{
-            col.forEach((piece, j)=>{
-                let sq = cols[j] + (8-i)
-                if (piece){}
-                map[0]
-                rook
-                knight
-            })
-        })
-
-        let col = 0
-        for (let row = 8; row < 0; row--) {
-            let sq = letters[col] + row
-            col++
-        }
-        for (let row = 0; row < grid.h; row++) {
-            let xCoord = -7
-
-        }
-
-    }
     handleUserMove (move) {
         var validMove = this.engine.move(move);
         // if (!validMove) return
@@ -92,13 +39,68 @@ export default class Game {
         } else {
             Api.sendMove(move, this.gameId)
         }
-
-        // if(!this.inReview) this.Scene.uiActions.addMove(this.engine.pgn())
         
+        // if(!this.inReview) this.Scene.uiActions.addMove(this.engine.pgn())
+        if(!this.inReview) console.log('pgn/fen',{pgn:this.engine.pgn(),fen:this.engine.fen()})
+        
+        // console.log('player move', validMove)
         this.checkGameOver()
         // if (move === null)  return 'snapback';
         // else socket.emit('move', move);
         return validMove
+    }
+    makeComputerMove(){
+        // console.log('turn', this.engine.turn())
+        if (this.engine.turn() != 'b') return
+        const moves = this.engine.moves()
+        const move = moves[Math.floor(Math.random() * moves.length)] // get random move
+        var validMove = this.engine.move(move, { verbose: true })
+        if (validMove) setTimeout(()=> this.board().moveOpponentPiece(validMove), 10)
+        // console.log('computer move', move)
+        this.checkGameOver()
+    }
+    onServerMove({move}){
+        if (!move) return
+        var validMove = this.engine.move(move);
+        if (!validMove) return
+        // console.log('opponent move', validMove)
+        this.board().moveOpponentPiece(move)
+        this.checkGameOver()
+    }
+    mapBoard(matrix){
+        let map = {}
+        let piecesCount = { 
+            w: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0},
+            b: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0}
+        }
+        let cols = ['a','b','c','d','e','f','g','h']
+        matrix.forEach((row, i)=>{
+            row.forEach((piece, j)=>{
+                // console.log('mapping')
+                let sq = cols[j] + (8-i)
+                if(!piece) {
+                    map[sq] = null
+                    return
+                }
+                let count = ++piecesCount[piece.color][piece.type]
+                let id = piece.type + '_' + piece.color + (count > 1 ? '_' + count : '')
+                map[sq] = id
+            })
+        })
+        return map
+    }
+    setReview(gamePosition) {
+        this.beforeReview = this.engine.pgn()
+        this.engine.load_pgn(gamePosition)
+        let boardMap = mapBoard(this.engine.board())
+        this.board().setReviewBoard(boardMap)
+    }
+    resumePlay(){
+        this.engine.load_pgn(this.beforeReview)
+        this.board().setBoard(this.engine.board())
+        this.inReview = false
+        this.beforeReview = null
+        this.Scene.uiActions.endReview()
     }
     checkGameOver(){
         // todo: if gameover how 'time/checkmate/3foldrep...'

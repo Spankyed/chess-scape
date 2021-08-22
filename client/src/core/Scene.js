@@ -15,7 +15,6 @@ const Scene = new class {
         this.pieces = _=> this._pieces;
         this.assetsManager;
     }
-
     async setupGame(canvas, actions, gameId){
         // todo: add playerColor arg
         if(!canvas) console.warn('No canvas found')
@@ -31,29 +30,26 @@ const Scene = new class {
         let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
         // this.modelsLoaded = true;
-
-
         engine.hideLoadingUI()
         // todo: begin camera animation
         // todo: signal to server player is ready. Used for syncing start timing
 
         engine.runRenderLoop(_ => scene.render())
 
+        window.interact = {engine: engine, scene: this, game, board}
+
         Object.assign(this, {
             canvas, engine, scene,  
-            _game: game, _board: board, _pieces: pieces,
+            _game: game, _board: board, _pieces: piecesMap,
             uiActions: actions, 
         });
     }
-    
     openPromotionUI(){
         this.uiActions.showPromotionUI(); 
     }
-    
     hideLoader(){
         this.engine.hideLoadingUI()
     }
-
 }
 
 export default Scene;
