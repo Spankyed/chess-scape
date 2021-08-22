@@ -5,3 +5,5 @@ The stack is node for the backend, along with fastify & fastify websockets to ha
 The vision of the project is to allow chess loving individuals to play and watch matches, while chatting and sharing intersting media. 
 
 The project is still in development with plans to add features as I see fit.
+
+Support for Internet Explorer 9 and up.

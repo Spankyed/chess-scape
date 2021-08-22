@@ -2,13 +2,13 @@ import { Chess } from 'chess.js';
 import Api from '../api/Api'; 
 
 export default class Game {
-    constructor(Scene, gameId){
+    constructor(current, gameId){
         // Game class depends on players/pieces being created
         // super()
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
-        this.Scene = Scene
-        this.board = Scene.board
+        this.Scene = current
+        this.board = current.board
         this.gameId = gameId
         this.isVsComputer = true;
         // this.computerColor = 'black';
@@ -17,14 +17,12 @@ export default class Game {
         this.engine = new Chess()
         // console.log('moves', this.engine.moves())
         this.inReview = false;
-        this.pausedPgn = null;
+        this.beforeReview = null;
 
         this.setupWebhookHandlers()
-        window.interact = {engine: this.engine, scene: this.Scene, game:this}
 
         return this
     }
-
     setupWebhookHandlers() {
         // console.log('bind socket handlers')
         Api.setMessageHandlers({
@@ -33,63 +31,59 @@ export default class Game {
             // chat: this.onChat,
         })
     }
-
     makeComputerMove(){
         // console.log('turn', this.engine.turn())
-        if(this.engine.turn() != 'b') return
+        if (this.engine.turn() != 'b') return
         const moves = this.engine.moves()
         const move = moves[Math.floor(Math.random() * moves.length)]
         var validMove = this.engine.move(move, { verbose: true })
-        if (validMove) setTimeout(()=> this.Scene.board().moveOpponentPiece(validMove), 10)
+        if (validMove) setTimeout(()=> this.board().moveOpponentPiece(validMove), 10)
         this.checkGameOver()
     }
-
     onServerMove({move}){
         if (!move) return
         var validMove = this.engine.move(move);
         console.log('server move', validMove)
         if (!validMove) return
-        this.Scene.board().moveOpponentPiece(move)
+        this.board().moveOpponentPiece(move)
         this.checkGameOver()
     }
-
     resumePlay(){
-        this.engine.load_pgn(this.pausedPgn)
-        this.Scene.setBoard(chess.board())
+        this.engine.load_pgn(this.beforeReview)
+        this.board().setBoard(this.engine.board())
         this.inReview = false
-        his.pausedPgn = null
+        this.beforeReview = null
+        this.Scene.uiActions.endReview()
     }
-    setReview(sq) {
-        return this.engine.moves(sq)
-        this.pausedPgn = this.engine.pgn()
+    setReview(gamePosition) {
+        this.beforeReview = this.engine.pgn()
+        this.engine.load_pgn(gamePosition)
+        this.board().setReviewPosition(this.engine.board())
     }
-    
-    // mapBoard(matrix){
-    //     let map = {}
-    //     let cols = ['a','b','c','d','e','f','g','h']
-    //     matrix.forEach((row, i)=>{
-    //         col.forEach((piece, j)=>{
-    //             let sq = cols[j] + (8-i)
-    //             if (piece)
-    //             map[]
-    //             rook
-    //             knight
-    //         })
-    //     })
+    mapBoard(matrix){
+        let map = {}
+        let cols = ['a','b','c','d','e','f','g','h']
+        matrix.forEach((row, i)=>{
+            col.forEach((piece, j)=>{
+                let sq = cols[j] + (8-i)
+                if (piece){}
+                map[0]
+                rook
+                knight
+            })
+        })
 
-    //     let col = 0
-    //     for (let row = 8; row < 0; row--) {
-    //         let sq = letters[col] + row
-    //         col++
-    //     }
-    //     for (let row = 0; row < grid.h; row++) {
-    //         let xCoord = -7
+        let col = 0
+        for (let row = 8; row < 0; row--) {
+            let sq = letters[col] + row
+            col++
+        }
+        for (let row = 0; row < grid.h; row++) {
+            let xCoord = -7
 
-    //     }
+        }
 
-    // }
-
-
+    }
     handleUserMove (move) {
         var validMove = this.engine.move(move);
         // if (!validMove) return
@@ -98,31 +92,29 @@ export default class Game {
         } else {
             Api.sendMove(move, this.gameId)
         }
+
+        // if(!this.inReview) this.Scene.uiActions.addMove(this.engine.pgn())
         
         this.checkGameOver()
         // if (move === null)  return 'snapback';
         // else socket.emit('move', move);
         return validMove
     }
-
     checkGameOver(){
+        // todo: if gameover how 'time/checkmate/3foldrep...'
         if (this.engine.game_over()) {
             this.game_over = true
             this.Scene.uiActions.endGame()
             // this.piecesContainer.removeAllFromScene()
         }
     }
-
     getValidMoves() {
         //should never return an opponent move
         return validMoves
     }
-
     // getMovesFromSq(sq) {
     //     return this.engine.moves(sq)
     // }
-
-
     isPromoting(fen, move) {
         const chess = new Chess(fen);
         const piece = chess.get(move.from);

@@ -3,7 +3,7 @@ export default class Board {
         // Board class depends on game class have being instantiated
         // this.Scene = Scene
         this.scene = scene;  
-        this.pieces = current.pieces
+        // this.pieces = current.pieces
         this.game = current.game
         this.squares = {}
         this.fadedPieces = []
@@ -46,34 +46,30 @@ export default class Board {
     onPointerDown(evt) {
         if (this.game().game_over || !this.playerCanMove) return;
         if (evt.button !== 0) return;
-        let pickInfo = this.pickWhere((mesh) => mesh.isPickable);
+        let pickInfo = this.pickWhere((mesh) => mesh.isPickable); // select square
         // console.log('picked sq',pickInfo.pickedMesh)
         if (!pickInfo.hit)  return;
         if (this.fromSq.mesh == pickInfo.pickedMesh){
             this.resetMove(true)
             return
         }
-
         let piece = this.squares[pickInfo.pickedMesh.name].piece
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
-        if (pieceColor !== this.playerColor) return // check if pickedsq piece is enemy piece, then ignore event; pointerUp will handle if it is an eat move
-
-        this.fromSq = this.squares[pickInfo.pickedMesh.name]; // pick new piece
-        if (!(this.fromSq && this.fromSq.piece)) return; // if no piece on square, return
-        // set piece starting Sq and highlight the square underneath the piece yellow
-        // this.startingSq = this.fromSq;
+        if (pieceColor !== this.playerColor) return // exit if selected piece is enemy piece; pointerUp will handle if its an eat move
+        this.fromSq = this.squares[pickInfo.pickedMesh.name]; // set selected piece/sq
+        if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides)
         this.selectedHighlightLayer.removeAllMeshes();
-        this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow());
+        this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow()); // highlight selected square/piece
         this.isMoving = true;
         this.isDragging = true
     }
 
     onPointerUp(evt) {
-        if (evt.button == 2) return;
+        if (evt.button == 2) return; // ignore right click
         if (!( this.isMoving && this.fromSq )) return;
         let pickInfo = this.pickWhere(mesh => mesh.isPickable)
-        if (!pickInfo.hit) { // boardPos is false if user clicked off board
+        if (!pickInfo.hit) { // is false if user clicked off board
             this.resetMove(true)
             return; 
         }
@@ -100,22 +96,21 @@ export default class Board {
                 //     this.actions()
                 //     this.game().selectPiece
                 // }
-                // if(validMove.isCastling){
-                //     select 
+                // if(validMove.Castled){
+                // todo: move rook to other side of king
                 // }
                 console.log('player move', validMove)
                 this.movePiece(this.fromSq.piece, this.toSq.coords, potentialMove)
                 // this.whitesTurn = !this.whitesTurn                
-                // todo: after move, check if gameover, if so how 'time/checkmate/3foldrep..'
             } else {
                 // todo: if not valid move highlight square red for .5 secs
-                this.resetMove(true)
+                this.resetMove(true) // go back if !validMove
             }
 
-            this.resetMove() // go back if !valid
+            this.resetMove() // reset move state
         }
         else {
-            // if release mouse click on same sq, dont completely reset move, but pos piece at center of starting sq
+            // if mouseup on same sq, dont reset move, just reposition piece at center of starting sq
             this.movePiece(this.fromSq.piece, this.fromSq.coords.clone())
             this.isDragging = false 
         }
@@ -252,7 +247,6 @@ export default class Board {
     }
     
     setReviewPosition(state){
-        // name.charAt(0)
         if (this.squares[to].piece) this.squares[to].piece.dispose() // move pieces off board instead of dispose
         this.squares[to].piece = this.squares[from].piece
         this.squares[to].piece.sqName = this.squares[to].sqName
@@ -260,15 +254,14 @@ export default class Board {
     }
 
     mapPiecesToSquares(pieces){
-        for (const color in pieces) {
-            let colorPieces = pieces[color]
-            colorPieces.forEach(piece => {
-                let closestSq = this.getClosestSq(piece.position)
-                this.squares[closestSq.sqName] = { ...closestSq, piece }
-                // console.log('closestSq', this.squares[closestSq.sqName])
-                // Object.assign(closestSq, )
-            })
-        }
+        pieces.forEach( piece =>{
+            let closestSq = this.getClosestSq(piece.position)
+            let square = this.squares[closestSq.sqName]
+            square.piece = piece
+            piece.sqName = closestSq.sqName
+            // console.log('closestSq', this.squares[closestSq.sqName])
+             // Object.assign(closestSq, )
+        })
         // console.log('squares', this.squares)
     }
 

@@ -8,43 +8,40 @@ const Scene = new class {
     constructor(){
         this.uiActions = {};   
         this.canvas;  
-        this.scene = null;
         this.engine;  
+        this.scene = null;
         this.game = _=> this._game;
         this.board = _=> this._board;
-        this.pieces = {white:[],black:[]}
+        this.pieces = _=> this._pieces;
         this.assetsManager;
     }
 
     async setupGame(canvas, actions, gameId){
-        if(!canvas) console.warn('no canvas found')
+        // todo: add playerColor arg
+        if(!canvas) console.warn('No canvas found')
         // this.uiActions = actions;
         let engine = new BABYLON.Engine(canvas, true);
         let scene = SceneManager.CreateScene(engine, canvas, true)
-        engine.loadingScreen = {
-            displayLoadingUI: _ => actions.showLoader(),
-            hideLoadingUI: _ => actions.hideLoader() 
-        };
-
+        engine.loadingScreen = { displayLoadingUI: actions.showLoader, hideLoadingUI: actions.hideLoader }
         engine.displayLoadingUI()
         // this.canvas = canvas
-        scene.manager.setEnv(this.canvas)
+        scene.manager.setEnv(canvas)
         let board = new Board(this, scene, canvas);
         let game = new Game(this, gameId);
-        let pieces = await loadPieces(scene)
+        let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
         // this.modelsLoaded = true;
 
 
         engine.hideLoadingUI()
         // todo: begin camera animation
-
+        // todo: signal to server player is ready. Used for syncing start timing
 
         engine.runRenderLoop(_ => scene.render())
 
         Object.assign(this, {
-            _game: game, _board: board,
-            canvas, scene, engine, 
+            canvas, engine, scene,  
+            _game: game, _board: board, _pieces: pieces,
             uiActions: actions, 
         });
     }
@@ -58,6 +55,5 @@ const Scene = new class {
     }
 
 }
-
 
 export default Scene;

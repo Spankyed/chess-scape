@@ -24,49 +24,42 @@ function getPiecesContainer(scene){
     })
 }
 
+function rotateKnight(piece, right){
+    piece.rotation = new BABYLON.Vector3(0, right ? Math.PI : 0, 0)
+}
+
 async function loadPieces(scene){
     let container = await getPiecesContainer(scene)
-    let pieces = {
-        white: container.instantiateModelsToScene(name => name + "_white", false).rootNodes,
-        black: container.instantiateModelsToScene(name => name + "_black", false).rootNodes
-    }
+    let pieces = [
+        ...container.instantiateModelsToScene(name => name + "_white", false).rootNodes,
+        ...container.instantiateModelsToScene(name => name + "_black", false).rootNodes
+    ]
+
     let materials = getPieceMaterials(scene)
     // var kingGlowLayer = new BABYLON.GlowLayer("glow", this.scene);
     // kingGlowLayer.intensity = .02;
-    pieces.white.forEach(piece => {
-        if (piece.name.startsWith('Knight')) piece.rotation = new BABYLON.Vector3(0, Math.PI, 0)
-        if (piece.name.startsWith('King')){
-            piece.material = materials.white.clone()
-            // kingGlowLayer.addIncludedOnlyMesh(piece)
-            // piece.material.emissiveColor = new BABYLON.Color3(0.37, 0.29, 0.28)
-        } else {
-            piece.material = materials.white
+
+    let pieceMap = {}
+    pieces.forEach( piece => {
+        let isWhite = piece.name.endsWith('_white') ? true : false
+        // if (piece.name.startsWith('King')){
+        //     piece.material = isWhite ? materials.white.clone() : materials.black.clone()
+        //     piece.material.metallicTexture = null
+        // } else
+        piece.material = isWhite ? materials.white : materials.black
+        if (!isWhite){
+            let newPos = piece.position.clone()
+            piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z) // invert z
         }
+        if (piece.name.startsWith('Knight')) rotateKnight(piece, isWhite)
         piece.isPickable = false
+        piece.id = piece.name.charAt(0).toLowerCase() + '_' +  (isWhite ? 'w':'b')
+        pieceMap[piece.id] = piece.id
         // piece.addPickingBox()
-    });
-    pieces.black.forEach(piece => {
-        
-        let newPos = piece.position.clone()
-        piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z)
-        if (piece.name.startsWith('Knight')) piece.rotation = new BABYLON.Vector3(0, 0, 0)
-        if (piece.name.startsWith('King')) {
-            piece.material = materials.black.clone()
-            // kingGlowLayer.addIncludedOnlyMesh(piece)
-            // piece.material.emissiveColor = piece.material.diffuseColor
-        } else {
-            piece.material = materials.black
-            piece.material.metallicTexture = null
-        }
-        piece.isPickable = false
-        // piece.addPickingBox()
-    });
-    
-    // this.board.mapPiecesToSquares(this.pieces)// reconsider this flow
-    // todo: signal to server player is ready. Used for syncing start timing
-    return pieces
+    })
+
+
+    return [pieces, pieceMap]
 }
-
-
 
 export default loadPieces
