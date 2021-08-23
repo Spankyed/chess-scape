@@ -44,7 +44,7 @@ export default class Board {
 
     // remove scene and ground
     onPointerDown(evt) {
-        if (this.game().game_over || !this.playerCanMove) return;
+        if (!this.game().inReview && (this.game().game_over || !this.playerCanMove)) return;
         if (evt.button !== 0) return;
         let pickInfo = this.pickWhere((mesh) => mesh.isPickable); // select square
         // console.log('picked sq',pickInfo.pickedMesh)
@@ -58,6 +58,10 @@ export default class Board {
         let pieceColor = this.getColorFromPiece(piece)
         // if (pieceColor !== this.playerColor) return // exit if selected piece is enemy piece; pointerUp will handle if its an eat move
         if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
+        
+        let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
+        if (fromPieceColor && (pieceColor != fromPieceColor)) return // in review, handle trying to eat 
+        
         this.fromSq = this.squares[pickInfo.pickedMesh.name]; // set selected piece/sq
         if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides)
         this.selectedHighlightLayer.removeAllMeshes();
@@ -143,7 +147,7 @@ export default class Board {
     }
     
     attemptGameMove(potentialMove){
-        this.playerCanMove = false
+        if (!this.game().inReview) this.playerCanMove = false
         let validMove = this.game().handleUserMove(potentialMove)
         if (!validMove) this.playerCanMove = true
         return validMove
@@ -234,6 +238,7 @@ export default class Board {
     //     return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
     // }
     getColorFromPiece(piece){
+        if (!piece) return null
         return piece.name.endsWith('white') ? 'white' : 'black'
     }
     updateBoardState({ from, to}){

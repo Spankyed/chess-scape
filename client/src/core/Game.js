@@ -42,6 +42,7 @@ export default class Game {
     handleUserMove (move) {
         let validMove = this.makeMove(move);
         if (!validMove) return validMove
+        console.log('player move', validMove)
         if (this.inReview) return validMove
         if (this.isVsComputer) {
             this.handleComputerMove()
@@ -50,8 +51,6 @@ export default class Game {
             Api.sendMove(move, this.gameId)
             // Api.sendMove(validMove, this.gameId)
         }
-        
-        console.log('player move', validMove)
         this.checkGameOver()
         // if (move === null)  return 'snapback';
         // else socket.emit('move', move);
