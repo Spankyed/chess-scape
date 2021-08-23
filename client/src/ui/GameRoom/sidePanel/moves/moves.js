@@ -72,7 +72,7 @@ export default initial => ({
 function Move({move, currMove, startReview, endReview, alert}){
 	function review(){
 		startReview(move)
-		// promptReview(alert, endReview)
+		promptReview(alert, endReview)
 		interact.game.setReview(move.fen)
 	}
 	return (
@@ -86,8 +86,9 @@ function Move({move, currMove, startReview, endReview, alert}){
 function promptReview(alert, endReview){
 	alert.show({
 		icon: "./assets/sidePanel/controls/review_icon.svg",
-		heading: 'In Review',
-		message: "You are currently reviewing moves. The board does not reflect current game state.", 
+		heading: 'Reviewing Moves',
+		// message: "You are currently reviewing moves. The board does not reflect current game state.", 
+		message: "The board does not reflect current game.", 
 		actions: {
 			cancel: { text: 'End', handler: _ => {
 				endReview()

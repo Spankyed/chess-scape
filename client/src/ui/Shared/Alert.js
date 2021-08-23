@@ -31,7 +31,7 @@ export default initial => ({
 		{	
 		<div class={`alert info mx-auto flex-row justify-between ${!isVisible && 'hidden'}`}>
 			<div class="alert-icon flex items-center bg-blue-100 border-r border-blue-500 justify-center w-20 flex-shrink-0">
-				<span class="text-blue-500 p-3 h-full">
+				<span class="text-blue-500 px-3  h-full">
 					<img class="alert-icon-img h-full" src={options.icon}/> 
 				</span>
 			</div>
@@ -51,18 +51,21 @@ export default initial => ({
 			</div>
 			{	options.actions && 
 				<div class="alert-options flex-shrink flex flex-col font-semibold">
+					{	options.actions.positive &&
 					<button onclick={handleAction('positive')} class="alert-button text-blue-800 p-1 px-4">
-						{options.actions?.positive.text}
+						{options.actions.positive.text}
 					</button>
-					{/* <button class="alert-button text-green-800 p-1">
-						Allow Always
-					</button> */}
+					}
+					{	options.actions.negative &&
 					<button onclick={handleAction('negative')} class="alert-button text-gray-800 p-1 px-4">
-						{options.actions?.negative.text}
+						{options.actions.negative.text}
 					</button>
-					{/* <button class="alert-button text-red-800 p-1">
-						Disable
-					</button> */}
+					}
+					{	options.actions.cancel &&
+					<button onclick={handleAction('cancel')} class="alert-button text-gray-800 p-1 px-4">
+						{options.actions.cancel.text}
+					</button>
+					}
 				</div>
 			}
 		</div>

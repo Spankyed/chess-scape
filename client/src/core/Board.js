@@ -252,7 +252,7 @@ export default class Board {
     // interact.game.engine.load_pgn("1. d4 a6")
     // let map = interact.game.mapBoard(interact.game.engine.board())
     // interact.board.setReviewBoard(map)
-    setReviewBoard(boardMap){
+    setBoardPosition(boardMap){
         Object.entries(boardMap).forEach(([sq, pieceId]) => {
             if(!pieceId){
                 this.squares[sq].piece = null

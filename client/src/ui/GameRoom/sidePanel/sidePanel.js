@@ -43,7 +43,7 @@ export default initial => ({
 							<ChatView/>
 						</div>
 						<div class={`panel-section ${isCurrTab('moves') && 'visible'}`}>
-							<MovesView/>
+							<MovesView alert={alert}/>
 						</div>
 						<div class={`panel-section ${isCurrTab('media') && 'visible'}`}>
 							<MediaView alert={alert}/>

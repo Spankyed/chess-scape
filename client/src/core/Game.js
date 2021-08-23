@@ -104,12 +104,13 @@ export default class Game {
         // this.beforeReview = this.engine.fen()
         this.tempEngine.load(gamePosition)
         let boardMap = this.mapBoard(this.tempEngine.board())
-        this.board().setReviewBoard(boardMap)
+        this.board().setBoardPosition(boardMap)
         this.inReview = true
     }
     resumePlay(){
         // this.engine.load(this.beforeReview)
-        this.board().setBoard(this.engine.board())
+        let boardMap = this.mapBoard(this.engine.board())
+        this.board().setBoardPosition(boardMap)
         this.inReview = false
         // this.beforeReview = null
         // this.Scene.uiActions.sidePanel.moves.endReview()
