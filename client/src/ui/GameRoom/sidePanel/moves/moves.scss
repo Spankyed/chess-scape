@@ -11,12 +11,17 @@ $alt-color: #bf8b69;
     overflow: hidden;
     justify-content: flex-end;
     background: #525357;
-    height: 2rem/* 28px */;
+    height: 13%;
     // border-bottom: 1px solid #777777;
+    .dl-header{
+        margin-top:0px;
+        align-self: center;
+    }
     .download-label{
 
     }
     .download-button{
+        align-self: center;
         padding: 0.4rem/* 12px */;
         padding-left: 0.7rem;
         padding-right: 0.7rem;

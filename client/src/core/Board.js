@@ -7,7 +7,7 @@ export default class Board {
         this.pieces = current.pieces
         this.squares = {}
         this.fadedPieces = []
-        this.playerColor = 'white'
+        // this.playerColor = 'white'
         this.playerCanMove = true;
         this.isMoving = false;
         this.fromSq = {};
@@ -57,7 +57,7 @@ export default class Board {
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
         // if (pieceColor !== this.playerColor) return // exit if selected piece is enemy piece; pointerUp will handle if its an eat move
-        if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
+        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
         
         let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
         if (fromPieceColor && (pieceColor != fromPieceColor)) return // in review, handle trying to eat 
@@ -156,7 +156,10 @@ export default class Board {
     movePiece(piece, newPos, gameMove){
         // console.log('moving piece',piece)
         if(gameMove) this.updateBoardState(gameMove)
-        piece.position = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+        let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+        if (!piece.position.equals(updatedPos)) {
+            piece.position = updatedPos
+        }
     }
 
     moveOpponentPiece(move){

@@ -10,7 +10,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = true;
+        this.isVsComputer = false;
         // this.computerColor = 'black';
         this.playerColor = 'black';
         this.game_over = false;
@@ -56,6 +56,15 @@ export default class Game {
         // else socket.emit('move', move);
         return validMove
     }
+    handleServerMove({move}){
+        if (!move) return
+        if (this.inReview) this.resumePlay() // end review if opponent makes moves 
+        var validMove = this.makeMove(move);
+        if (!validMove) return
+        // console.log('opponent move', validMove)
+        this.board().moveOpponentPiece(move)
+        this.checkGameOver()
+    }
     handleComputerMove(){
         // console.log('turn', this.engine.turn())
         if (this.engine.turn() != 'b') return
@@ -64,15 +73,6 @@ export default class Game {
         var validMove = this.makeMove(move)
         if (validMove) setTimeout(_=> this.board().moveOpponentPiece(validMove), 10)
         console.log('computer move', validMove)
-        this.checkGameOver()
-    }
-    handleServerMove({move}){
-        if (!move) return
-        if (this.inReview) this.resumePlay() 
-        var validMove = this.makeMove(move);
-        if (!validMove) return
-        // console.log('opponent move', validMove)
-        this.board().moveOpponentPiece(move)
         this.checkGameOver()
     }
     addMoveForReview(move){
@@ -101,19 +101,17 @@ export default class Game {
         return map
     }
     setReview(gamePosition) {
-        // this.beforeReview = this.engine.fen()
         this.tempEngine.load(gamePosition)
         let boardMap = this.mapBoard(this.tempEngine.board())
         this.board().setBoardPosition(boardMap)
         this.inReview = true
     }
     resumePlay(){
-        // this.engine.load(this.beforeReview)
+        this.Scene.uiActions.alert.hide()
+        this.Scene.uiActions.sidePanel.moves.endReview()
         let boardMap = this.mapBoard(this.engine.board())
         this.board().setBoardPosition(boardMap)
         this.inReview = false
-        // this.beforeReview = null
-        // this.Scene.uiActions.sidePanel.moves.endReview()
     }
     checkGameOver(){
         // todo: if gameover how 'time/checkmate/3foldrep...'

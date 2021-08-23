@@ -10,8 +10,9 @@ import { saveAs } from 'file-saver';
 const pieceSymbols = {p:'♟',r:'♖',n:'♘',b:'♗',q:'♕',k:'♔'}
 export default initial => ({
 	state: { 
+		reviewDisabled: false, 
+		inReview: false, 
 		currMove: null,
-		// moveCount: 2,
 		moves: {
 			w:[],
 			b:[]
@@ -48,7 +49,7 @@ export default initial => ({
 			<div class="h-full w-full">
 				<div>
 				<div class='header w-full flex justify-end'>
-					<h2 class="pr-2">Download</h2>
+					<h2 class="dl-header pr-2">Download</h2>
 					<button onclick={_=> download('pgn')} class="download-button" type="button">PGN</button>
 					<button onclick={_=> download('fen')} class="download-button" type="button">FEN</button>
 				</div>
@@ -65,14 +66,14 @@ export default initial => ({
 					<div class="white colors-moves h-full flex flex-col w-2/5">
 					{
 						state.moves.w.map((move,i)=>
-							<Move move={move} {...actions} alert={alert} currMove={state.currMove}/>
+							<Move move={move} alert={alert} {...actions} {...state}/>
 						)
 					}
 					</div>
 					<div class="black colors-moves h-full flex flex-col w-2/5">
 					{
 						state.moves.b.map((move,i)=>
-							<Move move={move} {...actions} alert={alert} currMove={state.currMove}/>
+							<Move move={move} alert={alert} {...actions} {...state}/>
 						)
 					}
 					</div>
@@ -83,16 +84,17 @@ export default initial => ({
 	},
 })
 
-function Move({move, currMove, startReview, endReview, alert}){
+function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview, alert}){
 	function review(){
+		// if (reviewDisabled) return
 		startReview(move)
-		promptReview(alert, endReview)
+		if (!inReview) promptReview(alert, endReview)
 		interact.game.setReview(move.fen)
 	}
 	return (
 		<move onclick={review} class={`${ currMove == move && ' active'}`}>
 			<sans> {move.piece} </sans>
-			to {move.to}
+			- {move.to}
 		</move>
 	)
 }
@@ -105,7 +107,6 @@ function promptReview(alert, endReview){
 		message: "The board does not reflect current game.", 
 		actions: {
 			cancel: { text: 'End', handler: _ => {
-				endReview()
 				interact.game.resumePlay()
 			}}
 		}
