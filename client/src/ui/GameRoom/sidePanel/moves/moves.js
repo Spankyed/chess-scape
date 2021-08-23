@@ -1,4 +1,5 @@
 import { h } from 'hyperapp';
+import { saveAs } from 'file-saver';
 
 // todo: let players download game pgn/fen
 // todo: alert that user is in review, option to cancel
@@ -32,14 +33,24 @@ export default initial => ({
 		endReview: _=> _=> ({inReview: false, currMove: null}),
 	},
 	view: (state, actions) => ({alert}) => {
-		// console.log(state.moves)
+		function download(type){
+			let date = new Date().toLocaleDateString('en-GB', {
+				month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+			}).replace(/\//g, '-').replace(/,/, '').replace(/:/, '');
+			let content = interact.game.engine[type]()
+			let filename = `match-${date}.${type}`;
+			let blob = new Blob([content], {
+			 type: "text/plain;charset=utf-8"
+			});
+			saveAs(blob, filename);
+		}
 		return (
 			<div class="h-full w-full">
 				<div>
 				<div class='header w-full flex justify-end'>
 					<h2 class="pr-2">Download</h2>
-					<button class="download-button" type="button">PGN</button>
-					<button class="download-button" type="button">FEN</button>
+					<button onclick={_=> download('pgn')} class="download-button" type="button">PGN</button>
+					<button onclick={_=> download('fen')} class="download-button" type="button">FEN</button>
 				</div>
 				</div>
 
