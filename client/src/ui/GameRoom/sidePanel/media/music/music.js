@@ -210,7 +210,11 @@ function SongPlayer({ state, actions }){
 		return(
 			<div class="song-input cursor-pointer">
 				<img class='input-icon' src="../assets/sidePanel/controls/add_music.svg"/>	
-				<div class='input-text'><span>Choose</span> or drag music file here</div>
+				<div class='input-text'>
+					<span class='btn'>Choose</span>
+					<span class='hidden md:inline'> or drag music file here</span>
+					<span class='md:hidden'> music file</span>
+				</div>
 				{/* <img src="http://placekitten.com/200/300"/> */}
 			</div>
 		)

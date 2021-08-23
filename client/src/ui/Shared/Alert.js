@@ -31,11 +31,11 @@ export default initial => ({
 		{	
 		<div class={`alert info mx-auto flex-row justify-between ${!isVisible && 'hidden'}`}>
 			<div class="alert-icon flex items-center bg-blue-100 border-r border-blue-500 justify-center w-20 flex-shrink-0">
-				<span class="text-blue-500 px-3  h-full">
+				<span class="text-blue-500 px-3 h-full">
 					<img class="alert-icon-img h-full" src={options.icon}/> 
 				</span>
 			</div>
-			<div class="alert-text m-2 mx-4 flex-grow relative">
+			<div class="alert-text m-2 mx-2 md:mx-4 flex-grow relative">
 				<div class="alert-title font-semibold text-gray-800">
 					{options.heading}
 				</div>
@@ -45,7 +45,8 @@ export default initial => ({
 				{	showDAG &&
 					<label class="flex items-center absolute right-0 top-0 text-sm text-gray-500">
 						<input onchange={actions.toggleAskAgain} checked={options.dontAskAgain} class="form-checkbox" type="checkbox"/>
-						<span class="ml-2">Don't ask again</span>
+						<span class="md:hidden ml-1">Remember</span>
+						<span class="hidden md:inline ml-2">Don't ask again</span>
 					</label> 
 				}
 			</div>

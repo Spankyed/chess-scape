@@ -88,8 +88,7 @@
                 white-space: nowrap;
                 overflow: hidden;
                 // flex-grow: 1;
-                span{
-                    // @apply p-2 border-r rounded-sm;
+                .btn{
                     padding: 0.25rem 0.5rem 0.25rem 0.5rem;
                     background-color: #EFEFEF;
                     color: #000;
