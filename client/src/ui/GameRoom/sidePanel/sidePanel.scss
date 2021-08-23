@@ -95,6 +95,7 @@ $text-color: #D4D3D3;
           min-height: 0;
           flex: 1 0 0;
           .panel-section{
+              overflow: hidden;
               display: none;
             &.visible {
               display:initial;

@@ -35,11 +35,14 @@ export default initial => ({
 		// console.log(state.moves)
 		return (
 			<div class="h-full w-full">
-				<div class='header w-full flex'>
+				<div>
+				<div class='header w-full flex justify-end'>
 					<h2 class="pr-2">Download</h2>
 					<button class="download-button" type="button">PGN</button>
 					<button class="download-button" type="button">FEN</button>
 				</div>
+				</div>
+
 				<div class="moves move-list flex flex-row h-full w-full">
 					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-col flex-wrap">
 						{
