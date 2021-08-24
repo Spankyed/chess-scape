@@ -200,6 +200,7 @@ export default class Board {
             piece.sqName = sq
             this.movePiece(piece, this.squares[sq].coords)
         })
+        this.selectedHighlightLayer.removeAllMeshes();
     }
     mapPiecesToSquares(pieces){
         pieces.forEach( piece =>{
