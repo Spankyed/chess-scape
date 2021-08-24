@@ -7,6 +7,7 @@ export default class Board {
         this.pieces = current.pieces
         this.squares = {}
         this.fadedPieces = []
+        this.capturedPiecesCount = {white:0, black:0}
         this.playerColor = 'white'
         this.playerCanMove = true;
         this.isMoving = false;
@@ -145,11 +146,31 @@ export default class Board {
     updateBoardState({ from, to}){
         // todo: if pawn changes file, and there isnt a pawn on the "to" square, pawn ate enpessant, dispose pawn
         // todo: if king moves two spaces, then castled: move & updateBoardState for rook to other side of king
-        if (this.squares[to].piece) this.squares[to].piece.dispose() // todo: move pieces off board instead of dispose
+        // if (this.squares[to].piece) this.squares[to].piece.dispose()
+        if (this.squares[to].piece) this.positionCapturedPiece(this.squares[to].piece)
         this.squares[to].piece = this.squares[from].piece
         this.squares[to].piece.sqName = this.squares[to].sqName
         delete this.squares[from].piece
     }
+    positionCapturedPiece(piece){
+        piece.sqName = null
+        let pieceColor = this.getColorFromPiece(piece)
+        // let positions = [[-10,-5],[-10,-3.75],[-10,-2.5],[-10,-1.25],[-10,0],[-10,1.25],[-10,2.5],[-10,3.75]]
+        // [[-11.5,-5],[-11.5,-3.75],[-11.5,-2.5],[-11.5,-1.25],[-11.5,0],[-11.5,1.25],[-11.5,2.5],[-11.5,3.75]]
+        const getNextPosition = (pieceColor,invert) =>  {
+            let columnsPos = [10, 11.5, 13]  // columns 2 units from board, 1.5 units apart
+            let count = this.capturedPiecesCount[pieceColor]++
+            let column = count / 8 | 0
+            let offsetMultiplier = count % 8 
+            let x = columnsPos[column]
+            let z = -6.5 + (1.3 * (offsetMultiplier)) // start piece row at z = -6.5 and move up 1.3 units apart
+            let coords = invert ? [-1*x, 0, -1*z] : [x, 0, z] // invert for captured whites pieces
+            return new BABYLON.Vector3(...coords)
+        }
+        if( pieceColor == 'white') piece.position = getNextPosition(pieceColor, true)
+        else piece.position = getNextPosition(pieceColor)
+    }
+
     resetMove(goBack){
         if (goBack && this.fromSq.piece) this.movePiece(this.fromSq.piece, this.fromSq.coords)
         if (this.fadedPieces.length > 0) this.restoreFadedPieces()
@@ -190,6 +211,7 @@ export default class Board {
     // interact.board.setReviewBoard(map)
     setBoardPosition(boardMap){
         Object.entries(boardMap).forEach(([sq, pieceId]) => {
+            // todo: check if squares have 2 pieces, moved & captured pieces
             if(!pieceId){
                 this.squares[sq].piece = null
                 return

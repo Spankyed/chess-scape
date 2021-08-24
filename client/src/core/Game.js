@@ -11,7 +11,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = false;
+        this.isVsComputer = true;
         // this.computerColor = 'black';
         this.playerColor = 'black';
         this.game_over = false;
@@ -43,7 +43,7 @@ export default class Game {
     handleUserMove (move) {
         let validMove = this.makeMove(move);
         if (!validMove) return validMove
-        console.log('player move', validMove)
+        // console.log('player move', validMove)
         if (this.inReview) return validMove
         if (this.isVsComputer) {
             this.handleComputerMove()
@@ -73,7 +73,7 @@ export default class Game {
         const move = moves[Math.floor(Math.random() * moves.length)] // get random move
         var validMove = this.makeMove(move)
         if (validMove) setTimeout(_=> this.board().moveOpponentPiece(validMove), 10)
-        console.log('computer move', validMove)
+        // console.log('computer move', validMove)
         this.checkGameOver()
     }
     addMoveForReview(move){
