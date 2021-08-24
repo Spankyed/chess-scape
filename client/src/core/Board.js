@@ -7,18 +7,14 @@ export default class Board {
         this.pieces = current.pieces
         this.squares = {}
         this.fadedPieces = []
-        // this.playerColor = 'white'
+        this.playerColor = 'white'
         this.playerCanMove = true;
         this.isMoving = false;
         this.fromSq = {};
         this.toSq = {};
-        // this.selectedPiece;  
-        // this.startingSq 
-        // this.dragPos;
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
         this.setupEventHandlers(canvas)
         this.board = this.createBoard()
-        // this.mapPiecesToSquares()
         return 
     }
     setupEventHandlers(canvas) {
@@ -28,7 +24,7 @@ export default class Board {
             onPointerMove: (evt) => this.onPointerMove(evt),
             onRightPointerDown: (evt) => { if (evt.button == 2) this.resetMove(true) }
         }
-        // todo: use rxjs fromEvent here
+        // todo: consider using rxjs fromEvent here?
         canvas.addEventListener("pointerdown", handlers.onPointerDown, false);
         canvas.addEventListener("pointerup", handlers.onPointerUp, false);
         canvas.addEventListener("pointermove", handlers.onPointerMove, false);
@@ -48,7 +44,7 @@ export default class Board {
         if (evt.button !== 0) return;
         let pickInfo = this.pickWhere((mesh) => mesh.isPickable); // select square
         // console.log('picked sq',pickInfo.pickedMesh)
-        if (!pickInfo.hit)  return;
+        if (!pickInfo.hit) return;
         if (this.fromSq.mesh == pickInfo.pickedMesh){
             this.resetMove(true)
             return
@@ -56,14 +52,11 @@ export default class Board {
         let piece = this.squares[pickInfo.pickedMesh.name].piece
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
-        // if (pieceColor !== this.playerColor) return // exit if selected piece is enemy piece; pointerUp will handle if its an eat move
-        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
-        
+        if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
         let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
-        if (fromPieceColor && (pieceColor != fromPieceColor)) return // in review, handle trying to eat 
-        
-        this.fromSq = this.squares[pickInfo.pickedMesh.name]; // set selected piece/sq
-        if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides)
+        if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to eat, dont select
+        this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
+        if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides); check perhaps unnecessary duplicate
         this.selectedHighlightLayer.removeAllMeshes();
         this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow()); // highlight selected square/piece
         this.isMoving = true;
@@ -80,19 +73,8 @@ export default class Board {
         }
         this.toSq = this.squares[pickInfo.pickedMesh.name];
         if (this.toSq != this.fromSq) {
-            // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`
-            // let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
             let potentialMove = { from: this.fromSq.sqName, to: this.toSq.sqName }
             // console.log('potential move ', potentialMove)
-            // let validMove = this.game().moves().find((move) => {
-            //     if (pieceAbbrev == '') 
-            //     {    // todo: in pgn, check when pawn captures, if its starting sq changes file
-            //         return move.startsWith(`${this.startingSq.charAt(0)}x${closestSq.sqName}`) 
-            //     }
-            //     else 
-            //         return move.startsWith(potentialMove) 
-            // }) 
-
             let validMove = this.attemptGameMove(potentialMove)
             // console.log('valid move ', validMove)
             // console.log('possible moves '+ this.game().moves())
@@ -105,12 +87,10 @@ export default class Board {
                 // todo: move rook to other side of king
                 // }
                 this.movePiece(this.fromSq.piece, this.toSq.coords, potentialMove)
-                // this.whitesTurn = !this.whitesTurn                
             } else {
                 // todo: if not valid move highlight square red for .5 secs
                 this.resetMove(true) // go back if !validMove
             }
-
             this.resetMove() // reset move state
         }
         else {
@@ -128,8 +108,6 @@ export default class Board {
         // todo drag piece along sides of board if mouse is off board
         let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
         if (!boardPos) return;
-        // console.log('selectedPiece',this.selectedPiece)
-
         let closestSqPiece = this.getClosestSq(boardPos).piece
         if(closestSqPiece && closestSqPiece != this.fromSq.piece){
             this.restoreFadedPieces()
@@ -138,55 +116,53 @@ export default class Board {
         }else if(this.fadedPieces.length > 0){
             this.restoreFadedPieces()
         }
-
         this.movePiece(this.fromSq.piece, boardPos.clone())
     }
-
     pickWhere (predicate) {
         return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
     }
-    
     attemptGameMove(potentialMove){
         if (!this.game().inReview) this.playerCanMove = false
         let validMove = this.game().handleUserMove(potentialMove)
         if (!validMove) this.playerCanMove = true
         return validMove
     }
-
     movePiece(piece, newPos, gameMove){
         // console.log('moving piece',piece)
         if(gameMove) this.updateBoardState(gameMove)
-        let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+        let updatedPos = new BABYLON.Vector3(newPos.x, piece?.position.y, newPos.z)
         if (!piece.position.equals(updatedPos)) {
             piece.position = updatedPos
         }
     }
-
     moveOpponentPiece(move){
         // { from: 'a2', to: 'a4' }
         let piece = this.squares[move.from].piece
-        // console.log('goturpiece',piece)
+        // console.log('opponent moved piece', piece)
         if (piece) this.movePiece(piece, this.squares[move.to].coords, move)
         this.playerCanMove = true
     }
-    
+    updateBoardState({ from, to}){
+        // todo: if pawn changes file, and there isnt a pawn on the "to" square, pawn ate enpessant, dispose pawn
+        // todo: if king moves two spaces, then castled: move & updateBoardState for rook to other side of king
+        if (this.squares[to].piece) this.squares[to].piece.dispose() // todo: move pieces off board instead of dispose
+        this.squares[to].piece = this.squares[from].piece
+        this.squares[to].piece.sqName = this.squares[to].sqName
+        delete this.squares[from].piece
+    }
     resetMove(goBack){
         if (goBack && this.fromSq.piece) this.movePiece(this.fromSq.piece, this.fromSq.coords)
         if (this.fadedPieces.length > 0) this.restoreFadedPieces()
         this.fromSq = {};
         this.toSq = {}
-        // this.selectedPiece = null;
-        // this.dragPos = null;
         this.isMoving = false;
         this.legalSquares = null;
         this.selectedHighlightLayer.removeAllMeshes();
     }
-
     restoreFadedPieces() {
         this.fadedPieces.forEach( piece =>  piece.visibility = 1 )
         this.fadedPieces = []
     }
-
     getClosestSq(fromPos){
         let pickedPoint = fromPos || this.pickWhere().pickedPoint
         if (!pickedPoint) return
@@ -201,57 +177,14 @@ export default class Board {
         // console.log('closest sq', closest)
         return this.squares[closest.sqName]
     }
-    
-
-    // getPieceBySq(sqName){
-    //     let square = this.squares[sqName]
-    //     if (!square) return
-    //     var closestPiece = { piece: '', dist: 999 }; 
-    //     for (const color in this.pieces) {
-    //         let colorPieces = this.pieces[color]
-    //         colorPieces.forEach(piece => {
-    //             if (piece == this.selectedPiece) return
-    //             let dist = BABYLON.Vector3.Distance(piece.position, square.coords)
-    //             if (dist < closestPiece.dist) closestPiece = { piece, dist: dist }
-    //         })
-    //         // console.log('dist', dist)
-    //     }
-    //     // console.log('closest sq', closest)
-    //     return closestPiece.piece
-    // }
-    // isMoveValid(from, to){
-    //     let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
-    //     return !!this.game.moves({ square: from }).find((move) => {
-    //         if (pieceAbbrev == '') 
-    //         {    // todo: in pgn, check when pawn captures, if its starting sq changes file
-    //             return move.startsWith(`${from.charAt(0)}x${to}`) 
-    //         }
-    //         else 
-    //             return move.startsWith(`${this.selectedPiece.name.charAt(0)}${to}`) 
-    //     }) 
-    // }
-
-    // getPieceNameAbbrev(piece){
-    //     let abbrev = piece.name.charAt(0)
-    //     return (abbrev != 'P') ? abbrev : ''
-    // }
-
-
     // calcDistance(p1, p2){
     //     return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
     // }
     getColorFromPiece(piece){
         if (!piece) return null
         return piece.name.endsWith('white') ? 'white' : 'black'
-    }
-    updateBoardState({ from, to}){
-        // todo: if pawn changes file, and there isnt a pawn on the "to" square, pawn ate enpessant, dispose pawn
-        // todo: if king moves two spaces, then castled: move & updateBoardState for rook to other side of king
-        if (this.squares[to].piece) this.squares[to].piece.dispose() // todo: move pieces off board instead of dispose
-        this.squares[to].piece = this.squares[from].piece
-        this.squares[to].piece.sqName = this.squares[to].sqName
-        delete this.squares[from].piece
-    }
+    }  
+
     // interact.game.engine.load_pgn("1. d4 a6")
     // let map = interact.game.mapBoard(interact.game.engine.board())
     // interact.board.setReviewBoard(map)
@@ -275,11 +208,9 @@ export default class Board {
             square.piece = piece
             piece.sqName = closestSq.sqName
             // console.log('closestSq', this.squares[closestSq.sqName])
-             // Object.assign(closestSq, )
         })
-        // console.log('squares', this.squares)
+        // console.log('mapped squares', this.squares)
     }
-
     createBoard(){
         const whiteMaterial = new BABYLON.StandardMaterial("White");
         whiteMaterial.diffuseColor = new BABYLON.Color3(0.97, 0.98, 0.85);
@@ -348,13 +279,11 @@ export default class Board {
             yCoord += 2
         }
        
-        setTimeout(()=>{ boardTiles.dispose() },100)
+        setTimeout(()=>{ boardTiles.dispose() }, 50)
 
-        console.log('squares', this.squares)
+        // console.log('squares', this.squares)
         return board
     }
     
-
-
 }
 

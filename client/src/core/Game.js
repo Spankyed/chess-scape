@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js';
 import Api from '../api/Api'; 
+import { MapBoard } from './utils/utils'; 
 
 export default class Game {
     constructor(current, gameId){
@@ -78,38 +79,17 @@ export default class Game {
     addMoveForReview(move){
         this.Scene.uiActions.sidePanel.moves.addMove({move, fen: this.engine.fen()})
     }
-    mapBoard(matrix){
-        let map = {}
-        let piecesCount = { 
-            w: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0},
-            b: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0}
-        }
-        let cols = ['a','b','c','d','e','f','g','h']
-        matrix.forEach((row, i)=>{
-            row.forEach((piece, j)=>{
-                // console.log('mapping')
-                let sq = cols[j] + (8-i)
-                if(!piece) {
-                    map[sq] = null
-                    return
-                }
-                let count = ++piecesCount[piece.color][piece.type]
-                let id = piece.type + '_' + piece.color + (count > 1 ? '_' + count : '')
-                map[sq] = id
-            })
-        })
-        return map
-    }
+
     setReview(gamePosition) {
         this.tempEngine.load(gamePosition)
-        let boardMap = this.mapBoard(this.tempEngine.board())
+        let boardMap = MapBoard(this.tempEngine.board())
         this.board().setBoardPosition(boardMap)
         this.inReview = true
     }
     resumePlay(){
         this.Scene.uiActions.alert.hide()
         this.Scene.uiActions.sidePanel.moves.endReview()
-        let boardMap = this.mapBoard(this.engine.board())
+        let boardMap = MapBoard(this.engine.board())
         this.board().setBoardPosition(boardMap)
         this.inReview = false
     }
@@ -118,13 +98,13 @@ export default class Game {
         if (this.engine.game_over()) {
             this.game_over = true
             this.Scene.uiActions.endGame()
-            // this.piecesContainer.removeAllFromScene()
+            this.piecesContainer.removeAllFromScene()
         }
     }
-    getValidMoves() {
-        //should never return an opponent move
-        return validMoves
-    }
+    // getValidMoves() {
+    //     // should not return opponent moves
+    //     return validMoves
+    // }
     // getMovesFromSq(sq) {
     //     return this.engine.moves(sq)
     // }
@@ -139,5 +119,30 @@ export default class Game {
           .map((it) => it.to)
           .includes(move.to);
     }
+
+    // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`
+    // let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
+    // isMoveValid(from, to){
+    //     let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
+    //     return !!this.game.moves({ square: from }).find((move) => {
+    //         if (pieceAbbrev == '') 
+    //         {    // todo: in pgn, check when pawn captures, if its starting sq changes file
+    //             return move.startsWith(`${from.charAt(0)}x${to}`) 
+    //         }
+    //         else 
+    //             return move.startsWith(`${this.selectedPiece.name.charAt(0)}${to}`) 
+    //     }) 
+    // }
+
+    // getPieceNameAbbrev(piece){
+    //     let abbrev = piece.name.charAt(0)
+    //     return (abbrev != 'P') ? abbrev : ''
+    // }
+
+    // this.game().moves().find((move) => {
+    //     if (move.isPromiting){    
+    //         this.Scene.uiActions.showPromotionUI() 
+    //     }
+    // }) 
 }
 
