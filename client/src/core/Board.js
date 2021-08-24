@@ -124,7 +124,7 @@ export default class Board {
     attemptGameMove(potentialMove){
         if (!this.game().inReview) this.playerCanMove = false
         let validMove = this.game().handleUserMove(potentialMove)
-        if (!validMove) this.playerCanMove = true
+        if (!validMove && !this.game().inReview) this.playerCanMove = true
         return validMove
     }
     movePiece(piece, newPos, gameMove){

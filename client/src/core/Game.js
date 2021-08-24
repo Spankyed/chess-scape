@@ -11,7 +11,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = true;
+        this.isVsComputer = false;
         // this.computerColor = 'black';
         this.playerColor = 'black';
         this.game_over = false;
