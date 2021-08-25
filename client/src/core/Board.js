@@ -53,7 +53,7 @@ export default class Board {
         let piece = this.squares[pickInfo.pickedMesh.name].piece
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
-        if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
+        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
         let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
         if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to eat, dont select
         this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
@@ -87,7 +87,7 @@ export default class Board {
                 // if(validMove.Castled){
                 // todo: move rook to other side of king
                 // }
-                this.movePiece(this.fromSq.piece, this.toSq.coords, potentialMove)
+                this.movePiece(this.fromSq.piece, this.toSq.coords, validMove)
             } else {
                 // todo: if not valid move highlight square red for .5 secs
                 this.resetMove(true) // go back if !validMove
@@ -129,8 +129,11 @@ export default class Board {
         return validMove
     }
     movePiece(piece, newPos, gameMove){
-        // console.log('moving piece',piece)
-        if(gameMove) this.updateBoardState(gameMove)
+        // console.log('moving piece', gameMove)
+        if(gameMove) {
+            this.updateBoardState(gameMove)
+            this.resetMove()
+        }
         let updatedPos = new BABYLON.Vector3(newPos.x, piece?.position.y, newPos.z)
         if (!piece.position.equals(updatedPos)) {
             piece.position = updatedPos
@@ -143,13 +146,21 @@ export default class Board {
         if (piece) this.movePiece(piece, this.squares[move.to].coords, move)
         this.playerCanMove = true
     }
-    updateBoardState({ from, to}){
+    updateBoardState({ from, to, flags}){
         // todo: if pawn changes file, and there isnt a pawn on the "to" square, pawn ate enpessant, dispose pawn
-        // todo: if king moves two spaces, then castled: move & updateBoardState for rook to other side of king
+        // todo: if king moves two spaces, then castled: move & update board state for rook to other side of king
+        if (flags &&  flags.includes('e')) this.captureEnPassantPiece(to)
         if (this.squares[to].piece) this.positionCapturedPiece(this.squares[to].piece)
         this.squares[to].piece = this.squares[from].piece
         this.squares[to].piece.sqName = this.squares[to].sqName
         delete this.squares[from].piece
+    }
+    captureEnPassantPiece(moveTo) {
+        let rankOffSet = {6:5, 3:4} // captured piece location, relative to move
+        let file = moveTo.charAt(0)
+        let rank = moveTo.charAt(1)
+        let capturedPieceSq = file + rankOffSet[rank]
+        this.positionCapturedPiece(this.squares[capturedPieceSq].piece)
     }
     positionCapturedPiece(piece){
         piece.sqName = null
@@ -160,8 +171,8 @@ export default class Board {
             let column = count / 8 | 0
             let offsetMultiplier = count % 8 
             let x = columnsCoords[column]
-            let z = -6.5 + (1.3 * (offsetMultiplier)) // start piece row at z = -6.5 and move up 1.3 units apart
-            let coords = invert ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for captured whites pieces
+            let z = -6.5 + (1.3 * (offsetMultiplier)) // start piece row at z = -6.5 and move each piece up 1.3 units 
+            let coords = invert ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for whites pieces
             return new BABYLON.Vector3(...coords)
         }
         if( pieceColor == 'white') piece.position = getNextPosition(pieceColor, true)
