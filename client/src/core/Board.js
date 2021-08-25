@@ -11,6 +11,7 @@ export default class Board {
         this.playerColor = 'white'
         this.playerCanMove = true;
         this.isMoving = false;
+        this.isDragging = false;
         this.fromSq = {};
         this.toSq = {};
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
@@ -92,7 +93,6 @@ export default class Board {
                 // todo: if not valid move highlight square red for .5 secs
                 this.resetMove(true) // go back if !validMove
             }
-            this.resetMove() // reset move state
         }
         else {
             // if mouseup on same sq, dont reset move, just reposition piece at center of starting sq
@@ -140,14 +140,12 @@ export default class Board {
         }
     }
     moveOpponentPiece(move){
-        // { from: 'a2', to: 'a4' }
         let piece = this.squares[move.from].piece
         // console.log('opponent moved piece', piece)
         if (piece) this.movePiece(piece, this.squares[move.to].coords, move)
         this.playerCanMove = true
     }
     updateBoardState({ from, to, flags}){
-        // if (flags) console.log('flag',flags)
         let castle;
         if (flags && (castle = flags.match(/k|q/))) this.positionCastledRook(castle[0],to)
         if (flags && flags.includes('e')) this.captureEnPassant(to)
@@ -168,7 +166,6 @@ export default class Board {
         let kingRank = kingSq.charAt(1)
         let fromSq = this.squares[rookPositions[side].from + kingRank]
         let toSq = this.squares[rookPositions[side].to + kingRank]
-        // console.log('castling',{from:rookPositions[side].from + kingRank, to:rookPositions[side].to + kingRank})
         let rook = fromSq.piece
         this.movePiece(rook, toSq.coords)
         toSq.piece = fromSq.piece
@@ -195,6 +192,7 @@ export default class Board {
         if (this.fadedPieces.length > 0) this.restoreFadedPieces()
         this.fromSq = {};
         this.toSq = {}
+        this.isDragging = false;
         this.isMoving = false;
         this.legalSquares = null;
         this.selectedHighlightLayer.removeAllMeshes();
