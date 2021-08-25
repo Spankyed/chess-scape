@@ -98,7 +98,7 @@ export default class Game {
         if (this.engine.game_over()) {
             this.game_over = true
             this.Scene.uiActions.endGame()
-            this.piecesContainer.removeAllFromScene()
+            // this.piecesContainer.removeAllFromScene()
         }
     }
     // getValidMoves() {
