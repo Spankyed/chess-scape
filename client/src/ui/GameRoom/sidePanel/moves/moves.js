@@ -56,7 +56,7 @@ export default initial => ({
 				</div>
 
 				<div class="moves move-list flex flex-row h-full w-full">
-					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-wrap">
+					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-col flex-wrap">
 						{
 							[...new Array(state.moves.w.length)].map((_,idx) => (
 								<span>{idx+1}</span>

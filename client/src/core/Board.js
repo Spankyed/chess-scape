@@ -137,7 +137,6 @@ export default class Board {
         if(!gameMove) return
         // console.log('moving piece', {piece})
         let { from, to, flags} = gameMove
-        console.log('flags',flags)
         if (flags) this.handleFlags(gameMove)
         let fromSq = this.squares[from]
         let toSq = this.squares[to]
