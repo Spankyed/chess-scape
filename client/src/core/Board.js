@@ -1,6 +1,6 @@
 export default class Board {
     constructor(current, scene, canvas){
-        // Board class depends on game class have being instantiated
+        // Board class depends on Game class & current Scene class
         // this.Scene = Scene
         this.scene = scene;  
         this.game = current.game
@@ -42,8 +42,8 @@ export default class Board {
 
     // remove scene and ground
     onPointerDown(evt) {
-        if (!this.game().inReview && (this.game().game_over || !this.playerCanMove)) return;
         if (evt.button !== 0) return;
+        if (!this.game().inReview && (this.game().game_over || !this.playerCanMove)) return;
         let pickInfo = this.pickWhere((mesh) => mesh.isPickable); // select square
         // console.log('picked sq',pickInfo.pickedMesh)
         if (!pickInfo.hit) return;
@@ -54,11 +54,12 @@ export default class Board {
         let piece = this.squares[pickInfo.pickedMesh.name].piece
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
-        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return //  only allow enemy piece selection in
+        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return // !only allow enemy piece selection in
         let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
-        if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to eat, dont select
+        if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to eat, dont select new piece
         this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
         if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides); check perhaps unnecessary duplicate
+        // todo: change cursor back to grabbing
         this.selectedHighlightLayer.removeAllMeshes();
         this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow()); // highlight selected square/piece
         this.isMoving = true;
@@ -74,30 +75,15 @@ export default class Board {
             return; 
         }
         this.toSq = this.squares[pickInfo.pickedMesh.name];
-        if (this.toSq != this.fromSq) {
+        if (this.toSq == this.fromSq) {
+            // if mouseup on same sq, reposition piece at center of starting sq, dont completely reset
+            this.changePosition(this.fromSq.piece, this.fromSq.coords.clone())
+            this.isDragging = false 
+        } else {
             let potentialMove = { from: this.fromSq.sqName, to: this.toSq.sqName }
-            // console.log('potential move ', potentialMove)
-            let validMove = this.attemptGameMove(potentialMove)
+            this.attemptGameMove(potentialMove)
             // console.log('valid move ', validMove)
             // console.log('possible moves '+ this.game().moves())
-            if (validMove) {
-                // if(validMove.isPromoting){
-                //     this.actions()
-                //     this.game().selectPiece
-                // }
-                // if(validMove.Castled){
-                // todo: move rook to other side of king
-                // }
-                this.movePiece(this.fromSq.piece, this.toSq.coords, validMove)
-            } else {
-                // todo: if not valid move highlight square red for .5 secs
-                this.resetMove(true) // go back if !validMove
-            }
-        }
-        else {
-            // if mouseup on same sq, dont reset move, just reposition piece at center of starting sq
-            this.movePiece(this.fromSq.piece, this.fromSq.coords.clone())
-            this.isDragging = false 
         }
         // todo: set prev move indicator on square (change tile material diffuse)
         return;
@@ -105,6 +91,7 @@ export default class Board {
 
     // todo: this function needs to run in a renderLoop(throttled)
     onPointerMove (evt) {
+        // todo: change cursor back to grab, if not grabbing
         if (!( this.isDragging && this.fromSq )) return;
         // todo drag piece along sides of board if mouse is off board
         let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
@@ -114,10 +101,10 @@ export default class Board {
             this.restoreFadedPieces()
             closestSqPiece.visibility = 0.35
             this.fadedPieces.push(closestSqPiece)
-        }else if(this.fadedPieces.length > 0){
+        } else if(this.fadedPieces.length > 0){
             this.restoreFadedPieces()
         }
-        this.movePiece(this.fromSq.piece, boardPos.clone())
+        this.changePosition(this.fromSq.piece, boardPos.clone())
     }
     pickWhere (predicate) {
         return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
@@ -126,33 +113,56 @@ export default class Board {
         if (!this.game().inReview) this.playerCanMove = false
         let validMove = this.game().handleUserMove(potentialMove)
         if (!validMove && !this.game().inReview) this.playerCanMove = true
-        return validMove
-    }
-    movePiece(piece, newPos, gameMove){
-        // console.log('moving piece', piece)
-        if(gameMove) {
-            this.updateBoardState(gameMove)
-            this.resetMove()
-        }
-        let updatedPos = new BABYLON.Vector3(newPos.x, piece?.position.y, newPos.z)
-        if (!piece.position.equals(updatedPos)) {
-            piece.position = updatedPos
+        if (validMove) {
+            // if(validMove.isPromoting){
+            //     this.actions()
+            //     this.game().selectPiece
+            // }
+            this.move(validMove)
+        } else {
+            // todo: if not valid move highlight square red for .5 secs
+            this.resetMove(true) // go back if !validMove
         }
     }
     moveOpponentPiece(move){
-        let piece = this.squares[move.from].piece
-        // console.log('opponent moved piece', piece)
-        if (piece) this.movePiece(piece, this.squares[move.to].coords, move)
+        // console.log('moving opponent piece', {piece})
+        this.move(move)
         this.playerCanMove = true
     }
-    updateBoardState({ from, to, flags}){
-        let castle;
-        if (flags && (castle = flags.match(/k|q/))) this.positionCastledRook(castle[0],to)
+    changePosition(piece, newPos){
+        let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+        if (!piece.position.equals(updatedPos)) piece.position = updatedPos
+    }
+    move(gameMove){
+        if(!gameMove) return
+        // console.log('moving piece', {piece})
+        let { from, to, flags} = gameMove
+        console.log('flags',flags)
+        if (flags) this.handleFlags(gameMove)
+        let fromSq = this.squares[from]
+        let toSq = this.squares[to]
+        this.changePosition(fromSq.piece, toSq.coords)
+        this.updateSquares(fromSq, toSq)
+        this.resetMove()
+    }
+    updateSquares(fromSq, toSq){
+        toSq.piece = fromSq.piece
+        fromSq.piece.sqName = toSq.sqName
+        delete fromSq.piece
+    }
+    handleFlags({ from, to, flags}){
         if (flags && flags.includes('e')) this.captureEnPassant(to)
-        else if (this.squares[to].piece) this.positionCapturedPiece(this.squares[to].piece)
-        this.squares[to].piece = this.squares[from].piece
-        this.squares[to].piece.sqName = this.squares[to].sqName
-        delete this.squares[from].piece
+        else if (flags && flags.includes('c')) this.positionCapturedPiece(this.squares[to].piece)
+        let castle;
+        if (flags && (castle = flags.match(/k|q/))) this.positionCastledRook(castle[0], to)
+    }
+    positionCastledRook(side, kingSq){
+        let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
+        let kingRank = kingSq.charAt(1)
+        let fromSq = this.squares[rookPositions[side].from + kingRank]
+        let toSq = this.squares[rookPositions[side].to + kingRank]
+        this.changePosition(fromSq.piece, toSq.coords)
+        this.updateSquares(fromSq, toSq)
     }
     captureEnPassant(moveTo) {
         let rankOffSet = {6:5, 3:4} // captured piece location, relative to move
@@ -160,16 +170,6 @@ export default class Board {
         let rank = moveTo.charAt(1)
         let capturedPieceSq = file + rankOffSet[rank]
         this.positionCapturedPiece(this.squares[capturedPieceSq].piece)
-    }
-    positionCastledRook(side, kingSq){
-        let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
-        let kingRank = kingSq.charAt(1)
-        let fromSq = this.squares[rookPositions[side].from + kingRank]
-        let toSq = this.squares[rookPositions[side].to + kingRank]
-        let rook = fromSq.piece
-        this.movePiece(rook, toSq.coords)
-        toSq.piece = fromSq.piece
-        toSq.piece.sqName = toSq.sqName
     }
     positionCapturedPiece(piece){
         piece.sqName = null
@@ -186,9 +186,8 @@ export default class Board {
         }
         piece.position = getNextPosition(pieceColor)
     }
-
     resetMove(goBack){
-        if (goBack && this.fromSq.piece) this.movePiece(this.fromSq.piece, this.fromSq.coords)
+        if (goBack && this.fromSq.piece) this.changePosition(this.fromSq.piece, this.fromSq.coords)
         if (this.fadedPieces.length > 0) this.restoreFadedPieces()
         this.fromSq = {};
         this.toSq = {}
@@ -237,7 +236,7 @@ export default class Board {
             this.squares[sq].piece = piece
             // console.log('mapped piece', piece)
             piece.sqName = sq
-            this.movePiece(piece, this.squares[sq].coords)
+            this.changePosition(piece, this.squares[sq].coords)
         })
         this.selectedHighlightLayer.removeAllMeshes();
     }
