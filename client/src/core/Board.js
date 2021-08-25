@@ -129,7 +129,7 @@ export default class Board {
         return validMove
     }
     movePiece(piece, newPos, gameMove){
-        // console.log('moving piece', gameMove)
+        // console.log('moving piece', piece)
         if(gameMove) {
             this.updateBoardState(gameMove)
             this.resetMove()
@@ -147,36 +147,47 @@ export default class Board {
         this.playerCanMove = true
     }
     updateBoardState({ from, to, flags}){
-        // todo: if pawn changes file, and there isnt a pawn on the "to" square, pawn ate enpessant, dispose pawn
-        // todo: if king moves two spaces, then castled: move & update board state for rook to other side of king
-        if (flags &&  flags.includes('e')) this.captureEnPassantPiece(to)
-        if (this.squares[to].piece) this.positionCapturedPiece(this.squares[to].piece)
+        // if (flags) console.log('flag',flags)
+        let castle;
+        if (flags && (castle = flags.match(/k|q/))) this.positionCastledRook(castle[0],to)
+        if (flags && flags.includes('e')) this.captureEnPassant(to)
+        else if (this.squares[to].piece) this.positionCapturedPiece(this.squares[to].piece)
         this.squares[to].piece = this.squares[from].piece
         this.squares[to].piece.sqName = this.squares[to].sqName
         delete this.squares[from].piece
     }
-    captureEnPassantPiece(moveTo) {
+    captureEnPassant(moveTo) {
         let rankOffSet = {6:5, 3:4} // captured piece location, relative to move
         let file = moveTo.charAt(0)
         let rank = moveTo.charAt(1)
         let capturedPieceSq = file + rankOffSet[rank]
         this.positionCapturedPiece(this.squares[capturedPieceSq].piece)
     }
+    positionCastledRook(side, kingSq){
+        let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
+        let kingRank = kingSq.charAt(1)
+        let fromSq = this.squares[rookPositions[side].from + kingRank]
+        let toSq = this.squares[rookPositions[side].to + kingRank]
+        // console.log('castling',{from:rookPositions[side].from + kingRank, to:rookPositions[side].to + kingRank})
+        let rook = fromSq.piece
+        this.movePiece(rook, toSq.coords)
+        toSq.piece = fromSq.piece
+        toSq.piece.sqName = toSq.sqName
+    }
     positionCapturedPiece(piece){
         piece.sqName = null
         let pieceColor = this.getColorFromPiece(piece)
-        const getNextPosition = (pieceColor,invert) =>  {
-            let columnsCoords = [10, 11.5, 13]  // columns 2 units from board(8x8), 1.5 units apart
+        const getNextPosition = (pieceColor) =>  {
+            let columnsCoords = [10, 11.5, 13]  // start columns 2 units from board(8x8) & spread 1.5 units apart
             let count = this.capturedPiecesCount[pieceColor]++
             let column = count / 8 | 0
             let offsetMultiplier = count % 8 
             let x = columnsCoords[column]
-            let z = -6.5 + (1.3 * (offsetMultiplier)) // start piece row at z = -6.5 and move each piece up 1.3 units 
-            let coords = invert ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for whites pieces
+            let z = -6.5 + (1.3 * (offsetMultiplier)) // start piece row at z:-6.5 and move each piece up 1.3 units 
+            let coords = pieceColor == 'white' ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for whites pieces
             return new BABYLON.Vector3(...coords)
         }
-        if( pieceColor == 'white') piece.position = getNextPosition(pieceColor, true)
-        else piece.position = getNextPosition(pieceColor)
+        piece.position = getNextPosition(pieceColor)
     }
 
     resetMove(goBack){

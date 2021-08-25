@@ -30,6 +30,7 @@ const Scene = new class {
         let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
         // this.modelsLoaded = true;
+        // todo: fetch or set initial game state
         engine.hideLoadingUI()
         // todo: begin camera animation
         // todo: signal to server player is ready. Used for syncing start timing
