@@ -11,7 +11,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = true;
+        this.isVsComputer = false;
         // this.computerColor = 'black';
         this.playerColor = 'black';
         this.game_over = false;
@@ -32,16 +32,24 @@ export default class Game {
             // chat: this.onChat,
         })
     }
-    makeMove(move){
+    async makeMove(move, fromServer = false){
         let engine = this.inReview ? this.tempEngine : this.engine
-        let validMove = engine.move(move);
+        let validMove;
+        if (!fromServer && this.isPromoting(move)) { 
+            // .then instead of await?
+            const piece = await this.promptPieceSelect()
+            // const promotion = promptUserForPromotionPiece() // <- you supply this
+            validMove = piece ? engine.move({ ...move, promotion: piece }) : null
+        } else {
+            validMove = engine.move(move)
+        }
         // let validMove = this.engine.move(move, { verbose: true });
         // console.log('pgn/fen',{pgn:this.engine.pgn(),fen:this.engine.fen()})
         if (validMove && !this.inReview) this.addMoveForReview(validMove)
         return validMove
     }
-    handleUserMove (move) {
-        let validMove = this.makeMove(move);
+    async handleUserMove (move) {
+        let validMove = await this.makeMove(move);
         if (!validMove) return validMove
         // console.log('player move', validMove)
         if (this.inReview) return validMove
@@ -60,7 +68,7 @@ export default class Game {
     handleServerMove({move}){
         if (!move) return
         if (this.inReview) this.resumePlay() // end review if opponent makes moves 
-        var validMove = this.makeMove(move);
+        var validMove = this.makeMove(move, true);
         if (!validMove) return
         // console.log('opponent move', validMove)
         this.board().moveOpponentPiece(move)
@@ -108,16 +116,21 @@ export default class Game {
     // getMovesFromSq(sq) {
     //     return this.engine.moves(sq)
     // }
-    isPromoting(fen, move) {
-        const chess = new Chess(fen);
-        const piece = chess.get(move.from);
+    isPromoting(move) {
+        if(!move.to.match(/1|8/)) return false;
+        const piece = this.engine.get(move.from);
         if (piece?.type !== "p") return false;
-        if (piece.color !== chess.turn()) return false;
-        if (!["1", "8"].some((it) => move.to.endsWith(it))) return false;
-        return chess
-          .moves({ square: move.from, verbose: true })
-          .map((it) => it.to)
-          .includes(move.to);
+        // if (piece.color !== this.engine.turn()) return false; // dont think this is needed
+        return this.engine.moves({ verbose: true }).filter(m =>    
+            m.from === move.from && 
+            m.to === move.to &&
+            m.flags.includes('p')
+        ).length > 0
+    }
+
+
+    promptPieceSelect() {
+        return new Promise(this.Scene.uiActions.controls.openPieceSelect)
     }
 
     // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`

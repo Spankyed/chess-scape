@@ -13,8 +13,8 @@ export default initial => ({
 		chat: chat.state,
 		moves: moves.state,
 		media: media.state,
-		isVisible: true,
-		currTab: "moves"
+		isVisible: false,
+		currTab: "chat"
 	},
 
 	actions: {

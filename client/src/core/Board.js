@@ -109,9 +109,9 @@ export default class Board {
     pickWhere (predicate) {
         return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
     }
-    attemptGameMove(potentialMove){
+    async attemptGameMove(potentialMove){
         if (!this.game().inReview) this.playerCanMove = false
-        let validMove = this.game().handleUserMove(potentialMove)
+        let validMove = await this.game().handleUserMove(potentialMove)
         if (!validMove && !this.game().inReview) this.playerCanMove = true
         if (validMove) {
             // if(validMove.isPromoting){
@@ -129,10 +129,6 @@ export default class Board {
         this.move(move)
         this.playerCanMove = true
     }
-    changePosition(piece, newPos){
-        let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-        if (!piece.position.equals(updatedPos)) piece.position = updatedPos
-    }
     move(gameMove){
         if(!gameMove) return
         // console.log('moving piece', {piece})
@@ -144,16 +140,22 @@ export default class Board {
         this.updateSquares(fromSq, toSq)
         this.resetMove()
     }
+    changePosition(piece, newPos){
+        let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+        if (!piece.position.equals(updatedPos)) piece.position = updatedPos
+    }
     updateSquares(fromSq, toSq){
         toSq.piece = fromSq.piece
         fromSq.piece.sqName = toSq.sqName
         delete fromSq.piece
     }
-    handleFlags({ from, to, flags}){
+    handleFlags(move){
+        let { from, to, flags} = move
         if (flags && flags.includes('e')) this.captureEnPassant(to)
         else if (flags && flags.includes('c')) this.positionCapturedPiece(this.squares[to].piece)
         let castle;
         if (flags && (castle = flags.match(/k|q/))) this.positionCastledRook(castle[0], to)
+        if (flags && flags.includes('p')) console.log('promoted', move)
     }
     positionCastledRook(side, kingSq){
         let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
@@ -164,7 +166,7 @@ export default class Board {
         this.updateSquares(fromSq, toSq)
     }
     captureEnPassant(moveTo) {
-        let rankOffSet = {6:5, 3:4} // captured piece location, relative to move
+        let rankOffSet = {6:5, 3:4} // possible ranks for captured piece, relative to capturing piece
         let file = moveTo.charAt(0)
         let rank = moveTo.charAt(1)
         let capturedPieceSq = file + rankOffSet[rank]
@@ -220,7 +222,7 @@ export default class Board {
         if (!piece) return null
         return piece.name.endsWith('white') ? 'white' : 'black'
     }  
-
+    // test setBoardPosition
     // interact.game.engine.load_pgn("1. d4 a6")
     // let map = interact.game.mapBoard(interact.game.engine.board())
     // interact.board.setReviewBoard(map)
