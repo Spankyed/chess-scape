@@ -98,7 +98,8 @@ function join({message, clientId}){ // client wants to join a game
     const gameRoom = gameRooms[gameId];
     if(!gameRoom) return
     // const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
-    gameRoom.clients.push(clientId)
+    if (!gameRoom.clients.includes(clientId)) gameRoom.clients.push(clientId) 
+    // else // todo: reject client from joining - security
     if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // todo: check max players instead of clients
     const response = { "method": "join", gameId, clientId, matchStarted: gameRoom.matchStarted }
     // todo: notify all clients in lobby a player has joined a gameRoom to update their room list 
@@ -125,13 +126,12 @@ function move({message, clientId}) { // a user plays
         // socket.emit('gameOver', roomId)
     }
     else {
-        const move = match.move(message.move)
+        const validMove = match.move(message.move)
         // const move = match.move(message.move, { verbose: true })
-        // todo: if not valid move, send game state to sync client
-        if(!move) return
-        const response = { "method": "move", move }
-        // messageOtherClients(gameRoom, clientId, response)
-        gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
+        if(!validMove) return // todo: if not valid move, send game state to sync client
+        const response = { "method": "move", move: validMove, clientId }
+        messageOtherClients(gameRoom, clientId, response)
+        // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
     }
 }
 function chat({message, clientId}) {
