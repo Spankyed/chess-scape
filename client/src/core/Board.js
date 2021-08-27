@@ -97,11 +97,11 @@ export default class Board {
         let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
         if (!boardPos) return;
         let closestSqPiece = this.getClosestSq(boardPos).piece
-        if(closestSqPiece && closestSqPiece != this.fromSq.piece){
+        if (closestSqPiece && closestSqPiece != this.fromSq.piece){
             this.restoreFadedPieces()
             closestSqPiece.visibility = 0.35
             this.fadedPieces.push(closestSqPiece)
-        } else if(this.fadedPieces.length > 0){
+        } else if (this.fadedPieces.length > 0){
             this.restoreFadedPieces()
         }
         this.changePosition(this.fromSq.piece, boardPos.clone())
@@ -114,10 +114,6 @@ export default class Board {
         let validMove = await this.game().handleUserMove(potentialMove)
         if (!validMove && !this.game().inReview) this.playerCanMove = true
         if (validMove) {
-            // if(validMove.isPromoting){
-            //     this.actions()
-            //     this.game().selectPiece
-            // }
             this.move(validMove)
         } else {
             // todo: if not valid move highlight square red for .5 secs
@@ -133,7 +129,10 @@ export default class Board {
         if(!gameMove) return
         // console.log('moving piece', {piece})
         let { from, to, flags} = gameMove
-        if (flags) this.handleFlags(gameMove)
+        if (flags) {
+            let promoted = this.handleFlags(gameMove)
+            if( promoted) return
+        }
         let fromSq = this.squares[from]
         let toSq = this.squares[to]
         this.changePosition(fromSq.piece, toSq.coords)
@@ -155,7 +154,29 @@ export default class Board {
         else if (flags && flags.includes('c')) this.positionCapturedPiece(this.squares[to].piece)
         let castle;
         if (flags && (castle = flags.match(/k|q/))) this.positionCastledRook(castle[0], to)
-        if (flags && flags.includes('p')) console.log('promoted', move)
+        if (flags && flags.includes('p')) {
+            this.addPromotionPiece(move)
+            return true
+        }
+        return false
+    }
+    addPromotionPiece({color, promotion, from, to}){
+        console.log('promoted', {color, promotion, to})
+        let pieceId = `${promotion}_${color}`
+        let firstPiece = this.pieces()[pieceId]
+        let promotionPiece = firstPiece.clone()
+        let count = Object.entries(this.pieces()).filter(([id]) => id.startsWith(pieceId)).length;
+        promotionPiece.id = `${pieceId}_${count+1}_p`
+        promotionPiece.name = firstPiece.name +  '_clone'
+        this.pieces()[promotionPiece.id] = promotionPiece
+        let toSq = this.squares[to]
+        let fromSq = this.squares[from]
+        fromSq.piece.setEnabled(false) //hide pawn
+        // this.promotedPawns.push[fromSq.piece]
+        delete fromSq.piece
+        toSq.piece = promotionPiece
+        this.changePosition(promotionPiece, toSq.coords)
+        this.resetMove()
     }
     positionCastledRook(side, kingSq){
         let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
@@ -220,23 +241,30 @@ export default class Board {
     // }
     getColorFromPiece(piece){
         if (!piece) return null
-        return piece.name.endsWith('white') ? 'white' : 'black'
+        return piece.name.match(/white|black/)[0]
     }  
     // test setBoardPosition
     // interact.game.engine.load_pgn("1. d4 a6")
     // let map = interact.game.mapBoard(interact.game.engine.board())
     // interact.board.setReviewBoard(map)
     setBoardPosition(boardMap){
+	    let expectedCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1}
         Object.entries(boardMap).forEach(([sq, pieceId]) => {
             // todo: check if squares have 2 pieces, moved & captured pieces
             if(!pieceId){
                 this.squares[sq].piece = null
                 return
             }
+            if (parseInt(pieceId?.slice(-1)) > expectedCount[pieceId.charAt(0)]) pieceId = pieceId + '_p'
             let piece = this.pieces()[pieceId]
+            if(!piece){
+                console.log('fkk')
+                debugger
+            }
             this.squares[sq].piece = piece
             // console.log('mapped piece', piece)
             piece.sqName = sq
+            if (!piece.isEnabled()) piece.setEnabled(true)
             this.changePosition(piece, this.squares[sq].coords)
         })
         this.selectedHighlightLayer.removeAllMeshes();

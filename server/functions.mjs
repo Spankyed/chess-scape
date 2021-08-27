@@ -128,7 +128,7 @@ function move({message, clientId}) { // a user plays
     else {
         const validMove = match.move(message.move)
         // const move = match.move(message.move, { verbose: true })
-        if(!validMove) return // todo: if not valid move, send game state to sync client
+        if(!validMove) return // todo: if not valid move, send game state to sync client, and alert user board was synced
         const response = { "method": "move", move: validMove, clientId }
         messageOtherClients(gameRoom, clientId, response)
         // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )

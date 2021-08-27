@@ -57,8 +57,7 @@ export default class Game {
             this.handleComputerMove()
             // Api.getComputerMove()
         } else {
-            Api.sendMove(move, this.gameId)
-            // Api.sendMove(validMove, this.gameId)
+            Api.sendMove(validMove, this.gameId)
         }
         this.checkGameOver()
         // if (move === null)  return 'snapback';
