@@ -52,7 +52,7 @@ function sendChat(text){ sendMessage({ method: "chat", text }) }
 function shareMusic(songData, rawData){ 
 	let {src, ...song} = songData
 	let BSON = serialize({ 
-		method: "share", type: "music", gameId, song, 
+		method: "share", type: "music", gameId, song, // clientId, // add clientId to msg after testing/development
 		rawData: Buffer.from(rawData) 
 	})
 	// let bson = serialize({ method: "share", type: "music", blob: rawData }) // test when rawData is type blob fails, file converted to obj and binary data loss 

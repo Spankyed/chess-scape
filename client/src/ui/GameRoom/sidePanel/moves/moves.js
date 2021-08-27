@@ -1,12 +1,9 @@
 import { h } from 'hyperapp';
 import { saveAs } from 'file-saver';
 
-// todo: let players download game pgn/fen
-// todo: alert that user is in review, option to cancel
 // todo: add list empty state
-
-// ['♟','♘','♝','♜','♛','♚']
-// ['♙','♘','♗','♖','♕','♔']
+// ['♟','♘','♝','♜','♛','♚'] // white
+// ['♙','♘','♗','♖','♕','♔'] // black
 const pieceSymbols = {p:'♟',r:'♖',n:'♘',b:'♗',q:'♕',k:'♔'}
 export default initial => ({
 	state: { 

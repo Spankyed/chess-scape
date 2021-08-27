@@ -3,8 +3,8 @@
 import ChessLib  from 'chess.js';
 import fetch  from 'node-fetch';
 import HTMLParser from 'node-html-parser';
-import BSON from 'bson';
 import fileType from 'file-type';
+import BSON from 'bson';
 
 const { Chess } = ChessLib;
 
@@ -42,7 +42,6 @@ function handleRoomsWebSocket(connection, req) {
 	connection.socket.send(JSON.stringify(response))
     // todo: notify lobby player has joined 
     // console.log('client connected', {client:clients[clientId]})
-    // set message handlers
     connection.socket.on('message', request => { // handle incoming messages from connected client 
 		// console.log('incoming request ', request)
         let isBinary = Buffer.isBuffer(request)
@@ -51,7 +50,7 @@ function handleRoomsWebSocket(connection, req) {
         if(isBinary && !isValidFileType(message.rawData)) return
         // if (isBinary) console.log("bson", message)
         console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
-        const methods = { create, join, move, chat, share}
+        const methods = { create, join, move, chat, share} // set message handlers
         const messageHandler = methods[message.method]
         if (messageHandler) messageHandler({message, clientId})
 
@@ -92,7 +91,7 @@ function create({message, clientId}){
     sendMessageAll(response)
 
 }
-function join({message, clientId}){ // client wants to join a game
+function join({message, clientId}){ 
     // const {gameId, clientId} = message;
     const {gameId} = message;
     const gameRoom = gameRooms[gameId];
@@ -105,7 +104,7 @@ function join({message, clientId}){ // client wants to join a game
     // todo: notify all clients in lobby a player has joined a gameRoom to update their room list 
     gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
 }
-function leave({message, clientId}){ //a client want to leave
+function leave({message, clientId}){ 
     const {gameId} = message;
     const gameRoom = gameRooms[gameId];
     // if (arr.includes(val)) arr.splice(arr.indexOf(val), 1)
@@ -113,7 +112,7 @@ function leave({message, clientId}){ //a client want to leave
     // notify all clients that a player has left
     gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
 }
-function move({message, clientId}) { // a user plays
+function move({message, clientId}) { 
     // todo: verify player is actually same color as move made
     const gameId = message.gameId;
     const gameRoom = gameRooms[gameId];
@@ -173,7 +172,11 @@ function addNewClient(username, ip) {
 function setClientConnection(clientId, connection) {
     clients[clientId] = {...clients[clientId], connection}
 }
-
+function messageOtherClients(gameRoom, sender, message){
+    gameRoom.clients.forEach(clientId => { 
+        if (clientId != sender) sendMessage(clientId, message)
+    })
+}
 function sendMessageAll(message, clientId){
     Object.values(clients).forEach( client => {
         const clientConn = client.connection;
@@ -185,11 +188,7 @@ function sendMessage(clientId, message){
     clients[clientId].connection.socket.send(JSON.stringify(message))
     console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", {message})
 }
-function messageOtherClients(gameRoom, sender, message){
-    gameRoom.clients.forEach(clientId => { 
-        if (clientId != sender) sendMessage(clientId, message)
-    })
-}
+
 function mapRooms(){
     return Object.values(gameRooms).map( room => {
         const { match, whitePlayerId, blackPlayerId, // omitted properties
@@ -197,26 +196,16 @@ function mapRooms(){
         return roomModel
     })
 }
-function guid() {
-	// Convert it to base 36 (numbers + letters), and grab the first 9 characters
-	return '_' + Math.random().toString(36).substr(2, 9);
-};
-
-
 async function isValidFileType(buffer){
     // fileType.mime === 'image/jpeg'
     // if (stream2.fileType && stream2.fileType.mime === 'image/jpeg') if (stream2.fileType && stream2.fileType.mime === 'image/jpeg') 
     let {mime} = await fileType.fromBuffer(buffer) // todo: test/ensure that audio is on all audio mime types
     return (mime.indexOf('audio') > -1)
 }
-
-
-// function guid() {
-//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-//     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-//     return v.toString(16);
-//   });
-// }
+function guid() {
+    // use nanoId instead
+	return '_' + Math.random().toString(36).substr(2, 9);
+}
 
 export default {
     handleRoomsHttp,

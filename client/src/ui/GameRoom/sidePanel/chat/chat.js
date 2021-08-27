@@ -96,11 +96,10 @@ export default initial => ({
 	}
 })
 
-function scrollBottom(){
-	let chatWindow = $('.chat-window')
-	chatWindow.animate({ scrollTop: chatWindow.prop('scrollHeight') }, 1000);
-}
-
+// function scrollBottom(){
+// 	let chatWindow = $('.chat-window')
+// 	chatWindow.animate({ scrollTop: chatWindow.prop('scrollHeight') }, 1000);
+// }
 
 function Message({message}){
 	return (

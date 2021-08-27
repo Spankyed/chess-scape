@@ -2,7 +2,7 @@ import { FromResize } from './utils';
 
 export default class SceneManager {
     /**
-     * Create a new scene and registers a manager instance
+     * Create a new scene and register a manager instance
      * @param engine 
      */
     static CreateScene(engine, canvas) {
@@ -16,52 +16,17 @@ export default class SceneManager {
             // scene.debugLayer.show({ embedMode: true }).then(() => {
             //     // scene.debugLayer.select(light);
             // });
-
-            // window.addEventListener("resize", _ =>  );
-            // const resize$ = new ResizeObserver( _ => engine.resize() ); // todo: make sure this gets disposed
-            // resize$.observe(canvas)
             const resize$ = FromResize(canvas)
             resize$.subscribe(_ => engine.resize(false)) // add this observable & others to a cleanup method, and call on dispose
         }
         return scene;
     }
-    /**
-     * Append and parse scene objects from a filename url
-     */
-    static AppendScene(rootUrl, fileName, scene, onSuccess,  onProgress, onError) {
-        let scenex = scene;
-        let onSuccessWrapper = (sn) => {
-            //SceneManager.readyHandlers.forEach((handler) => { handler(this._scene, this); }); //apply 'this' context to handlers?
-            if (onSuccess != null) onSuccess(sn);
-        };
-        return BABYLON.SceneLoader.Append(rootUrl, fileName, scene, onSuccessWrapper, onProgress, onError);
-    }
-    /**
-     * Load and parse a new scene and register a manager instance
-     */
-    static LoadScene(rootUrl, fileName, engine, onSuccess, onProgress) {
-        let onError = (arg1, arg2, Exception) => {
-            console.error(Exception) // show exception to debug LoadScene callback
-        }
-        return SceneManager.AppendScene(rootUrl, fileName, SceneManager.CreateScene(engine), onSuccess, onProgress, onError); //here be magic
-    }
-    /** 
-     * Import and parse mesh from a filename url 
-     * */        
-    static ImportMesh(meshNames, rootUrl, sceneFilename, scene, onSuccess) {
-        let scenex = scene;
-        let onSuccessWrapper = (meshes, particleSystems, skeletons)=> {
-            if (onSuccess != null) onSuccess(meshes, particleSystems, skeletons);
-        };
-        return BABYLON.SceneLoader.ImportMesh(meshNames, rootUrl, sceneFilename, scene, onSuccessWrapper);
-    }
-
     get scene() { return this._scene; }
-    get time() { return this._time; }
+    // get time() { return this._time; }
     constructor(scene) {
         if (scene == null) throw new Error("Host scene not specified.");
         this._scene = scene;
-        this._time = 0;
+        // this._time = 0;
         // Register scene render loop handlers
         this._scene.registerBeforeRender(this._beforeRender);
         this._scene.registerAfterRender(this._afterRender);
@@ -84,6 +49,7 @@ export default class SceneManager {
         //this._scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
         //camera.applyGravity = true;
 
+        // change background color to dark-gray
         this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
 
         const narrowDevice = (window.innerWidth/window.innerHeight) < 1.1
@@ -141,23 +107,5 @@ export default class SceneManager {
 		this._scene.activeCamera.upperBetaLimit=1.5; //Math.PI*(0)/180;
     }
 
-        /** TODO: Switch between players/characters */
-    // getMainCamera(player = PlayerNumber.One) { //below is psuedo code
-    //     let result = null;
-    //     switch (player) {
-    //         case PlayerNumber.One:
-    //             result = this._playerOneCamera;
-    //             break;
-    //         case PlayerNumber.Two:
-    //             result = this._playerTwoCamera;
-    //             break;
-    //         case PlayerNumber.Three:
-    //             result = this._playerThreeCamera;
-    //             break;
-    //         case PlayerNumber.Four:
-    //             result = this._playerFourCamera;
-    //             break;
-    //     }
-    //     return result;
-    // }
+
 }

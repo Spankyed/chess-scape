@@ -16,7 +16,7 @@ export default class Board {
         this.toSq = {};
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
         this.setupEventHandlers(canvas)
-        this.board = this.createBoard()
+        this.board = this.createBoard() // var not used
         return 
     }
     setupEventHandlers(canvas) {
@@ -39,8 +39,7 @@ export default class Board {
         }
         return this.scene;
     };
-
-    // remove scene and ground
+    // pointer down only selects a piece, never captures
     onPointerDown(evt) {
         if (evt.button !== 0) return;
         if (!this.game().inReview && (this.game().game_over || !this.playerCanMove)) return;
@@ -56,7 +55,7 @@ export default class Board {
         let pieceColor = this.getColorFromPiece(piece)
         // if (!this.game().inReview && (pieceColor !== this.playerColor)) return // !only allow enemy piece selection in
         let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
-        if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to eat, dont select new piece
+        if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to capture, dont select new piece
         this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
         if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides); check perhaps unnecessary duplicate
         // todo: change cursor back to grabbing
@@ -131,7 +130,7 @@ export default class Board {
         let { from, to, flags} = gameMove
         if (flags) {
             let promoted = this.handleFlags(gameMove)
-            if( promoted) return
+            if (promoted) return
         }
         let fromSq = this.squares[from]
         let toSq = this.squares[to]

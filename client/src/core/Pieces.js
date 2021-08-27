@@ -11,6 +11,7 @@ function getPieceMaterials(scene){
     return { white, black }
 }
 function getPiecesContainer(scene){
+    // todo: move this code to SceneManager
     let assetsManager = new BABYLON.AssetsManager(scene)
     assetsManager.useDefaultLoadingScreen = false
     let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/", 'Chesspieces.babylon');

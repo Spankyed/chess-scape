@@ -36,9 +36,7 @@ export default class Game {
         let engine = this.inReview ? this.tempEngine : this.engine
         let validMove;
         if (!fromServer && this.isPromoting(move)) { 
-            // .then instead of await?
             const piece = await this.promptPieceSelect()
-            // const promotion = promptUserForPromotionPiece() // <- you supply this
             validMove = piece ? engine.move({ ...move, promotion: piece }) : null
         } else {
             validMove = engine.move(move)
@@ -68,7 +66,7 @@ export default class Game {
         if (!move) return
         if (this.inReview) this.resumePlay() // end review if opponent makes moves 
         var validMove = this.makeMove(move, true);
-        if (!validMove) return
+        if (!validMove) return // todo: should make request to sync player boards
         // console.log('opponent move', validMove)
         this.board().moveOpponentPiece(move)
         this.checkGameOver()
@@ -132,29 +130,17 @@ export default class Game {
         return new Promise(this.Scene.uiActions.controls.openPieceSelect)
     }
 
-    // let move = `{"${this.startingSq.sqName}:"${closestSq.sqName}"}`
-    // let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
-    // isMoveValid(from, to){
-    //     let pieceAbbrev = this.getPieceNameAbbrev(this.selectedPiece)
-    //     return !!this.game.moves({ square: from }).find((move) => {
-    //         if (pieceAbbrev == '') 
-    //         {    // todo: in pgn, check when pawn captures, if its starting sq changes file
-    //             return move.startsWith(`${from.charAt(0)}x${to}`) 
+    // get_captured_pieces(game, color) {
+    //     const captured = {'p': 0, 'n': 0, 'b': 0, 'r': 0, 'q': 0}
+    
+    //     for (const move of game.history({ verbose: true })) {
+    //         if (move.hasOwnProperty("captured") && move.color !== color[0]) {
+    //             captured[move.captured]++
     //         }
-    //         else 
-    //             return move.startsWith(`${this.selectedPiece.name.charAt(0)}${to}`) 
-    //     }) 
-    // }
-
-    // getPieceNameAbbrev(piece){
-    //     let abbrev = piece.name.charAt(0)
-    //     return (abbrev != 'P') ? abbrev : ''
-    // }
-
-    // this.game().moves().find((move) => {
-    //     if (move.isPromiting){    
-    //         this.Scene.uiActions.showPromotionUI() 
     //     }
-    // }) 
+    
+    //     return captured
+    // }
+    // get_captured_pieces(game, "white")
 }
 

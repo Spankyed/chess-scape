@@ -3,6 +3,7 @@ import utils from './utils/utils';
 import Board from './Board';
 import Game from './Game';
 import loadPieces  from './Pieces'; 
+// import { Scene, Engine } from 'babylonjs';
 
 const Scene = new class {
     constructor(){
@@ -45,12 +46,15 @@ const Scene = new class {
             uiActions: actions, 
         });
     }
-    openPromotionUI(){
-        this.uiActions.showPromotionUI(); 
-    }
-    hideLoader(){
-        this.engine.hideLoadingUI()
-    }
+
+    // methods below not used
+
+    // openPromotionUI(){ 
+    //     this.uiActions.showPromotionUI(); 
+    // }
+    // hideLoader(){
+    //     this.engine.hideLoadingUI()
+    // }
 }
 
 export default Scene;
