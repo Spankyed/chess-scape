@@ -16,13 +16,13 @@ export default initial => ({
 		}
 	},
 	actions: { 
-		addMove: ({move, fen}) => ({moves}) => ({
+		addMove: ({move, fen, boardMap}) => ({moves}) => ({
 			moves: { ...moves, 
 				[move.color]:[ ...moves[move.color], 
 					{
 						piece: pieceSymbols[move.piece], 
 						to: move.san,
-						fen
+						fen, boardMap
 					}
 				]
 			}
@@ -53,7 +53,7 @@ export default initial => ({
 				</div>
 
 				<div class="moves move-list flex flex-row h-full w-full">
-					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-col flex-wrap">
+					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-col">
 						{
 							[...new Array(state.moves.w.length)].map((_,idx) => (
 								<span>{idx+1}</span>
@@ -86,7 +86,7 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 		// if (reviewDisabled) return
 		startReview(move)
 		if (!inReview) promptReview(alert, endReview)
-		interact.game.setReview(move.fen)
+		interact.game.setReview(move)
 	}
 	return (
 		<move onclick={review} class={`${ currMove == move && ' active'}`}>
