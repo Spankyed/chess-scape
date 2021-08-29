@@ -11,7 +11,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = false;
+        this.isVsComputer = true;
         // this.computerColor = 'black';
         this.playerColor = 'black';
         this.game_over = false;
@@ -41,9 +41,8 @@ export default class Game {
         } else {
             validMove = engine.move(move)
         }
-        // let validMove = this.engine.move(move, { verbose: true });
-        // console.log('pgn/fen',{pgn:this.engine.pgn(),fen:this.engine.fen()})
-        if (validMove && !this.inReview) this.addMoveForReview(validMove)
+        //moved to board
+        // if (validMove && !this.inReview) this.addMoveForReview(validMove)
         return validMove
     }
     async handleUserMove (move) {
@@ -62,40 +61,38 @@ export default class Game {
         // else socket.emit('move', move);
         return validMove
     }
-    handleServerMove({move}){
+    async handleServerMove({move}){
         if (!move) return
         if (this.inReview) this.resumePlay() // end review if opponent makes moves 
-        var validMove = this.makeMove(move, true);
+        var validMove = await this.makeMove(move, true);
         if (!validMove) return // todo: should make request to sync player boards
         // console.log('opponent move', validMove)
         this.board().moveOpponentPiece(move)
         this.checkGameOver()
     }
-    handleComputerMove(){
+    async handleComputerMove(){
         // console.log('turn', this.engine.turn())
         if (this.engine.turn() != 'b') return
-        const moves = this.engine.moves()
+        const moves = this.engine.moves({verbose:true})
         const move = moves[Math.floor(Math.random() * moves.length)] // get random move
-        var validMove = this.makeMove(move)
-        if (validMove) setTimeout(_=> this.board().moveOpponentPiece(validMove), 10)
-        // console.log('computer move', validMove)
-        this.checkGameOver()
-    }
-    addMoveForReview(move){
-        this.Scene.uiActions.sidePanel.moves.addMove({move, fen: this.engine.fen()})
+        if(move){
+            var validMove = await this.makeMove(move)
+            if (validMove) setTimeout(_=> this.board().moveOpponentPiece(validMove), 10)
+            // console.log('computer move', validMove)
+            this.checkGameOver()
+        }
     }
 
-    setReview(gamePosition) {
-        this.tempEngine.load(gamePosition)
-        let boardMap = MapBoard(this.tempEngine.board())
+    setReview({fen, boardMap}) {
+        this.tempEngine.load(fen)
         this.board().setBoardPosition(boardMap)
+        this.board().inReview = true
         this.inReview = true
     }
     resumePlay(){
         this.Scene.uiActions.alert.hide()
         this.Scene.uiActions.sidePanel.moves.endReview()
-        let boardMap = MapBoard(this.engine.board())
-        this.board().setBoardPosition(boardMap)
+        this.board().setBoardPosition(null, true)
         this.inReview = false
     }
     checkGameOver(){
@@ -106,14 +103,8 @@ export default class Game {
             // this.piecesContainer.removeAllFromScene()
         }
     }
-    // getValidMoves() {
-    //     // should not return opponent moves
-    //     return validMoves
-    // }
-    // getMovesFromSq(sq) {
-    //     return this.engine.moves(sq)
-    // }
     isPromoting(move) {
+        // if(!move) debugger
         if(!move.to.match(/1|8/)) return false;
         const piece = this.engine.get(move.from);
         if (piece?.type !== "p") return false;
@@ -124,23 +115,17 @@ export default class Game {
             m.flags.includes('p')
         ).length > 0
     }
-
-
     promptPieceSelect() {
         return new Promise(this.Scene.uiActions.controls.openPieceSelect)
     }
-
-    // get_captured_pieces(game, color) {
+    // getCapturePieces(color) {
     //     const captured = {'p': 0, 'n': 0, 'b': 0, 'r': 0, 'q': 0}
-    
-    //     for (const move of game.history({ verbose: true })) {
-    //         if (move.hasOwnProperty("captured") && move.color !== color[0]) {
+    //     for (const move of this.engine.history({ verbose: true })) {
+    //         if (move.hasOwnProperty("captured") && move.color !== color) {
     //             captured[move.captured]++
     //         }
     //     }
-    
     //     return captured
     // }
-    // get_captured_pieces(game, "white")
 }
 

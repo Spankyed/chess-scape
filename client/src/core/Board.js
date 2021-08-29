@@ -2,16 +2,18 @@ export default class Board {
     constructor(current, scene, canvas){
         // Board class depends on Game class & current Scene class
         // this.Scene = Scene
-        this.scene = scene;  
+        this.scene = scene; 
+        this.current = current 
         this.game = current.game
         this.pieces = current.pieces
         this.squares = {}
         this.fadedPieces = []
-        this.capturedPiecesCount = {white:0, black:0}
+        this.capturedPieces = {count:{w:0,b:0}}
         this.playerColor = 'white'
         this.playerCanMove = true;
         this.isMoving = false;
         this.isDragging = false;
+        this.inReview = false;
         this.fromSq = {};
         this.toSq = {};
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
@@ -61,6 +63,7 @@ export default class Board {
         // todo: change cursor back to grabbing
         this.selectedHighlightLayer.removeAllMeshes();
         this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow()); // highlight selected square/piece
+        
         this.isMoving = true;
         this.isDragging = true
     }
@@ -75,6 +78,7 @@ export default class Board {
         }
         this.toSq = this.squares[pickInfo.pickedMesh.name];
         if (this.toSq == this.fromSq) {
+            console.log('same',this.toSq,this.fromSq)
             // if mouseup on same sq, reposition piece at center of starting sq, dont completely reset
             this.changePosition(this.fromSq.piece, this.fromSq.coords.clone())
             this.isDragging = false 
@@ -130,14 +134,21 @@ export default class Board {
         let { from, to, flags} = gameMove
         if (flags) {
             let promoted = this.handleFlags(gameMove)
-            if (promoted) return
+            if (promoted) {
+                this.resetMove()
+                if (!this.inReview) this.addMoveForReview(gameMove)
+                return
+            }
         }
+        //code below never reached, aways flags
         let fromSq = this.squares[from]
         let toSq = this.squares[to]
         this.changePosition(fromSq.piece, toSq.coords)
         this.updateSquares(fromSq, toSq)
+        if (!this.inReview) this.addMoveForReview(gameMove)
         this.resetMove()
     }
+
     changePosition(piece, newPos){
         let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
         if (!piece.position.equals(updatedPos)) piece.position = updatedPos
@@ -159,23 +170,34 @@ export default class Board {
         }
         return false
     }
+    addMoveForReview(move){
+        let boardMap = this.mapBoard()
+        // console.log('added',{move,boardMap})
+        this.current.uiActions.sidePanel.moves.addMove({move, fen: this.game().engine.fen(), boardMap: boardMap})
+    }
     addPromotionPiece({color, promotion, from, to}){
-        console.log('promoted', {color, promotion, to})
+        console.log('promoted', {color, promotion, from,  to})
         let pieceId = `${promotion}_${color}`
         let firstPiece = this.pieces()[pieceId]
-        let promotionPiece = firstPiece.clone()
+        let promotionPiece = firstPiece.clone(firstPiece.name +  '_clone')
         let count = Object.entries(this.pieces()).filter(([id]) => id.startsWith(pieceId)).length;
+        promotionPiece.makeGeometryUnique()
         promotionPiece.id = `${pieceId}_${count+1}_p`
-        promotionPiece.name = firstPiece.name +  '_clone'
+        // promotionPiece.name = firstPiece.name +  '_clone'
         this.pieces()[promotionPiece.id] = promotionPiece
         let toSq = this.squares[to]
         let fromSq = this.squares[from]
-        fromSq.piece.setEnabled(false) //hide pawn
+        // fromSq.piece.setEnabled(false) 
         // this.promotedPawns.push[fromSq.piece]
-        delete fromSq.piece
         toSq.piece = promotionPiece
+        let pawn = fromSq.piece
+        pawn.isVisible = false //hide pawn
+        pawn.sqName = null
+        promotionPiece.sqName = to
+        // console.log('deleting',fromSq.piece)
+        delete this.squares[from].piece
         this.changePosition(promotionPiece, toSq.coords)
-        this.resetMove()
+
     }
     positionCastledRook(side, kingSq){
         let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
@@ -193,11 +215,13 @@ export default class Board {
         this.positionCapturedPiece(this.squares[capturedPieceSq].piece)
     }
     positionCapturedPiece(piece){
+        // if(!piece) debugger
+        if(!this.inReview) this.capturedPieces[piece.id] = piece
         piece.sqName = null
         let pieceColor = this.getColorFromPiece(piece)
         const getNextPosition = (pieceColor) =>  {
             let columnsCoords = [10, 11.5, 13]  // start columns 2 units from board(8x8) & spread 1.5 units apart
-            let count = this.capturedPiecesCount[pieceColor]++
+            let count = this.capturedPieces.count[pieceColor.charAt(0)]++
             let column = count / 8 | 0
             let offsetMultiplier = count % 8 
             let x = columnsCoords[column]
@@ -246,27 +270,70 @@ export default class Board {
     // interact.game.engine.load_pgn("1. d4 a6")
     // let map = interact.game.mapBoard(interact.game.engine.board())
     // interact.board.setReviewBoard(map)
-    setBoardPosition(boardMap){
-	    let expectedCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1}
-        Object.entries(boardMap).forEach(([sq, pieceId]) => {
-            // todo: check if squares have 2 pieces, moved & captured pieces
-            if(!pieceId){
-                this.squares[sq].piece = null
-                return
+
+    // setBoardPosition(boardMap){
+	//     let expectedCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1}
+    //     Object.entries(boardMap).forEach(([sq, pieceId]) => {
+    //         // todo: check if squares have 2 pieces, moved & captured pieces
+    //         if(!pieceId){
+    //             this.squares[sq].piece = null
+    //             return
+    //         }
+    //         if (parseInt(pieceId?.slice(-1)) > expectedCount[pieceId.charAt(0)]) pieceId = pieceId + '_p'
+    //         let piece = this.pieces()[pieceId]
+    //         if(!piece){
+    //             console.log('fkk')
+    //             debugger
+    //         }
+    //         this.squares[sq].piece = piece
+    //         // console.log('mapped piece', piece)
+    //         piece.sqName = sq
+    //         if (!piece.isEnabled()) piece.setEnabled(true)
+    //         this.changePosition(piece, this.squares[sq].coords)
+    //     })
+    //     this.selectedHighlightLayer.removeAllMeshes();
+    // }
+    setBoardPosition(boardMap, curr){
+        boardMap = curr ? this.currBoardMap : boardMap
+        let mappedPieces = []
+        boardMap.forEach(({sqName, id, position, isVisible}) => {
+            let piece = this.pieces()[id]
+            piece.position = position.clone()
+            piece.sqName = sqName
+            piece.isVisible = isVisible
+            // piece.setEnabled(isEnabled)
+            if (sqName){
+                let sq = this.squares[sqName]
+                sq.piece = piece
             }
-            if (parseInt(pieceId?.slice(-1)) > expectedCount[pieceId.charAt(0)]) pieceId = pieceId + '_p'
-            let piece = this.pieces()[pieceId]
-            if(!piece){
-                console.log('fkk')
-                debugger
-            }
-            this.squares[sq].piece = piece
-            // console.log('mapped piece', piece)
-            piece.sqName = sq
-            if (!piece.isEnabled()) piece.setEnabled(true)
-            this.changePosition(piece, this.squares[sq].coords)
+            mappedPieces.push(id)
         })
+        let removedPromotionPieces = Object.entries(this.pieces()).filter(([key, piece])=>{
+            return !mappedPieces.includes(key)
+        })
+        // console.log({removedPromotionPieces})
+        removedPromotionPieces.forEach( ([id, piece]) => piece.isVisible = false)
+        Object.entries(this.squares).forEach(([key, sq])=>{ if (sq.piece &&  sq.piece.sqName != key) {
+            console.log('deleted')
+            delete sq.piece
+        }})
         this.selectedHighlightLayer.removeAllMeshes();
+    }
+    mapBoard(){
+        let map = []
+        // could also record this.capturedPieces for better consistency
+        Object.entries(this.pieces()).forEach(([key, piece])=>{
+            let {id, sqName, position} = piece
+            // if(sqName && !this.squares[sqName].piece)debugger
+            sqName = sqName && this.squares[sqName].piece ? sqName : null
+            map.push({ 
+                id, sqName, 
+                position: position.clone(),
+                isVisible: piece.isVisible
+            })
+        })
+        this.currBoardMap = map
+        return map
     }
     mapPiecesToSquares(pieces){
         pieces.forEach( piece =>{

@@ -67,7 +67,7 @@ async function loadPieces(scene){
             piece.id += '_' + count
             pieceMap[piece.id] = piece
         }
-        
+        piece.doNotSyncBoundingInfo = true;
         // piece.addPickingBox()
     })
 
