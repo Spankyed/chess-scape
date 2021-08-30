@@ -23,6 +23,13 @@ html, body {
     // font-family: "Calibri", "Roboto", sans-serif;
     // font-family:'Segoe UI';
     font-family: 'Quattrocento Sans', sans-serif;
+
+    // grid bg like - https://stately.ai/
+    background-image: 
+        linear-gradient(#ffffff07 0.1em, transparent 0.1em), 
+        linear-gradient( 90deg  , #ffffff07 0.1em, transparent 0.1em);
+    background-size: 3em 3em;
+
 }
 
 h2 {
