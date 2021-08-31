@@ -17,6 +17,7 @@ export default initial => ({
 	},
 	actions: { 
 		addMove: ({move, fen, boardMap}) => ({moves}) => ({
+			// todo only send a moveId, not the whole move
 			moves: { ...moves, 
 				[move.color]:[ ...moves[move.color], 
 					{

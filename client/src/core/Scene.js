@@ -36,7 +36,7 @@ const Scene = new class {
         // todo: begin camera animation
         // todo: signal to server player is ready. Used for syncing start timing
 
-        engine.runRenderLoop(_ => scene.render())
+        engine.runRenderLoop(_ => scene.render()) // todo: manually render scene updates with ferp app({observe})
 
         window.interact = {engine: engine, scene: this, game, board}
 

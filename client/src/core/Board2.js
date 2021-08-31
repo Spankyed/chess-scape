@@ -1,137 +1,3 @@
-import { createMachine, actions, interpret, assign, send } from 'xstate';
-
-// const boardMachine = createMachine({
-//     id: 'board_states',
-//     initial: 'started',
-//     context: {
-// 		players: {white:null, black:null}
-//     },
-//     states: {
-// 		started: {
-// 			on: {
-// 				FETCH: 'loading'
-// 			},
-//             // after: {
-//             //     1000: {
-//             //         actions: sendParent('BOARD.READY')
-//             //     }
-//             // }
-// 		},
-// 		loading: {
-// 			invoke: {
-// 				id: 'fetchDog',
-// 				src: (context, event) => 
-// 					fetch('https://dog.ceo/api/breeds/image/random')
-// 					.then((data) => data.json() ),
-// 				onDone: {
-// 					target: 'resolved',
-// 					actions: assign({
-// 						dog: (_, event) => event.data
-// 					})
-// 				},
-// 				onError: 'rejected'
-// 			},
-// 			on: {
-// 				CANCEL: 'idle'
-// 			}
-// 		},
-// 		ended: {
-// 			type: 'final'
-// 		},
-//     }
-// });
-
-const moveMachine = createMachine({
-    id: 'move_states',
-    initial: 'moving',
-	context: {
-        currPlayer: 'white',
-		lastMove: undefined,
-        colorToMove: 'white',
-		fromSq: undefined,
-	},
-    states: {
-		moving: {
-            initial: 'selecting',
-            states:{
-                selecting: {
-					id: 'selecting',
-                    on: {
-                        'SELECT': {
-                            actions: [
-								assign({ fromSq: (ctx, event) => event.value })
-							],
-                            target: 'selected.dragging'
-                        },
-                    }  
-                },
-                selected: {
-                    initial: 'dragging',
-                    states: {
-                        dragging: {
-                            on: {
-                                'DRAG': {
-                                    actions: assign({ dragPos: (_, event) => event.value })
-                                },
-                                'END_DRAG': 'notDragging' 
-                            }
-                        },
-						notDragging: {
-							on: {
-								'DESELECT': {
-									actions: assign({ fromSq: (_, event) => undefined }),
-									target: '#selecting'
-								}
-							},
-						}
-                    },
-                    on: {
-                        'DESELECT': {
-                            actions: assign({ fromSq: (_, event) => undefined }),
-                        },
-
-                        'MOVE': {
-                            actions: [ assign({ lastMove: (_, event) => event.value }) ]
-                        }
-                    }
-                }
-            }
-		},
-        waiting: {
-			on: {
-                'OPP_MOVE': {
-					actions: assign({ lastMove: (_, event) => event.value }),
-                    target: 'moving'
-				}
-			}
-		},
-        reviewing: {
-			on: {
-                // 'MOVE': {
-				// 	actions: assign({ lastMove: (_, event) => event.value })
-				// },
-                'END_REVIEW': 'moving',
-                'OPP_MOVE': 'waiting' 
-                // 'END': {
-				// 	actions: assign({ lastMove: (_, event) => event.value })
-				// }
-			}
-		},
-		// WAITING: {
-		// 	on: {
-		// 		FETCH: 'loading'
-		// 	}
-		// },
-        on: {
-            'REVIEW': 'reviewing'
-            // 'REVIEW': {
-            //     actions: assign({ currMove: (_, event) => event.value }),
-            //     target: 'reviewing'
-            // },
-        }
-	}
-})
-
 export default class Board {
     constructor(current, scene, canvas){
         // Board class depends on Game class & current Scene class
@@ -151,161 +17,56 @@ export default class Board {
         this.fromSq = {};
         this.toSq = {};
         this.selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", this.scene);
-        this.setupEventListeners(canvas)
+        this.setupEventHandlers(canvas)
         this.board = this.createBoard() // var not used
-        this.moveService = this.setupStateMachine()
         return 
     }
-    setupStateMachine(){
-        const moveService = interpret(moveMachine)
-                                // .onTransition((state) => console.log('state changed', state))
-                                // .onTransition((state) => console.log('state changed', state.value))
-                                .start();
-        this.setEventHandlers(moveService)
-        return moveService
-    }
-    setEventHandlers(moveService){
-        this.stateSubscription = moveService.subscribe((state) => {
-            let { event, context } = state
-            let { type, value } = event
-            // console.log('ohh boy', { type, value, state: {event, context} })
-            const eventHandlers = {
-                'SELECT': this.selectSq.bind(this),
-                'DESELECT': this.deselectSq.bind(this),
-                'DRAG': this.dragPiece.bind(this),
-                'END_DRAG': this.endPieceDrag.bind(this),
-                'RESET': this.resetMove.bind(this),
-        }
-            eventHandlers[type]?.(value, state)
-        });
-    }
-    cleanupState(){
-        this.stateSubscription.unsubscribe()
-    }
-    selectSq(fromSq,state){
-		console.log('selected',{state})
-        // todo: change cursor back to grabbing
-        this.selectedHighlightLayer.removeAllMeshes();
-        this.selectedHighlightLayer.addMesh(fromSq.mesh, BABYLON.Color3.Yellow()); // highlight
-        // this.isMoving = true;
-        // this.isDragging = true
-    }
-    deselectSq(value, state){
-        // todo: change cursor back to grabbing
-        this.selectedHighlightLayer.removeAllMeshes();
-        // this.isDragging = false
-    }
-    dragPiece(position, state){
-        let { fromSq } = state.context
-        // console.log('dragging',{position: position.clone(),state})
-        this.changePosition(fromSq.piece, position.clone())
-        // let closestSqPiece = this.getClosestSq(boardPos).piece
-        // if (closestSqPiece && closestSqPiece != this.fromSq.piece){
-        //     this.restoreFadedPieces()
-        //     closestSqPiece.visibility = 0.35
-        //     this.fadedPieces.push(closestSqPiece)
-        // } else if (this.fadedPieces.length > 0){
-        //     this.restoreFadedPieces()
-        // }
-    }
-    endPieceDrag(_, state){
-		// attempt Move
-		// if not valid
-        // reset Move
-        console.log('boo',this.moveService.state)
-        let { fromSq } = state.context
-		this.changePosition(fromSq.piece, fromSq.coords)
-		// resetMove(fromSq, true)
-    }
-    fadePiece(){
-
-    }
-    resetMove(fromSq, goBack){
-        console.log('resetting',{fromSq, goBack})
-        if (goBack) this.changePosition(fromSq.piece, fromSq.coords)
-        // if (this.fadedPieces.length > 0) this.restoreFadedPieces(fadedPieces)
-        this.selectedHighlightLayer.removeAllMeshes();
-        // this.fromSq = {};
-        // this.toSq = {}
-        // this.isDragging = false;
-        // this.isMoving = false;
-    }
-    restoreFadedPieces(fadedPieces) {
-        fadedPieces.forEach( piece =>  piece.visibility = 1 )
-        fadedPieces = []
-    }
-    setupEventListeners(canvas) {
+    setupEventHandlers(canvas) {
         const handlers =  {   
             onPointerDown: (evt) => this.onPointerDown(evt),
-            onPointerMove: (evt) => this.onPointerMove(evt),
             onPointerUp: (evt) => this.onPointerUp(evt),
-            onRightPointerDown: (evt) => this.onRightPointerDown(evt)
+            onPointerMove: (evt) => this.onPointerMove(evt),
+            onRightPointerDown: (evt) => { if (evt.button == 2) this.resetMove(true) }
         }
-        // todo: consider using rxjs fromEvent to throttle?
+        // todo: consider using rxjs fromEvent here?
         canvas.addEventListener("pointerdown", handlers.onPointerDown, false);
+        canvas.addEventListener("pointerup", handlers.onPointerUp, false);
         canvas.addEventListener("pointermove", handlers.onPointerMove, false);
         canvas.addEventListener("contextmenu", handlers.onRightPointerDown, false);
-        // canvas.addEventListener("pointerup", handlers.onPointerUp, false);
         this.scene.onDispose = function () {
             canvas.removeEventListener("pointerdown", handlers.onPointerDown);
+            canvas.removeEventListener("pointerup", handlers.onPointerUp);
             canvas.removeEventListener("pointermove", handlers.onPointerMove);
             canvas.removeEventListener("contextmenu", handlers.onRightPointerDown);
-            canvas.removeEventListener("pointerup", handlers.onPointerUp);
         }
         return this.scene;
     };
-    onPointerMove (evt) {
-        // todo: change cursor back to grab, if not grabbing
-        // if (!( this.isDragging && this.fromSq )) return;
-        // todo drag piece along sides of board if mouse is off board
-        let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
-        if (!boardPos) return;
-        // console.log('tryna move here',{state:this.moveService.state})
-
-        if(this.moveService.state.matches("moving.selected.dragging"))
-            this.moveService.send({ type: "DRAG", value: boardPos })
-    }
-    onRightPointerDown(evt) {
-        let {state, send} = this.moveService
-        if (state.matches("moving.selected.dragging")
-        //   state.matches(["moving.selected.dragging","reviewing.selected.dragging"])
-        ) send({ type: "END_DRAG" })
-
-        else if (state.matches("moving.selected.notDragging")) send({ type: "DESELECT" })
-    }
+    // pointer down only selects a piece, never captures
     onPointerDown(evt) {
-        // pointer down only selects a piece, never captures
         if (evt.button !== 0) return;
-        // if (!this.game().inReview && (this.game().game_over || !this.playerCanMove)) return;
+        if (!this.game().inReview && (this.game().game_over || !this.playerCanMove)) return;
         let pickInfo = this.pickWhere((mesh) => mesh.isPickable); // select square
         // console.log('picked sq',pickInfo.pickedMesh)
         if (!pickInfo.hit) return;
-        // if (this.fromSq.mesh == pickInfo.pickedMesh){ // todo xstate handle using multiple guards 
-        //     this.resetMove(true)
-        //     return
-        // }
-        // let piece = this.squares[pickInfo.pickedMesh.name].piece
-        let square = this.squares[pickInfo.pickedMesh.name]
-
-        if (!square.piece) return
-        // let pieceColor = this.getColorFromPiece(square.piece)
-        // // if (!this.game().inReview && (pieceColor !== this.playerColor)) return // !only allow enemy piece selection in
-        // let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
-        // if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to capture, dont select new piece
-        // this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
-        // if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides); check perhaps unnecessary duplicate
+        if (this.fromSq.mesh == pickInfo.pickedMesh){
+            this.resetMove(true)
+            return
+        }
+        let piece = this.squares[pickInfo.pickedMesh.name].piece
+        if (!piece) return
+        let pieceColor = this.getColorFromPiece(piece)
+        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return // !only allow enemy piece selection in
+        let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
+        if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to capture, dont select new piece
+        this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
+        if (!(this.fromSq && this.fromSq.piece)) return; // exit if no piece on square (no need to reset; overrides); check perhaps unnecessary duplicate
+        // todo: change cursor back to grabbing
+        this.selectedHighlightLayer.removeAllMeshes();
+        this.selectedHighlightLayer.addMesh(this.fromSq.mesh, BABYLON.Color3.Yellow()); // highlight selected square/piece
         
-        
-        // if( this.moveService.matches('selecting'))
-            this.moveService.send({ type: "SELECT", value: square })
-        // if( this.moveService.matches('selected'))
-            // this.moveService.send({ type: "MOVE", value: square })
+        this.isMoving = true;
+        this.isDragging = true
     }
-    // todo: this function needs to be throttled d
-
-
-
-
 
     onPointerUp(evt) {
         if (evt.button == 2) return; // ignore right click
@@ -331,7 +92,23 @@ export default class Board {
         return;
     }
 
-
+    // todo: this function needs to run in a renderLoop(throttled)
+    onPointerMove (evt) {
+        // todo: change cursor back to grab, if not grabbing
+        if (!( this.isDragging && this.fromSq )) return;
+        // todo drag piece along sides of board if mouse is off board
+        let boardPos = this.pickWhere(mesh => mesh.id == 'board').pickedPoint
+        if (!boardPos) return;
+        let closestSqPiece = this.getClosestSq(boardPos).piece
+        if (closestSqPiece && closestSqPiece != this.fromSq.piece){
+            this.restoreFadedPieces()
+            closestSqPiece.visibility = 0.35
+            this.fadedPieces.push(closestSqPiece)
+        } else if (this.fadedPieces.length > 0){
+            this.restoreFadedPieces()
+        }
+        this.changePosition(this.fromSq.piece, boardPos.clone())
+    }
     pickWhere (predicate) {
         return this.scene.pick(this.scene.pointerX, this.scene.pointerY, predicate)
     }
@@ -457,20 +234,20 @@ export default class Board {
         }
         piece.position = getNextPosition(pieceColor)
     }
-    // resetMove(goBack){
-    //     if (goBack && this.fromSq.piece) this.changePosition(this.fromSq.piece, this.fromSq.coords)
-    //     if (this.fadedPieces.length > 0) this.restoreFadedPieces()
-    //     this.fromSq = {};
-    //     this.toSq = {}
-    //     this.isDragging = false;
-    //     this.isMoving = false;
-    //     this.legalSquares = null;
-    //     this.selectedHighlightLayer.removeAllMeshes();
-    // }
-    // restoreFadedPieces() {
-    //     this.fadedPieces.forEach( piece =>  piece.visibility = 1 )
-    //     this.fadedPieces = []
-    // }
+    resetMove(goBack){
+        if (goBack && this.fromSq.piece) this.changePosition(this.fromSq.piece, this.fromSq.coords)
+        if (this.fadedPieces.length > 0) this.restoreFadedPieces()
+        this.fromSq = {};
+        this.toSq = {}
+        this.isDragging = false;
+        this.isMoving = false;
+        this.legalSquares = null;
+        this.selectedHighlightLayer.removeAllMeshes();
+    }
+    restoreFadedPieces() {
+        this.fadedPieces.forEach( piece =>  piece.visibility = 1 )
+        this.fadedPieces = []
+    }
     getClosestSq(fromPos){
         let pickedPoint = fromPos || this.pickWhere().pickedPoint
         if (!pickedPoint) return
