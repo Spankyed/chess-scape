@@ -55,7 +55,7 @@ export default class Board {
         let piece = this.squares[pickInfo.pickedMesh.name].piece
         if (!piece) return
         let pieceColor = this.getColorFromPiece(piece)
-        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return // !only allow enemy piece selection in
+        // if (!this.game().inReview && (pieceColor !== this.playerColor)) return // !disable enemy piece selection unless reviewing
         let fromPieceColor = this.getColorFromPiece(this.fromSq.piece)
         if (fromPieceColor && (pieceColor != fromPieceColor)) return // user is in review & trying to capture, dont select new piece
         this.fromSq = this.squares[pickInfo.pickedMesh.name]; // select piece/sq
@@ -146,9 +146,6 @@ export default class Board {
         this.changePosition(fromSq.piece, toSq.coords)
         this.updateSquares(fromSq, toSq)
         if (!this.inReview) this.addMoveForReview(gameMove)
-
-
-        this.renderBoard()
         this.resetMove()
     }
 
@@ -382,40 +379,33 @@ export default class Board {
         // multimat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
         // multimat.specularPower = 32;
 
-        // dynamic/programmatically generate grid & coordinates
-        let grid = { 'h' : 8, 'w' : 8 }
-        const boardTiles = new BABYLON.MeshBuilder.CreateTiledGround("Chess_Board", {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: grid});
-        boardTiles.position = new BABYLON.Vector3(0,0,0)
-        boardTiles.material = multimat;
-        const verticesCount = boardTiles.getTotalVertices(); // Needed variables to set subMeshes
-        const tileIndicesLength = boardTiles.getIndices().length / (grid.w * grid.h);
+        const grid = {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: { 'h' : 8, 'w' : 8 }}
+        const boardTiles = new BABYLON.MeshBuilder.CreateTiledGround("Chess_Board", grid)
+        const totalVertices = boardTiles.getTotalVertices() // Needed for subMeshes
+        const gridIndices = boardTiles.getIndices().length / (grid.w * grid.h);
+		boardTiles.subMeshes = [];
+		boardTiles.position = new BABYLON.Vector3(0,0,0)
+        boardTiles.material = multiMaterial;
         boardTiles.subMeshes = [];
-        let base = 0;
-        let tilesCreated = 0
-        let yCoord = -7
-        for (let row = 0; row < grid.h; row++) {
-            let xCoord = -7
-            for (let col = 0; col < grid.w; col++) {
-                let sqName = `${String.fromCharCode(col + 97)}${row + 1}`
-                let squareDef =  new BABYLON.SubMesh(row % 2 ^ col % 2,  0, verticesCount, base, tileIndicesLength, boardTiles)
-                let square = boardTiles.clone(sqName)
-                square.subMeshes = [squareDef.clone(square, square)] // could deconstruct mesh alternatively https://doc.babylonjs.com/toolsAndResources/utilities/Deconstruct_Mesh
-                square.isPickable = true
-                square.id = sqName
-                square.name = sqName
-                // square.materialIndex = materials[row % 2 ^ col % 2]
-                // let square = boardTiles.subMeshes[tiles]
-                this.squares[sqName] = { sqName, coords: new BABYLON.Vector3(xCoord, 0, yCoord), mesh: square, piece: null } // change mesh to tile
-                base += tileIndicesLength;
-                tilesCreated += 1
-                // console.log('Sq Name(col, row)',`${sqName}(${col}, ${row})`)
-                // console.log(`Sq coords ${xCoord}, ${yCoord}`)
-                // console.log('______________________')
-                xCoord += 2
-            }
-            yCoord += 2
-        }
-       
+
+        let boardMap = Array(8).fill(Array(8).fill())
+		this.squares = boardMap.reduce((ranks, rank, rIdx) => {
+			let rankSquares = rank.reduce((squares, file, fIdx) => {
+                let xCoord = -7 + (2 * fIdx)
+                let yCoord = -7 + (2 * rIdx)
+                let sqName = `${String.fromCharCode(fIdx + 97)}${rIdx + 1}`
+				let startIdx = fIdx * gridIndices + (rIdx * 48); // slide over 48 indices for every rank
+				let materialIdx = rIdx % 2 ^ fIdx % 2
+                let squareDef = new BABYLON.SubMesh(materialIdx, 0, totalVertices, startIdx, gridIndices, boardTiles)
+                // let sq = new BABYLON.Mesh(sqName, this.scene);
+                let sq = boardTiles.clone(sqName) // could deconstruct mesh alternatively https://doc.babylonjs.com/toolsAndResources/utilities/Deconstruct_Mesh
+                sq.subMeshes = [squareDef.clone(sq, sq)] 
+				let sqState = { sqName, coords: new BABYLON.Vector3(xCoord, 0, yCoord), mesh: sq, piece: null }
+				return {...squares, [sqName]: sqState}
+			},{})
+			return {...ranks, ...rankSquares}
+		},{});
+        
         setTimeout(()=>{ boardTiles.dispose() }, 50)
 
         // console.log('squares', this.squares)
