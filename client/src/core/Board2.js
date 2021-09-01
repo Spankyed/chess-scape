@@ -373,11 +373,11 @@ export default class Board {
         // ground.position = new BABYLON.Vector3(0, -.7, 0);
         // ground.receiveShadows = true;
 
-        const multimat = new BABYLON.MultiMaterial("multi", this.scene);
-        multimat.subMaterials.push(blackMaterial, whiteMaterial);
-        // multimat.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
-        // multimat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-        // multimat.specularPower = 32;
+        const multiMaterial = new BABYLON.MultiMaterial("multi", this.scene);
+        multiMaterial.subMaterials.push(blackMaterial, whiteMaterial);
+        // multiMaterial.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+        // multiMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+        // multiMaterial.specularPower = 32;
 
         const grid = {xmin: -8, zmin: -8, xmax: 8, zmax: 8, subdivisions: { 'h' : 8, 'w' : 8 }}
         const boardTiles = new BABYLON.MeshBuilder.CreateTiledGround("Chess_Board", grid)
