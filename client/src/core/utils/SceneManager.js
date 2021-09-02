@@ -50,8 +50,8 @@ export default class SceneManager {
         //camera.applyGravity = true;
 
         // change background color to dark-gray
-        this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
-
+        // this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
+        this._scene.clearColor = new BABYLON.Color4(0,0,0,0.0000000000000001);
         const narrowDevice = (window.innerWidth/window.innerHeight) < 1.1
         let cameraDistance = narrowDevice ? 33 : 25
         var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
