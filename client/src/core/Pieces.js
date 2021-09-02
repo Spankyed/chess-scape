@@ -31,17 +31,15 @@ async function loadPieces(scene){
         ...container.instantiateModelsToScene(name => name + "_white", false).rootNodes,
         ...container.instantiateModelsToScene(name => name + "_black", false).rootNodes
     ]
-
     let materials = getPieceMaterials(scene)
     // var kingGlowLayer = new BABYLON.GlowLayer("glow", this.scene);
     // kingGlowLayer.intensity = .02;
 
-    let piecesCount = { 
+    let pieceCount = { 
         white: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0},
         black: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0}
     }
-    let pieceMap = {}
-    pieces.forEach( piece => {
+    let pieceMap = pieces.reduce( (map, piece) => {
         piece.isPickable = false
         let isWhite = piece.name.endsWith('_white') ? true : false
         // if (piece.name.startsWith('King')){
@@ -59,20 +57,17 @@ async function loadPieces(scene){
         } else {
             piece.id = piece.name.charAt(0).toLowerCase() + '_' +  (isWhite ? 'w':'b')
         }
-
-        let count = ++piecesCount[isWhite ? 'white' : 'black'][piece.id.charAt(0)]
+        let count = ++pieceCount[isWhite ? 'white' : 'black'][piece.id.charAt(0)]
         
-        if (count <= 1) pieceMap[piece.id] = piece
-        else {
-            piece.id += '_' + count
-            pieceMap[piece.id] = piece
-        }
+        if (count >= 1) piece.id += '_' + count
+
         piece.doNotSyncBoundingInfo = true;
         // piece.addPickingBox()
-    })
+        return {...map, [piece.id]: piece}
+    },{})
 
     // console.log('Piece Map ('+ Object.keys(pieceMap).length +') ', {pieceMap})
-    // console.log('count', {piecesCount})
+    // console.log('count', {pieceCount})
 
     return [pieces, pieceMap]
 }
