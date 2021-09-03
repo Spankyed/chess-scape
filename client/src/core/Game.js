@@ -32,6 +32,21 @@ export default class Game {
             // chat: this.onChat,
         })
     }
+    checkMove(move){
+        console.log('checking',{move})
+        // issa copy of function below
+        let engine = this.inReview ? this.tempEngine : this.engine
+        let validMove, piece;
+        if (this.isPromoting(move)) { 
+            // const piece = await this.promptPieceSelect()
+            validMove = piece ? engine.move({ ...move, promotion: piece }) : null
+        } else {
+            validMove = engine.move(move)
+        }
+        //moved to board
+        // if (validMove && !this.inReview) this.addMoveForReview(validMove)
+        return validMove
+    }
     async makeMove(move, fromServer = false){
         let engine = this.inReview ? this.tempEngine : this.engine
         let validMove;
@@ -105,7 +120,7 @@ export default class Game {
     }
     isPromoting(move) {
         // if(!move) debugger
-        if(!move.to.match(/1|8/)) return false;
+        if(!move.to?.match(/1|8/)) return false;
         const piece = this.engine.get(move.from);
         if (piece?.type !== "p") return false;
         // if (piece.color !== this.engine.turn()) return false; // dont think this is needed

@@ -25,7 +25,7 @@ const FromResize = (element) => {
 *	{ a1: "r_w", a2: "p_w", ...}
 **
 */
-// todo: make reuseable, must first record captured pieces in piece count
+// todo: to make reuseable, must first record captured pieces in piece count
 function MapBoard(board){
 	let piecesCount = { 
 		w: {'p':0,'r':0,'n':0,'b':0,'q':0,'k':0},
@@ -48,8 +48,88 @@ function MapBoard(board){
 	}, {});
 }
 
+function ClonePiece({pieces, color, type}){
+	let pieceId = `${type}_${color}`
+	let clonedPiece = pieces[pieceId].clone(firstPiece.name +  '_clone')
+	let count = Object.entries(pieces).filter(([id]) => id.startsWith(pieceId)).length;
+	clonedPiece.makeGeometryUnique()
+	clonedPiece.id = `${pieceId}_${count+1}_p` //_p indicates its promotion piece : change to _c
+	return clonedPiece
+}
+
 
 export {
 	MapBoard,
+	ClonePiece,
 	FromResize
 };
+
+
+// const boardMachine = createMachine({
+//     id: 'board_states',
+//     initial: 'started',
+//     context: {
+// 		players: {white:null, black:null}
+//     },
+//     states: {
+// 		started: {
+// 			on: {
+// 				FETCH: 'loading'
+// 			},
+//             // after: {
+//             //     1000: {
+//             //         actions: sendParent('BOARD.READY')
+//             //     }
+//             // }
+// 		},
+// 		loading: {
+// 			invoke: {
+// 				id: 'fetchDog',
+// 				src: (context, event) => 
+// 					fetch('https://dog.ceo/api/breeds/image/random')
+// 					.then((data) => data.json() ),
+// 				onDone: {
+// 					target: 'resolved',
+// 					actions: assign({
+// 						dog: (_, event) => event.data
+// 					})
+// 				},
+// 				onError: 'rejected'
+// 			},
+// 			on: {
+// 				CANCEL: 'idle'
+// 			}
+// 		},
+// 		ended: {
+// 			type: 'final'
+// 		},
+//     }
+// });
+
+// {
+        // reviewing: {
+		// 	on: {
+        //         // 'MOVE': {
+		// 		// 	actions: assign({ lastMove: (_, event) => event.value })
+		// 		// },
+        //         'END_REVIEW': 'moving',
+        //         'OPP_MOVE': 'waiting' 
+        //         // 'END': {
+		// 		// 	actions: assign({ lastMove: (_, event) => event.value })
+		// 		// }
+		// 	}
+		// },
+		// WAITING: {
+		// 	on: {
+		// 		FETCH: 'loading'
+		// 	}
+		// },
+        // on: {
+        //     'REVIEW': 'reviewing'
+        //     // 'REVIEW': {
+        //     //     actions: assign({ currMove: (_, event) => event.value }),
+        //     //     target: 'reviewing'
+        //     // },
+        // }
+
+

@@ -26,7 +26,7 @@ const Scene = new class {
         engine.displayLoadingUI()
         // this.canvas = canvas
         scene.manager.setEnv(canvas)
-        let board = new Board(this, scene, canvas);
+        let board = new Board(this, scene, canvas); // dont use new
         let game = new Game(this, gameId);
         let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
