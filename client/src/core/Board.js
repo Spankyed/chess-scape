@@ -154,7 +154,7 @@ function setupStateMachine(game, squares){
     } 
     function updateCapture(captures) {
         let [{ pieceColor, newCount, piece}] = captures
-        return (ctx, event) => ({ ...ctx['captures'], [pieceColor]: newCount })
+        return (ctx, event) => ({ ...ctx['captured'], [pieceColor]: newCount })
     }
 	return interpret(moveMachine)
 		// .onTransition((state) => console.log('state changed', state))
@@ -333,7 +333,7 @@ export default function Board(current, scene, canvas){
         let pieceColor = getColor(piece)
         const processCapturedPiece = (pieceColor) =>  { //!
             let columnsCoords = [10, 11.5, 13]  // start columns horizontal: 2 units from board(8x8) & spread 1.5 units apart
-            let count = captured[pieceColor]
+            let count = captured[pieceColor] || 0
             let column = count / 8 | 0
             let offsetMultiplier = count % 8 
             let x = columnsCoords[column]
