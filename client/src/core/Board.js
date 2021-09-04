@@ -7,17 +7,17 @@ import { ClonePiece } from './utils/utils';
 **  State managed with Xstate
 ** --------------------------------------------------------------------------
 ** 
-**  A user begins in a moving.notSelected state. In any state while moving, 
-**  whether selected or not, the user may click to SELECT a square, which 
-**  will transition the user to selected.dragging. If the user lets up on 
-**  mouse click while dragging a move attempt or transition to 
-**  selected.notDragging occurs conditionally. In any state while selected,
-**  the user may ATTEMPT_MOVE, which  will transition the user to a 
+**  A user begins in a moving.notSelected state. In any moving state, 
+**  selected or not, the user may click to SELECT a square, which will  
+**  transition the user to selected.dragging. If the user lets up on 
+**  mouse click while dragging either a move attempt or transition to 
+**  selected.notDragging occurs. In any selected state, dragging or not the
+**  user may ATTEMPT_MOVE, which  will transition the user to a 
 **  validatingMove state. Move validation can either ALLOW or DENY the move.
-**  If allowed user will transition to a waiting state, else if denied the 
+**  If allowed user will transition to a waiting state. Else move denied and
 **  user will be transitioned back to the moving.notSelected state. The user
-**  remains in waiting state until an OPP_MOVE is recieved, transitioning 
-**  user back to moving.notSelected.
+**  remains in waiting state until an OPP_MOVE is received, transitioning 
+**  the user back to initial moving.notSelected state.
 ** 
 */
 function setupStateMachine(game, squares){
@@ -31,8 +31,8 @@ function setupStateMachine(game, squares){
 			fromSq: undefined,
 			toSq: undefined,
 			lastMove: undefined,
-            fadedPieces: undefined,
             promotedPieces: undefined,
+            faded: undefined,
             captured: {white: 0, black: 0},
 			// inReview: false,
 		},
@@ -53,7 +53,7 @@ function setupStateMachine(game, squares){
                                 // exit: 'releaseGrabCursor',
 								on: {
 									'DRAG': {
-										actions: assign({ dragPos: (_, event) => event.value })
+										actions: assign({ dragPos: (_, event) => event.value.pickedPoint })
 									},
 									'END_DRAG': 'notDragging' 
 								}
@@ -131,30 +131,39 @@ function setupStateMachine(game, squares){
         on:{
             'UPDATE': {
                 actions: pure((ctx, event) => {
-                    let types = [['squares', updateSquares], ['captured', updateCapture], ] 
+                    let types = [['squares', updateSquares], ['captured', updateCapture], ['faded', updateFaded]] 
                     let updates = event.value.reduce((changes, { type, ...change }) => {
                         return {...changes, [type]: [...(changes[type]||[]), change]}
                     }, {}) // aggregates list of changes into updates
-                    let assignments = types.reduce((props, [type, assigner]) =>{
+                    let assignments = types.reduce((props, [type, factory]) =>{
                         return {
                             ...props, 
-                            ...(updates[type] ? {[type]: assigner(updates[type])}: {}), // if updates.type not empty add prop assigner to assignment
+                            ...(updates[type] ? {[type]: factory(updates[type])}: {}), // if updates.type not empty add prop assigner to assignment
                         }
-                    }, {}) // partially inputs updates to assigner for assignments
+                    }, {}) // partially input updates to factory assigner for assignments
                     return assign(assignments)
                 })
             }
         }
 	})
     function updateSquares(squares) {
-        return (ctx, event) => ({
-            ...ctx.squares,
-            ...squares.reduce( (sqs, {name, piece}) => ({...sqs, [name]:{...ctx.squares[name], piece}}), {})
+        return ctx => ({
+            ...ctx['squares'],
+            ...squares.reduce( (sqs, {name, piece}) => ({...sqs, [name]:{...ctx['squares'][name], piece}}), {})
         })
     } 
-    function updateCapture(captures) {
-        let [{ pieceColor, newCount, piece}] = captures
-        return (ctx, event) => ({ ...ctx['captured'], [pieceColor]: newCount })
+    function updateCapture(captured) {
+        let [{ pieceColor, newCount, piece}] = captured
+        return ctx => ({ ...ctx['captured'], [pieceColor]: newCount })
+    }
+    function updateFaded(faded) {
+        let [{ piece }] = faded
+        return ctx => {
+            if (piece == ctx['faded']) return piece
+            if (ctx['faded']) ctx['faded'].visibility = 1 // reset prev faded piece
+            if (piece) piece.visibility = .35
+            return piece || null
+        }
     }
 	return interpret(moveMachine)
 		// .onTransition((state) => console.log('state changed', state))
@@ -239,10 +248,14 @@ export default function Board(current, scene, canvas){
 	    const { send, state } = moveService
         // todo: change cursor back to default, if not grabbing
         if (!state.matches("moving.selected.dragging")) return
-        let boardPos = pickWhere(mesh => mesh.id == 'board').pickedPoint
-        if (!boardPos) return; // todo drag piece along sides of board if mouse is off board (!boardPos)
+        // let boardPos = pickWhere(mesh => mesh.id == 'board').pickedPoint
+        let {pickedPoint, pickedMesh} = pickWhere(mesh => mesh.isPickable)
+        // let boardPos = pickWhere(mesh => mesh.id == 'board').pickedPoint
+        if (!pickedPoint) return;
+        // if (!boardPos) return; // todo drag piece along sides of board if mouse is off board (!boardPos)
         // send({ type: "DRAG", value: boardPos, fade: square.piece })
-        send({ type: "DRAG", value: boardPos })
+        // send({ type: "DRAG", value: boardPos })
+        send({ type: "DRAG", value: {pickedPoint, hoveredSquare: state.context.squares[pickedMesh?.name]} })
     }
     function onRightPointerDown(evt) {
 	    const { send, state } = moveService
@@ -268,34 +281,34 @@ export default function Board(current, scene, canvas){
         selectedHighlightLayer.removeAllMeshes();
         selectedHighlightLayer.addMesh(fromSq.mesh, BABYLON.Color3.Yellow()); // highlight
     }
-    function deselectSq(){
-	    const { state } = moveService
-        // todo: change cursor back to grabbing
-        // todo: reset piece position?
-        let { fromSq } = state.history.context
-		if (fromSq) changePosition(fromSq.piece, fromSq.coords)
-        selectedHighlightLayer.removeAllMeshes();
-    }
-    function dragPiece(position, state){
-        let { fromSq } = state.context
-        // console.log('dragging',{position: position.clone(),state})
-        changePosition(fromSq.piece, position.clone())
+    function dragPiece(event, state){
+	    const { send } = moveService
+        let { fromSq, faded } = state.context
+        let { pickedPoint, hoveredSquare } = event
+        let shouldFade = hoveredSquare.piece && (fromSq.piece != hoveredSquare.piece)
+        let isFaded = faded || (fromSq.piece != hoveredSquare.piece)
+        if (shouldFade) {
+            send({type: 'UPDATE', value: [{ type: 'faded', piece: hoveredSquare.piece}]})
+        } else if (isFaded){
+            send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
+        }
+        if (pickedPoint) changePosition(fromSq.piece, pickedPoint.clone())
         // if drag over another piece fade piece
         // else restore any faded pieces 
-
-        // function fadePiece(piece){ piece.visibility = 0 } //!
-
-        // let closestSqPiece = this.getClosestSq(boardPos).piece
-        // if (event.faded){
-        //     this.restoreFadedPiece()
-        //     event.faded.visibility = 0.35
-        // } else if (state.context.fadedPiece.length > 0){
-        //     this.restoreFadedPiece()
-        // }
+    }
+    function deselectSq(_,state){
+        // todo: change cursor back to grabbing
+	    const { send } = moveService
+        let { fromSq } = state.history.context
+		if (fromSq) changePosition(fromSq.piece, fromSq.coords) 
+        selectedHighlightLayer.removeAllMeshes();
+        send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
     }
     function endPieceDrag(_, state){
+	    const { send } = moveService
         let { fromSq } = state.context
 		changePosition(fromSq.piece, fromSq.coords)
+        send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
 		// resetMove(fromSq, true)
     }
     function handleMove(move, state){
@@ -314,10 +327,10 @@ export default function Board(current, scene, canvas){
             else if (flags.includes('c')) changes.push( positionCapturedPiece(toSq.piece))
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to))
         }
+        send({type: 'UPDATE', value: changes})
         // console.log('handling move', {move,fromSq,toSq})
         changePosition(fromSq.piece, toSq.coords)
         selectedHighlightLayer.removeAllMeshes();
-        send({type: 'UPDATE', value: changes})
         // if (!this.inReview) this.addMoveForReview(gameMove)
         // toSq.piece = fromSq.piece
         // fromSq.piece.sqName = toSq.sqName
@@ -402,10 +415,6 @@ export default function Board(current, scene, canvas){
         // this.isDragging = false;
         // this.isMoving = false;
     }
-    function restoreFadedPieces(fadedPieces) {
-        fadedPieces.forEach( piece =>  piece.visibility = 1 )
-        fadedPieces = []
-    }
     function changePosition(piece, newPos){
         // console.log('tf',{piece, newPos})
         let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
@@ -432,7 +441,7 @@ export default function Board(current, scene, canvas){
     }
     function mapPiecesToSquares(pieces){ //!
         pieces.forEach( piece =>{
-            let closestSq = getClosestSq(piece.position)
+            let closestSq = getClosestSq(piece.position) //! this has to be removed O(n2)
             let square = squares[closestSq.sqName]
             square.piece = piece
             // piece.sqName = closestSq.sqName
