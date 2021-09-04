@@ -35,31 +35,33 @@ export default class Game {
     checkMove(move){
         console.log('checking',{move})
         // issa copy of function below
-        let engine = this.inReview ? this.tempEngine : this.engine
-        let validMove, piece;
+        let validMove;
         if (this.isPromoting(move)) { 
             // const piece = await this.promptPieceSelect()
-            validMove = piece ? engine.move({ ...move, promotion: piece }) : null
+            // validMove = piece ? this.makeMove({ ...move, promotion: piece }) : null
         } else {
-            validMove = engine.move(move)
+            validMove = this.makeMove(move)
         }
+        if(validMove){
+            if (this.isVsComputer) {
+                this.handleComputerMove()
+                // Api.getComputerMove()
+            } else {
+                Api.sendMove(validMove, this.gameId)
+            }
+        }
+        // this.checkGameOver()
+
         //moved to board
         // if (validMove && !this.inReview) this.addMoveForReview(validMove)
         return validMove
     }
-    async makeMove(move, fromServer = false){
+    makeMove(move){
         let engine = this.inReview ? this.tempEngine : this.engine
-        let validMove;
-        if (!fromServer && this.isPromoting(move)) { 
-            const piece = await this.promptPieceSelect()
-            validMove = piece ? engine.move({ ...move, promotion: piece }) : null
-        } else {
-            validMove = engine.move(move)
-        }
-        //moved to board
         // if (validMove && !this.inReview) this.addMoveForReview(validMove)
-        return validMove
+        return engine.move(move)
     }
+    
     async handleUserMove (move) {
         let validMove = await this.makeMove(move);
         if (!validMove) return validMove
@@ -80,21 +82,23 @@ export default class Game {
         if (!move) return
         if (this.inReview) this.resumePlay() // end review if opponent makes moves 
         var validMove = await this.makeMove(move, true);
-        if (!validMove) return // todo: should make request to sync player boards
+        if (!validMove) return // todo: should make request to sync player boards or invalidate game
+        this.board().send({type:'OPP_MOVE', value: validMove})
+        // this.board().moveOpponentPiece(move)
         // console.log('opponent move', validMove)
-        this.board().moveOpponentPiece(move)
         this.checkGameOver()
     }
-    async handleComputerMove(){
+    handleComputerMove(){
         // console.log('turn', this.engine.turn())
-        if (this.engine.turn() != 'b') return
+        // if (this.engine.turn() != 'b') return
         const moves = this.engine.moves({verbose:true})
         const move = moves[Math.floor(Math.random() * moves.length)] // get random move
         if(move){
-            var validMove = await this.makeMove(move)
-            if (validMove) setTimeout(_=> this.board().moveOpponentPiece(validMove), 10)
-            // console.log('computer move', validMove)
-            this.checkGameOver()
+            var validMove = this.makeMove(move)
+            if (validMove) setTimeout(_=> {
+                this.board().moveService.send({type:'OPP_MOVE', value: validMove})
+                // console.log('computer move', validMove)
+            }, 1000)
         }
     }
 

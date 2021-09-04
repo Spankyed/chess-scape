@@ -37,66 +37,65 @@ function setupStateMachine(game, squares){
 									'END_DRAG': 'notDragging' 
 								}
 							},
-							notDragging: {
-								on: {
-									'DESELECT': {
-										actions: assign({ fromSq: undefined }),
-										target: '#notSelected'
-									}
-								},
-							}
+							notDragging: { }
 						},
 						on: {
+                            'DESELECT': {
+                                actions: assign({ fromSq: undefined }),
+                                target: '#notSelected'
+                            },
 							'ATTEMPT_MOVE': {
 								actions: [ 
 									assign({ toSq: (_, event) => event.value }) 
 								],
-								target: 'validatingMove'
-							}
-						}
-					},
-					validatingMove: {
-						invoke:{
-                            // needs to be a promise to handle promotion piece selection
-							src: (ctx, event) => (trigger, onReceive) => {
-                                let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                                let validMove = game().checkMove(move)
-                                // console.log('isValid',{validMove})
-                                trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
-							}
-						},
-						on: {
-                            'ALLOW': {
-                                // todo: indicate square of prev move (change tile material color)
-								actions: [ 
-                                    assign({ 
-                                        lastMove: (ctx, event) => ({
-                                            from: ctx.fromSq.sqName,
-                                            to: event.value.to
-                                        }),
-                                        fromSq: undefined, toSq: undefined, // todo flip above for readability
-                                    }) 
-                                ],
-								target: '#waiting'
-							},
-							'DENY': {
-                                // actions: assign({ fromSq: undefined, toSq: undefined }),
-								target: 'notSelected'
+								target: '#validatingMove'
 							}
 						}
 					}
 				},
 				on: {
 					'SELECT': {
-                        // cond: ({ age }) => age >= 18, 
+                        cond: (ctx, {value}) => value.piece, // todo & check if player's color/piece
 						actions: [
 							assign({ fromSq: (ctx, event) => event.value })
 						],
-						target: '.selected',
+						target: '.selected.dragging',
 						// in: '#light.red.stop'
 					}
 				}
 			},
+            validatingMove: {
+                id:'validatingMove',
+                invoke:{
+                    // needs to be a promise to handle promotion piece selection
+                    src: (ctx, event) => (trigger, onReceive) => {
+                        let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
+                        let validMove = game().checkMove(move)
+                        // console.log('isValid',{validMove})
+                        trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
+                    }
+                },
+                on: {
+                    'ALLOW': {
+                        // todo: indicate square of prev move (change tile material color)
+                        actions: [ 
+                            assign({ 
+                                lastMove: (ctx, event) => ({
+                                    from: ctx.fromSq.sqName,
+                                    to: event.value.to
+                                }),
+                                fromSq: undefined, toSq: undefined, // todo flip prop order for readability, lastMove should still contain move
+                            }) 
+                        ],
+                        target: '#waiting'
+                    },
+                    'DENY': {
+                        actions: assign({ fromSq: undefined, toSq: undefined }),
+                        // target: '.notSelected'
+                        target: '#notSelected'
+                    }
+                }
+            },
 			waiting: {
 				id: 'waiting',
 				on: {
@@ -157,6 +156,7 @@ export default function Board(current, scene, canvas){
                 // 'ATTEMPT_MOVE': attemptMove,
                 'ALLOW': handleMove,
                 'DENY': deselectSq,
+                'OPP_MOVE': handleMove,
         	}
             eventHandlers[type]?.(value, state)
         });
@@ -179,19 +179,18 @@ export default function Board(current, scene, canvas){
 	    const { send, state } = moveService
         if (evt.button !== 0) return;
         let pickInfo = pickWhere( mesh => mesh.isPickable); // pick square
-        if (!pickInfo.hit) return; // todo if click missed the whole board deselect?
+        if (!pickInfo.hit) { // user clicked off board
+            send({ type: "DESELECT"}) 
+            return;
+        } 
+        let { squares } =  state.context
         let square = squares[pickInfo.pickedMesh.name]
-        // if (!square.piece) return // !cannot move to new sq with this
         // if user is in review & trying to capture, dont select enemy piece
         // !only allow enemy piece selection in review
-        let sameSq = square === state.context.fromSq
         let colorsMatch = getColor(square.piece) == getColor(state.context.fromSq?.piece)
         let isMove = state.matches('moving.selected') && !colorsMatch
         if (isMove){ 
             send({ type: "ATTEMPT_MOVE", value: square })
-        }
-        else if (state.matches('moving.selected') && sameSq) {
-            send({ type: "DESELECT", value: square })
         }
         else if (state.matches('moving')) {
             send({ type: "SELECT", value: square })
@@ -200,16 +199,16 @@ export default function Board(current, scene, canvas){
 
     function onPointerUp(evt) {
 	    const { send, state } = moveService
-        if (evt.button == 2) return; // ignore right click
+        if (evt.button == 2){ return; }// ignore right click
         if (!state.matches('moving.selected.dragging')){ return; } // ignore pointer up unless dragging 
         let pickInfo = pickWhere(mesh => mesh.isPickable)
-        if (!pickInfo.hit) { send({ type: "DESELECT", value: boardPos }) } // user dragged off board
-        let square = squares[pickInfo.pickedMesh.name];
+        let { squares } =  state.context
+        let square = squares[pickInfo.pickedMesh?.name];
         let sameSq = square === state.context.fromSq
-        let pieceColorsMatch = getColor(square.piece) == getColor(state.context.fromSq?.piece)
-        if (sameSq){ 
-            send({ type: "END_DRAG"}) 
-        }// repositions piece in center of starting sq
+        let pieceColorsMatch = getColor(square?.piece) == getColor(state.context.fromSq?.piece)
+        if (sameSq || pieceColorsMatch || !pickInfo.hit){ // if !pickInfo.hit user dragged off board
+            send({ type: "END_DRAG"}) // reposition dragged piece in center of starting sq
+        }
         else if (!pieceColorsMatch){ 
             send({ type: "ATTEMPT_MOVE", value: square }) 
         }
@@ -218,7 +217,6 @@ export default function Board(current, scene, canvas){
     function onPointerMove(evt) {
 	    const { send, state } = moveService
         // todo: change cursor back to default, if not grabbing
-        // console.log('hmm',moveService.state.matches("moving.selected"),state.matches("moving.selected"))
         if (!state.matches("moving.selected.dragging")) return
         let boardPos = pickWhere(mesh => mesh.id == 'board').pickedPoint
         if (!boardPos) return; // todo drag piece along sides of board if mouse is off board (!boardPos)
@@ -242,7 +240,7 @@ export default function Board(current, scene, canvas){
     function selectSq(fromSq, state){
 		// console.log('selected',{fromSq, history:state.history.context})
         // todo: change cursor back to grabbing
-        if(state.history.context.fromSq){
+        if(state.history.context.fromSq){ // this could cause error after a move
             let {piece, coords} = state.history.context.fromSq
             changePosition(piece, coords) // reset prev piece
         }
@@ -250,8 +248,11 @@ export default function Board(current, scene, canvas){
         selectedHighlightLayer.addMesh(fromSq.mesh, BABYLON.Color3.Yellow()); // highlight
     }
     function deselectSq(){
+	    const { state } = moveService
         // todo: change cursor back to grabbing
         // todo: reset piece position?
+        let { fromSq } = state.history.context
+		if (fromSq) changePosition(fromSq.piece, fromSq.coords)
         selectedHighlightLayer.removeAllMeshes();
     }
     function dragPiece(position, state){
@@ -276,15 +277,16 @@ export default function Board(current, scene, canvas){
     }
     function fadePiece(piece){ piece.visibility = 0 } //!
     function handleMove(move, state){
-        console.log('handling move', {move})
 	    const { send } = moveService
         let { from, to, flags, promotion} = move
         // if (flags) { handleFlags(gameMove) }
+        let { squares } =  state.context
         let fromSq = squares[from]
         let toSq = squares[to]
+        console.log('handling move', {move,fromSq,toSq})
         changePosition(fromSq.piece, toSq.coords)
         updateSquares(state.context)
-        deselectSq()
+        selectedHighlightLayer.removeAllMeshes();
         // if (!this.inReview) this.addMoveForReview(gameMove)
         function updateSquares({lastMove, squares}){
             let piece = squares[lastMove.from].piece
@@ -296,6 +298,7 @@ export default function Board(current, scene, canvas){
         }
     }
     function handleFlags(move){
+        let { squares } =  state.context
         let castle, { from, to, flags} = move
         if (flags.includes('p')){ addPromotionPiece(move) } 
         if (flags.includes('e')){ captureEnPassant(to) }  
@@ -328,6 +331,7 @@ export default function Board(current, scene, canvas){
         piece.position = getNextPosition(pieceColor)
     }
     function addPromotionPiece({color, promotion, from, to}){
+        let { squares } =  moveService.state.context
         console.log('promoted', {color, promotion, from,  to})
         let promotionPiece = ClonePiece({pieces: pieces(), color, type: promotion})
         pieces()[promotionPiece.id] = promotionPiece
@@ -345,6 +349,7 @@ export default function Board(current, scene, canvas){
 
     }
     function positionCastledRook(side, kingSq){
+        let { squares } =  moveService.state.context
         let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
         let kingRank = kingSq.charAt(1)
         let fromSq = this.squares[rookPositions[side].from + kingRank]
@@ -374,6 +379,7 @@ export default function Board(current, scene, canvas){
         fadedPieces = []
     }
     function changePosition(piece, newPos){
+        // console.log('tf',{piece, newPos})
         let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
         if (!piece.position.equals(updatedPos)) piece.position = updatedPos
     }
@@ -382,6 +388,7 @@ export default function Board(current, scene, canvas){
         return piece.name.match(/white|black/)[0]
     }
     function getClosestSq(fromPos){ //!
+        // let { squares } =  moveService.state.context
         let pickedPoint = fromPos || pickWhere().pickedPoint
         if (!pickedPoint) return
         let closest = { sqName: '', dist: 999 }; 
@@ -407,7 +414,8 @@ export default function Board(current, scene, canvas){
     }
 
     return {
-        mapPiecesToSquares
+        mapPiecesToSquares,
+        moveService
     }
 
 }
