@@ -167,14 +167,12 @@ function setupStateMachine(game, squares){
     }
 	return interpret(moveMachine)
 		// .onTransition((state) => console.log('state changed', state))
-		// .onTransition((state) => console.log('state changed', state.value))
 		.start();
 }
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
 	pieces = current.pieces,
-	fadedPieces = [],
 	[board, squares] = createBoard(scene), // board var not used
 	selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", scene),
 	moveService = setupStateMachine(game, squares);
@@ -246,16 +244,15 @@ export default function Board(current, scene, canvas){
     }
     function onPointerMove(evt) {
 	    const { send, state } = moveService
-        // todo: change cursor back to default, if not grabbing
-        if (!state.matches("moving.selected.dragging")) return
-        // let boardPos = pickWhere(mesh => mesh.id == 'board').pickedPoint
         let {pickedPoint, pickedMesh} = pickWhere(mesh => mesh.isPickable)
-        // let boardPos = pickWhere(mesh => mesh.id == 'board').pickedPoint
-        if (!pickedPoint) return;
-        // if (!boardPos) return; // todo drag piece along sides of board if mouse is off board (!boardPos)
-        // send({ type: "DRAG", value: boardPos, fade: square.piece })
-        // send({ type: "DRAG", value: boardPos })
-        send({ type: "DRAG", value: {pickedPoint, hoveredSquare: state.context.squares[pickedMesh?.name]} })
+        let square = state.context.squares[pickedMesh?.name]
+        if (!state.matches("moving.selected.dragging")){ 
+            if (square.piece) document.body.style.cursor = 'grab';
+            else document.body.style.cursor = 'default';
+            return
+        } else document.body.style.cursor = 'grabbing';
+        if (!pickedPoint) return;  // todo drag piece along sides of board if mouse is off board
+        send({ type: "DRAG", value: {pickedPoint, hoveredSquare: square} })
     }
     function onRightPointerDown(evt) {
 	    const { send, state } = moveService
@@ -263,10 +260,7 @@ export default function Board(current, scene, canvas){
         if (state.matches("moving.selected.dragging")){ 
             send({ type: "END_DRAG" }) 
         }
-        // else if (state.matches("moving.selected.notDragging")) send({ type: "DESELECT" })
-        else { 
-            send({ type: "DESELECT" }) 
-        }
+        else { send({ type: "DESELECT" }) }
     }
     //================================================================================
     // State event listeners
@@ -371,13 +365,13 @@ export default function Board(current, scene, canvas){
         let rookPositions = { q: {from:'a', to:'d'}, k: {from:'h', to:'f'} } // possible files for castled rook
         let kingRank = kingSq.charAt(1)
         let getSqName = (order) => rookPositions[side][order] + kingRank
-        let sqNames = { from: getSqName('from'), to: getSqName('to') }
-        let { piece } = squares[sqNames.from]
-        let toSq = squares[sqNames.to]
+        let { from, to } = { from: getSqName('from'), to: getSqName('to') }
+        let { piece } = squares[from]
+        let toSq = squares[to]
         changePosition(piece, toSq.coords)
         return [
-            { type: 'squares', name: sqNames.from, piece: null},
-            { type: 'squares', name: sqNames.to, piece }
+            { type: 'squares', name: from, piece: null},
+            { type: 'squares', name: to, piece }
         ]
     }
     function addPromotionPiece({color, promotion, from, to}){
@@ -398,7 +392,6 @@ export default function Board(current, scene, canvas){
             { type: 'squares', name: to, piece: promotionPiece} // will override pawn to promo sq update
         ]
     }
-
 
     // ______________________________________________________________________________________________________
     function addMoveForReview(move){

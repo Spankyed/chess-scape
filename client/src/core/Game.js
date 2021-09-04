@@ -50,7 +50,7 @@ export default class Game {
                 Api.sendMove(validMove, this.gameId)
             }
         }
-        // this.checkGameOver()
+        this.checkGameOver()
 
         //moved to board
         // if (validMove && !this.inReview) this.addMoveForReview(validMove)
