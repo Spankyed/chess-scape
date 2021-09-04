@@ -1,4 +1,5 @@
 import { h } from 'hyperapp';
+import { cancel } from 'xstate/lib/actionTypes';
 
 export default initial => ({
 	state: { 
@@ -65,6 +66,7 @@ function PieceSelection({resolver, closePieceSelect}){
 			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_${color}.png`}/></div>
 			<div onclick={_=> select('b')} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.png`}/></div>
 			{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
+			<button onclick={_=> select(null)}>Cancel</button>
 		</div>
 	)
 }

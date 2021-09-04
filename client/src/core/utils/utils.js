@@ -49,8 +49,9 @@ function MapBoard(board){
 }
 
 function ClonePiece({pieces, color, type}){
-	let pieceId = `${type}_${color}`
-	let clonedPiece = pieces[pieceId].clone(firstPiece.name +  '_clone')
+	let pieceId = `${type}_${color}_1`
+	let firstPiece = pieces()[pieceId]
+    let clonedPiece = firstPiece.clone(firstPiece.name +  '_clone')
 	let count = Object.entries(pieces).filter(([id]) => id.startsWith(pieceId)).length;
 	clonedPiece.makeGeometryUnique()
 	clonedPiece.id = `${pieceId}_${count+1}_p` //_p indicates its promotion piece : change to _c

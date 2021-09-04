@@ -89,9 +89,9 @@ function setupStateMachine(game, squares){
                 id:'validatingMove',
                 invoke:{
                     // needs to be a promise to handle promotion piece selection
-                    src: (ctx, event) => (trigger, onReceive) => {
+                    src: (ctx, event) => async (trigger, onReceive) => {
                         let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                        let validMove = game().checkMove(move)
+                        let validMove = await game().checkMove(move)
                         // console.log('isValid',{validMove})
                         trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
                     }
@@ -309,7 +309,7 @@ export default function Board(current, scene, canvas){
             { type: 'squares', name: from, piece: null }
         ], castled;
         if (flags) { // can include both p & c at once
-            if (flags.includes('p')) changes.push( addPromotionPiece(move))
+            if (flags.includes('p')) changes.push( ...addPromotionPiece(move))
             if (flags.includes('e')) changes.push( captureEnPassant(to))
             else if (flags.includes('c')) changes.push( positionCapturedPiece(toSq.piece))
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to))
@@ -367,25 +367,23 @@ export default function Board(current, scene, canvas){
             { type: 'squares', name: sqNames.to, piece }
         ]
     }
-
-
     function addPromotionPiece({color, promotion, from, to}){
         let { squares } =  moveService.state.context
-        console.log('promoted', {color, promotion, from,  to})
-        let promotionPiece = ClonePiece({pieces: pieces(), color, type: promotion})
+        let promotionPiece = ClonePiece({pieces, color, type: promotion})
         pieces()[promotionPiece.id] = promotionPiece
         let toSq = squares[to]
         let fromSq = squares[from]
         // fromSq.piece.setEnabled(false) 
         // this.promotedPawns.push[fromSq.piece]
-        toSq.piece = promotionPiece
         let pawn = fromSq.piece
-        pawn.isVisible = false //hide pawn
+        pawn.isVisible = false // hide pawn // todo setEnabled instead visible
         pawn.sqName = null
         // promotionPiece.sqName = to
-        delete this.squares[from].piece
-        this.changePosition(promotionPiece, toSq.coords)
-
+        changePosition(promotionPiece, toSq.coords)
+        return [
+            { type: 'squares', name: from, piece: null },
+            { type: 'squares', name: to, piece: promotionPiece} // will override pawn to promo sq update
+        ]
     }
 
 

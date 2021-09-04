@@ -32,13 +32,13 @@ export default class Game {
             // chat: this.onChat,
         })
     }
-    checkMove(move){
+    async checkMove(move){
         // console.log('checking',{move})
         // issa copy of function below
         let validMove;
         if (this.isPromoting(move)) { 
-            // const piece = await this.promptPieceSelect()
-            // validMove = piece ? this.makeMove({ ...move, promotion: piece }) : null
+            const piece = await this.promptPieceSelect()
+            validMove = piece ? this.makeMove({ ...move, promotion: piece }) : null
         } else {
             validMove = this.makeMove(move)
         }
