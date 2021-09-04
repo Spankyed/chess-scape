@@ -312,7 +312,7 @@ export default function Board(current, scene, canvas){
             if (flags.includes('p')) changes.push( addPromotionPiece(move))
             if (flags.includes('e')) changes.push( captureEnPassant(to))
             else if (flags.includes('c')) changes.push( positionCapturedPiece(toSq.piece))
-            else if (castled = flags.match(/k|q/)) changes.push( positionCastledRook(castled[0], to))
+            else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to))
         }
         // console.log('handling move', {move,fromSq,toSq})
         changePosition(fromSq.piece, toSq.coords)
@@ -342,7 +342,7 @@ export default function Board(current, scene, canvas){
             return { nextPosition: new BABYLON.Vector3(...coords), newCount: ++count}
         } 
         let { nextPosition, newCount } = processCapturedPiece(pieceColor)
-        piece.position = nextPosition
+        changePosition(piece, nextPosition)
         return { type: 'captured', pieceColor, newCount, piece}
     }
     function captureEnPassant(moveTo) {
@@ -353,6 +353,21 @@ export default function Board(current, scene, canvas){
         let capturedPieceSq = file + rankOffSet[rank]
         return positionCapturedPiece(squares[capturedPieceSq].piece)
     }
+    function positionCastledRook(side, kingSq){
+        let { squares } =  moveService.state.context
+        let rookPositions = { q: {from:'a', to:'d'}, k: {from:'h', to:'f'} } // possible files for castled rook
+        let kingRank = kingSq.charAt(1)
+        let getSqName = (order) => rookPositions[side][order] + kingRank
+        let sqNames = { from: getSqName('from'), to: getSqName('to') }
+        let { piece } = squares[sqNames.from]
+        let toSq = squares[sqNames.to]
+        changePosition(piece, toSq.coords)
+        return [
+            { type: 'squares', name: sqNames.from, piece: null},
+            { type: 'squares', name: sqNames.to, piece }
+        ]
+    }
+
 
     function addPromotionPiece({color, promotion, from, to}){
         let { squares } =  moveService.state.context
@@ -371,15 +386,6 @@ export default function Board(current, scene, canvas){
         delete this.squares[from].piece
         this.changePosition(promotionPiece, toSq.coords)
 
-    }
-    function positionCastledRook(side, kingSq){
-        let { squares } =  moveService.state.context
-        let rookPositions = { q:{from:'a', to:'d'}, k:{from:'h', to:'f'} } // possible files for castled rook
-        let kingRank = kingSq.charAt(1)
-        let fromSq = this.squares[rookPositions[side].from + kingRank]
-        let toSq = this.squares[rookPositions[side].to + kingRank]
-        this.changePosition(fromSq.piece, toSq.coords)
-        this.updateSquares(fromSq, toSq)
     }
 
 
