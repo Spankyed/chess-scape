@@ -33,7 +33,7 @@ export default class Game {
         })
     }
     checkMove(move){
-        console.log('checking',{move})
+        // console.log('checking',{move})
         // issa copy of function below
         let validMove;
         if (this.isPromoting(move)) { 

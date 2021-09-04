@@ -1,7 +1,25 @@
 
 import { createMachine, actions, interpret, assign, send } from 'xstate';
+import { pure } from 'xstate/lib/actions';
 import { ClonePiece } from './utils/utils'; 
-
+/*
+** --------------------------------------------------------------------------
+**  State managed with Xstate
+** --------------------------------------------------------------------------
+** 
+**  A user begins in a moving.notSelected state. In any state while moving, 
+**  whether selected or not, the user may click to SELECT a square, which 
+**  will transition the user to selected.dragging. If the user lets up on 
+**  mouse click while dragging a move attempt or transition to 
+**  selected.notDragging occurs conditionally. In any state while selected,
+**  the user may ATTEMPT_MOVE, which  will transition the user to a 
+**  validatingMove state. Move validation can either ALLOW or DENY the move.
+**  If allowed user will transition to a waiting state, else if denied the 
+**  user will be transitioned back to the moving.notSelected state. The user
+**  remains in waiting state until an OPP_MOVE is recieved, transitioning 
+**  user back to moving.notSelected.
+** 
+*/
 function setupStateMachine(game, squares){
 	const moveMachine = createMachine({
 		id: 'move_states',
@@ -13,6 +31,9 @@ function setupStateMachine(game, squares){
 			fromSq: undefined,
 			toSq: undefined,
 			lastMove: undefined,
+            fadedPieces: undefined,
+            promotedPieces: undefined,
+            captured: {white: 0, black: 0},
 			// inReview: false,
 		},
 		states: {
@@ -109,18 +130,32 @@ function setupStateMachine(game, squares){
 		},
         on:{
             'UPDATE': {
-                actions: assign({ 
-                    squares: (ctx, event) => {
-                        let squares = event.value
-                        return ({
-                            ...ctx.squares,
-                            ...squares.reduce( (sqs, {name, piece}) => ({...sqs, [name]:{...ctx.squares[name], piece}}), {})
-                        })
-                    } 
+                actions: pure((ctx, event) => {
+                    let types = [['squares', updateSquares], ['captured', updateCapture], ] 
+                    let updates = event.value.reduce((changes, { type, ...change }) => {
+                        return {...changes, [type]: [...(changes[type]||[]), change]}
+                    }, {}) // aggregates list of changes into updates
+                    let assignments = types.reduce((props, [type, assigner]) =>{
+                        return {
+                            ...props, 
+                            ...(updates[type] ? {[type]: assigner(updates[type])}: {}), // if updates.type not empty add prop assigner to assignment
+                        }
+                    }, {}) // partially inputs updates to assigner for assignments
+                    return assign(assignments)
                 })
             }
         }
 	})
+    function updateSquares(squares) {
+        return (ctx, event) => ({
+            ...ctx.squares,
+            ...squares.reduce( (sqs, {name, piece}) => ({...sqs, [name]:{...ctx.squares[name], piece}}), {})
+        })
+    } 
+    function updateCapture(captures) {
+        let [{ pieceColor, newCount, piece}] = captures
+        return (ctx, event) => ({ ...ctx['captures'], [pieceColor]: newCount })
+    }
 	return interpret(moveMachine)
 		// .onTransition((state) => console.log('state changed', state))
 		// .onTransition((state) => console.log('state changed', state.value))
@@ -131,7 +166,6 @@ export default function Board(current, scene, canvas){
 	let game = current.game,
 	pieces = current.pieces,
 	fadedPieces = [],
-	capturedPieces = {count:{w:0,b:0}},
 	[board, squares] = createBoard(scene), // board var not used
 	selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", scene),
 	moveService = setupStateMachine(game, squares);
@@ -139,11 +173,10 @@ export default function Board(current, scene, canvas){
 	subscribeChanges(moveService)
 	setupClickListeners(canvas)
 
-	// cleanupState(){ this.stateSubscription.unsubscribe()}
     function subscribeChanges(moveService){
-        return moveService.subscribe((state) => {
-            let { event, context } = state
-            let { type, value } = event
+	    // cleanupState(){ subscription.unsubscribe()}
+        return moveService.subscribe(state => {
+            let { type, value } = state.event
             // console.log('ohh boy', {state})
             if (!state.changed) return
             // console.log('ohh boy!', {state})
@@ -152,7 +185,7 @@ export default function Board(current, scene, canvas){
                 'DESELECT': deselectSq,
                 'DRAG': dragPiece,
                 'END_DRAG': endPieceDrag,
-                'RESET': resetMove,
+                // 'RESET': resetMove,
                 // 'ATTEMPT_MOVE': attemptMove,
                 'ALLOW': handleMove,
                 'DENY': deselectSq,
@@ -161,21 +194,11 @@ export default function Board(current, scene, canvas){
             eventHandlers[type]?.(value, state)
         });
     }
-
-	function setupClickListeners(canvas) {
-        canvas.addEventListener("pointerdown", onPointerDown, false);
-        canvas.addEventListener("pointermove", onPointerMove, false); // todo: rxjs fromEvent to throttle
-        canvas.addEventListener("contextmenu", onRightPointerDown, false);
-        canvas.addEventListener("pointerup", onPointerUp, false);
-        scene.onDispose = () => {
-            canvas.removeEventListener("pointerdown", onPointerDown);
-            canvas.removeEventListener("pointermove", onPointerMove);
-            canvas.removeEventListener("contextmenu", onRightPointerDown);
-            canvas.removeEventListener("pointerup", onPointerUp);
-        }
-    };
-    // pointer down only selects a piece, never captures
+    //================================================================================
+    // DOM event listeners
+    //================================================================================
 	function onPointerDown(evt) {
+        // pointer down only selects a piece, never captures
 	    const { send, state } = moveService
         if (evt.button !== 0) return;
         let pickInfo = pickWhere( mesh => mesh.isPickable); // pick square
@@ -196,11 +219,10 @@ export default function Board(current, scene, canvas){
             send({ type: "SELECT", value: square })
         }
     }
-
     function onPointerUp(evt) {
 	    const { send, state } = moveService
-        if (evt.button == 2){ return; }// ignore right click
-        if (!state.matches('moving.selected.dragging')){ return; } // ignore pointer up unless dragging 
+        if (evt.button == 2){ return; } // ignore right click
+        if (!state.matches('moving.selected.dragging')){ return; } // ignore click release unless dragging 
         let pickInfo = pickWhere(mesh => mesh.isPickable)
         let { squares } =  state.context
         let square = squares[pickInfo.pickedMesh?.name];
@@ -213,7 +235,6 @@ export default function Board(current, scene, canvas){
             send({ type: "ATTEMPT_MOVE", value: square }) 
         }
     }
-
     function onPointerMove(evt) {
 	    const { send, state } = moveService
         // todo: change cursor back to default, if not grabbing
@@ -223,7 +244,6 @@ export default function Board(current, scene, canvas){
         // send({ type: "DRAG", value: boardPos, fade: square.piece })
         send({ type: "DRAG", value: boardPos })
     }
-
     function onRightPointerDown(evt) {
 	    const { send, state } = moveService
         //   state.matches(["moving.selected.dragging","reviewing.selected.dragging"])
@@ -235,8 +255,9 @@ export default function Board(current, scene, canvas){
             send({ type: "DESELECT" }) 
         }
     }
-
-	function pickWhere (predicate) { return scene.pick(scene.pointerX, scene.pointerY, predicate) }
+    //================================================================================
+    // State event listeners
+    //================================================================================
     function selectSq(fromSq, state){
 		// console.log('selected',{fromSq, history:state.history.context})
         // todo: change cursor back to grabbing
@@ -262,6 +283,8 @@ export default function Board(current, scene, canvas){
         // if drag over another piece fade piece
         // else restore any faded pieces 
 
+        // function fadePiece(piece){ piece.visibility = 0 } //!
+
         // let closestSqPiece = this.getClosestSq(boardPos).piece
         // if (event.faded){
         //     this.restoreFadedPiece()
@@ -275,61 +298,62 @@ export default function Board(current, scene, canvas){
 		changePosition(fromSq.piece, fromSq.coords)
 		// resetMove(fromSq, true)
     }
-    function fadePiece(piece){ piece.visibility = 0 } //!
     function handleMove(move, state){
 	    const { send } = moveService
-        let { from, to, flags, promotion} = move
-        // if (flags) { handleFlags(gameMove) }
         let { squares } =  state.context
+        let { from, to, flags, promotion} = move
         let fromSq = squares[from]
         let toSq = squares[to]
-        console.log('handling move', {move,fromSq,toSq})
-        changePosition(fromSq.piece, toSq.coords)
-        updateSquares(state.context)
-        selectedHighlightLayer.removeAllMeshes();
-        // if (!this.inReview) this.addMoveForReview(gameMove)
-        function updateSquares({lastMove, squares}){
-            let piece = squares[lastMove.from].piece
-            let sqs = [{name:lastMove.to, piece},{name:lastMove.from, piece:null}]
-            send({type: 'UPDATE', value: sqs})
-            // toSq.piece = fromSq.piece
-            // fromSq.piece.sqName = toSq.sqName
-            // delete fromSq.piece
+        let changes = [
+            { type: 'squares', name: to, piece: fromSq.piece},
+            { type: 'squares', name: from, piece: null }
+        ], castled;
+        if (flags) { // can include both p & c at once
+            if (flags.includes('p')) changes.push( addPromotionPiece(move))
+            if (flags.includes('e')) changes.push( captureEnPassant(to))
+            else if (flags.includes('c')) changes.push( positionCapturedPiece(toSq.piece))
+            else if (castled = flags.match(/k|q/)) changes.push( positionCastledRook(castled[0], to))
         }
+        // console.log('handling move', {move,fromSq,toSq})
+        changePosition(fromSq.piece, toSq.coords)
+        selectedHighlightLayer.removeAllMeshes();
+        send({type: 'UPDATE', value: changes})
+        // if (!this.inReview) this.addMoveForReview(gameMove)
+        // toSq.piece = fromSq.piece
+        // fromSq.piece.sqName = toSq.sqName
+        // delete fromSq.piece
     }
-    function handleFlags(move){
-        let { squares } =  state.context
-        let castle, { from, to, flags} = move
-        if (flags.includes('p')){ addPromotionPiece(move) } 
-        if (flags.includes('e')){ captureEnPassant(to) }  
-        else if (flags.includes('c')){ positionCapturedPiece(squares[to].piece) } 
-        else if ((castle = flags.match(/k|q/))){ positionCastledRook(castle[0], to)  } 
-        // return false
+    //================================================================================
+    // Board Utilities
+    //================================================================================
+    function positionCapturedPiece(piece){
+        // if(!this.inReview) this.capturedPieces[piece.id] = piece
+        // piece.sqName = null
+        let { captured } = moveService.state.context
+        let pieceColor = getColor(piece)
+        const processCapturedPiece = (pieceColor) =>  { //!
+            let columnsCoords = [10, 11.5, 13]  // start columns horizontal: 2 units from board(8x8) & spread 1.5 units apart
+            let count = captured[pieceColor]
+            let column = count / 8 | 0
+            let offsetMultiplier = count % 8 
+            let x = columnsCoords[column]
+            let z = -6.5 + (1.3 * (offsetMultiplier)) // start rows vertical: -6.5 and move each piece up 1.3 units 
+            let coords = pieceColor == 'white' ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for whites pieces
+            return { nextPosition: new BABYLON.Vector3(...coords), newCount: ++count}
+        } 
+        let { nextPosition, newCount } = processCapturedPiece(pieceColor)
+        piece.position = nextPosition
+        return { type: 'captured', pieceColor, newCount, piece}
     }
-    // ______________________________________________________________________________________________________
     function captureEnPassant(moveTo) {
+        let { squares } = moveService.state.context
         let rankOffSet = {6:5, 3:4} // possible ranks for captured piece, relative to capturing piece
         let file = moveTo.charAt(0)
         let rank = moveTo.charAt(1)
         let capturedPieceSq = file + rankOffSet[rank]
-        this.positionCapturedPiece(this.squares[capturedPieceSq].piece)
+        return positionCapturedPiece(squares[capturedPieceSq].piece)
     }
-    function positionCapturedPiece(piece){
-        if(!this.inReview) this.capturedPieces[piece.id] = piece
-        // piece.sqName = null
-        let pieceColor = getColor(piece)
-        const getNextPosition = (pieceColor) =>  { //!
-            let columnsCoords = [10, 11.5, 13]  // start columns 2 units from board(8x8) & spread 1.5 units apart
-            let count = this.capturedPieces.count[pieceColor.charAt(0)]++
-            let column = count / 8 | 0
-            let offsetMultiplier = count % 8 
-            let x = columnsCoords[column]
-            let z = -6.5 + (1.3 * (offsetMultiplier)) // start piece row at z:-6.5 and move each piece up 1.3 units 
-            let coords = pieceColor == 'white' ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for whites pieces
-            return new BABYLON.Vector3(...coords)
-        }
-        piece.position = getNextPosition(pieceColor)
-    }
+
     function addPromotionPiece({color, promotion, from, to}){
         let { squares } =  moveService.state.context
         console.log('promoted', {color, promotion, from,  to})
@@ -412,14 +436,24 @@ export default function Board(current, scene, canvas){
         })
         // console.log('mapped squares', squares)
     }
-
+    function pickWhere (predicate) { return scene.pick(scene.pointerX, scene.pointerY, predicate) }
+    function setupClickListeners(canvas) {
+        canvas.addEventListener("pointerdown", onPointerDown, false);
+        canvas.addEventListener("pointermove", onPointerMove, false); // todo: rxjs fromEvent to throttle
+        canvas.addEventListener("contextmenu", onRightPointerDown, false);
+        canvas.addEventListener("pointerup", onPointerUp, false);
+        scene.onDispose = () => {
+            canvas.removeEventListener("pointerdown", onPointerDown);
+            canvas.removeEventListener("pointermove", onPointerMove);
+            canvas.removeEventListener("contextmenu", onRightPointerDown);
+            canvas.removeEventListener("pointerup", onPointerUp);
+        }
+    };
     return {
         mapPiecesToSquares,
         moveService
     }
-
 }
-
 
 function createBoard(scene){ //!
     const whiteMaterial = new BABYLON.StandardMaterial("White");
