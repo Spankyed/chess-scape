@@ -10,24 +10,12 @@ export default initial => ({
 		reviewDisabled: false, 
 		inReview: false, 
 		currMove: null,
-		moves: {
-			w:[],
-			b:[]
-		}
+		moves: { w:[], b:[] }
 	},
 	actions: { 
-		addMove: ({move, fen, boardMap}) => ({moves}) => ({
-			// todo only send a moveId, not the whole move
-			moves: { ...moves, 
-				[move.color]:[ ...moves[move.color], 
-					{
-						piece: pieceSymbols[move.piece], 
-						to: move.san,
-						fen, boardMap
-					}
-				]
-			}
-		}),
+		addMove: ({color, ...move}) => ({moves}) => {console.log('move added',move); return ({
+			moves: { ...moves, [color]:[ ...moves[color], move ] }
+		})},
 		startReview: move => () => ({inReview: true, currMove: move}),
 		endReview: _=> _=> ({inReview: false, currMove: null}),
 	},
@@ -36,7 +24,7 @@ export default initial => ({
 			let date = new Date().toLocaleDateString('en-GB', {
 				month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
 			}).replace(/\//g, '-').replace(/,/, '').replace(/:/, '');
-			let content = interact.game.engine[type]()
+			let content = interact.game.engine[type]() //! 
 			let filename = `match-${date}.${type}`;
 			let blob = new Blob([content], {
 			 type: "text/plain;charset=utf-8"
@@ -81,22 +69,20 @@ export default initial => ({
 		);
 	},
 })
-
 function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview, alert}){
 	function review(){
 		// if (reviewDisabled) return
 		startReview(move)
 		if (!inReview) promptReview(alert, endReview)
-		interact.game.setReview(move)
+		interact.board.moveService.send({type: 'REVIEW', value: move})
 	}
 	return (
 		<move onclick={review} class={`${ currMove == move && ' active'}`}>
-			<sans> {move.piece} </sans>
-			- {move.to}
+			<sans> {pieceSymbols[move.piece]} </sans>
+			- {move.san}
 		</move>
 	)
 }
-
 function promptReview(alert, endReview){
 	alert.show({
 		icon: "./assets/sidePanel/controls/review_icon.svg",
@@ -105,7 +91,8 @@ function promptReview(alert, endReview){
 		message: "The board does not reflect current game.", 
 		actions: {
 			cancel: { text: 'End', handler: _ => {
-				interact.game.resumePlay()
+				// !interact.board.resumePlay() 
+				interact.board.moveService.send({type: 'END_REVIEW'}) 
 			}}
 		}
 	})
