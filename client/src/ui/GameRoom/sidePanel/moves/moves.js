@@ -73,7 +73,7 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 	function review(){
 		// if (reviewDisabled) return
 		startReview(move)
-		if (!inReview) promptReview(alert, endReview)
+		if (!inReview) promptReview(alert, endReview) // ! this can cause alert show/hide issues
 		interact.board.moveService.send({type: 'REVIEW', value: move})
 	}
 	return (
@@ -91,8 +91,8 @@ function promptReview(alert, endReview){
 		message: "The board does not reflect current game.", 
 		actions: {
 			cancel: { text: 'End', handler: _ => {
-				// !interact.board.resumePlay() 
 				interact.board.moveService.send({type: 'END_REVIEW'}) 
+				endReview()
 			}}
 		}
 	})
