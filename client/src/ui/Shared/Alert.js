@@ -13,7 +13,7 @@ export default initial => ({
 	actions: { 
 		show: options => state => ({
 			isVisible: true, 
-			showDAG: typeof options.dontAskAgain === 'boolean', 
+			showDAG: typeof options?.dontAskAgain === 'boolean', 
 			options
 		}),
 		hide: _ => _ => ({isVisible: false}),
