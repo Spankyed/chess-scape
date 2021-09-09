@@ -48,7 +48,28 @@ function MapBoard(board){
 	}, {});
 }
 
-function ClonePiece({pieces, color, type}){
+function SerializeBoard(squares, {from, to}, capturedPieces){ // record capturedPieces for better consistency
+	let map = Object.entries(squares).reduce((sqs, [_, {sqName, piece}]) => {
+		// if (sqName == from || sqName == to) piece = sqName == from ? squares[from].piece : squares[to].piece
+		return ([...sqs, { sqName, piece: piece?.id || null}])
+	}, [])
+	return map
+}
+function DeserializeBoard(mapSquares, pieces, squares){ // record capturedPieces for better consistency
+	// should produce list of changes for UPDATE event
+	// const sqCoords = {a1:[-7,-7]}
+	return mapSquares.reduce((changes, {sqName, piece}) => {
+		let pieceMesh = pieces()[piece]
+		// let sqMesh = squares[sqName]
+		// if (pieceMesh?.position != sqMesh.coords){
+		// 	pieceMesh.position = sqMesh.coords.clone()
+		// }
+		return [...changes, { type: 'squares', name: sqName, piece: pieceMesh || null}]
+	}, [])
+}
+
+
+function ClonePiece({type, color, pieces}){
 	let pieceId = `${type}_${color}_1`
 	let firstPiece = pieces()[pieceId]
     let clonedPiece = firstPiece.clone(firstPiece.name +  '_clone')
@@ -61,6 +82,8 @@ function ClonePiece({pieces, color, type}){
 
 export {
 	MapBoard,
+	SerializeBoard,
+	DeserializeBoard,
 	ClonePiece,
 	FromResize
 };

@@ -35,6 +35,9 @@ export default class Game {
     async checkMove(move){
         // console.log('checking',{move})
         // issa copy of function below
+        const inReview = this.board().moveService.state.matches('reviewing')
+        let engine = this.inReview ? this.tempEngine : this.engine
+
         let validMove;
         if (this.isPromoting(move)) { 
             const piece = await this.promptPieceSelect()
@@ -42,15 +45,15 @@ export default class Game {
         } else {
             validMove = this.makeMove(move)
         }
-        if(validMove){
+        if(validMove && !inReview){
             if (this.isVsComputer) {
                 this.handleComputerMove()
                 // Api.getComputerMove()
             } else {
                 Api.sendMove(validMove, this.gameId)
             }
+            this.checkGameOver()
         }
-        this.checkGameOver()
 
         //moved to board
         // if (validMove && !this.inReview) this.addMoveForReview(validMove)
@@ -68,6 +71,7 @@ export default class Game {
         // console.log('player move', validMove)
         if (this.inReview) return validMove
         if (this.isVsComputer) {
+            console.log('comp moved')
             this.handleComputerMove()
             // Api.getComputerMove()
         } else {

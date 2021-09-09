@@ -13,9 +13,9 @@ export default initial => ({
 		moves: { w:[], b:[] }
 	},
 	actions: { 
-		addMove: ({color, ...move}) => ({moves}) => {console.log('move added',move); return ({
+		addMove: ({color, ...move}) => ({moves}) => ({
 			moves: { ...moves, [color]:[ ...moves[color], move ] }
-		})},
+		}),
 		startReview: move => () => ({inReview: true, currMove: move}),
 		endReview: _=> _=> ({inReview: false, currMove: null}),
 	},

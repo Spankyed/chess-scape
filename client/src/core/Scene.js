@@ -1,6 +1,6 @@
 import SceneManager from './utils/SceneManager';
 import utils from './utils/utils'; 
-import Board from './Board';
+import Board from './board/Board';
 import Game from './Game';
 import loadPieces  from './Pieces'; 
 // import { Scene, Engine } from 'babylonjs';
@@ -26,7 +26,8 @@ const Scene = new class {
         engine.displayLoadingUI()
         // this.canvas = canvas
         scene.manager.setEnv(canvas)
-        let board = new Board(this, scene, canvas); // dont use new
+        // let board = new Board(this, scene, canvas); // dont use new
+        let board = Board(this, scene, canvas); // dont use new
         let game = new Game(this, gameId);
         let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
