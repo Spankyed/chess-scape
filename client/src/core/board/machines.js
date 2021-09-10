@@ -132,41 +132,147 @@ function setupMachine(current, game, squares, pieces){
 				id: 'waiting',
 				on: { }
 			},
+            // ___________________________________________________________________________________________________________________
             reviewing: {
                 id: 'reviewing',
+                initial: 'moving',
+                entry:[
+                    send({type: 'DESELECT'}),
+                    send((ctx, event) => {
+                        return ({type: 'SET_BOARD', value:{ squares: DeserializeBoard(ctx.moves[event.value.id].squares, pieces, ctx.squares) }})
+                    }),
+                ],
+                exit: send(ctx => ({
+                    type: 'SET_BOARD',
+                    value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1].squares, pieces) }
+                })),
+                states: {
+                    moving: {
+                        id: 'r_moving',
+                        initial: 'notSelected',
+                        states:{
+                            notSelected: { 
+                                id: 'notSelected',
+                                // entry:{} // should deselect, reset move  
+                            },
+                            selected: {
+                                initial: 'dragging',
+                                states: {
+                                    dragging: {
+                                        //  entry/exit toggle cursor to drag
+                                        // entry: 'showGrabCursor',
+                                        // exit: 'releaseGrabCursor',
+                                        on: {
+                                            'DRAG': {
+                                                actions: [
+                                                    assign({ dragPos: (_, event) => event.value.boardPos }),
+                                                ]
+                                            },
+                                            'END_DRAG': 'notDragging' 
+                                        }
+                                    },
+                                    notDragging: { }
+                                },
+                                on: {
+                                    'ATTEMPT_MOVE': {
+                                        actions: [ 
+                                            assign({ toSq: (_, event) => event.value }),
+                                        ],
+                                        target: '#reviewing.validatingMove'
+                                    }
+                                }
+                            }
+                        },
+                        on: {
+                            'SELECT': {
+                                cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
+                                actions: [
+                                    _=>{console.log('fkoff')},
+                                    assign({ fromSq: (ctx, {value}) => value }),
+                                ],
+                                target: '.selected.dragging',
+                                // in: '#light.red.stop'
+                            }
+                        }
+                    },
+                    validatingMove: {
+                        id:'r_validatingMove',
+                        invoke:{
+                            // needs to be a promise to handle promotion piece selection
+                            src: (ctx, event) => async (trigger, onReceive) => {
+                                let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
+                                let validMove = await game().checkMove(move)
+                                // console.log('isValid',{validMove})
+                                trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
+                            }
+                        },
+                        entry: [
+                        ],
+                        // entry:{},
+                        on: {
+                            'ALLOW': {
+                                // todo: indicate square of prev move (change tile material color)
+                                actions: [ 
+                                    _=>console.log('fkme'),
+                                    assign({ 
+                                        fromSq: undefined, toSq: undefined, 
+                                        lastMove: (ctx, event) => ({
+                                            from: ctx.fromSq.sqName,
+                                            to: event.value.to
+                                        }),
+                                    }),
+                                ],
+                                // target: '#moving.notSelected'
+                                target: '#reviewing.moving.notSelected'
+                            },
+                            'DENY': {
+                                actions: [
+                                    assign({ fromSq: undefined, toSq: undefined }),
+                                ],
+                                // target: '.notSelected'
+                                target: '#reviewing.moving.notSelected'
+                            }
+                        }
+                    },
+                    // finished: { type: 'final' }
+                },
+                on:{ 
+                    // 'DESELECT': {
+                    //     actions: [
+                    //         _=>console.log('fkme2'),
+                    //         // (ctx, {value})=>console.log('deselecting'),
+                    //         assign({ fromSq: undefined }),
+                    //         // sendUpdate()
+                    //     ],
+                    //     target: '#reviewing.moving.notSelected'
+                    // },
+
+                },
                 // entry: assign({
                 //     reviewRef: (ctx, {value}) => spawn(setupReviewMachine(
                 //         DeserializeBoard(ctx.moves[value.id].squares, pieces, ctx.squares),
                 //         game, ctx.squares
                 //     ),  { name: 'reviews', autoForward: true })
                 // }),
-                invoke:{
-                    id: 'review_machine',
-                    autoForward: true, // forward events received by parent machine
-                    sync: true,
-                    src: (ctx, {value}) => {
-                        return setupReviewMachine(
-                            DeserializeBoard(ctx.moves[value.id].squares, pieces, ctx.squares),
-                            game, ctx.squares
-                        )
-                    },
-                    onDone: {
-                        actions: (ctx, event)=>{
-                            console.log('bichhhh we done reviewing!!!!',moveMachine.state.history)
-                        }
-                    }
-                },
-                exit: send(ctx => ({
-                    type: 'SET_BOARD',
-                    value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1].squares, pieces) }
-                })),
-				on: {
-                    // '': { actions: assign({ fromSq: undefined, toSq: undefined }) }, infinite loop
-				}
+
 			},
 		},
+        // ___________________________________________________________________________________________________________________
         on:{
-
+            'SET_BOARD':{
+                // todo removedPromotionPieces
+                actions: [
+                    // (ctx, {value})=>console.log('setting',value),
+                    assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.squares
+                    // send((ctx, {value}) =>({ type: 'UPDATE', value: value.squares})),
+                    send(ctx => ({
+                        type: 'POSITION', 
+                        value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
+                    })),
+                    // sendUpdate()
+                ],
+                // target: 'moving'
+            },
             'OPP_MOVE': {
                 actions: [
                     assign({ 
@@ -233,6 +339,7 @@ function setupMachine(current, game, squares, pieces){
                 }
             },
             'REVIEW': {
+                // actions: send('DESELECT'),
                 target: '#reviewing',
             },
             'END_REVIEW': [
@@ -279,157 +386,20 @@ function updateFaded(faded) {
     }
 }
 
-function setupReviewMachine(initUpdates, game, squares){
-	const reviewMachine = createMachine({
-		id: 'review_states',
-		initial: 'setup',
-		context: {
-            squares: squares,
-			// currPlayer: 'white',
-			colorToMove: 'white',
-			fromSq: undefined,
-			toSq: undefined,
-			lastMove: undefined,
-			initUpdates: initUpdates,
-            promotedPieces: undefined,
-            faded: undefined,
-            captured: {white: 0, black: 0},
-		},
-		states: {
-            setup: {
-                always: {
-                    target: 'moving', 
-                    actions: [
-                        send(ctx => ({type: 'SET_BOARD', value:{ squares: ctx.initUpdates }})),
-                        send({type: 'DESELECT'}),
-                        // sendUpdate()
-                        //todo set fen for review engine
-                    ]
-                }
-            },
-			moving: {
-                id: 'moving',
-				initial: 'notSelected',
-				states:{
-					notSelected: { 
-						id: 'notSelected',
-                        // entry:{} // should deselect, reset move  
-					},
-					selected: {
-						initial: 'dragging',
-						states: {
-							dragging: {
-								//  entry/exit toggle cursor to drag
-                                // entry: 'showGrabCursor',
-                                // exit: 'releaseGrabCursor',
-								on: {
-									'DRAG': {
-										actions: [
-                                            assign({ dragPos: (_, event) => event.value.boardPos }),
-                                            // sendUpdate()
-                                        ]
-									},
-									'END_DRAG': 'notDragging' 
-								}
-							},
-							notDragging: { }
-						},
-						on: {
-							'ATTEMPT_MOVE': {
-								actions: [ 
-									assign({ toSq: (_, event) => event.value }),
-                                    // sendUpdate() 
-								],
-								target: '#validatingMove'
-							}
-						}
-					}
-				},
-				on: {
-					'SELECT': {
-                        cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
-						actions: [
-							assign({ fromSq: (ctx, {value}) => value }),
-                            // sendUpdate()
-						],
-						target: '.selected.dragging',
-						// in: '#light.red.stop'
-					}
-				}
-			},
-            validatingMove: {
-                id:'validatingMove',
-                invoke:{
-                    // needs to be a promise to handle promotion piece selection
-                    src: (ctx, event) => async (trigger, onReceive) => {
-                        let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                        let validMove = await game().checkMove(move)
-                        // console.log('isValid',{validMove})
-                        trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
-                    }
-                },
-                entry: [
+// context: {
+//     squares: squares,
+//     // currPlayer: 'white',
+//     colorToMove: 'white',
+//     fromSq: undefined,
+//     toSq: undefined,
+//     lastMove: undefined,
+//     initUpdates: initUpdates,
+//     promotedPieces: undefined,
+//     faded: undefined,
+//     captured: {white: 0, black: 0},
+// },
 
-                ],
-                // entry:{},
-                on: {
-                    'ALLOW': {
-                        // todo: indicate square of prev move (change tile material color)
-                        actions: [ 
-                            _=>console.log('fkme'),
-                            assign({ 
-                                fromSq: undefined, toSq: undefined, 
-                                lastMove: (ctx, event) => ({
-                                    from: ctx.fromSq.sqName,
-                                    to: event.value.to
-                                }),
-                            }),
-                            sendUpdate() 
-                        ],
-                        // target: '#moving.notSelected'
-                        target: '#notSelected'
-                    },
-                    'DENY': {
-                        actions: [
-                            assign({ fromSq: undefined, toSq: undefined }),
-                            // sendUpdate()
-                        ],
-                        // target: '.notSelected'
-                        target: '#notSelected'
-                    }
-                }
-            },
-            // finished: { type: 'final' }
-		},
-        on:{ 
-            'DESELECT': {
-                actions: [
-                    _=>console.log('fkme2'),
-                    // (ctx, {value})=>console.log('deselecting'),
-                    assign({ fromSq: undefined }),
-                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]}),
-                    sendUpdate()
-                ],
-                target: '#notSelected'
-            },
-            'SET_BOARD':{
-                // todo removedPromotionPieces
-                actions: [
-                    // (ctx, {value})=>console.log('setting',value),
-                    assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.squares
-                    // send((ctx, {value}) =>({ type: 'UPDATE', value: value.squares})),
-                    sendParent(ctx => ({
-                        type: 'POSITION', 
-                        value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
-                    })),
-                    // sendUpdate()
-                ],
-                // target: 'moving'
-            },
-        }
-	})
-    return reviewMachine
-}
+
 export {
     setupMachine
 }

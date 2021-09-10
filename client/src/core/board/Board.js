@@ -18,15 +18,7 @@ export default function Board(current, scene, canvas){
 	    // cleanupState(){ subscription.unsubscribe()}
         return moveService.subscribe(state => {
             let { type, value } = state.event
-            console.log(type)
-            if(state.event.type === 'xstate.update'){
-            // if(state.children.review_machine){
-                let { changed, event } = state.children.review_machine?.state
-                if (event) console.log('ohh boy', state)
-            }
-
-            // if(type == 'ALLOW') debugger
-            if (!stateChanged(state)) return
+            if (!state.changed) return
             // console.log('ohh boy!', {type, value, state})
             const eventHandlers = {
                 'SELECT': selectSq,
@@ -39,49 +31,31 @@ export default function Board(current, scene, canvas){
                 'DENY': deselectSq,
                 'OPP_MOVE': handleMove,
         	}
-            eventHandlers[getType(state)]?.(getValue(state), getState(state))
+            eventHandlers[type]?.(value, state)
         });
-        function stateChanged(state){ return state.changed || state.children.review_machine?.state.changed }
-        function getValue(state){ return state.event.value || state.children.review_machine?.state.event?.value }
-        function getState(state){ return state.changed ? state : state.children.review_machine?.state }
-        function getType(state){ 
-            let type = state.event.type
-            return type == 'xstate.update' ? state.children.review_machine?.state.event.type : state.event.type  
-        }
-        // function stateChanged(state){ return state.changed || state.context.reviewRef?.state.changed }
-        // function getState(state){ return state.changed ? state : state.context.reviewRef?.state }
+
     }
     //================================================================================
     // DOM event listeners
     //================================================================================
-	function stateIs(check, matchReview) { // also matches reviewing states
+	function stateIs(check) {
         let { state } = moveService
-        let reviewState = state.children.review_machine?.state
-        // let reviewState = state.context.reviewRef?.state
-        let match = state.matches(check)
-        let reviewMatch = reviewState?.matches(check)
-        // let reviewMatch = matchReview ? reviewState?.matches(check) : false
-        return match || reviewMatch
-    }
-    function switchContext(state){
-        return !state.matches('reviewing') ? state : state.children.review_machine?.state
-        // return !state.matches('reviewing') ? state : state.context.reviewRef?.state
+        return state.matches(check) || state.matches('reviewing.' + check)  
     }
 	function onPointerDown(evt) {
         // todo checkGameOver
 	    const { send, state } = moveService
-        const currState = switchContext(state)
         if (evt.button !== 0) return;
         let pickInfo = pickWhere( mesh => mesh.isPickable); // pick square
         if (!pickInfo.hit) { // user clicked off board
             send({ type: "DESELECT"}) 
             return;
         } 
-        let { squares } =  currState.context
+        let { squares } =  state.context
         let square = squares[pickInfo.pickedMesh.name]
         // if user is in review & trying to capture, dont select enemy piece
         // !only allow enemy piece selection in review
-        let colorsMatch = getColor(square.piece) == getColor(currState.context.fromSq?.piece)
+        let colorsMatch = getColor(square.piece) == getColor(state.context.fromSq?.piece)
         let isMove = stateIs('moving.selected') && !colorsMatch
         if (isMove){ 
             send({ type: "ATTEMPT_MOVE", value: square })
@@ -93,14 +67,13 @@ export default function Board(current, scene, canvas){
     }
     function onPointerUp(evt) {
 	    const { send, state } = moveService
-        const currState = switchContext(state)
         if (evt.button == 2){ return; } // ignore right-click
         if (!stateIs('moving.selected.dragging')){ return; } // ignore click-release unless dragging 
         let board = pickWhere(mesh => mesh.isPickable)
-        let { squares } =  currState.context
+        let { squares } =  state.context
         let square = squares[board.pickedMesh?.name];
-        let sameSq = square === currState.context.fromSq
-        let pieceColorsMatch = getColor(square?.piece) == getColor(currState.context.fromSq?.piece)
+        let sameSq = square === state.context.fromSq
+        let pieceColorsMatch = getColor(square?.piece) == getColor(state.context.fromSq?.piece)
         if (sameSq || pieceColorsMatch || !board.hit){ 
             send({ type: "END_DRAG"}) // reposition dragged piece in center of starting sq
         }
@@ -110,9 +83,8 @@ export default function Board(current, scene, canvas){
     }
     function onPointerMove(evt) {
 	    const { send, state } = moveService
-        const currState = switchContext(state)
         let {pickedPoint, pickedMesh} = pickWhere(mesh => mesh.isPickable)
-        let square = currState.context.squares[pickedMesh?.name]
+        let square = state.context.squares[pickedMesh?.name]
         if (stateIs("moving.selected.dragging")){ 
             document.body.style.cursor = 'grabbing';
             if (!pickedPoint) return;  // todo drag piece along sides of board if mouse is off board
@@ -160,7 +132,7 @@ export default function Board(current, scene, canvas){
         if (dragPos) changePosition(fromSq.piece, dragPos.clone())
     }
     function endPieceDrag(_, state){
-	    const { send } = moveService
+	    // const { send } = moveService
         let { fromSq } = state.context
 		changePosition(fromSq.piece, fromSq.coords)
     }
@@ -251,10 +223,6 @@ export default function Board(current, scene, canvas){
     function changePosition(piece, newPos){
 	    const { send } = moveService
         send({type: 'POSITION', value: { piece, newPos }})
-        // if (!piece.position.equals(newPos)){
-        //     let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-        //     piece.position = updatedPos
-        // }
     }
     function getColor(piece){ //!
         if (!piece) return null
