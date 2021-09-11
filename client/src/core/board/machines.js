@@ -105,9 +105,9 @@ function setupMachine(current, game, squares, pieces){
                     src: (ctx, event) => async (trigger, onReceive) => {
                         let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
                         let validMove = await game().checkMove(move)
-                        // console.log('isValid',{validMove})
-                        trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
-                    }
+                        trigger({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
+                    },
+                    onError: '#moving.selected'
                 },
                 on: {
                     'ALLOW': {
@@ -136,15 +136,19 @@ function setupMachine(current, game, squares, pieces){
             reviewing: {
                 id: 'reviewing',
                 initial: 'moving',
-                entry:[
-                    send({type: 'DESELECT'}),
-                    send((ctx, event) => {
-                        return ({type: 'SET_BOARD', value:{ squares: DeserializeBoard(ctx.moves[event.value.id].squares, pieces, ctx.squares) }})
-                    }),
-                ],
+                invoke:{
+                    src:(ctx, {value}) => sendBack =>{
+                        game().tempEngine.load(ctx.moves[value.id].fen),
+                        sendBack({
+                            type: 'SET_BOARD', 
+                            value:{ squares: DeserializeBoard(ctx.moves[value?.id]?.squares, pieces, ctx.squares) }
+                        })
+                    }
+                },
+                entry: send({type: 'DESELECT'}),
                 exit: send(ctx => ({
                     type: 'SET_BOARD',
-                    value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1].squares, pieces) }
+                    value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1]?.squares, pieces) }
                 })),
                 states: {
                     moving: {
@@ -159,14 +163,12 @@ function setupMachine(current, game, squares, pieces){
                                 initial: 'dragging',
                                 states: {
                                     dragging: {
-                                        //  entry/exit toggle cursor to drag
-                                        // entry: 'showGrabCursor',
-                                        // exit: 'releaseGrabCursor',
                                         on: {
                                             'DRAG': {
-                                                actions: [
-                                                    assign({ dragPos: (_, event) => event.value.boardPos }),
-                                                ]
+                                                actions: assign({ 
+                                                    dragPos: (_, { value }) => value.boardPos,
+                                                    hoveredSq: (_, { value }) => value.hoveredSq
+                                                 })
                                             },
                                             'END_DRAG': 'notDragging' 
                                         }
@@ -187,7 +189,6 @@ function setupMachine(current, game, squares, pieces){
                             'SELECT': {
                                 cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
                                 actions: [
-                                    _=>{console.log('fkoff')},
                                     assign({ fromSq: (ctx, {value}) => value }),
                                 ],
                                 target: '.selected.dragging',
@@ -202,9 +203,9 @@ function setupMachine(current, game, squares, pieces){
                             src: (ctx, event) => async (trigger, onReceive) => {
                                 let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
                                 let validMove = await game().checkMove(move)
-                                // console.log('isValid',{validMove})
-                                trigger({type: validMove ? 'ALLOW' : 'DENY', value: validMove })
-                            }
+                                trigger({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
+                            },
+                            onError: '#moving.selected'
                         },
                         entry: [
                         ],
@@ -213,7 +214,6 @@ function setupMachine(current, game, squares, pieces){
                             'ALLOW': {
                                 // todo: indicate square of prev move (change tile material color)
                                 actions: [ 
-                                    _=>console.log('fkme'),
                                     assign({ 
                                         fromSq: undefined, toSq: undefined, 
                                         lastMove: (ctx, event) => ({
@@ -239,7 +239,6 @@ function setupMachine(current, game, squares, pieces){
                 on:{ 
                     // 'DESELECT': {
                     //     actions: [
-                    //         _=>console.log('fkme2'),
                     //         // (ctx, {value})=>console.log('deselecting'),
                     //         assign({ fromSq: undefined }),
                     //         // sendUpdate()
@@ -281,7 +280,8 @@ function setupMachine(current, game, squares, pieces){
                         moves: (ctx, {value}) => ([ 
                             ...ctx.moves,
                             {   
-                                squares: SerializeBoard(ctx.squares, value), //fen: game().engine.fen(),
+                                squares: SerializeBoard(ctx.squares, value), 
+                                fen: game().engine.fen(),
                                 captured: ctx.captured
                             }
                         ]),
@@ -314,7 +314,8 @@ function setupMachine(current, game, squares, pieces){
                             moves: (ctx, {value}) => ([ 
                                 ...ctx.moves,
                                 {   
-                                    squares: SerializeBoard(ctx.squares, value), //fen: game().engine.fen(),
+                                    squares: SerializeBoard(ctx.squares, value), 
+                                    fen: game().engine.fen(),
                                     captured: ctx.captured
                                 }
                             ])

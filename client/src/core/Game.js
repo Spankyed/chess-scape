@@ -95,9 +95,10 @@ export default class Game {
         const moves = this.engine.moves({verbose:true})
         const move = moves[Math.floor(Math.random() * moves.length)] // get random move
         if(move){
-            var validMove = this.makeMove(move)
-            if (validMove) setTimeout(_=> {
-                this.board().moveService.send({type:'OPP_MOVE', value: validMove})
+             setTimeout(_=> {
+                let validMove = this.makeMove(move)
+                if (validMove)
+                    this.board().moveService.send({type:'OPP_MOVE', value: validMove})
                 // console.log('computer move', validMove)
             }, 1000)
         }
