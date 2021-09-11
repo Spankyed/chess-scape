@@ -103,11 +103,14 @@ function setupMachine(current, game, squares, pieces){
                 on: {
                     'ALLOW': {
                         // todo: indicate square of prev move (change tile material color)
-                        actions: assign({ 
-                            canMove: false,
-                            fromSq: undefined, toSq: undefined, 
-                            lastMove: (ctx, {value}) => value,
-                        }),
+                        actions: [
+                            assign({ 
+                                canMove: false,
+                                fromSq: undefined, toSq: undefined, 
+                                lastMove: (_, {value}) => value,
+                            }),
+                            send({type: 'RESET'})
+                        ],
                         target: '#waiting'
                     },
                     'DENY': {
@@ -200,13 +203,13 @@ function setupMachine(current, game, squares, pieces){
                         on: {
                             'ALLOW': {
                                 // todo: indicate square of prev move (change tile material color)
-                                actions: assign({ 
-                                    fromSq: undefined, toSq: undefined, 
-                                    lastMove: (ctx, event) => ({
-                                        from: ctx.fromSq.sqName,
-                                        to: event.value.to
-                                    })
-                                }),
+                                actions: [
+                                    assign({ 
+                                        fromSq: undefined, toSq: undefined, 
+                                        lastMove: (_, {value}) => value,
+                                    }),
+                                    send({type: 'RESET'})
+                                ],
                                 target: '#reviewing.moving.notSelected'
                             },
                             'DENY': {
