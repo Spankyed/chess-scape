@@ -40,7 +40,6 @@ function setupMachine(current, game, squares, pieces){
             faded: undefined,
             captured: {white: 0, black: 0},
             moves: []
-			// inReview: false,
 		},
 		states: {
 			moving: {
@@ -49,7 +48,7 @@ function setupMachine(current, game, squares, pieces){
 				states:{
 					notSelected: { 
 						id: 'notSelected',
-                        // entry:{} // should deselect, reset move  
+                        // entry:{} // consider deselect, reset move  
 					},
 					selected: {
 						initial: 'dragging',
@@ -76,7 +75,7 @@ function setupMachine(current, game, squares, pieces){
                                     assign({ fromSq: undefined }),
                                     send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
                                 ],
-                                target: '#notSelected'
+                                target: '#moving.notSelected'
                             },
 							'ATTEMPT_MOVE': {
 								actions: [ 
@@ -170,7 +169,10 @@ function setupMachine(current, game, squares, pieces){
                                                     hoveredSq: (_, { value }) => value.hoveredSq
                                                  })
                                             },
-                                            'END_DRAG': 'notDragging' 
+                                            'END_DRAG': {
+                                                target: 'notDragging',
+                                                actions: send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
+                                            } 
                                         }
                                     },
                                     notDragging: { }
@@ -186,6 +188,13 @@ function setupMachine(current, game, squares, pieces){
                             }
                         },
                         on: {
+                            'DESELECT': {
+                                actions: [
+                                    assign({ fromSq: undefined }),
+                                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
+                                ],
+                                target: '#notSelected'
+                            },
                             'SELECT': {
                                 cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
                                 actions: [
