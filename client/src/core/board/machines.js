@@ -45,7 +45,7 @@ function setupMachine(current, game, squares, pieces){
 			moving: {
                 id: 'moving',
 				initial: 'notSelected',
-				states:{
+				states: {
 					notSelected: { 
 						id: 'notSelected',
                         // entry:{} // consider deselect, reset move  
@@ -71,9 +71,7 @@ function setupMachine(current, game, squares, pieces){
 						},
 						on: {
 							'ATTEMPT_MOVE': {
-								actions: [ 
-									assign({ toSq: (_, event) => event.value }) 
-								],
+								actions: assign({ toSq: (_, event) => event.value }),
 								target: '#validatingMove'
 							}
 						}
@@ -85,11 +83,8 @@ function setupMachine(current, game, squares, pieces){
                         target: '.notSelected'
                     },
 					'SELECT': {
-                        cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
-						actions: [
-                            // (_,ev) => console.log('sel',ev.value),
-							assign({ fromSq: (ctx, {value}) => value })
-						],
+                        cond: (_, {value}) => !!value.piece, // todo also check if player's color/piece
+						actions: assign({ fromSq: (ctx, {value}) => value }),
 						target: '.selected.dragging',
 						// in: '#light.red.stop'
 					}
@@ -97,29 +92,26 @@ function setupMachine(current, game, squares, pieces){
 			},
             validatingMove: {
                 id:'validatingMove',
-                invoke:{
-                    src: (ctx, event) => async (trigger, onReceive) => {
+                invoke: {
+                    src: ctx => async (sendBack) => {
                         let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
                         let validMove = await game().checkMove(move)
-                        trigger({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
+                        sendBack({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
                     },
                     onError: '#moving.selected'
                 },
                 on: {
                     'ALLOW': {
                         // todo: indicate square of prev move (change tile material color)
-                        actions: [ 
-                            assign({ 
-                                canMove: false,
-                                fromSq: undefined, toSq: undefined, 
-                                lastMove: (ctx, {value}) => value,
-                            }),
-                        ],
+                        actions: assign({ 
+                            canMove: false,
+                            fromSq: undefined, toSq: undefined, 
+                            lastMove: (ctx, {value}) => value,
+                        }),
                         target: '#waiting'
                     },
                     'DENY': {
                         actions: send({type: 'RESET'}),
-                        // target: '.notSelected'
                         target: '#moving.notSelected'
                     }
                 }
@@ -132,8 +124,8 @@ function setupMachine(current, game, squares, pieces){
             reviewing: {
                 id: 'reviewing',
                 initial: 'moving',
-                invoke:{
-                    src:(ctx, {value}) => sendBack =>{
+                invoke: {
+                    src: (ctx, {value}) => sendBack =>{
                         game().tempEngine.load(ctx.moves[value.id].fen),
                         sendBack({
                             type: 'SET_BOARD', 
@@ -154,11 +146,8 @@ function setupMachine(current, game, squares, pieces){
                     moving: {
                         id: 'r_moving',
                         initial: 'notSelected',
-                        states:{
-                            notSelected: { 
-                                id: 'r_notSelected',
-                                // entry:{} // should deselect, reset move  
-                            },
+                        states: {
+                            notSelected: { },
                             selected: {
                                 initial: 'dragging',
                                 states: {
@@ -180,9 +169,7 @@ function setupMachine(current, game, squares, pieces){
                                 },
                                 on: {
                                     'ATTEMPT_MOVE': {
-                                        actions: [ 
-                                            assign({ toSq: (_, event) => event.value }),
-                                        ],
+                                        actions: assign({ toSq: (_, event) => event.value }),
                                         target: '#reviewing.validatingMove'
                                     }
                                 }
@@ -195,46 +182,35 @@ function setupMachine(current, game, squares, pieces){
                             },
                             'SELECT': {
                                 cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
-                                actions: [
-                                    assign({ fromSq: (ctx, {value}) => value }),
-                                ],
+                                actions: assign({ fromSq: (ctx, {value}) => value }),
                                 target: '.selected.dragging',
-                                // in: '#light.red.stop'
                             }
                         }
                     },
                     validatingMove: {
                         id:'r_validatingMove',
                         invoke:{
-                            // needs to be a promise to handle promotion piece selection
-                            src: (ctx, event) => async (trigger, onReceive) => {
+                            src: ctx => async (sendBack) => {
                                 let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
                                 let validMove = await game().checkMove(move)
-                                trigger({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
+                                sendBack({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
                             },
                             onError: '#moving.selected'
                         },
-                        entry: [
-                        ],
-                        // entry:{},
                         on: {
                             'ALLOW': {
                                 // todo: indicate square of prev move (change tile material color)
-                                actions: [ 
-                                    assign({ 
-                                        fromSq: undefined, toSq: undefined, 
-                                        lastMove: (ctx, event) => ({
-                                            from: ctx.fromSq.sqName,
-                                            to: event.value.to
-                                        }),
-                                    }),
-                                ],
-                                // target: '#moving.notSelected'
+                                actions: assign({ 
+                                    fromSq: undefined, toSq: undefined, 
+                                    lastMove: (ctx, event) => ({
+                                        from: ctx.fromSq.sqName,
+                                        to: event.value.to
+                                    })
+                                }),
                                 target: '#reviewing.moving.notSelected'
                             },
                             'DENY': {
                                 actions: send({type: 'RESET'}),
-                                // target: '.notSelected'
                                 target: '#reviewing.moving.notSelected'
                             }
                         }
@@ -246,7 +222,7 @@ function setupMachine(current, game, squares, pieces){
         // ___________________________________________________________________________________________________________________
         on:{
             'RESET': {
-                actions:[
+                actions: [
                     assign({ fromSq: undefined, toSq: undefined }),
                     send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]}),
                 ]
@@ -263,14 +239,14 @@ function setupMachine(current, game, squares, pieces){
                                 fen: game().engine.fen(),
                                 captured: ctx.captured
                             }
-                        ]),
-                    }),
+                        ])
+                    })
                 ],
                 target: 'moving'
 			},
             'UPDATE': {
                 actions: [
-                    pure((ctx, {value}) => {
+                    pure((_, {value}) => {
                         let types = [
                             ['squares', updateSquares], 
                             ['captured', updateCaptured], 
@@ -287,7 +263,7 @@ function setupMachine(current, game, squares, pieces){
                         }, {}) // partially input updates to designated assigner factoryFn for assignments
                         return assign(assignments)
                     }),
-                    pure((ctx, {add})=>{
+                    pure((_, {add})=>{
                         if (!add) return
                         return assign({
                             moves: (ctx, {value}) => ([ 
@@ -307,9 +283,9 @@ function setupMachine(current, game, squares, pieces){
                     }
                 ]
             },
-            'POSITION':{
+            'POSITION': {
                 actions: (_, {value}) => {
-                    if(!(value instanceof Array)) value = [value]
+                    if (!(value instanceof Array)) value = [value]
                     value.forEach(({ piece, newPos }) => {
                         if (piece && !piece.position.equals(newPos)){
                             let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
@@ -319,26 +295,22 @@ function setupMachine(current, game, squares, pieces){
                 }
             },
             'REVIEW': {
-                // actions: send('DESELECT'),
                 target: '#reviewing',
             },
             'END_REVIEW': [
                 {  target: '.moving', cond: ctx => ctx.canMove},
                 {  target: '.waiting', cond: ctx => !ctx.canMove}
             ],
-            'SET_BOARD':{
+            'SET_BOARD': {
                 // todo removedPromotionPieces
                 actions: [
-                    // (ctx, {value})=>console.log('setting',value),
                     assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.squares
-                    // send((ctx, {value}) =>({ type: 'UPDATE', value: value.squares})),
                     send(ctx => ({
                         type: 'POSITION', 
                         value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
                     }))
-                ],
-                // target: 'moving'
-            },
+                ]
+            }
         }
 	})
 
@@ -365,7 +337,6 @@ function updateFaded(faded) {
         return piece || null
     }
 }
-
 
 export {
     setupMachine

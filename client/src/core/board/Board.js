@@ -1,7 +1,5 @@
 
-import { createMachine, actions, interpret, assign, send } from 'xstate';
-import { pure } from 'xstate/lib/actions';
-import { ClonePiece, SerializeBoard, DeserializeBoard  } from '../utils/utils'; 
+import { ClonePiece } from '../utils/utils'; 
 import { setupMachine } from './machines';
 
 export default function Board(current, scene, canvas){
@@ -25,8 +23,6 @@ export default function Board(current, scene, canvas){
                 'DESELECT': deselectSq,
                 'DRAG': dragPiece,
                 'END_DRAG': endPieceDrag,
-                // 'RESET': resetMove,
-                // 'ATTEMPT_MOVE': attemptMove,
                 'ALLOW': handleMove,
                 'DENY': deselectSq,
                 'OPP_MOVE': handleMove,
@@ -53,8 +49,7 @@ export default function Board(current, scene, canvas){
         } 
         let { squares } =  state.context
         let square = squares[pickInfo.pickedMesh.name]
-        // if user is in review & trying to capture, dont select enemy piece
-        // !only allow enemy piece selection in review
+        // todo !only allow enemy piece selection in review
         let colorsMatch = getColor(square.piece) == getColor(state.context.fromSq?.piece)
         let isMove = stateIs('moving.selected') && !colorsMatch
         if (isMove){ 
@@ -62,7 +57,6 @@ export default function Board(current, scene, canvas){
         }
         else if (stateIs('moving')) {
             send({ type: "SELECT", value: square })
-            // send({ type: "SELECT", value: square })
         }
     }
     function onPointerUp(evt) {
@@ -228,13 +222,12 @@ export default function Board(current, scene, canvas){
         if (!piece) return null
         return piece.name.match(/white|black/)[0]
     }
-    function getClosestSq(fromPos){ //! inefficient when used to mapPieces
+    function getClosestSq(fromPos){ //! highly inefficient when used to mapPieces
         // let { squares } =  moveService.state.context
-        let pickedPoint = fromPos || pickWhere().pickedPoint
-        if (!pickedPoint) return
+        if (!fromPos) return
         let closest = { sqName: '', dist: 999 }; 
         for (const sqName in squares) {
-            let dist = BABYLON.Vector3.Distance(pickedPoint, squares[sqName].coords)
+            let dist = BABYLON.Vector3.Distance(fromPos, squares[sqName].coords)
             // console.log('dist', dist)
             if (dist < closest.dist){
                 closest = { sqName: sqName, dist: dist }
@@ -248,7 +241,6 @@ export default function Board(current, scene, canvas){
             let closestSq = getClosestSq(piece.position) //! this has to be removed O(n2)
             let square = squares[closestSq.sqName]
             square.piece = piece
-            // piece.sqName = closestSq.sqName
             // console.log('closestSq', squares[closestSq.sqName])
         })
         // console.log('mapped squares', squares)
@@ -321,7 +313,7 @@ function createBoard(scene){ //!
             let next = n => -7 + (2 * n)
             let coords = {x: next(fIdx), y: next(rIdx)}
             let materialIdx = rIdx % 2 ^ fIdx % 2
-            let startIdx = fIdx * gridIndices + (rIdx * 48); // slide over 48 indices for every rank
+            let startIdx = fIdx * gridIndices + (rIdx * 48); // slide over 48 indices every rank for subMesh def
             let sqName = `${String.fromCharCode(fIdx + 97)}${rIdx + 1}`
             let squareDef = new BABYLON.SubMesh(materialIdx, 0, totalVertices, startIdx, gridIndices, boardTiles)
             // let sq = new BABYLON.Mesh(sqName, scene);
@@ -334,7 +326,7 @@ function createBoard(scene){ //!
         return {...ranks, ...rankSquares}
     },{});
     
-    setTimeout(_=> boardTiles.dispose() , 50) // todo: create board with prefab
+    setTimeout(_=> boardTiles.dispose() , 50) // todo: create board using prefab
 
     // console.log('squares', squares)
 
