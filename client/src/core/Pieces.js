@@ -58,10 +58,9 @@ async function loadPieces(scene){
             piece.id = piece.name.charAt(0).toLowerCase() + '_' +  (isWhite ? 'w':'b')
         }
         let count = ++pieceCount[isWhite ? 'white' : 'black'][piece.id.charAt(0)]
-        
-        if (count >= 1) piece.id += '_' + count
-
-        piece.doNotSyncBoundingInfo = true;
+        piece.id += '_' + count
+        // if (count >= 1) piece.id += '_' + count
+        // piece.doNotSyncBoundingInfo = true;
         // piece.addPickingBox()
         return {...map, [piece.id]: piece}
     },{})
