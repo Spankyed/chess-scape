@@ -7,7 +7,7 @@ import { SerializeBoard, DeserializeBoard  } from '../utils/utils';
 ** --------------------------------------------------------------------------
 **  State managed with Xstate statecharts
 ** --------------------------------------------------------------------------
-**  ___Simplified Overview (does not include review machine)___
+**  _______Simplified Overview (does not include review machine)_______
 **  A user begins in the moving.notSelected state. In any moving state, 
 **  selected or not, the user may click to SELECT a square, which will  
 **  transition the user to selected.dragging. If the user lets up on 
@@ -81,10 +81,7 @@ function setupMachine(current, game, squares, pieces){
 				},
 				on: {
                     'DESELECT': {
-                        actions: [
-                            assign({ fromSq: undefined }),
-                            send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                        ],
+                        actions: send({type: 'RESET'}),
                         target: '.notSelected'
                     },
 					'SELECT': {
@@ -121,10 +118,7 @@ function setupMachine(current, game, squares, pieces){
                         target: '#waiting'
                     },
                     'DENY': {
-                        actions: [
-                            assign({ fromSq: undefined, toSq: undefined }),
-                            send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                        ],
+                        actions: send({type: 'RESET'}),
                         // target: '.notSelected'
                         target: '#moving.notSelected'
                     }
@@ -194,12 +188,9 @@ function setupMachine(current, game, squares, pieces){
                                 }
                             }
                         },
-                        on: {
+                        on: { 
                             'DESELECT': {
-                                actions: [
-                                    assign({ fromSq: undefined }),
-                                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                                ],
+                                actions: send({type: 'RESET'}),
                                 target: '.notSelected'
                             },
                             'SELECT': {
@@ -242,52 +233,23 @@ function setupMachine(current, game, squares, pieces){
                                 target: '#reviewing.moving.notSelected'
                             },
                             'DENY': {
-                                actions: [
-                                    assign({ fromSq: undefined, toSq: undefined }),
-                                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                                ],
+                                actions: send({type: 'RESET'}),
                                 // target: '.notSelected'
                                 target: '#reviewing.moving.notSelected'
                             }
                         }
                     },
                     // finished: { type: 'final' }
-                },
-                on:{ 
-                    // 'DESELECT': {
-                    //     actions: [
-                    //         // (ctx, {value})=>console.log('deselecting'),
-                    //         assign({ fromSq: undefined }),
-                    //         // sendUpdate()
-                    //     ],
-                    //     target: '#reviewing.moving.notSelected'
-                    // },
-
-                },
-                // entry: assign({
-                //     reviewRef: (ctx, {value}) => spawn(setupReviewMachine(
-                //         DeserializeBoard(ctx.moves[value.id].squares, pieces, ctx.squares),
-                //         game, ctx.squares
-                //     ),  { name: 'reviews', autoForward: true })
-                // }),
-
+                }
 			},
 		},
         // ___________________________________________________________________________________________________________________
         on:{
-            'SET_BOARD':{
-                // todo removedPromotionPieces
-                actions: [
-                    // (ctx, {value})=>console.log('setting',value),
-                    assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.squares
-                    // send((ctx, {value}) =>({ type: 'UPDATE', value: value.squares})),
-                    send(ctx => ({
-                        type: 'POSITION', 
-                        value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
-                    })),
-                    // sendUpdate()
-                ],
-                // target: 'moving'
+            'RESET': {
+                actions:[
+                    assign({ fromSq: undefined, toSq: undefined }),
+                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]}),
+                ]
             },
             'OPP_MOVE': {
                 actions: [
@@ -403,19 +365,6 @@ function updateFaded(faded) {
         return piece || null
     }
 }
-
-// context: {
-//     squares: squares,
-//     // currPlayer: 'white',
-//     colorToMove: 'white',
-//     fromSq: undefined,
-//     toSq: undefined,
-//     lastMove: undefined,
-//     initUpdates: initUpdates,
-//     promotedPieces: undefined,
-//     faded: undefined,
-//     captured: {white: 0, black: 0},
-// },
 
 
 export {
