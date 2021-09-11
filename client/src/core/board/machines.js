@@ -70,13 +70,6 @@ function setupMachine(current, game, squares, pieces){
 							notDragging: { }
 						},
 						on: {
-                            'DESELECT': {
-                                actions: [
-                                    assign({ fromSq: undefined }),
-                                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                                ],
-                                target: '#moving.notSelected'
-                            },
 							'ATTEMPT_MOVE': {
 								actions: [ 
 									assign({ toSq: (_, event) => event.value }) 
@@ -87,6 +80,13 @@ function setupMachine(current, game, squares, pieces){
 					}
 				},
 				on: {
+                    'DESELECT': {
+                        actions: [
+                            assign({ fromSq: undefined }),
+                            send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
+                        ],
+                        target: '.notSelected'
+                    },
 					'SELECT': {
                         cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
 						actions: [
@@ -121,9 +121,12 @@ function setupMachine(current, game, squares, pieces){
                         target: '#waiting'
                     },
                     'DENY': {
-                        actions: assign({ fromSq: undefined, toSq: undefined }),
+                        actions: [
+                            assign({ fromSq: undefined, toSq: undefined }),
+                            send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
+                        ],
                         // target: '.notSelected'
-                        target: '#notSelected'
+                        target: '#moving.notSelected'
                     }
                 }
             },
@@ -142,20 +145,24 @@ function setupMachine(current, game, squares, pieces){
                             type: 'SET_BOARD', 
                             value:{ squares: DeserializeBoard(ctx.moves[value?.id]?.squares, pieces, ctx.squares) }
                         })
+                        return
                     }
                 },
                 entry: send({type: 'DESELECT'}),
-                exit: send(ctx => ({
-                    type: 'SET_BOARD',
-                    value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1]?.squares, pieces) }
-                })),
+                exit: [
+                    send({type: 'DESELECT'}),
+                    send(ctx => ({
+                        type: 'SET_BOARD',
+                        value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1]?.squares, pieces) }
+                    }))
+                ],
                 states: {
                     moving: {
                         id: 'r_moving',
                         initial: 'notSelected',
                         states:{
                             notSelected: { 
-                                id: 'notSelected',
+                                id: 'r_notSelected',
                                 // entry:{} // should deselect, reset move  
                             },
                             selected: {
@@ -193,7 +200,7 @@ function setupMachine(current, game, squares, pieces){
                                     assign({ fromSq: undefined }),
                                     send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
                                 ],
-                                target: '#notSelected'
+                                target: '.notSelected'
                             },
                             'SELECT': {
                                 cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
@@ -237,6 +244,7 @@ function setupMachine(current, game, squares, pieces){
                             'DENY': {
                                 actions: [
                                     assign({ fromSq: undefined, toSq: undefined }),
+                                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
                                 ],
                                 // target: '.notSelected'
                                 target: '#reviewing.moving.notSelected'
