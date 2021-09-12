@@ -141,13 +141,13 @@ export default function Board(current, scene, canvas){
             { type: 'squares', name: to, piece: fromSq.piece},
             { type: 'squares', name: from, piece: null }
         ], castled;
-        if (flags) { // p + c is only compound condition possible
+        if (flags) { // p + c is only combination possible
             if (flags.includes('p')) changes.push( ...addPromotionPiece(move, state))
             if (flags.includes('e')) changes.push( ...captureEnPassant(to, state))
             else if (flags.includes('c')) changes.push( ...positionCapturedPiece(toSq.piece, state))
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to, state))
         }
-        send({type: 'UPDATE', value: changes, add: !stateIs('reviewing') })
+        send({type: 'UPDATE', value: changes, addMove: !stateIs('reviewing') })
         changePosition(fromSq.piece, toSq.coords)
         selectedHighlightLayer.removeAllMeshes();
     }
@@ -171,7 +171,7 @@ export default function Board(current, scene, canvas){
         changePosition(piece, nextPosition)
         return [
             { type: 'squares', name: `cp_${newCount}_${pieceColor}`, coords: nextPosition, piece },
-            { type: 'captured', pieceColor, newCount, piece}
+            { type: 'captured', pieceColor, newCount }
         ]
     }
     function captureEnPassant(moveTo, state) {
@@ -205,11 +205,11 @@ export default function Board(current, scene, canvas){
         // fromSq.piece.setEnabled(false) 
         // this.promotedPawns.push[fromSq.piece]
         let pawn = fromSq.piece
-        pawn.isVisible = false // hide pawn // todo setEnabled instead visible
+        pawn.setEnabled(false) // hide pawn 
         changePosition(promotionPiece, toSq.coords)
         return [
             { type: 'squares', name: from, piece: null },
-            { type: 'squares', name: to, piece: promotionPiece} // will override pawn to promo sq update
+            { type: 'squares', name: to, piece: promotionPiece }, // overrides pawn to promo sq update in handleMove
         ]
     }
     function changePosition(piece, newPos){

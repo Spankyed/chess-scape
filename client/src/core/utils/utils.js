@@ -18,29 +18,37 @@ const FromResize = (element) => {
 	return resize$.pipe(debounceTime(1));
 }
 
-function SerializeBoard(squares){ 
-	return Object.entries(squares).reduce((sqs, [sqName, { piece } ]) => (
-		[...sqs, { sqName, piece}]
-	), [])
+function SerializeBoard(squares, pieces){ // returns a boardMap to be deserialized into changes
+	return {
+		squares: Object.entries(squares).reduce((sqs, [sqName, { piece } ]) => (
+			[...sqs, { sqName, piece }]
+		), []),
+		pieces: Object.entries(pieces()).reduce((pcs, [id, piece ]) => (
+			{ ...pcs,  [id]:{ isEnabled: piece?.isEnabled()} } 
+		), {})
+	}
 }
 
-function DeserializeBoard(squareMap, squares){ // produces list of changes for UPDATE event
-	return [
-		...resetCaptured(squares), // add changes that reset captured sqs; overwritten by squareMap
-		...squareMap.reduce((changes, { sqName, piece }) => (
-			[...changes, { type: 'squares', name: sqName, piece}]
-		), [])
-	]
+function DeserializeBoard(boardMap, squares){ // returns list of square changes & map of pieces 
+	return {
+		sqChanges: [
+			...resetCaptured(squares), // add changes that reset captured sqs; overwritten by boardMap's captured sqs
+			...boardMap.squares.reduce((changes, { sqName, piece }) => (
+				[ ...changes, { type: 'squares', name: sqName, piece} ]
+			), [])
+		],
+		piecesMap: boardMap.pieces
+	}
 }
 
 function resetCaptured(squares){
-	return Object.entries(squares).reduce((changes, [ name ]) => {
-		if (name.startsWith('cp')) return ([...changes, { type: 'squares', name, piece: null}])
-		else return changes
-	}, [])
+	return Object.entries(squares).reduce((changes, [ name ]) =>(
+		name.startsWith('cp') ? [...changes, { type: 'squares', name, piece: null }] : changes
+	), [])
 }
 
 function ClonePiece({type, color, pieces}){
+	// let origPiecesCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1} // todo allow recycle prev cloned piece
 	let pieceId = `${type}_${color}`
 	let firstPiece = pieces()[pieceId + '_1']
     let clonedPiece = firstPiece.clone(firstPiece.name +  '_clone')

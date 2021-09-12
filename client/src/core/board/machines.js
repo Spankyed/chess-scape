@@ -132,7 +132,7 @@ function setupMachine(current, game, squares, pieces){
                         game().tempEngine.load(moves[value.id].fen),
                         sendBack({
                             type: 'SET_BOARD', 
-                            value:{ squares: DeserializeBoard(moves[value?.id]?.squares, squares) }
+                            value:{ ...DeserializeBoard(moves[value?.id]?.board, squares) }
                         })
                         return
                     }
@@ -142,7 +142,7 @@ function setupMachine(current, game, squares, pieces){
                     send({type: 'DESELECT'}),
                     send(({moves, squares}) => ({
                         type: 'SET_BOARD',
-                        value: { squares: DeserializeBoard(moves[moves.length-1]?.squares, squares) }
+                        value: { ...DeserializeBoard(moves[moves.length-1]?.board, squares) }
                     }))
                 ],
                 states: {
@@ -238,7 +238,7 @@ function setupMachine(current, game, squares, pieces){
                         moves: (ctx, {value}) => ([ 
                             ...ctx.moves,
                             {   
-                                squares: SerializeBoard(ctx.squares), 
+                                board: SerializeBoard(ctx.squares, pieces), 
                                 fen: game().engine.fen()
                             }
                         ])
@@ -265,20 +265,20 @@ function setupMachine(current, game, squares, pieces){
                         }, {}) // partially input updates to designated assigner factoryFn for assignments
                         return assign(assignments)
                     }),
-                    pure((_, {add})=>{
-                        if (!add) return
+                    pure((_, {addMove})=>{
+                        if (!addMove) return
                         return assign({
                             moves: (ctx, {value}) => ([ 
                                 ...ctx.moves,
                                 {   
-                                    squares: SerializeBoard(ctx.squares), 
+                                    board: SerializeBoard(ctx.squares, pieces), 
                                     fen: game().engine.fen()
                                 }
                             ])
                         })
                     }),
-                    (ctx, {add})=>{
-                        if (!add) return
+                    (ctx, {addMove})=>{
+                        if (!addMove) return
                         let { piece, san, color} = ctx.lastMove
                         current.uiActions.sidePanel.moves.addMove({ piece, san, id: ctx.moves.length-1, color})
                     }
@@ -305,7 +305,8 @@ function setupMachine(current, game, squares, pieces){
             'SET_BOARD': {
                 // todo removedPromotionPieces
                 actions: [
-                    assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.squares
+                    updatePieces(pieces),
+                    assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.changes
                     send(ctx => ({
                         type: 'POSITION', 
                         value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
@@ -319,10 +320,10 @@ function setupMachine(current, game, squares, pieces){
     // .onTransition((state) => console.log('state changed', state))
     .start();
 }
-function updateSquares(squares) {
+function updateSquares(changes) {
     return (ctx, { value }) => ({
-        ...ctx['squares'], // some/all values will be overwritten
-        ...(squares||value.squares) // if sq updates not partially input, get from event
+        ...ctx['squares'], // some/all these prev squares will be overwritten
+        ...(changes||value.sqChanges) // if sq changes not partially input, get from SET_BOARD event.value
         .reduce( (sqs, {type, name, piece, ...square}) => ({
             ...sqs, 
             [name]: {
@@ -332,12 +333,24 @@ function updateSquares(squares) {
         }), {})
     })
 } 
-function updateCaptured(captured) {
-    let [{ pieceColor, newCount, piece}] = captured
+function updatePieces(pieces) {
+    return (_, { value }) => {
+        Object.entries(pieces()).forEach( ([id, piece]) =>{
+            if (!value.piecesMap[id]) {
+                piece.setEnabled(false)
+                return
+            }
+            let isEnabled = value.piecesMap[id].isEnabled
+            if (piece.isEnabled != isEnabled) piece.setEnabled(isEnabled)
+        })
+    }
+}
+function updateCaptured(change) {
+    let [{ pieceColor, newCount }] = change
     return ctx => ({ ...ctx['captured'], [pieceColor]: newCount })
 }
-function updateFaded(faded) {
-    let [{ piece }] = faded
+function updateFaded(change) {
+    let [{ piece }] = change
     return ctx => {
         if (piece == ctx['faded']) return piece // piece already faded
         if (ctx['faded']) ctx['faded'].visibility = 1 // reset prev faded piece
