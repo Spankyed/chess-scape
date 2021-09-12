@@ -48,21 +48,27 @@ function MapBoard(board){
 	}, {});
 }
 
-function SerializeBoard(squares, {from, to}, capturedPieces){ // record capturedPieces for better consistency
-	let map = Object.entries(squares).reduce((sqs, [_, {sqName, piece}]) => {
-		// if (sqName == from || sqName == to) piece = sqName == from ? squares[from].piece : squares[to].piece
-		return ([...sqs, { sqName, piece}])
-	}, [])
-	return map
-}
-function DeserializeBoard(mapSquares, pieces, squares){ // record capturedPieces for better consistency
-	// should produce list of changes for UPDATE event
-	// const sqCoords = {a1:[-7,-7]}
-	return mapSquares.reduce((changes, {sqName, piece}) => {
-		return [...changes, { type: 'squares', name: sqName, piece}]
-	}, [])
+function SerializeBoard(squares){ 
+	return Object.entries(squares).reduce((sqs, [sqName, { piece } ]) => (
+		[...sqs, { sqName, piece}]
+	), [])
 }
 
+function DeserializeBoard(squareMap, squares){ // produces list of changes for UPDATE event
+	return [
+		...resetCaptured(squares), // add updates that reset captured sqs; overwritten by squareMap
+		...squareMap.reduce((changes, { sqName, piece }) => (
+			[...changes, { type: 'squares', name: sqName, piece}]
+		), [])
+	]
+}
+
+function resetCaptured(squares){
+	return Object.entries(squares).reduce((changes, [ name ]) => {
+		if (name.startsWith('cp')) return ([...changes, { type: 'squares', name, piece: null}])
+		else return changes
+	}, [])
+}
 
 function ClonePiece({type, color, pieces}){
 	let pieceId = `${type}_${color}_1`
@@ -74,7 +80,6 @@ function ClonePiece({type, color, pieces}){
 	return clonedPiece
 }
 
-
 export {
 	MapBoard,
 	SerializeBoard,
@@ -82,73 +87,5 @@ export {
 	ClonePiece,
 	FromResize
 };
-
-
-// const boardMachine = createMachine({
-//     id: 'board_states',
-//     initial: 'started',
-//     context: {
-// 		players: {white:null, black:null}
-//     },
-//     states: {
-// 		started: {
-// 			on: {
-// 				FETCH: 'loading'
-// 			},
-//             // after: {
-//             //     1000: {
-//             //         actions: sendParent('BOARD.READY')
-//             //     }
-//             // }
-// 		},
-// 		loading: {
-// 			invoke: {
-// 				id: 'fetchDog',
-// 				src: (context, event) => 
-// 					fetch('https://dog.ceo/api/breeds/image/random')
-// 					.then((data) => data.json() ),
-// 				onDone: {
-// 					target: 'resolved',
-// 					actions: assign({
-// 						dog: (_, event) => event.data
-// 					})
-// 				},
-// 				onError: 'rejected'
-// 			},
-// 			on: {
-// 				CANCEL: 'idle'
-// 			}
-// 		},
-// 		ended: {
-// 			type: 'final'
-// 		},
-//     }
-// });
-
-// {
-        // reviewing: {
-		// 	on: {
-        //         // 'MOVE': {
-		// 		// 	actions: assign({ lastMove: (_, event) => event.value })
-		// 		// },
-        //         'END_REVIEW': 'moving',
-        //         'OPP_MOVE': 'waiting' 
-        //         // 'END': {
-		// 		// 	actions: assign({ lastMove: (_, event) => event.value })
-		// 		// }
-		// 	}
-		// },
-		// WAITING: {
-		// 	on: {
-		// 		FETCH: 'loading'
-		// 	}
-		// },
-        // on: {
-        //     'REVIEW': 'reviewing'
-        //     // 'REVIEW': {
-        //     //     actions: assign({ currMove: (_, event) => event.value }),
-        //     //     target: 'reviewing'
-        //     // },
-        // }
 
 

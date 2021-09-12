@@ -143,8 +143,8 @@ export default function Board(current, scene, canvas){
         ], castled;
         if (flags) { // p + c is only compound condition possible
             if (flags.includes('p')) changes.push( ...addPromotionPiece(move, state))
-            if (flags.includes('e')) changes.push( captureEnPassant(to, state))
-            else if (flags.includes('c')) changes.push( positionCapturedPiece(toSq.piece, state))
+            if (flags.includes('e')) changes.push( ...captureEnPassant(to, state))
+            else if (flags.includes('c')) changes.push( ...positionCapturedPiece(toSq.piece, state))
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to, state))
         }
         send({type: 'UPDATE', value: changes, add: !stateIs('reviewing') })
@@ -157,7 +157,6 @@ export default function Board(current, scene, canvas){
     //================================================================================
     function positionCapturedPiece(piece, state){
         // if(!this.inReview) this.capturedPieces[piece.id] = piece
-        // piece.sqName = null
         let { captured } = state.context
         let pieceColor = getColor(piece)
         const processCapturedPiece = (pieceColor) =>  { //!
@@ -172,7 +171,10 @@ export default function Board(current, scene, canvas){
         } 
         let { nextPosition, newCount } = processCapturedPiece(pieceColor)
         changePosition(piece, nextPosition)
-        return { type: 'captured', pieceColor, newCount, piece}
+        return [
+            { type: 'squares', name: `cp_${newCount}_${pieceColor}`, coords: nextPosition, piece },
+            { type: 'captured', pieceColor, newCount, piece}
+        ]
     }
     function captureEnPassant(moveTo, state) {
         let { squares } = state.context
@@ -186,8 +188,8 @@ export default function Board(current, scene, canvas){
         let { squares } =  state.context
         let rookPositions = { q: {from:'a', to:'d'}, k: {from:'h', to:'f'} } // possible files for castled rook
         let kingRank = kingSq.charAt(1)
-        let getSqName = (order) => rookPositions[side][order] + kingRank
-        let { from, to } = { from: getSqName('from'), to: getSqName('to') }
+        let constructSqName = (order) => rookPositions[side][order] + kingRank
+        let { from, to } = { from: constructSqName('from'), to: constructSqName('to') }
         let { piece } = squares[from]
         let toSq = squares[to]
         changePosition(piece, toSq.coords)
@@ -206,8 +208,6 @@ export default function Board(current, scene, canvas){
         // this.promotedPawns.push[fromSq.piece]
         let pawn = fromSq.piece
         pawn.isVisible = false // hide pawn // todo setEnabled instead visible
-        // pawn.sqName = null
-        // promotionPiece.sqName = to
         changePosition(promotionPiece, toSq.coords)
         return [
             { type: 'squares', name: from, piece: null },

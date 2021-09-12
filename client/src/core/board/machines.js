@@ -132,7 +132,7 @@ function setupMachine(current, game, squares, pieces){
                         game().tempEngine.load(ctx.moves[value.id].fen),
                         sendBack({
                             type: 'SET_BOARD', 
-                            value:{ squares: DeserializeBoard(ctx.moves[value?.id]?.squares, pieces, ctx.squares) }
+                            value:{ squares: DeserializeBoard(ctx.moves[value?.id]?.squares, ctx.squares) }
                         })
                         return
                     }
@@ -142,7 +142,7 @@ function setupMachine(current, game, squares, pieces){
                     send({type: 'DESELECT'}),
                     send(ctx => ({
                         type: 'SET_BOARD',
-                        value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1]?.squares, pieces) }
+                        value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1]?.squares, ctx.squares) }
                     }))
                 ],
                 states: {
@@ -238,9 +238,8 @@ function setupMachine(current, game, squares, pieces){
                         moves: (ctx, {value}) => ([ 
                             ...ctx.moves,
                             {   
-                                squares: SerializeBoard(ctx.squares, value), 
-                                fen: game().engine.fen(),
-                                captured: ctx.captured
+                                squares: SerializeBoard(ctx.squares), 
+                                fen: game().engine.fen()
                             }
                         ])
                     })
@@ -272,9 +271,8 @@ function setupMachine(current, game, squares, pieces){
                             moves: (ctx, {value}) => ([ 
                                 ...ctx.moves,
                                 {   
-                                    squares: SerializeBoard(ctx.squares, value), 
-                                    fen: game().engine.fen(),
-                                    captured: ctx.captured
+                                    squares: SerializeBoard(ctx.squares), 
+                                    fen: game().engine.fen()
                                 }
                             ])
                         })
@@ -291,6 +289,7 @@ function setupMachine(current, game, squares, pieces){
                     if (!(value instanceof Array)) value = [value]
                     value.forEach(({ piece, newPos }) => {
                         if (piece && !piece.position.equals(newPos)){
+                            if(!newPos) debugger
                             let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
                             piece.position = updatedPos
                         }
@@ -322,9 +321,16 @@ function setupMachine(current, game, squares, pieces){
     .start();
 }
 function updateSquares(squares) {
-    return (ctx,{ value }) => ({
-        ...ctx['squares'],
-        ...(squares||value.squares).reduce( (sqs, {name, piece}) => ({...sqs, [name]:{...ctx['squares'][name], piece}}), {})
+    return (ctx, { value }) => ({
+        ...ctx['squares'], // some/all values will be overwritten
+        ...(squares||value.squares) // if sq updates not partially input, get from event
+        .reduce( (sqs, {type, name, piece, ...square}) => ({
+            ...sqs, 
+            [name]: {
+                ...(ctx['squares'][name]||square), // get sq from ctx or create new sq for captured pieces
+                piece
+            }
+        }), {})
     })
 } 
 function updateCaptured(captured) {
