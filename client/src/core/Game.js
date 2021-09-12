@@ -1,11 +1,8 @@
 import { Chess } from 'chess.js';
 import Api from '../api/Api'; 
-import { MapBoard } from './utils/utils'; 
 
 export default class Game {
     constructor(current, gameId){
-        // Game class depends on players/pieces being created
-        // super()
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         this.Scene = current
@@ -13,12 +10,11 @@ export default class Game {
         this.gameId = gameId
         this.isVsComputer = true;
         // this.computerColor = 'black';
-        this.playerColor = 'black';
-        this.game_over = false;
+        // this.playerColor = 'black';
+        // this.game_over = false;
         this.engine = new Chess()
         this.tempEngine = new Chess()
-        this.inReview = false;
-        // this.beforeReview = null;
+        // this.inReview = false;
 
         this.setupWebhookHandlers()
 
@@ -28,9 +24,14 @@ export default class Game {
         // console.log('bind socket handlers')
         Api.setMessageHandlers({
             // join: this.onJoin, 
-            move: this.handleServerMove.bind(this), 
+            move: this.handleOpponentMove.bind(this), 
             // chat: this.onChat,
         })
+    }
+    makeMove(move, opponentMove){
+        const inReview = this.board().moveService.state.matches('reviewing')
+        let engine = (inReview && !opponentMove) ? this.tempEngine : this.engine
+        return engine.move(move)
     }
     async checkMove(move){
         // console.log('checking',{move})
@@ -43,9 +44,9 @@ export default class Game {
         }
         
         const inReview = this.board().moveService.state.matches('reviewing')
-        if(validMove && !inReview){
+        if (validMove && !inReview){
             if (this.isVsComputer) {
-                this.handleComputerMove()
+                this.makeRandomMove()
                 // Api.getComputerMove()
             } else {
                 Api.sendMove(validMove, this.gameId)
@@ -55,41 +56,15 @@ export default class Game {
 
         return validMove
     }
-    makeMove(move){
-        const inReview = this.board().moveService.state.matches('reviewing')
-        let engine = inReview ? this.tempEngine : this.engine
-        // if (validMove && !this.inReview) this.addMoveForReview(validMove)
-        return engine.move(move)
-    }
-    
-    async handleUserMove (move) {
-        let validMove = await this.makeMove(move);
-        if (!validMove) return validMove
-        // console.log('player move', validMove)
-        if (this.inReview) return validMove
-        if (this.isVsComputer) {
-            console.log('comp moved')
-            this.handleComputerMove()
-            // Api.getComputerMove()
-        } else {
-            Api.sendMove(validMove, this.gameId)
-        }
-        this.checkGameOver()
-        // if (move === null)  return 'snapback';
-        // else socket.emit('move', move);
-        return validMove
-    }
-    async handleServerMove({move}){
+    async handleOpponentMove({move}){
         if (!move) return
-        if (this.inReview) this.resumePlay() // end review if opponent makes moves 
         var validMove = await this.makeMove(move, true);
         if (!validMove) return // todo: should make request to sync player boards or invalidate game
         this.board().send({type:'OPP_MOVE', value: validMove})
-        // this.board().moveOpponentPiece(move)
         // console.log('opponent move', validMove)
         this.checkGameOver()
     }
-    handleComputerMove(){
+    makeRandomMove(){
         // console.log('turn', this.engine.turn())
         // if (this.engine.turn() != 'b') return
         const moves = this.engine.moves({verbose:true})
@@ -103,33 +78,18 @@ export default class Game {
             }, 1000)
         }
     }
-
-    setReview({fen, boardMap}) {
-        this.tempEngine.load(fen)
-        this.board().setBoardPosition(boardMap)
-        this.board().inReview = true
-        this.inReview = true
-    }
-    resumePlay(){
-        this.Scene.uiActions.alert.hide()
-        this.Scene.uiActions.sidePanel.moves.endReview()
-        this.board().setBoardPosition(null, true)
-        this.inReview = false
-    }
     checkGameOver(){
-        // todo: if gameover how 'time/checkmate/3foldrep...'
+        // todo: if gameover indicate how: 'time/checkmate/3foldrep...'
         if (this.engine.game_over()) {
-            this.game_over = true
+            // this.game_over = true
             this.Scene.uiActions.endGame()
             // this.piecesContainer.removeAllFromScene()
         }
     }
     isPromoting(move) {
-        // if(!move) debugger
         if(!move.to?.match(/1|8/)) return false;
         const piece = this.engine.get(move.from);
         if (piece?.type !== "p") return false;
-        // if (piece.color !== this.engine.turn()) return false; // dont think this is needed
         return this.engine.moves({ verbose: true }).filter(m =>    
             m.from === move.from && 
             m.to === move.to &&

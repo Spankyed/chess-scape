@@ -148,7 +148,6 @@ export default function Board(current, scene, canvas){
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to, state))
         }
         send({type: 'UPDATE', value: changes, add: !stateIs('reviewing') })
-        // console.log('handling move', {move,fromSq,toSq})
         changePosition(fromSq.piece, toSq.coords)
         selectedHighlightLayer.removeAllMeshes();
     }
@@ -156,7 +155,6 @@ export default function Board(current, scene, canvas){
     // Board Utilities
     //================================================================================
     function positionCapturedPiece(piece, state){
-        // if(!this.inReview) this.capturedPieces[piece.id] = piece
         let { captured } = state.context
         let pieceColor = getColor(piece)
         const processCapturedPiece = (pieceColor) =>  { //!

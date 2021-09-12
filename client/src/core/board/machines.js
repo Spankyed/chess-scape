@@ -1,13 +1,13 @@
 
-import { createMachine, interpret, assign, send, sendParent, spawn, sendUpdate } from 'xstate';
-import { pure, log } from 'xstate/lib/actions';
+import { createMachine, interpret, assign, send } from 'xstate';
+import { pure } from 'xstate/lib/actions';
 import { SerializeBoard, DeserializeBoard  } from '../utils/utils'; 
 
 /*
 ** --------------------------------------------------------------------------
 **  State managed with Xstate statecharts
 ** --------------------------------------------------------------------------
-**  _______Simplified Overview (does not include review machine)_______
+**  _______Simplified Overview (does not include review states)_______
 **  A user begins in the moving.notSelected state. In any moving state, 
 **  selected or not, the user may click to SELECT a square, which will  
 **  transition the user to selected.dragging. If the user lets up on 
@@ -128,11 +128,11 @@ function setupMachine(current, game, squares, pieces){
                 id: 'reviewing',
                 initial: 'moving',
                 invoke: {
-                    src: (ctx, {value}) => sendBack =>{
-                        game().tempEngine.load(ctx.moves[value.id].fen),
+                    src: ({moves, squares}, {value}) => sendBack =>{
+                        game().tempEngine.load(moves[value.id].fen),
                         sendBack({
                             type: 'SET_BOARD', 
-                            value:{ squares: DeserializeBoard(ctx.moves[value?.id]?.squares, ctx.squares) }
+                            value:{ squares: DeserializeBoard(moves[value?.id]?.squares, squares) }
                         })
                         return
                     }
@@ -140,9 +140,9 @@ function setupMachine(current, game, squares, pieces){
                 entry: send({type: 'DESELECT'}),
                 exit: [
                     send({type: 'DESELECT'}),
-                    send(ctx => ({
+                    send(({moves, squares}) => ({
                         type: 'SET_BOARD',
-                        value: { squares: DeserializeBoard(ctx.moves[ctx.moves.length-1]?.squares, ctx.squares) }
+                        value: { squares: DeserializeBoard(moves[moves.length-1]?.squares, squares) }
                     }))
                 ],
                 states: {
@@ -289,7 +289,6 @@ function setupMachine(current, game, squares, pieces){
                     if (!(value instanceof Array)) value = [value]
                     value.forEach(({ piece, newPos }) => {
                         if (piece && !piece.position.equals(newPos)){
-                            if(!newPos) debugger
                             let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
                             piece.position = updatedPos
                         }

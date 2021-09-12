@@ -11,7 +11,7 @@ Support for Internet Explorer 9 and up.
 
 ## Tech 
 - Node & fastify for API server 
-- Websockets for bidirectional client/server communcation
+- Websockets for bidirectional client/server communication
 - XState for state management
 - Hyperapp front-end framework
 - BabylonJS 3D game engine
@@ -25,7 +25,7 @@ Support for Internet Explorer 9 and up.
 ## Notable Features
 - Multiplayer
 - Public/Private matches
-- Game Room Chat
-- Share music files & Youtube videos
 - Review game moves
+- Game room chat
+- Share music files & Youtube videos
 - Mobile friendly
