@@ -12,7 +12,7 @@ export default initial => ({
 		closePieceSelect: _ => _ => ({isPromoting: false}),
 		toggleMenu: (ev) => (state) => ({menuOpen: !state.menuOpen}),
 	},
-	view: (state, actions) => ({isLoading, toggleSidePanel, gameOver}) => {
+	view: (state, actions) => ({isLoading, toggleSidePanel, gameOver, color}) => {
 		return ( 
 			// pointer-events-none controls-wrapper
 			<div class={`controls-wrapper pointer-events-none ${isLoading && 'hidden'}`}>
@@ -21,7 +21,7 @@ export default initial => ({
 						<MatchMessage/>
 					}
 					{ state.isPromoting  &&
-						<PieceSelection resolver={state.resolver} closePieceSelect={actions.closePieceSelect}/>
+						<PieceSelection color={color} resolver={state.resolver} closePieceSelect={actions.closePieceSelect}/>
 					}
 					<div class="player-section"> 
 						<Player/>
@@ -52,8 +52,8 @@ export default initial => ({
 		)
 	}
 })
-function PieceSelection({resolver, closePieceSelect}){
-	let color = 'b'
+function PieceSelection({resolver, closePieceSelect, color}){
+	color = color || 'b'
 	function select(piece){
 		resolver(piece)
 		closePieceSelect()
