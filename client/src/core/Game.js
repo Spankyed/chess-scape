@@ -3,21 +3,19 @@ import Api from '../api/Api';
 
 export default class Game {
     constructor(current, gameId){
-        // this.mainPlayer = scene;  
-        // this.opponentPlayer = canvas;  
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
         this.isVsComputer = true;
+        // this.mainPlayer = scene;  
+        // this.opponentPlayer = canvas;  
         // this.computerColor = 'black';
         // this.playerColor = 'black';
         // this.game_over = false;
         this.engine = new Chess()
-        this.tempEngine = new Chess()
-        // this.inReview = false;
-
+        this.reviewEngine = new Chess()
+        this.inReview = _ => this.board().moveService.state.matches('reviewing');
         this.setupWebhookHandlers()
-
         return this
     }
     setupWebhookHandlers() {
@@ -28,26 +26,24 @@ export default class Game {
             // chat: this.onChat,
         })
     }
-    makeMove(move, opponentMove){
-        const inReview = this.board().moveService.state.matches('reviewing')
-        let engine = (inReview && !opponentMove) ? this.tempEngine : this.engine
-        return engine.move(move)
+    getCurrentEngine(isOpponentMove){
+        return (this.inReview() && !isOpponentMove) ? this.reviewEngine : this.engine
+    }
+    makeMove(move, isOpponentMove){
+        return this.getCurrentEngine(isOpponentMove).move(move)
     }
     async checkMove(move){
         // console.log('checking',{move})
-        let validMove;
+        let validMove = null;
         if (this.isPromoting(move)) { 
             const piece = await this.promptPieceSelect()
             validMove = piece ? this.makeMove({ ...move, promotion: piece }) : null
         } else {
             validMove = this.makeMove(move)
         }
-        
-        const inReview = this.board().moveService.state.matches('reviewing')
-        if (validMove && !inReview){
+        if (validMove && !this.inReview()){
             if (this.isVsComputer) {
                 this.makeRandomMove()
-                // Api.getComputerMove()
             } else {
                 Api.sendMove(validMove, this.gameId)
             }
@@ -87,10 +83,11 @@ export default class Game {
         }
     }
     isPromoting(move) {
+        let engine = this.getCurrentEngine()
         if(!move.to?.match(/1|8/)) return false;
-        const piece = this.engine.get(move.from);
+        const piece = engine.get(move.from);
         if (piece?.type !== "p") return false;
-        return this.engine.moves({ verbose: true }).filter(m =>    
+        return engine.moves({ verbose: true }).filter(m =>    
             m.from === move.from && 
             m.to === move.to &&
             m.flags.includes('p')
