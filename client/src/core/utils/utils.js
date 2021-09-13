@@ -18,14 +18,15 @@ const FromResize = (element) => {
 	return resize$.pipe(debounceTime(1));
 }
 
-function SerializeBoard(squares, pieces){ // returns a boardMap to be deserialized into changes
+function SerializeBoard(squares, pieces, captured){ // returns a boardMap to be deserialized into changes
 	return {
 		squares: Object.entries(squares).reduce((sqs, [sqName, { piece } ]) => (
 			[...sqs, { sqName, piece }]
 		), []),
 		pieces: Object.entries(pieces()).reduce((pcs, [id, piece ]) => (
 			{ ...pcs,  [id]:{ isEnabled: piece?.isEnabled()} } 
-		), {})
+		), {}),
+		captured
 	}
 }
 
@@ -37,7 +38,8 @@ function DeserializeBoard(boardMap, squares){ // returns list of square changes 
 				[ ...changes, { type: 'squares', name: sqName, piece} ]
 			), [])
 		],
-		piecesMap: boardMap.pieces
+		piecesMap: boardMap.pieces,
+		captured: boardMap.captured
 	}
 }
 

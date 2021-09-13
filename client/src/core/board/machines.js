@@ -30,7 +30,7 @@ function setupMachine(current, game, squares, pieces){
             squares: squares,
 			currPlayer: 'white',
 			colorToMove: 'white',
-			canMove: true,
+			canMove: true, // initially set t/f depending on player color
 			toSq: undefined,
 			fromSq: undefined,
             hoveredSq: undefined,
@@ -84,7 +84,7 @@ function setupMachine(current, game, squares, pieces){
                     },
 					'SELECT': {
                         cond: (_, {value}) => !!value.piece, // todo also check if player's color/piece
-						actions: assign({ fromSq: (ctx, {value}) => value }),
+						actions: assign({ fromSq: (_, {value}) => value }),
 						target: '.selected.dragging',
 						// in: '#light.red.stop'
 					}
@@ -106,7 +106,7 @@ function setupMachine(current, game, squares, pieces){
                         actions: [
                             assign({ 
                                 canMove: false,
-                                fromSq: undefined, toSq: undefined, 
+                                // fromSq: undefined, toSq: undefined, 
                                 lastMove: (_, {value}) => value,
                             }),
                             send({type: 'RESET'})
@@ -129,7 +129,7 @@ function setupMachine(current, game, squares, pieces){
                 initial: 'moving',
                 invoke: {
                     src: ({moves, squares}, {value}) => sendBack =>{
-                        game().tempEngine.load(moves[value.id].fen),
+                        game().reviewEngine.load(moves[value?.id]?.fen),
                         sendBack({
                             type: 'SET_BOARD', 
                             value:{ ...DeserializeBoard(moves[value?.id]?.board, squares) }
@@ -205,7 +205,7 @@ function setupMachine(current, game, squares, pieces){
                                 // todo: indicate square of prev move (change tile material color)
                                 actions: [
                                     assign({ 
-                                        fromSq: undefined, toSq: undefined, 
+                                        // fromSq: undefined, toSq: undefined, 
                                         lastMove: (_, {value}) => value,
                                     }),
                                     send({type: 'RESET'})
@@ -230,7 +230,7 @@ function setupMachine(current, game, squares, pieces){
                     send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]}),
                 ]
             },
-            'OPP_MOVE': {
+            'OPP_MOVE': { // todo test if user in review selections are reset
                 actions: [
                     assign({ 
                         canMove: true,
@@ -238,7 +238,7 @@ function setupMachine(current, game, squares, pieces){
                         moves: (ctx, {value}) => ([ 
                             ...ctx.moves,
                             {   
-                                board: SerializeBoard(ctx.squares, pieces), 
+                                board: SerializeBoard(ctx.squares, pieces, ctx.captured), 
                                 fen: game().engine.fen()
                             }
                         ])
@@ -271,7 +271,7 @@ function setupMachine(current, game, squares, pieces){
                             moves: (ctx, {value}) => ([ 
                                 ...ctx.moves,
                                 {   
-                                    board: SerializeBoard(ctx.squares, pieces), 
+                                    board: SerializeBoard(ctx.squares, pieces, ctx.captured), 
                                     fen: game().engine.fen()
                                 }
                             ])
@@ -306,7 +306,10 @@ function setupMachine(current, game, squares, pieces){
                 // todo removedPromotionPieces
                 actions: [
                     updatePieces(pieces),
-                    assign({squares: updateSquares()}), // updateSquares() defaults to ev.val.changes
+                    assign({
+                        squares: updateSquares(), // updateSquares() defaults to ev.val.changes
+                        captured: (_,{value}) => value.captured
+                    }), 
                     send(ctx => ({
                         type: 'POSITION', 
                         value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
