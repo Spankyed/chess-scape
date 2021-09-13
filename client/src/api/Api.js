@@ -6,7 +6,7 @@ import { Buffer } from 'buffer';
 
 const baseAPIUrl = 'http://localhost:5000/api'
 const baseWSUrl = 'ws://localhost:5000/api'
-const clientId = nanoid()//localStorage.getItem('clientId'),
+let clientId = nanoid()//localStorage.getItem('clientId'),
 let gameId = null
 let connection,
 
