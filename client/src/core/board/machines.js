@@ -59,7 +59,7 @@ function setupMachine(current, game, squares, pieces){
 										actions: assign({ 
                                             dragPos: (_, { value }) => value.boardPos,
                                             hoveredSq: (_, { value }) => value.hoveredSq
-                                         })
+                                        })
 									},
 									'END_DRAG': {
                                         target:'notDragging', 
@@ -106,7 +106,6 @@ function setupMachine(current, game, squares, pieces){
                         actions: [
                             assign({ 
                                 canMove: false,
-                                // fromSq: undefined, toSq: undefined, 
                                 lastMove: (_, {value}) => value,
                             }),
                             send({type: 'RESET'})
@@ -139,12 +138,12 @@ function setupMachine(current, game, squares, pieces){
                 },
                 entry: send({type: 'DESELECT'}),
                 exit: [
-                    // _ => current.uiActions.sidePanel.moves.endReview(),
                     send({type: 'DESELECT'}),
                     send(({moves, squares}) => ({
                         type: 'SET_BOARD',
                         value: { ...DeserializeBoard(moves[moves.length-1]?.board, squares) }
-                    }))
+                    })),
+                    _ => current.uiActions.alert.close('review'),
                 ],
                 states: {
                     moving: {
@@ -161,7 +160,7 @@ function setupMachine(current, game, squares, pieces){
                                                 actions: assign({ 
                                                     dragPos: (_, { value }) => value.boardPos,
                                                     hoveredSq: (_, { value }) => value.hoveredSq
-                                                 })
+                                                })
                                             },
                                             'END_DRAG': {
                                                 target: 'notDragging',
@@ -185,7 +184,7 @@ function setupMachine(current, game, squares, pieces){
                                 target: '.notSelected'
                             },
                             'SELECT': {
-                                cond: (ctx, {value}) => !!value.piece, // todo also check if player's color/piece
+                                cond: (_, {value}) => !!value.piece, // todo also check if player's color/piece
                                 actions: assign({ fromSq: (ctx, {value}) => value }),
                                 target: '.selected.dragging',
                             }
@@ -206,7 +205,6 @@ function setupMachine(current, game, squares, pieces){
                                 // todo: indicate square of prev move (change tile material color)
                                 actions: [
                                     assign({ 
-                                        // fromSq: undefined, toSq: undefined, 
                                         lastMove: (_, {value}) => value,
                                     }),
                                     send({type: 'RESET'})
@@ -219,7 +217,14 @@ function setupMachine(current, game, squares, pieces){
                             }
                         }
                     },
+
                     // finished: { type: 'final' }
+                },
+                on: {
+                    'END_REVIEW': [
+                        {  target: '#moving', cond: ctx => ctx.canMove},
+                        {  target: '#waiting', cond: ctx => !ctx.canMove}
+                    ],
                 }
 			},
 		},
@@ -284,10 +289,6 @@ function setupMachine(current, game, squares, pieces){
             'REVIEW': {
                 target: '#reviewing',
             },
-            'END_REVIEW': [
-                {  target: '.moving', cond: ctx => ctx.canMove},
-                {  target: '.waiting', cond: ctx => !ctx.canMove}
-            ],
             'SET_BOARD': {
                 actions: [
                     updatePieces(pieces),

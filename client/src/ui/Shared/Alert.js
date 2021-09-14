@@ -26,6 +26,7 @@ export default initial => ({
 			}
 		}),
 		close: (id, completed) => ({alerts}) => {
+			if (!alerts[id]) return
 			if (!completed) alerts[id].actions?.['default'].handler(false, alerts[id].dontAskAgain)
 			let { [id]: removed, ...rest } = alerts
 			return ({  alerts: { ...rest } })
