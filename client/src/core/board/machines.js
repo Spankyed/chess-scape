@@ -139,6 +139,7 @@ function setupMachine(current, game, squares, pieces){
                 },
                 entry: send({type: 'DESELECT'}),
                 exit: [
+                    // _ => current.uiActions.sidePanel.moves.endReview(),
                     send({type: 'DESELECT'}),
                     send(({moves, squares}) => ({
                         type: 'SET_BOARD',
@@ -234,14 +235,7 @@ function setupMachine(current, game, squares, pieces){
                 actions: [
                     assign({ 
                         canMove: true,
-                        lastMove: (_, {value}) => value,
-                        moves: (ctx, {value}) => ([ 
-                            ...ctx.moves,
-                            {   
-                                board: SerializeBoard(ctx.squares, pieces, ctx.captured), 
-                                fen: game().engine.fen()
-                            }
-                        ])
+                        lastMove: (_, {value}) => value
                     })
                 ],
                 target: 'moving'
@@ -285,15 +279,7 @@ function setupMachine(current, game, squares, pieces){
                 ]
             },
             'POSITION': {
-                actions: (_, {value}) => {
-                    if (!(value instanceof Array)) value = [value]
-                    value.forEach(({ piece, newPos }) => {
-                        if (piece && !piece.position.equals(newPos)){
-                            let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-                            piece.position = updatedPos
-                        }
-                    })
-                }
+                actions: (_, {value}) => positionPieces(value)
             },
             'REVIEW': {
                 target: '#reviewing',
@@ -303,17 +289,15 @@ function setupMachine(current, game, squares, pieces){
                 {  target: '.waiting', cond: ctx => !ctx.canMove}
             ],
             'SET_BOARD': {
-                // todo removedPromotionPieces
                 actions: [
                     updatePieces(pieces),
                     assign({
-                        squares: updateSquares(), // updateSquares() defaults to ev.val.changes
+                        squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges   
                         captured: (_,{value}) => value.captured
                     }), 
-                    send(ctx => ({
-                        type: 'POSITION', 
-                        value: Object.entries(ctx.squares).map(([_,{ piece, coords }]) => ({piece, newPos: coords}))
-                    }))
+                    ({squares}) => positionPieces(Object.entries(squares).map(([_,{ piece, coords }]) => ({
+                        piece, newPos: coords
+                    })))
                 ]
             }
         }
@@ -326,7 +310,7 @@ function setupMachine(current, game, squares, pieces){
 function updateSquares(changes) {
     return (ctx, { value }) => ({
         ...ctx['squares'], // some/all these prev squares will be overwritten
-        ...(changes||value.sqChanges) // if sq changes not partially input, get from SET_BOARD event.value
+        ...(changes||value.sqChanges) // defaults to ev.val.sqChanges for SET_BOARD
         .reduce( (sqs, {type, name, piece, ...square}) => ({
             ...sqs, 
             [name]: {
@@ -360,6 +344,15 @@ function updateFaded(change) {
         if (piece) piece.visibility = .35 // fade piece
         return piece || null
     }
+}
+function positionPieces(pieces) {
+    if (!(pieces instanceof Array)) pieces = [pieces]
+    pieces.forEach(({ piece, newPos }) => {
+        if (piece && !piece.position.equals(newPos)){
+            let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+            piece.position = updatedPos
+        }
+    })
 }
 
 export {

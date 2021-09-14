@@ -131,7 +131,6 @@ export default function Board(current, scene, canvas){
 		changePosition(fromSq.piece, fromSq.coords)
     }
     function handleMove(move, state){
-        console.log('handling move',{move})
 	    const { send } = moveService
         let { squares } =  state.context
         let { from, to, flags } = move
@@ -147,8 +146,9 @@ export default function Board(current, scene, canvas){
             else if (flags.includes('c')) changes.push( ...positionCapturedPiece(toSq.piece, state))
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to, state))
         }
-        send({type: 'UPDATE', value: changes, addMove: !stateIs('reviewing') })
+        send({type: 'UPDATE', value: changes, addMove: !stateIs('reviewing') }) // add from/to to pos inside machine
         changePosition(fromSq.piece, toSq.coords)
+        console.log('handled move',{move})
         selectedHighlightLayer.removeAllMeshes();
     }
     //================================================================================

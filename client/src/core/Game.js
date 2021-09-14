@@ -6,7 +6,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = true;
+        this.isVsComputer = false;
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         // this.computerColor = 'black';
@@ -56,7 +56,7 @@ export default class Game {
         if (!move) return
         var validMove = await this.makeMove(move, true);
         if (!validMove) return // todo: should make request to sync player boards or invalidate game
-        this.board().send({type:'OPP_MOVE', value: validMove})
+        this.board().moveService.send({type:'OPP_MOVE', value: validMove})
         // console.log('opponent move', validMove)
         this.checkGameOver()
     }
