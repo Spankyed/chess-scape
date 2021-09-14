@@ -263,11 +263,11 @@ function promptShare(videoId, alert, actions){
 		heading: 'Video Shared',
 		message: 'A user wants to share a video with you.', 
 		actions: {
-			positive: { text: 'Allow', handler: (bool, persist) => {
+			confirm: { text: 'Allow', handler: (bool, persist) => {
 				setShare({bool, persist})
 				addVideo(videoId)
 			}},
-			negative: { text: 'Deny', handler: (bool, persist) => {
+			default: { text: 'Deny', handler: (bool, persist) => {
 				if (persist) setShare({bool, persist})
 			}}, 
 		},

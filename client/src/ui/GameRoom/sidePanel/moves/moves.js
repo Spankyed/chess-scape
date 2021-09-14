@@ -70,6 +70,7 @@ export default initial => ({
 	},
 })
 function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview, alert}){
+	// todo disable review when??
 	function review(){
 		// if (reviewDisabled) return
 		startReview(move)
@@ -85,12 +86,13 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 }
 function promptReview(alert, endReview){
 	alert.show({
+		id: 'review',
 		icon: "./assets/sidePanel/controls/review_icon.svg",
 		heading: 'Reviewing Moves',
 		// message: "You are currently reviewing moves. The board does not reflect current game state.", 
 		message: "The board does not reflect current game.", 
 		actions: {
-			cancel: { text: 'End', handler: _ => {
+			default: { text: 'End', handler: _ => {
 				endReview()
 				interact.board.moveService.send({type: 'END_REVIEW'}) 
 			}}

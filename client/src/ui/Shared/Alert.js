@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid/non-secure'
 {
 	options: {
 		position: 'top',
-		actions: {positive:{}, negative:{}}
+		actions: {confirm:{}, default:{}}
 		showDAG: true, // show Don't ask again checkbox
 		dontAskAgain: true
 	},
@@ -25,8 +25,9 @@ export default initial => ({
 				}
 			}
 		}),
-		close: (id) => ({alerts}) => {
-			let { [id]: remove, ...rest } = alerts
+		close: (id, completed) => ({alerts}) => {
+			if (!completed) alerts[id].actions?.['default'].handler(false, alerts[id].dontAskAgain)
+			let { [id]: removed, ...rest } = alerts
 			return ({  alerts: { ...rest } })
 		},
 		toggleAskAgain: id => ({alerts}) => ({
@@ -56,7 +57,7 @@ export default initial => ({
 function Alert({id, alert, actions}){
 		let { close, toggleAskAgain } = actions
 		const handleAction = type => _ => {
-			const result = type == 'positive' ? true : false
+			const result = type == 'confirm'
 			alert.actions?.[type].handler(result, alert.dontAskAgain)
 			close(id, true)
 		}
@@ -84,19 +85,14 @@ function Alert({id, alert, actions}){
 				</div>
 				{	alert.actions && 
 					<div class="alert-options flex-shrink flex flex-col font-semibold">
-						{	alert.actions.positive &&
-						<button onclick={handleAction('positive')} class="alert-button text-blue-800 p-1 px-4">
-							{alert.actions.positive.text}
+						{	alert.actions.confirm &&
+						<button onclick={handleAction('confirm')} class="alert-button text-blue-800 p-1 px-4">
+							{alert.actions.confirm.text}
 						</button>
 						}
-						{	alert.actions.negative &&
-						<button onclick={handleAction('negative')} class="alert-button text-gray-800 p-1 px-4">
-							{alert.actions.negative.text}
-						</button>
-						}
-						{	alert.actions.cancel &&
-						<button onclick={handleAction('cancel')} class="alert-button text-gray-800 p-1 px-4">
-							{alert.actions.cancel.text}
+						{	alert.actions.default &&
+						<button onclick={handleAction('default')} class="alert-button text-gray-800 p-1 px-4">
+							{alert.actions.default.text}
 						</button>
 						}
 					</div>

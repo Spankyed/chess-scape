@@ -74,11 +74,11 @@ export default initial => ({
 				heading: 'Music Shared',
 				message: 'A user wants to share a song with you.', 
 				actions: {
-					positive: { text: 'Allow', handler: (bool, persist) => {
+					confirm: { text: 'Allow', handler: (bool, persist) => {
 						setShare({bool, persist})
 						addFromBinary(message)
 					}},
-					negative: { text: 'Deny', handler: (bool, persist) => {
+					default: { text: 'Deny', handler: (bool, persist) => {
 						if (persist) setShare({bool, persist})
 					}}, 
 				},
