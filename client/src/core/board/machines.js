@@ -125,18 +125,10 @@ function setupMachine(current, game, squares, pieces){
             // ___________________________________________________________________________________________________________________
             reviewing: {
                 id: 'reviewing',
-                initial: 'moving',
-                invoke: {
-                    src: ({moves, squares}, {value}) => sendBack =>{
-                        game().reviewEngine.load(moves[value?.id]?.fen),
-                        sendBack({
-                            type: 'SET_BOARD', 
-                            value:{ ...DeserializeBoard(moves[value?.id]?.board, squares) }
-                        })
-                        return
-                    }
-                },
-                entry: send({type: 'DESELECT'}),
+                initial: 'setup',
+                entry: [
+                    send({type: 'DESELECT'}),
+                ],
                 exit: [
                     send({type: 'DESELECT'}),
                     send(({moves, squares}) => ({
@@ -146,6 +138,18 @@ function setupMachine(current, game, squares, pieces){
                     _ => current.uiActions.alert.close('review'),
                 ],
                 states: {
+                    setup: {
+                        invoke: {
+                            src: ({moves, squares}, {value}) => sendBack =>{
+                                game().reviewEngine.load(moves[value?.id]?.fen),
+                                sendBack({
+                                    type: 'SET_BOARD', 
+                                    value:{ ...DeserializeBoard(moves[value?.id]?.board, squares) }
+                                })
+                                return
+                            }
+                        }
+                    },
                     moving: {
                         id: 'r_moving',
                         initial: 'notSelected',
@@ -221,6 +225,14 @@ function setupMachine(current, game, squares, pieces){
                     // finished: { type: 'final' }
                 },
                 on: {
+                    'SET_BOARD': {
+                        ...setupBoard(pieces),
+                        target: ".moving"
+                    },
+                    'REVIEW': {
+                        target: '#reviewing.setup',
+                        internal: true 
+                    },
                     'END_REVIEW': [
                         {  target: '#moving', cond: ctx => ctx.canMove},
                         {  target: '#waiting', cond: ctx => !ctx.canMove}
@@ -289,18 +301,7 @@ function setupMachine(current, game, squares, pieces){
             'REVIEW': {
                 target: '#reviewing',
             },
-            'SET_BOARD': {
-                actions: [
-                    updatePieces(pieces),
-                    assign({
-                        squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges   
-                        captured: (_,{value}) => value.captured
-                    }), 
-                    ({squares}) => positionPieces(Object.entries(squares).map(([_,{ piece, coords }]) => ({
-                        piece, newPos: coords
-                    })))
-                ]
-            }
+            'SET_BOARD': setupBoard(pieces)
         }
 	})
 
@@ -321,6 +322,20 @@ function updateSquares(changes) {
         }), {})
     })
 } 
+function setupBoard(pieces){
+    return {
+        actions: [
+            updatePieces(pieces),
+            assign({
+                squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges   
+                captured: (_,{value}) => value.captured
+            }), 
+            ({squares}) => positionPieces(Object.entries(squares).map(([_,{ piece, coords }]) => ({
+                piece, newPos: coords
+            })))
+        ]
+    }
+}
 function updatePieces(pieces) {
     return (_, { value }) => {
         Object.entries(pieces()).forEach( ([id, piece]) =>{
