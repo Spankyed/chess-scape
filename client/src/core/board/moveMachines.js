@@ -316,6 +316,41 @@ function setupMoveMachine(current, game, squares, pieces){
     // .onTransition((state) => console.log('state changed', state))
     .start();
 }
+function setupBoard(pieces){
+    return {
+        actions: [
+            togglePieces(pieces),
+            assign({
+                squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges   
+                captured: (_,{value}) => value.captured
+            }), 
+            ({squares}) => positionPieces(Object.entries(squares).map(([_,{ piece, coords }]) => ({
+                piece, newPos: coords
+            })))
+        ]
+    }
+}
+function positionPieces(pieces) {
+    if (!(pieces instanceof Array)) pieces = [pieces]
+    pieces.forEach(({ piece, newPos }) => {
+        if (piece && !piece.position.equals(newPos)){
+            let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+            piece.position = updatedPos
+        }
+    })
+}
+function togglePieces(pieces) {
+    return (_, { value }) => {
+        Object.entries(pieces()).forEach( ([id, piece]) =>{
+            if (!value.piecesMap[id]) {
+                piece.setEnabled(false)
+                return
+            }
+            let isEnabled = value.piecesMap[id].isEnabled
+            if (piece.isEnabled != isEnabled) piece.setEnabled(isEnabled)
+        })
+    }
+}
 function updateSquares(changes) {
     return (ctx, { value }) => ({
         ...ctx['squares'], // some/all these prev squares will be overwritten
@@ -329,32 +364,6 @@ function updateSquares(changes) {
         }), {})
     })
 } 
-function setupBoard(pieces){
-    return {
-        actions: [
-            updatePieces(pieces),
-            assign({
-                squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges   
-                captured: (_,{value}) => value.captured
-            }), 
-            ({squares}) => positionPieces(Object.entries(squares).map(([_,{ piece, coords }]) => ({
-                piece, newPos: coords
-            })))
-        ]
-    }
-}
-function updatePieces(pieces) {
-    return (_, { value }) => {
-        Object.entries(pieces()).forEach( ([id, piece]) =>{
-            if (!value.piecesMap[id]) {
-                piece.setEnabled(false)
-                return
-            }
-            let isEnabled = value.piecesMap[id].isEnabled
-            if (piece.isEnabled != isEnabled) piece.setEnabled(isEnabled)
-        })
-    }
-}
 function updateCaptured(change) {
     let [{ pieceColor, newCount }] = change
     return ctx => ({ ...ctx['captured'], [pieceColor]: newCount })
@@ -368,15 +377,7 @@ function updateFaded(change) {
         return piece || null
     }
 }
-function positionPieces(pieces) {
-    if (!(pieces instanceof Array)) pieces = [pieces]
-    pieces.forEach(({ piece, newPos }) => {
-        if (piece && !piece.position.equals(newPos)){
-            let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-            piece.position = updatedPos
-        }
-    })
-}
+
 
 export {
     setupMoveMachine
