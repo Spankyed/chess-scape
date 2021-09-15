@@ -2,6 +2,7 @@
 import { createMachine, interpret, assign, send } from 'xstate';
 import { pure } from 'xstate/lib/actions';
 import { SerializeBoard, DeserializeBoard  } from '../utils/utils'; 
+import { startMovingPiece } from './navigationSystem';
 
 /*
 ** --------------------------------------------------------------------------
@@ -22,7 +23,7 @@ import { SerializeBoard, DeserializeBoard  } from '../utils/utils';
 ** 
 */
 
-function setupMachine(current, game, squares, pieces){
+function setupMoveMachine(current, game, squares, pieces){
 	const moveMachine = createMachine({
 		id: 'move_machine',
 		initial: 'moving',
@@ -104,6 +105,7 @@ function setupMachine(current, game, squares, pieces){
                     'ALLOW': {
                         // todo: indicate square of prev move (change tile material color)
                         actions: [
+                            ({fromSq, toSq}) => startMovingPiece(fromSq.piece, toSq.coords),
                             assign({ 
                                 canMove: false,
                                 lastMove: (_, {value}) => value,
@@ -208,6 +210,7 @@ function setupMachine(current, game, squares, pieces){
                             'ALLOW': {
                                 // todo: indicate square of prev move (change tile material color)
                                 actions: [
+                                    ({fromSq, toSq}) => startMovingPiece(fromSq.piece, toSq.coords),
                                     assign({ 
                                         lastMove: (_, {value}) => value,
                                     }),
@@ -250,6 +253,10 @@ function setupMachine(current, game, squares, pieces){
             },
             'OPP_MOVE': { // todo test if user in review selections are reset
                 actions: [
+                    ({squares}, {value}) => {
+                        let { from, to } = value
+                        startMovingPiece(squares[from].piece, squares[to].coords)
+                    },
                     assign({ 
                         canMove: true,
                         lastMove: (_, {value}) => value
@@ -372,5 +379,5 @@ function positionPieces(pieces) {
 }
 
 export {
-    setupMachine
+    setupMoveMachine
 }

@@ -1,13 +1,13 @@
 
 import { ClonePiece } from '../utils/utils'; 
-import { setupMachine } from './machines';
+import { setupMoveMachine } from './moveMachines';
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
 	pieces = current.pieces,
 	[board, squares] = createBoard(scene), // board var not used
 	selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", scene),
-	moveService = setupMachine(current, game, squares, pieces);
+	moveService = setupMoveMachine(current, game, squares, pieces);
 	// $moveState = subscribeChanges(moveService)
 	subscribeChanges(moveService)
 	setupClickListeners(canvas)
@@ -147,7 +147,6 @@ export default function Board(current, scene, canvas){
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to, state))
         }
         send({type: 'UPDATE', value: changes, addMove: !stateIs('reviewing') }) // add from/to to pos inside machine
-        changePosition(fromSq.piece, toSq.coords)
         console.log('handled move',{move})
         selectedHighlightLayer.removeAllMeshes();
     }

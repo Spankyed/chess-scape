@@ -1,4 +1,5 @@
 import { FromResize } from './utils'; 
+import { updateNavigation } from '../board/navigationSystem'; 
 
 export default class SceneManager {
     /**
@@ -32,13 +33,11 @@ export default class SceneManager {
         this._scene.registerAfterRender(this._afterRender);
     }
     _beforeRender(scene){
-        // this._time++
-        // scene.manager._ecs.update()
     }
     _afterRender(){        
+        updateNavigation()
     }
 
-    
     setEnv(canvas){
         // console.log('the scene',this._scene)
         //var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(3, 2, 3), scene);
