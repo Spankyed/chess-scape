@@ -224,7 +224,7 @@ function setupMachine(current, game, squares, pieces){
                     'END_REVIEW': [
                         {  target: '#moving', cond: ctx => ctx.canMove},
                         {  target: '#waiting', cond: ctx => !ctx.canMove}
-                    ],
+                    ]
                 }
 			},
 		},

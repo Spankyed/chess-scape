@@ -6,7 +6,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = false;
+        this.isVsComputer = true;
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         // this.computerColor = 'black';
@@ -67,11 +67,11 @@ export default class Game {
         const move = moves[Math.floor(Math.random() * moves.length)] // get random move
         if(move){
              setTimeout(_=> {
-                let validMove = this.makeMove(move)
+                let validMove = this.makeMove(move, true)
                 if (validMove)
                     this.board().moveService.send({type:'OPP_MOVE', value: validMove})
                 // console.log('computer move', validMove)
-            }, 1000)
+            }, 3000)
         }
     }
     checkGameOver(){
