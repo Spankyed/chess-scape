@@ -50,12 +50,21 @@ $controls-color: #464341;
       }
 
       .menu-wrapper{
+        --bg:  #242526;
+        --bg-accent: #484a4d;
+        --text-color: #dadce1;
+        --nav-size: 60px;
+        --border: 1px solid #474a4d;
+        --border-radius: 8px;
+        --speed: 500ms; 
         position: relative;
         .menu {
+          align-items: center;
+          justify-content: center;
           // @apply right-0 mt-2 w-56 rounded-md shadow-lg bg-white divide-y divide-gray-100 focus:outline-none;
           width: 14rem/* 224px */;
-          background-color: rgba(255, 255, 255, 1);
           position: absolute;
+          background-color: rgba(55, 65, 81, 1);
           bottom: 0px;
           right: 0px;
           margin-right: 0.25rem/* 4px */;
@@ -74,15 +83,43 @@ $controls-color: #464341;
             border-bottom-width: calc(1px * 0);
           }
 
-          .option {
-            color: rgba(55, 65, 81, 1);
-            display: block;
+          .menu-item {
+            color: rgba(255, 255, 255, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding-left: 1rem/* 16px */;
             padding-right: 1rem/* 16px */;
             padding-top: 0.5rem/* 8px */;
             padding-bottom: 0.5rem/* 8px */;
             font-size: 0.875rem/* 14px */;
             line-height: 1.25rem/* 20px */;
+            &:hover {
+              background-color: #525357;
+            }
+            .menu-icon {
+              margin-right: 0.5rem;
+              &:hover {
+                filter: none;
+              }
+              --button-size: calc(var(--nav-size) * 0.5);
+              width: var(--button-size);
+              height: var(--button-size);
+              background-color: #484a4d;
+              border-radius: 35%;
+              padding: 5px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: filter 300ms;
+              img{
+                width: 20px;
+                height: 20px;
+              }
+            }
+            span{
+              width: 80%;
+            }
           }
         }
       }

@@ -36,7 +36,7 @@ export default initial => ({
 					<div class="btn-wrapper right">
 						{/* menu */}
 						<div class="menu-wrapper">
-							{ state.menuOpen && <Menu/> }
+							{ state.menuOpen && <Menu gameOver={gameOver}/> }
 							<button onclick={actions.toggleMenu} class="control-btn first">
 								<img src="./assets/controls/menu.svg"></img>
 							</button>
@@ -52,39 +52,39 @@ export default initial => ({
 		)
 	}
 })
-function PieceSelection({resolver, closePieceSelect, color}){
-	color = color || 'b'
-	function select(piece){
-		resolver(piece)
-		closePieceSelect()
-	}
-	return (
-		<div class="promotion-wrapper">
-			<h2 class='w-full mx-auto text-gray-600'>Select a piece</h2>
-			<div onclick={_=> select('q')} class="piece w-1/2"><img src={`./assets/controls/pieces/queen_${color}.png`}/></div>
-			<div onclick={_=> select('n')} class="piece w-1/2"><img src={`./assets/controls/pieces/knight_${color}.png`}/></div>
-			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_${color}.png`}/></div>
-			<div onclick={_=> select('b')} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.png`}/></div>
-			{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
-			<button onclick={_=> select(null)}>Cancel</button>
-		</div>
-	)
-}
-function Menu(){
+function Menu({gameOver}){
 	return (
 		// needs pointer events
 		<div class="menu" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-			<div class="option" role="menu-item" id="menu-item-0" tabindex="-1">
-				Resign
+			<div class="menu-item" role="menu-item" id="menu-item-0" tabindex="-1">
+				<div class='menu-icon'><img src='./assets/controls/menu/resign.svg'/></div>
+				<span>Resign</span>
 			</div>
-			<div class="option" role="menu-item" id="menu-item-2" tabindex="-1">
-				Offer Draw
+			{ true && // gameOver  && 
+				<div class="menu-item" role="menu-item" id="menu-item-0" tabindex="-1">
+					<div class='menu-icon'><img src='./assets/controls/menu/rematch.svg'/></div>
+					<span>Rematch</span>
+				</div>
+			}
+			<div class="menu-item" role="menu-item" id="menu-item-2" tabindex="-1">
+				<div class='menu-icon'><img src='./assets/controls/menu/draw.svg'/></div>
+				<span>Offer Draw</span>
 			</div>
-			<div class="option" role="menu-item" id="menu-item-2" tabindex="-1">
-				Review Moves
+			<div class="menu-item" role="menu-item" id="menu-item-2" tabindex="-1">
+				<div class='menu-icon'><img src='./assets/controls/menu/chat.svg'/></div>
+				<span>Chat</span>
 			</div>
-			<div onclick={_=> toggleSidePanel("media")} class="option" role="menu-item" id="menu-item-4" tabindex="-1">
-				Play Media
+			<div class="menu-item" role="menu-item" id="menu-item-2" tabindex="-1">
+				<div class='menu-icon'><img src='./assets/controls/menu/review.svg'/></div>
+				<span>Review Moves</span>
+			</div>
+			<div onclick={_=> toggleSidePanel("media")} class="menu-item" role="menu-item" id="menu-item-4" tabindex="-1">
+				<div class='menu-icon'><img src='./assets/controls/menu/media.svg'/></div>
+				<span>Play Media</span>
+			</div>
+			<div onclick={_=> toggleSidePanel("media")} class="menu-item" role="menu-item" id="menu-item-4" tabindex="-1">
+				<div class='menu-icon'><img src='./assets/controls/menu/rotate-camera.svg'/></div>
+				<span>Flip Camera</span>
 			</div>
 		</div>
 	)
@@ -132,6 +132,24 @@ function MatchMessage(){
 					</div>
 				</div>
 			</div>
+		</div>
+	)
+}
+function PieceSelection({resolver, closePieceSelect, color}){
+	color = color || 'b'
+	function select(piece){
+		resolver(piece)
+		closePieceSelect()
+	}
+	return (
+		<div class="promotion-wrapper">
+			<h2 class='w-full mx-auto text-gray-600'>Select a piece</h2>
+			<div onclick={_=> select('q')} class="piece w-1/2"><img src={`./assets/controls/pieces/queen_${color}.png`}/></div>
+			<div onclick={_=> select('n')} class="piece w-1/2"><img src={`./assets/controls/pieces/knight_${color}.png`}/></div>
+			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_${color}.png`}/></div>
+			<div onclick={_=> select('b')} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.png`}/></div>
+			{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
+			<button onclick={_=> select(null)}>Cancel</button>
 		</div>
 	)
 }
