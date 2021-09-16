@@ -55,8 +55,13 @@ export default initial => ({
 								Lobby
 							</h1>
 							<div>
-								<button onclick={actions.toggleCreate} class="ring-2 ring-offset-2 focus:ring-indigo-900 px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none">
+								<button onclick={actions.toggleCreate} class="flex items-center ring-2 ring-offset-2 focus:ring-indigo-900 px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none">
+									<img src="./assets/create/add.svg"></img>
 									<p class="text-xl font-medium leading-none text-white">New Game</p>
+								</button>
+								<button onclick={actions.toggleCreate} class="flex items-center ring-2 ring-offset-2 focus:ring-yellow-900-900 px-4 py-2 bg-yellow-700 hover:bg-yellow-600 focus:outline-none">
+									<img src="./assets/create/cancel.svg"></img>
+									<p class="text-xl font-medium leading-none text-white">Cancel</p>
 								</button>
 							</div>
 						</div>

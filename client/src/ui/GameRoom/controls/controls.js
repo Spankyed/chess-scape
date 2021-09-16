@@ -20,7 +20,7 @@ export default initial => ({
 					{ gameOver  &&
 						<MatchMessage/>
 					}
-					{ state.isPromoting  &&
+					{ true && //state.isPromoting  &&
 						<PieceSelection color={color} resolver={state.resolver} closePieceSelect={actions.closePieceSelect}/>
 					}
 					<div class="player-section"> 
@@ -146,7 +146,7 @@ function PieceSelection({resolver, closePieceSelect, color}){
 			<h2 class='w-full mx-auto text-gray-600'>Select a piece</h2>
 			<div onclick={_=> select('q')} class="piece w-1/2"><img src={`./assets/controls/pieces/queen_${color}.png`}/></div>
 			<div onclick={_=> select('n')} class="piece w-1/2"><img src={`./assets/controls/pieces/knight_${color}.png`}/></div>
-			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_${color}.png`}/></div>
+			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_w.png`}/></div>
 			<div onclick={_=> select('b')} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.png`}/></div>
 			{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
 			<button onclick={_=> select(null)}>Cancel</button>
