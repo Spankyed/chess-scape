@@ -5,10 +5,10 @@ import Api from '../../api/Api';
 export default initial => ({
 	state: {
 		gameTypes: [
-			{ id: 1, name: 'Bullet', time: '1 min', src: `./assets/create/bullet.svg` },
-			{ id: 2, name: 'Blitz', time: '5 min', src: `./assets/create/fighter_jet.svg` },
-			{ id: 3, name: 'Rapid', time: '10 min', src: `./assets/create/lightning.svg` },
-			{ id: 4, name: 'Custom', time: '--', src: `./assets/create/custom.svg` },
+			{ id: 1, name: 'Bullet', time: '3 min', src: `./assets/create/bullet.svg` },
+			{ id: 2, name: 'Blitz', time: '5 min', src: `./assets/create/blitz.svg` },
+			{ id: 3, name: 'Rapid', time: '10 min', src: `./assets/create/rapid.svg` },
+			{ id: 4, name: 'Custom', time: '— —', src: `./assets/create/custom.svg` },
 		]
 	},
 	actions: { 
@@ -27,8 +27,10 @@ export default initial => ({
 			toggleCreate()
 		};
 		
-		const dangerouslySetInnerHTML = (html) => element => element.innerHTML = html;
-		
+		const selectRandom = _ => {
+			let idx = ~~(Math.random() * 2 + 1)
+			setColor(pieceColors[idx])
+		}
 		return ( 
 			<div class={`${showCreate ? '': 'opacity-0'} modal fixed w-full h-full top-0 left-0 flex items-center justify-center`}>
 				<div onclick={toggle} class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
@@ -42,10 +44,16 @@ export default initial => ({
 						<span class="text-sm">(Esc)</span>
 					</div> */}
 
-					<div style="display: flex; justify-content: center; align-items: center" class="chooseColorNewGame">
-						<img id="startingColor1" onclick="selectColor(1)" src="./assets/create/queen_w.png" style="max-height: 90px;"/>
-						<img id="startingColor0" onclick="selectColor(0)" class="selected" src="./assets/create/queen_bw.png" style="max-height: 120px;"/>
-						<img id="startingColor2" onclick="selectColor(2)" src="./assets/create/queen_b.png" style="max-height: 90px;"/>
+					<div class="choose-color">
+						<div class="piece-color">
+							<img id="startingColor1" onclick="selectColor(1)" src="./assets/create/piece-white.svg" style="max-height: 90px;"/>
+						</div>
+						<div class="piece-color selected">
+							<img id="startingColor0" onclick={selectRandom} class="selected" src="./assets/create/piece-unknown.svg" style="max-height: 120px;"/>
+						</div>
+						<div class="piece-color">
+							<img id="startingColor2" onclick="selectColor(2)" src="./assets/create/piece-black.svg" style="max-height: 90px;"/>
+						</div>
 					</div>
 
 					{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
@@ -73,9 +81,6 @@ export default initial => ({
 							}
 						</div>
 						{/* fill: orange; */}
-						
-
-
 
 						{/* <!--Body--> */}
 						{/* <p>Modal content can go here</p>
@@ -93,8 +98,8 @@ export default initial => ({
 							<label class="flex items-start">
 								<input type="checkbox" class="form-checkbox h-6 w-6"/>
 								<span class="ml-2">
-									Private Match 
-									( <span class="underline">invite only</span> )
+									Password Protected
+									( <span class="underline">invite</span> )
 								</span>
 							</label>
 						</div>				

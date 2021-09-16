@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-  <path d="M 231.177 83.644 C 207.432 83.644 187.615 100.515 183.058 122.924 L 83.874 122.924 L 83.874 142.566 L 183.058 142.566 C 187.615 164.975 207.412 181.847 231.177 181.847 C 254.942 181.847 274.74 164.975 279.295 142.566 L 398.119 142.566 L 398.119 122.924 L 279.295 122.924 C 274.74 100.515 254.922 83.644 231.177 83.644 Z" style="fill: rgb(75, 85, 99);"/>
-  <path d="M 329.378 201.487 C 305.632 201.487 285.816 218.358 281.26 240.767 L 83.874 240.767 L 83.874 260.409 L 281.26 260.409 C 285.816 282.817 305.614 299.688 329.378 299.688 C 353.143 299.688 372.94 282.817 377.499 260.409 L 398.119 260.409 L 398.119 240.767 L 377.499 240.767 C 372.94 218.358 353.125 201.487 329.378 201.487 Z" style="fill: rgb(75, 85, 99);"/>
-  <path d="M 191.895 299.688 C 168.152 299.688 148.333 316.56 143.777 338.969 L 83.874 338.969 L 83.874 358.609 L 143.777 358.609 C 148.333 381.02 168.13 397.889 191.895 397.889 C 215.66 397.889 235.46 381.02 240.015 358.609 L 398.119 358.609 L 398.119 338.969 L 240.015 338.969 C 235.46 316.56 215.64 299.688 191.895 299.688 Z" style="fill: rgb(75, 85, 99);"/>
+<svg width="505px" height="505px" viewBox="0 0 505 505" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <path d="M0 0L500 0L500 500L0 500L0 0Z" id="path_1" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+  </defs>
+  <g id="custom" transform="translate(2.5 2.5)">
+    <path d="M0 0L500 0L500 500L0 500L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+    <g clip-path="url(#mask_1)">
+      <g id="Group" transform="translate(93.874 89.2)">
+        <path d="M0 0L0 19.642L314.245 19.642L314.245 0L0 0Z" transform="translate(0 32.724014)" id="Shape" fill="#262626" fill-rule="evenodd" stroke="none" />
+        <path d="M0 42.5C0 19.0279 19.0279 0 42.5 0C65.9721 0 85 19.0279 85 42.5C85 65.9721 65.9721 85 42.5 85C19.0279 85 0 65.9721 0 42.5Z" transform="translate(94.62023 0)" id="Ellipse" fill="#FFFFFF" fill-rule="evenodd" stroke="#262626" stroke-width="5" />
+      </g>
+      <g id="Group-2" transform="translate(93.855 306.23187)">
+        <path d="M0 0L0 19.642L314.245 19.642L314.245 0L0 0Z" transform="translate(0 32.69214)" id="Shape" fill="#262626" fill-rule="evenodd" stroke="none" />
+        <path d="M0 42.5C0 19.0279 19.0279 0 42.5 0C65.9721 0 85 19.0279 85 42.5C85 65.9721 65.9721 85 42.5 85C19.0279 85 0 65.9721 0 42.5Z" transform="translate(47.62023 0)" id="Ellipse" fill="#FFFFFF" fill-rule="evenodd" stroke="#262626" stroke-width="5" />
+      </g>
+      <g id="Group-3" transform="translate(93.855 208.19998)">
+        <path d="M0 0L0 19.642L314.245 19.642L314.245 0L0 0Z" transform="translate(0 32.72403)" id="Shape" fill="#262626" fill-rule="evenodd" stroke="none" />
+        <path d="M0 42.5C0 19.0279 19.0279 0 42.5 0C65.9721 0 85 19.0279 85 42.5C85 65.9721 65.9721 85 42.5 85C19.0279 85 0 65.9721 0 42.5Z" transform="translate(197.14502 0)" id="Ellipse" fill="#FFFEFE" fill-rule="evenodd" stroke="#262626" stroke-width="5" />
+      </g>
+    </g>
+  </g>
 </svg>

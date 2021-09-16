@@ -1,0 +1,15 @@
+.choose-color {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    background-color: #4caf50;
+
+    .piece-color{
+        padding: 10px;
+        max-height: 120px;
+        margin: 10px;
+        &.selected{
+            box-shadow:#cddc39 0px 0px 10px 7px;
+        }
+    }
+}
