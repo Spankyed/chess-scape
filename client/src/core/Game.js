@@ -22,7 +22,7 @@ export default class Game {
         // console.log('bind socket handlers')
         Api.setMessageHandlers({
             // join: this.onJoin, 
-            move: this.handleOpponentMove.bind(this), 
+            move: this.handleOpponentMove.bind(this),
             // chat: this.onChat,
         })
     }
@@ -32,7 +32,7 @@ export default class Game {
     makeMove(move, isOpponentMove){
         return this.getCurrentEngine(isOpponentMove).move(move)
     }
-    async checkMove(move){
+    async handlePlayerMove(move){
         // console.log('checking',{move})
         let validMove = null;
         if (this.isPromoting(move)) { 
@@ -52,9 +52,9 @@ export default class Game {
 
         return validMove
     }
-    async handleOpponentMove({move}){
+    handleOpponentMove({move}){
         if (!move) return
-        var validMove = await this.makeMove(move, true);
+        var validMove = this.makeMove(move, true);
         if (!validMove) return // todo: should make request to sync player boards or invalidate game
         this.board().moveService.send({type:'OPP_MOVE', value: validMove})
         // console.log('opponent move', validMove)

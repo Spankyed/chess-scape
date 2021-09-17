@@ -96,7 +96,7 @@ function setupMoveMachine(current, game, squares, pieces){
                 invoke: {
                     src: ctx => async (sendBack) => {
                         let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                        let validMove = await game().checkMove(move)
+                        let validMove = await game().handlePlayerMove(move)
                         sendBack({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
                     },
                     onError: '#moving.selected'
@@ -201,7 +201,7 @@ function setupMoveMachine(current, game, squares, pieces){
                         invoke:{
                             src: ctx => async (sendBack) => {
                                 let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                                let validMove = await game().checkMove(move)
+                                let validMove = await game().handlePlayerMove(move)
                                 sendBack({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
                             },
                             onError: '#moving.selected'
