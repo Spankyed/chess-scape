@@ -1,16 +1,15 @@
 'use strict'
+// nodemon --inspect ./server.js
+
 // require('dotenv').config()
 // let cfenv = require('cfenv')
 import fastify from 'fastify'
 import fastifyCors from 'fastify-cors'
 import fastifyWebsocket from 'fastify-websocket'
-import functions from './functions.mjs'
-const {    
-	handleUsersHttp,
-	handleRoomsHttp,
-	handleSearchHttp,
-	handleRoomsWebSocket
-} = functions
+import http from './api/http.mjs'
+import websocket from './api/websocket.mjs'
+const { handleUsersHttp,  handleRoomsHttp, handleSearchHttp, } = http
+const { handleRoomsWebSocket } = websocket
 
 let server = fastify()
 // fastify.register(require('fastify-sensible'))

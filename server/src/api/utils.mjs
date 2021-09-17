@@ -1,8 +1,6 @@
 // nodemon --inspect ./server.js
 
 import ChessLib  from 'chess.js';
-import fetch  from 'node-fetch';
-import HTMLParser from 'node-html-parser';
 import fileType from 'file-type';
 import BSON from 'bson';
 
@@ -10,54 +8,7 @@ const { Chess } = ChessLib;
 
 let clients = {}; // todo: change or copy to lobby.clients, move clients in/out of lobby when join/leave gameRooms
 let gameRooms = {};
-async function getGoogleImage(search){
-    // console.time('fetch')
-    const url = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(search + ' song')
-    let page = await fetch(url)
-    // console.timeEnd('fetch')
-    let html = await page.text()
-    let parsedPage = HTMLParser.parse(html)
-    let img = parsedPage.querySelectorAll('img')[1].attributes.src
-    return img
-}
 
-async function handleSearchHttp(req, reply) {
-    const { title } = req.body
-    const image = await getGoogleImage(title);
-    reply.send(JSON.stringify(image)) // get rooms list
-}
-function handleRoomsHttp(req, reply) {
-    reply.send(JSON.stringify(mapRooms())) // get rooms list
-}
-function handleUsersHttp(req, reply) {
-    const { username } = req.body
-    let clientId = addNewClient(username, req.ip)
-    let response = JSON.stringify({ action: 'client-added', clientId })
-    reply.send(response)
-}
-function handleRoomsWebSocket(connection, req) {
-    let clientId = req.headers['sec-websocket-protocol']
-    if (clientId) setClientConnection(clientId, connection)
-    let response = { method: 'connect', clientId }
-	connection.socket.send(JSON.stringify(response))
-    // todo: notify lobby player has joined 
-    // console.log('client connected', {client:clients[clientId]})
-    connection.socket.on('message', request => { // handle incoming messages from connected client 
-		// console.log('incoming request ', request)
-        let isBinary = Buffer.isBuffer(request)
-        let message = isBinary ? BSON.deserialize(request, {promoteBuffers: true}) : JSON.parse(request)
-        if (!message) return
-        if(isBinary && !isValidFileType(message.rawData)) return
-        // if (isBinary) console.log("bson", message)
-        console.log(`%c Incoming message [${message.method}] from [${clientId}]`,"color:green;", message)
-        const methods = { create, join, move, chat, share} // set message handlers
-        const messageHandler = methods[message.method]
-        if (messageHandler) messageHandler({message, clientId})
-
-	})
-    // connection.socket.on('open', _ => console.log('~opened: ', i++))
-    // connection.socket.on('close', _ => delete clients[clientId])
-}
 function addNewGameRoom(clientId) {
     const gameId = guid()
     gameRooms[gameId] = {
@@ -66,6 +17,7 @@ function addNewGameRoom(clientId) {
         // "state": {},
         "host": clientId,
         "clients": [clientId],
+        // "match": instantiateNewEngine(),
         "match": new Chess(),
         "whitePlayerId":'',
         "blackPlayerId":'',
@@ -73,11 +25,7 @@ function addNewGameRoom(clientId) {
     }
     return gameId
 }
-// {
-//     "method": "create",
-//     "clientId" : "<guid>"
-// }
-function create({message, clientId}){
+function create({message, clientId}){ // { "method": "create", "clientId" : "<guid>"  }
     // console.log('creating')
     // const clientId = message.clientId;
     if (!clients[clientId]) return
@@ -89,7 +37,6 @@ function create({message, clientId}){
         "gameRooms" : mapRooms(),
     }
     sendMessageAll(response)
-
 }
 function join({message, clientId}){ 
     // const {gameId, clientId} = message;
@@ -120,7 +67,7 @@ function move({message, clientId}) {
     const match = gameRoom.match
     if (!match) return  
     if (match.game_over()){
-        const response = { "method": "endGame", move }
+        const response = { "method": "endGame", move: message.move }
         gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
         // socket.emit('gameOver', roomId)
     }
@@ -129,7 +76,7 @@ function move({message, clientId}) {
         // const move = match.move(message.move, { verbose: true })
         if(!validMove) return // todo: if not valid move, send game state to sync client, and alert user board was synced
         const response = { "method": "move", move: validMove, clientId }
-        messageOtherClients(gameRoom, clientId, response)
+        sendMessageOthers(gameRoom, clientId, response)
         // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
     }
 }
@@ -138,7 +85,7 @@ function chat({message, clientId}) {
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
     const response = { "method": "chat", text }
-    messageOtherClients(gameRoom, clientId, response)
+    sendMessageOthers(gameRoom, clientId, response)
 }
 function share(params){
     let mediaHandlers = { 'video': shareVideo, 'music': shareMusic  } 
@@ -149,14 +96,14 @@ function shareVideo({message, clientId}) {
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return   
     const response = { method: "share", type:'video', videoId }
-    messageOtherClients(gameRoom, clientId, response)
+    sendMessageOthers(gameRoom, clientId, response)
 }
 function shareMusic({message, clientId}) { // todo: check if song has image, otherwise scrap google?
     const {gameId, song, rawData} = message;
     const gameRoom = gameRooms[gameId]
     if (!gameRoom) return
     const response = BSON.serialize({ "method": "share", type:'music', song, rawData })
-    // messageOtherClients(gameRoom, clientId, response)
+    // sendMessageOthers(gameRoom, clientId, response)
     // gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
     console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", {response})
     gameRoom.clients.forEach( (clientId) => {
@@ -164,15 +111,12 @@ function shareMusic({message, clientId}) { // todo: check if song has image, oth
     } )
 }
 
-function addNewClient(username, ip) {
-    const clientId = guid()
-    clients[clientId] = { clientId, username, ip }
-    return clientId
+function sendMessage(clientId, message){
+    // todo: check if client is still connected before trying to send messages
+    clients[clientId].connection.socket.send(JSON.stringify(message))
+    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", {message})
 }
-function setClientConnection(clientId, connection) {
-    clients[clientId] = {...clients[clientId], connection}
-}
-function messageOtherClients(gameRoom, sender, message){
+function sendMessageOthers(gameRoom, sender, message){
     gameRoom.clients.forEach(clientId => { 
         if (clientId != sender) sendMessage(clientId, message)
     })
@@ -183,12 +127,15 @@ function sendMessageAll(message, clientId){
         if (clientConn) clientConn.socket.send(JSON.stringify(message));
     })
 }
-function sendMessage(clientId, message){
-    // todo: check if client is still connected before trying to send messages
-    clients[clientId].connection.socket.send(JSON.stringify(message))
-    console.log(`%c Sent message [${message.method}] to [${clientId}]`,"color:orange;", {message})
+function addNewClient(username, ip) {
+    const clientId = guid()
+    clients[clientId] = { clientId, username, ip }
+    return clientId
 }
-
+function setClientConnection(clientId, connection) {
+    clients[clientId] = {...clients[clientId], connection}
+}
+// ___________________________________________________________
 function mapRooms(){
     return Object.values(gameRooms).map( room => {
         const { match, whitePlayerId, blackPlayerId, // omitted properties
@@ -208,8 +155,7 @@ function guid() {
 }
 
 export default {
-    handleRoomsHttp,
-    handleUsersHttp,
-    handleSearchHttp,
-    handleRoomsWebSocket
+    addNewClient, mapRooms,
+    setClientConnection, isValidFileType,
+    create, join, leave, move, chat, share,
 }
