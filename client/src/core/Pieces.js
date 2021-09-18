@@ -14,7 +14,7 @@ function getPiecesContainer(scene){
     // todo: move this code to SceneManager
     let assetsManager = new BABYLON.AssetsManager(scene)
     assetsManager.useDefaultLoadingScreen = false
-    let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/", 'Chesspieces.babylon');
+    let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/", 'pieces.babylon');
     return new Promise((resolve, rej) => {
         meshTask.onError = (err) => rej(err)
         meshTask.onSuccess = (task) => {

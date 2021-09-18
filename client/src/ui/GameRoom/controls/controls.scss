@@ -291,13 +291,14 @@ $controls-color: #464341;
   padding: 0.75rem/* 4px */;
   --tw-shadow: 0 1px 7px 2px rgba(0, 0, 0, 0.4),0 4px 6px -2px rgba(0, 0, 0, 0.05);
   box-shadow: var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);
+  filter: drop-shadow(0px 0px 10px #4444dd);
 
   h2{
     padding-bottom: 0.5rem/* 8px */;
     font-size: 1.5rem;
   }
   .piece{
-
+    filter: drop-shadow(5px 1px 10px #4444dd);
   }
 }
 

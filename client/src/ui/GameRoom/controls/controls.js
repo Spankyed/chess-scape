@@ -20,7 +20,7 @@ export default initial => ({
 					{ gameOver  &&
 						<MatchMessage/>
 					}
-					{ true && //state.isPromoting  &&
+					{ state.isPromoting  &&
 						<PieceSelection color={color} resolver={state.resolver} closePieceSelect={actions.closePieceSelect}/>
 					}
 					<div class="player-section"> 
@@ -138,7 +138,7 @@ function MatchMessage(){
 function PieceSelection({resolver, closePieceSelect, color}){
 	color = color || 'b'
 	function select(piece){
-		resolver(piece)
+		if (resolver) resolver(piece)
 		closePieceSelect()
 	}
 	return (
