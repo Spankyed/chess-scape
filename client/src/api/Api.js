@@ -38,17 +38,23 @@ function createConnection(){
 
 // Send message wrappers
 function createGame(params){ sendMessage({ method: "create", ...params }) }
+
 function joinGame(id){ 
 	gameId ??= id; 
 	sendMessage({ method: "join", gameId }) 
 }
+
 function leaveGame(id){ 
 	sendMessage({ method: "leave", gameId }) 
 	gameId = null; 
 }
+
 function sendMove(move){ sendMessage({ method: "move", move }) }
+
 function sendChat(text){ sendMessage({ method: "chat", text }) }
+
 // function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
+
 function shareMusic(songData, rawData){ 
 	let {src, ...song} = songData
 	let BSON = serialize({ 
@@ -59,7 +65,9 @@ function shareMusic(songData, rawData){
 	connection.send(BSON) 
 	console.log(`%c Song data sent`,"color:orange;", deserialize(BSON, {promoteBuffers: true}))
 }
+
 // function shareMusic(rawData){ connection.send(rawData) }
+
 function shareVideo(videoId){ sendMessage({ method: "share", type: "video", videoId }) }
 
 function sendMessage(message){
