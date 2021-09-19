@@ -32,12 +32,10 @@ export default class SceneManager {
         this._scene.registerBeforeRender(this._beforeRender);
         this._scene.registerAfterRender(this._afterRender);
     }
-    _beforeRender(scene){
-    }
+    _beforeRender(scene){ }
     _afterRender(){        
         updateNavigation()
     }
-
     setEnv(canvas){
         // console.log('the scene',this._scene)
         //var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(3, 2, 3), scene);
@@ -96,6 +94,7 @@ export default class SceneManager {
         // return new BABYLON.ShadowGenerator(1024, spotLight);
     }
 
+    // not used
     createLightCamera(canvas){
         this._scene.createDefaultCameraOrLight(true, true, true);
 		this._scene.activeCamera.lowerRadiusLimit = 7;
@@ -105,6 +104,4 @@ export default class SceneManager {
         this._scene.activeCamera.wheelPrecision = 5;
 		this._scene.activeCamera.upperBetaLimit=1.5; //Math.PI*(0)/180;
     }
-
-
 }

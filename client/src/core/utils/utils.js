@@ -31,9 +31,13 @@ function SerializeBoard(squares, pieces, captured){ // returns a boardMap to be 
 }
 
 function DeserializeBoard(boardMap, squares){ // returns list of square changes & map of pieces 
+	const resetCaptured = squares => Object.entries(squares)
+		.reduce((captured, [ name ]) =>(
+			name.startsWith('cp') ? [...captured, { type: 'squares', name, piece: null }] : captured
+		), [])
 	return {
 		sqChanges: [
-			...resetCaptured(squares), // add changes that reset captured sqs; overwritten by boardMap's captured sqs
+			...resetCaptured(squares), // add changes to reset captured(ghost) sqs; is overwritten by new boardMap
 			...boardMap.squares.reduce((changes, { sqName, piece }) => (
 				[ ...changes, { type: 'squares', name: sqName, piece} ]
 			), [])
@@ -43,11 +47,6 @@ function DeserializeBoard(boardMap, squares){ // returns list of square changes 
 	}
 }
 
-function resetCaptured(squares){
-	return Object.entries(squares).reduce((changes, [ name ]) =>(
-		name.startsWith('cp') ? [...changes, { type: 'squares', name, piece: null }] : changes
-	), [])
-}
 
 function ClonePiece({type, color, pieces}){
 	// let origPiecesCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1} // todo allow recycle prev cloned piece
