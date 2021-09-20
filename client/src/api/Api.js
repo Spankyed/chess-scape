@@ -4,6 +4,8 @@ import { nanoid } from 'nanoid/non-secure'
 import { serialize, deserialize } from 'bson';
 import { Buffer } from 'buffer';
 
+// const baseAPIUrl = 'http://localhost:90001'
+// const baseWSUrl = 'ws://localhost:3001'
 const baseAPIUrl = 'http://localhost:5000/api'
 const baseWSUrl = 'ws://localhost:5000/api'
 let clientId = nanoid()//localStorage.getItem('clientId'),
@@ -24,6 +26,7 @@ function createConnection(){
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
 	connection = new ReconnectingWebSocket(baseWSUrl + '/rooms', clientId);
+	if (connection) console.log(`%c Connected [${clientId}]`,"color:white;", {connection})
 	connection.addEventListener('message', ({data}) => { // handle incoming messages from connected client 
 		let isBinary = data instanceof ArrayBuffer
 		// let isBinary = Buffer.isBuffer(data)
@@ -87,7 +90,7 @@ function setMessageHandlers(newHandlers) {
 async function fetchRooms(){
 	const method = 'GET';
 	const headers = {'Content-Type': 'application/json; charset=utf-8' };
-	const url = `${baseAPIUrl}/rooms`  // http://localhost:5000/api/rooms
+	const url = `${baseAPIUrl}/rooms` 
 	const response = await fetch(url, { method, headers })
 	if (response.ok) {
 		const rooms = await response.json()

@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel src/ui/index.html -p 3000",
-    "build": "parcel build src/ui/index.html -d build --public-url ./"
+    "build": "parcel build src/ui/index.html -d build --no-source-maps --experimental-scope-hoisting"
   },
   "staticFiles": {
     "staticPath": [

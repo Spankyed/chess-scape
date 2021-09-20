@@ -6,7 +6,7 @@ export default class Game {
         this.Scene = current
         this.board = current.board
         this.gameId = gameId
-        this.isVsComputer = true;
+        this.isVsComputer = false;
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         // this.computerColor = 'black';
@@ -22,7 +22,9 @@ export default class Game {
         // console.log('bind socket handlers')
         Api.setMessageHandlers({
             // join: this.onJoin, 
-            move: this.handleOpponentMove.bind(this),
+            move: this.handleOpponentMove.bind(this), 
+            resign: this.handleOpponentMove.bind(this), 
+            draw: this.handleOpponentMove.bind(this), 
             // chat: this.onChat,
         })
     }
@@ -77,10 +79,16 @@ export default class Game {
     checkGameOver(){
         // todo: if gameover indicate how: 'time/checkmate/3foldrep...'
         if (this.engine.game_over()) {
-            // this.game_over = true
             this.Scene.uiActions.endGame()
             // this.piecesContainer.removeAllFromScene()
         }
+    }
+    
+    endGame(info){ // { winningColor: white || black, way: resign || draw || abandon}
+        // this.engine.reset()
+        // this.game_over = true
+        this.Scene.uiActions.endGame(info)
+        // todo highlight losers kingSq white
     }
     isPromoting(move) {
         let engine = this.getCurrentEngine()
@@ -96,6 +104,18 @@ export default class Game {
     promptPieceSelect() {
         return new Promise(this.Scene.uiActions.controls.openPieceSelect)
     }
+
+    abandon(){
+        Api.sendMove('abandon', this.gameId)
+    }
+    resign(){
+        Api.sendMove('resign', this.gameId)
+    }
+    offerDraw(){
+        Api.sendMove('offer_draw', this.gameId)
+    }
+
+
     // getCapturePieces(color) {
     //     const captured = {'p': 0, 'n': 0, 'b': 0, 'r': 0, 'q': 0}
     //     for (const move of this.engine.history({ verbose: true })) {

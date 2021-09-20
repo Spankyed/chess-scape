@@ -39,7 +39,7 @@ const Scene = new class {
 /
         engine.runRenderLoop(_ => scene.render()) // todo: manually render scene updates with xstate activities?
 
-        window.interact = {engine: engine, scene: this, game, board}
+        window.interact = { engine: engine, scene: this, game, board }
 
         Object.assign(this, {
             canvas, engine, scene,  
