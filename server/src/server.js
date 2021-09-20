@@ -6,10 +6,11 @@
 import fastify from 'fastify'
 import fastifyCors from 'fastify-cors'
 import fastifyWebsocket from 'fastify-websocket'
-import http from './api/http.mjs'
-import websocket from './api/websocket.mjs'
-const { handleUsersHttp,  handleRoomsHttp, handleSearchHttp, } = http
-const { handleRoomsWebSocket } = websocket
+import http from './api/http/http.mjs'
+import websocket from './api/websocket/websocket.mjs'
+import state from './state.js'
+const { handleUsersHttp,  handleRoomsHttp, handleSearchHttp, } = http(state)
+const { handleRoomsWebSocket } = websocket(state)
 
 let server = fastify()
 // fastify.register(require('fastify-sensible'))
