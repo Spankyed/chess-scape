@@ -2,6 +2,7 @@ node_modules
 dist
 build
 .cache
+.parcel-cache
 package-lock.json
 yarn.lock
 .DS_Store
