@@ -1,49 +1,46 @@
 {
-  "name": "dobbers-inc",
-  "author": "AbuDobby",
-  "version": "1.0.0",
-  "description": "Dobby Private Network (Vishva)",
-  "repository": "https://github.com/spankyed/dobby.git",
-  "license": "MIT",
-  "scripts": {
-    "dev": "parcel src/ui/index.html -p 3000",
-    "build": "parcel build src/ui/index.html -d build --no-source-maps --experimental-scope-hoisting"
-  },
-  "staticFiles": {
-    "staticPath": [
-      {
-        "staticPath": "src/assets",
-        "staticOutDir": "/assets"
-      }
-    ]
-  },
-  "dependencies": {
-    "@hyperapp/logger": "^0.5.0",
-    "@xstate/inspect": "^0.5.0",
-    "babylonjs": "^3.3.0",
-    "bson": "^4.4.1",
-    "buffer": "^6.0.3",
-    "chess.js": "^0.12.0",
-    "file-saver": "^2.0.5",
-    "hyperapp": "1.2.9",
-    "nanoid": "^3.1.23",
-    "reconnecting-websocket": "^4.4.0",
-    "rxjs": "^7.2.0",
-    "utilities": "^1.0.5",
-    "xstate": "^4.23.2"
-  },
-  "devDependencies": {
-    "@babel/core": "7.1.0",
-    "@babel/preset-env": "7.1.0",
-    "@babel/preset-react": "7.0.0",
-    "autoprefixer": "^10.3.1",
-    "del-cli": "1.1.0",
-    "parcel-bundler": "1.10.1",
-    "postcss": "^8.3.5",
-    "sass": "^1.35.2",
-    "tailwindcss": "^2.2.4"
-  },
-  "browserslist": [
-    "last 2 Chrome versions"
-  ]
+	"name": "chess-scape",
+	"author": "Angel",
+	"version": "1.0.0",
+	"description": "Jus'another chess app",
+	"repository": "https://github.com/spankyed/chess-scape",
+	"license": "MIT",
+	"scripts": {
+		"dev": "parcel src/ui/index.html -p 3000",
+		"build": "parcel build src/ui/index.html -d build --no-source-maps --experimental-scope-hoisting"
+	},
+	"staticFiles": {
+		"staticPath": [
+			{
+				"staticPath": "src/assets",
+				"staticOutDir": "/assets"
+			}
+		]
+	},
+	"dependencies": {
+		"@hyperapp/logger": "^0.5.0",
+		"@xstate/inspect": "^0.5.0",
+		"babylonjs": "^3.3.0",
+		"bson": "^4.4.1",
+		"buffer": "^6.0.3",
+		"chess.js": "^0.12.0",
+		"file-saver": "^2.0.5",
+		"hyperapp": "1.2.9",
+		"nanoid": "^3.1.23",
+		"reconnecting-websocket": "^4.4.0",
+		"rxjs": "^7.2.0",
+		"utilities": "^1.0.5",
+		"xstate": "^4.23.2"
+	},
+	"devDependencies": {
+		"@babel/core": "7.1.0",
+		"@babel/preset-env": "7.1.0",
+		"@babel/preset-react": "7.0.0",
+		"autoprefixer": "^10.3.1",
+		"del-cli": "1.1.0",
+		"parcel-bundler": "1.10.1",
+		"postcss": "^8.3.5",
+		"sass": "^1.35.2",
+		"tailwindcss": "^2.2.4"
+	}
 }
