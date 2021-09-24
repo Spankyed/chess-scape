@@ -4,128 +4,177 @@ import { nanoid } from 'nanoid/non-secure'
 import { serialize, deserialize } from 'bson';
 import { Buffer } from 'buffer';
 
-// const baseAPIUrl = 'http://localhost:90001'
+// const baseHttpUrl = "http://localhost:9001";
 // const baseWSUrl = 'ws://localhost:3001'
-const baseAPIUrl = 'http://localhost:5000/api'
-const baseWSUrl = 'ws://localhost:5000/api'
-let clientId = nanoid()//localStorage.getItem('clientId'),
-let gameId = null
+// const baseHttpUrl = 'http://localhost:5000/api'
+const baseWSUrl = "ws://localhost:5000/api";
+let clientId = nanoid(); //localStorage.getItem('clientId'),
+let gameId = null;
 let connection,
+	// Message Received handlers
+	handlers = {
+		// connect: msg => console.log(msg.clientId), // already setting clientId onentrance
+		// connect: msg => clientId = msg.clientId, // can't set const
+		// join: msg => gameId ??= msg.gameId,
+		create: (_) => _,
+		join: (_) => _,
+		move: (_) => _,
+		chat: (_) => _,
+		share: (msg) => handlers[msg.type]?.(msg),
+		video: (_) => _,
+		music: (_) => _,
+	};
 
-// Message Received handlers
-handlers = {
-	// connect: msg => console.log(msg.clientId), // already setting clientId onentrance
-	// connect: msg => clientId = msg.clientId, // can't set const
-	// join: msg => gameId ??= msg.gameId,
-	create: _=>_, join: _=>_, move: _=>_, chat: _=>_, 
-	share: msg => handlers[msg.type]?.(msg),
-	video:_=>_, music:_=>_
+function setMessageHandlers(newHandlers) {
+	Object.assign(handlers, newHandlers);
 }
 
-function createConnection(){
+function createConnection() {
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
-	connection = new ReconnectingWebSocket(baseWSUrl + '/rooms', clientId);
-	if (connection) console.log(`%c Connected [${clientId}]`,"color:white;", {connection})
-	connection.addEventListener('message', ({data}) => { // handle incoming messages from connected client 
-		let isBinary = data instanceof ArrayBuffer
+	connection = new ReconnectingWebSocket(baseWSUrl + "/rooms", clientId);
+	if (connection)
+		console.log(`%c Connected [${clientId}]`, "color:white;", {
+			connection,
+		});
+	connection.addEventListener("message", ({ data }) => {
+		// handle incoming messages from connected client
+		let isBinary = data instanceof ArrayBuffer;
 		// let isBinary = Buffer.isBuffer(data)
-        let message = isBinary ? deserialize(Buffer.from(data), {promoteBuffers: true}) : JSON.parse(data)
-        if (!message) return
-		console.log(`%c Message received [${message.method}]`,"color:green;", {message})
-		const messageHandler = handlers[message.method]
-		if (messageHandler) messageHandler(message)
-	})
+		let message = isBinary
+			? deserialize(Buffer.from(data), { promoteBuffers: true })
+			: JSON.parse(data);
+		if (!message) return;
+		console.log(`%c Message received [${message.method}]`, "color:green;", {
+			message,
+		});
+		const messageHandler = handlers[message.method];
+		if (messageHandler) messageHandler(message);
+	});
 	// setTimeout(_=> connection.reconnect(), 4000)
 }
 
-// Send message wrappers
-function createGame(params){ sendMessage({ method: "create", ...params }) }
-
-function joinGame(id){ 
-	gameId ??= id; 
-	sendMessage({ method: "join", gameId }) 
+// ** --------------------------------------------------------------------------
+// **  Send Message Wrappers
+// ** --------------------------------------------------------------------------
+function joinGame(id) {
+	gameId ??= id;
+	sendMessage({ method: "join", gameId });
 }
 
-function leaveGame(id){ 
-	sendMessage({ method: "leave", gameId }) 
-	gameId = null; 
+function leaveGame(id) {
+	sendMessage({ method: "leave", gameId });
+	gameId = null;
 }
 
-function sendMove(move){ sendMessage({ method: "move", move }) }
+function sendMove(move) {
+	sendMessage({ method: "move", move });
+}
 
-function sendChat(text){ sendMessage({ method: "chat", text }) }
-
-// function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
-
-function shareMusic(songData, rawData){ 
-	let {src, ...song} = songData
-	let BSON = serialize({ 
-		method: "share", type: "music", gameId, song, // clientId, // add clientId to msg after testing/development
-		rawData: Buffer.from(rawData) 
-	})
-	// let bson = serialize({ method: "share", type: "music", blob: rawData }) // test when rawData is type blob fails, file converted to obj and binary data loss 
-	connection.send(BSON) 
-	console.log(`%c Song data sent`,"color:orange;", deserialize(BSON, {promoteBuffers: true}))
+function sendChat(text) {
+	sendMessage({ method: "chat", text });
 }
 
 // function shareMusic(rawData){ connection.send(rawData) }
-
-function shareVideo(videoId){ sendMessage({ method: "share", type: "video", videoId }) }
-
-function sendMessage(message){
-	connection.send(JSON.stringify({ ...(gameId && {gameId}), ...message}))
-	console.log(`%c Message sent [${message.method}]`,"color:orange;", {...message, clientId, gameId})
+// function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
+function shareMusic(songData, rawData) {
+	let { src, ...song } = songData;
+	let BSON = serialize({
+		method: "share",
+		type: "music",
+		gameId,
+		song, // clientId, // add clientId to msg after testing/development
+		rawData: Buffer.from(rawData),
+	});
+	// let bson = serialize({ method: "share", type: "music", blob: rawData }) // test when rawData is type blob fails, file converted to obj and binary data loss
+	connection.send(BSON);
+	console.log(
+		`%c Song data sent`,
+		"color:orange;",
+		deserialize(BSON, { promoteBuffers: true })
+	);
 }
 
-function restartConnection(){
-	if (connection) return
-	else createConnection()
+function shareVideo(videoId) {
+	sendMessage({ method: "share", type: "video", videoId });
 }
 
-function setMessageHandlers(newHandlers) {
-	Object.assign(handlers, newHandlers)
+function sendMessage(message) {
+	connection.send(JSON.stringify({ ...(gameId && { gameId }), ...message }));
+	console.log(`%c Message sent [${message.method}]`, "color:orange;", {
+		...message,
+		clientId,
+		gameId,
+	});
 }
 
-async function fetchRooms(){
-	const method = 'GET';
-	const headers = {'Content-Type': 'application/json; charset=utf-8' };
-	const url = `${baseAPIUrl}/rooms` 
-	const response = await fetch(url, { method, headers })
+function restartConnection() {
+	if (connection) return;
+	else createConnection();
+}
+
+// ** --------------------------------------------------------------------------
+// **  Http Request Wrappers
+// ** --------------------------------------------------------------------------
+// todo: wrap below in try-catches?
+async function fetchRooms() {
+	const method = "GET";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const url = `${baseHttpUrl}/get-rooms`;
+	const response = await fetch(url, { method, headers });
 	if (response.ok) {
-		const rooms = await response.json()
-		console.log('%c Room List',"color:blue;", {rooms})
-		return rooms
+		const rooms = await response.json();
+		console.log("%c Room List", "color:blue;", { rooms });
+		return rooms;
 	}
 }
-async function setUser(username){
-	const method = 'POST';
-	const headers = {'Content-Type': 'application/json; charset=utf-8' };
-	const body = JSON.stringify({ username })
-	const url = `${baseAPIUrl}/user` 
-	// todo: wrap below in try catch?
-	const response = await fetch(url, { method, headers, body })
+async function createGame(options) {
+	const method = "POST";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const body = JSON.stringify({ options });
+	const url = `${baseHttpUrl}/create-room`;
+	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
-		const userData = await response.json()
-		console.log('%c User Data',"color:blue;", {userData})
-		localStorage.setItem('clientId', userData.clientId);
-		clientId = userData.clientId
-		return userData
+		const room = await response.json();
+		console.log("%c New Room", "color:blue;", { room });
+		return room;
 	} else if (response.status === 401) {
 		clearSession();
 	}
-	function clearSession () { localStorage.removeItem('clientId') }
+	function clearSession() {
+		localStorage.removeItem("clientId");
+	}
 }
-async function searchSongImage(title){
-	const method = 'POST';
-	const headers = {'Content-Type': 'application/json; charset=utf-8' };
-	const body = JSON.stringify({ title })
-	const url = `${baseAPIUrl}/search`
-	const response = await fetch(url, { method, headers, body })
+async function setUser(username) {
+	const method = "POST";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const body = JSON.stringify({ username });
+	const url = `${baseHttpUrl}/user`;
+	// todo: wrap below in try catch?
+	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
-		const imageSrc = await response.json()
-		console.log('%c Song image',"color:blue;", {imageSrc})
-		return imageSrc
+		const userData = await response.json();
+		console.log("%c User Data", "color:blue;", { userData });
+		localStorage.setItem("clientId", userData.clientId);
+		clientId = userData.clientId;
+		return userData;
+	} else if (response.status === 401) {
+		clearSession();
+	}
+	function clearSession() {
+		localStorage.removeItem("clientId");
+	}
+}
+async function searchSongImage(title) {
+	const method = "POST";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const body = JSON.stringify({ title });
+	const url = `${baseHttpUrl}/search`;
+	const response = await fetch(url, { method, headers, body });
+	if (response.ok) {
+		const imageSrc = await response.json();
+		console.log("%c Song image", "color:blue;", { imageSrc });
+		return imageSrc;
 	}
 }
 
