@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="filter_1">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.7921569 0 0 0 0 0.92941177 0 0 0 0 0.90588236 0 0 0 1 0" />
+    </filter>
+    <path d="M0 0L16 0L16 16L0 16L0 0Z" id="path_1" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+  </defs>
+  <g id="lock" filter="url(#filter_1)">
+    <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+    <g clip-path="url(#mask_1)">
+      <path d="M2 4L2 6L1.75 6C0.783502 6 0 6.7835 0 7.75L0 13.25C0 14.216 0.784 15 1.75 15L10.25 15C11.2165 15 12 14.2165 12 13.25L12 7.75C12 6.7835 11.2165 6 10.25 6L10 6L10 4C10 1.79087 8.20915 5.72206e-06 6.00001 1.37121e-11C3.79088 -5.72203e-06 2.00001 1.79084 2 3.99998L2 4ZM8.5 6L8.5 4C8.5 2.61929 7.38072 1.5 6.00001 1.5C4.6193 1.5 3.50001 2.61928 3.5 3.99999L3.5 6L8.5 6L8.5 6ZM10 7.5L10.25 7.5C10.3881 7.5 10.5 7.61193 10.5 7.75L10.5 13.25C10.5 13.3881 10.3881 13.5 10.25 13.5L1.75 13.5C1.61193 13.5 1.5 13.3881 1.5 13.25L1.5 7.75C1.5 7.61193 1.61193 7.5 1.75 7.5L10 7.5L10 7.5Z" transform="translate(2 0)" id="Shape" fill="#000000" fill-rule="evenodd" stroke="none" />
+    </g>
+  </g>
+</svg>

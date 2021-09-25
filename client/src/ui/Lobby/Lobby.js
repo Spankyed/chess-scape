@@ -1,5 +1,5 @@
 import { h } from 'hyperapp';
-import Create from './create';
+import Create from "./create/create";
 // import './lobby.scss';
 import Api from '../../api/Api';
 

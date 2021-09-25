@@ -1,0 +1,187 @@
+.create-wrapper {
+    .selected{
+        box-shadow:#cddc39 0px 0px 10px 7px !important;
+    }
+    select{
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        text-align: center;
+        text-indent: 1px;
+        text-overflow: '';
+        &::-ms-expand {
+            display: none;
+        }
+        option{
+            padding-left: 5px;
+            padding-right: 5px;
+            background-color: #4d310a;
+        }
+        &.increment{
+            text-align: end;
+        }
+    }
+
+    transition: all 0.35s;
+
+    .create {
+        width: 100%;
+        height: 100%;
+        transition: all 0.35s;
+        font-size: 1.2rem !important;
+        color:#fff;
+        .choose-color {
+            max-height: 15vh;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            background-color: #4caf50;
+            .piece-color{
+                z-index:20;
+                padding: 10px;
+                max-height: 120px;
+                margin: 10px;
+                &.selected{
+                    background-color: #4caf50;
+                }
+            }
+        }
+        .create-content{
+            max-height: 70vh;
+            // scroll bar styling courtesy of  https://jsfiddle.net/vsj6qb8c/6/
+            &::-webkit-scrollbar {
+                width: 20px;
+                border-width: 5px;
+            }
+            &::-webkit-scrollbar-track {
+                margin-top:0rem;
+                background: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+                --container-background-color: rgba(55,65,81,1);
+                background-color: #ebedf5;
+                // border-radius: 8px;
+                border-color: var(--container-background-color);
+                border-style: solid;
+                border-width: 1px 4px 1px 7px;
+            }
+            &::-webkit-scrollbar-track-piece {
+                --container-background-color: rgba(55,65,81,1);
+                background-color: #8f8f8f;
+                border-color: var(--container-background-color);
+                border-width: 2px 9px 2px 9px;
+                border-style: solid;
+            }
+        }
+        .custom  {
+            .control {
+                --borderHeight: .1rem;
+                --borderColor: hsla(0,0%,100%,0.05);
+                --secondaryBorderColor: transparent;
+                --basicBgColor: #202329;
+                min-height: 45px;
+                width: 100%;
+                word-break: break-word;
+                // align-items: center;
+                border: 0;
+                border-radius: .5rem;
+                box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
+                display: inline-flex;
+                font-size: 1.7rem !important;
+                // justify-content: center;
+                margin-bottom: var(--borderHeight);
+                max-width: 100%;
+                overflow: hidden;
+                padding-left: var(--buttonPaddings,.5rem 2rem);
+                padding-right: var(--buttonPaddings,.5rem 2rem);
+                position: relative;
+                // text-align: center;
+                background-color: var(--basicBgColor);
+                color: var(--basicColor,#666463);
+
+                .ctrl-secondary {
+                    font-size: 1.4rem !important;
+                    background-color: #4d310a;
+                    position: absolute;
+                    top: 0px;
+                    bottom: 0px;
+                    right: 0px;
+                    display: flex;
+                    align-items: center;
+                }
+                .minutes-input{
+                    width: 33%;
+                    margin-top: 0.25rem;
+                    position: relative;
+                    text-align: center;
+                    position: relative;
+                    display: inline-block;
+                    input{
+                        font-size: 1.7rem !important;
+                        &::-webkit-outer-spin-button,
+                        &::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                        }
+
+                        /* Firefox */
+                        &[type=number] {
+                        -moz-appearance: textfield;
+                        }
+                        &:focus { 
+                            outline: none; 
+                        }
+                    }
+                    .minutes-suffix {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                    }
+                }
+            }
+        
+            .opp-option-wrapper{
+                .computer-skill-menu{
+                    select{
+                        background:none;
+                    }
+                }
+                &:not(:last-child) {
+                    margin-bottom: .2rem;
+                    border-color: rgba(243,244,246,1 );
+                    border-bottom-width: 2px;
+                }
+            }
+            .selected-opponent{
+                min-height: 50px;
+                background-color: var(--basicBgColor,#dbd9d7);
+                display: inline-flex;
+                font-size: 1.7rem !important;
+                color: var(--basicColor,#666463);
+            }
+
+            .pin-protect{   
+                .lock{
+                    opacity: 40%; 
+                }
+                .pin-wrapper{
+                    // width: 27.5%;
+                    input{
+                        appearance: none;
+                            outline: none; 
+                        background: none;
+                        &:focus{
+                            outline: none; 
+                            
+                            appearance: none;
+                        }
+                    }
+                }
+
+            }
+
+            select:focus { outline: none; }
+        }
+    }
+
+}
+
