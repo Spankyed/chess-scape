@@ -37,15 +37,19 @@ const view = ( state, actions ) => {
 
 	return (
 		<div class="h-full">
-		{	!state.authorized ?
-			<EntranceView authorize={ actions.authorize }/> :
-			( state.inGame ?
-				<GameRoomView gameId={state.gameId} leaveGame={actions.leaveGame}/> :
-				<LobbyView joinGame={actions.joinGame}/> 
-			)
-		}
+			{/* {!state.authorized ? ( */}
+			{true ? (
+				<EntranceView authorize={actions.authorize} />
+			) : state.inGame ? (
+				<GameRoomView
+					gameId={state.gameId}
+					leaveGame={actions.leaveGame}
+				/>
+			) : (
+				<LobbyView joinGame={actions.joinGame} />
+			)}
 		</div>
-	)
+	);
 }
 
 // export const App = app(state, actions, view, document.body); //withLogger(app)(state, actions, view, document.body);

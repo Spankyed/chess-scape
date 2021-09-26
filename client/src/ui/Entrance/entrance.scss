@@ -1,7 +1,47 @@
 .entrance {
-//BUTTON 3
-    /** EVEN BETTER */
     input[type=email]:not(:placeholder-shown):invalid {
+        //BUTTON 3
+        /** EVEN BETTER */
         color: red;
+    }
+    
+    background-color: #64533B;
+    font-size: 1.7rem;
+
+    input{
+        appearance: none;  
+        &:focus{
+            outline: none;
+        }
+    }
+    .rating{
+        width: 100%;
+        align-items: center;
+        display: flex;
+        .rating-menu{
+            background-color: #32291d;
+
+            .rating-option{
+                margin:.2rem;
+                // padding:.5rem;
+                width:100%;
+                transition: all .3 cubic-bezier(0.39, 0.575, 0.565, 1) ;
+                &:hover{
+                    background-color: #64533B;
+                }
+                &.selected{
+                    background-color: #64533B;
+                }
+            }
+
+        }
+    }
+
+    .part:not(:last-child) {
+        margin-bottom: .6rem;
+    }
+
+    .save{
+        background-color: #80a353;
     }
 }
