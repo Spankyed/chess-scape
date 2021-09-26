@@ -1,5 +1,5 @@
 {
-	"name": "chess-scape",
+	"name": "chess-scape-backend",
 	"version": "1.0.0",
 	"description": "",
 	"main": "webpack.config.js",
