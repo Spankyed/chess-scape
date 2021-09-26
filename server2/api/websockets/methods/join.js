@@ -5,7 +5,7 @@ const { withHooks, hooksWithSchema } = require("../../common/hooks");
 const clientsTable = process.env.clientsTableName;
 
 // const schema = {
-// 	body: { room: "number", clientID: "number"  },
+// 	body: { room: "string", clientID: "number"  },
 // };
 
 module.exports = async function ({ clientID, message }) {

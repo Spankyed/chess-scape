@@ -136,7 +136,7 @@ async function fetchRooms() {
 async function createGameRoom(options) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ options });
+	const body = JSON.stringify({ ...options });
 	const url = `${baseHttpUrl}/create-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
