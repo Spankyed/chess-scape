@@ -1,7 +1,9 @@
 import { h } from "hyperapp";
 // todo: if in game and websocket disconnects, reconnect
 import Api from "../../../api/Api";
-import { Custom } from "./custom";
+import Custom from "./Custom";
+
+const custom = Custom();
 
 const gameTypes = [
 	{
@@ -32,49 +34,72 @@ const gameTypes = [
 export default (initial) => ({
 	state: {
 		selectedColor: "random",
-		selectedGameType: gameTypes[0],
+		selectedGameType: 0,
 		gameTypes,
-		customType: {},
+		custom: custom.state,
+		submitText: "Create Room",
 	},
 	actions: {
+		custom: custom.actions,
 		selectColor: (color) => (state) => ({
 			selectedColor: color,
 		}),
-		selectGameType: (id) => (state) => ({
-			selectedGameType: state[id],
+		selectGameType: (gameType) => (state) => ({
+			selectedGameType: gameType,
 		}),
-		setCustomProp:
-			({ prop, value }) =>
-			(state) => {
-				return {
-					customType: { ...state.customType, [prop]: value },
-				};
-			},
+		attemptSubmit: () => ({
+			attemptingSubmit: true,
+			submitText: "Please wait...",
+			error: { show: false },
+		}),
+		endAttempt: () => ({
+			attemptingSubmit: false,
+			submitText: "Create Room",
+		}),
 	},
 	view:
-		({ gameTypes, selectedColor, selectedGameType, customType }, actions) =>
+		(state, actions) =>
 		({ showCreate, toggleCreate }) => {
+			const { gameTypes, selectedColor, selectedGameType } = state;
+			const CustomView = custom.view(state.custom, actions.custom);
+
 			// todo close modal using esc key
 			const toggle = (ev) => {
 				ev.stopPropagation();
 				toggleCreate();
 			};
 
-			const create = (ev) => {
+			const create = async (ev) => {
 				ev.stopPropagation();
 				const random = Math.random() >= 0.5 ? 1 : 0;
+				const {
+					opponents,
+					isSelectingOpp, // remove custom state props
+					...customOptions
+				} = state.custom;
+				const { src, ...gameOptions } = selectedGameType;
 				let gameRoom = {
 					selectedColor:
 						selectedColor == "random"
-							? [("white", "black")][random()]
+							? [("white", "black")][random]
 							: selectedColor,
-					selectedGameType:
+					gameType:
 						selectedGameType == "custom"
-							? customType
-							: selectedGameType,
+							? customOptions
+							: gameOptions,
 				};
-				Api.createGame(gameRoom);
-				toggleCreate();
+				try {
+					actions.attemptSubmit();
+					let room = await Api.createGameRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
+					if (room) {
+						toggleCreate();
+					}
+					actions.endAttempt();
+				} catch (err) {
+					console.log(err);
+					// if (!err.hidden) actions.showError(err);
+					actions.endAttempt();
+				}
 			};
 
 			return (
@@ -98,24 +123,32 @@ export default (initial) => ({
 								<span class="text-sm">(Esc)</span>
 							</div> */}
 
-								<ColorSelect {...actions} />
+								<ColorSelect
+									{...actions}
+									{...{ selectedColor }}
+								/>
 
 								{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
 								<div class="create-content py-4 text-left px-6 overflow-auto">
 									{/* <!--Title--> */}
 									<div class="justify-between items-center grid grid-cols-2 gap-5 w-full">
-										{gameTypes.map((type, idx) => (
-											<GameType {...{ type, idx }} />
+										{gameTypes.map((type) => (
+											<GameType
+												{...actions}
+												{...{
+													type,
+													selectedGameType,
+												}}
+											/>
 										))}
 									</div>
 
-									<Custom
+									<CustomView
 										{...actions}
 										{...{
-											gameTypes,
-											selectedColor,
+											selectGameType:
+												actions.selectGameType,
 											selectedGameType,
-											customType,
 										}}
 									/>
 								</div>
@@ -130,12 +163,16 @@ export default (initial) => ({
 		},
 });
 
-function ColorSelect({ selectColor }) {
+function ColorSelect({ selectedColor, selectColor }) {
 	const colors = ["white", "random", "black"];
 	return (
-		<div class="choose-color">
+		<div class="choose-color cursor-pointer">
 			{colors.map((color, idx) => (
-				<div class={`piece-color ${idx == 1 && "selected"}`}>
+				<div
+					class={`piece-color ${
+						color == selectedColor && "selected"
+					}`}
+				>
 					<img
 						id={`color-select-${color}`}
 						onclick={(_) => selectColor(color)}
@@ -149,11 +186,13 @@ function ColorSelect({ selectColor }) {
 	);
 }
 
-function GameType({ type, idx }) {
+function GameType({ type, selectGameType, selectedGameType }) {
 	return (
 		<div
-			onclick={() => selectGameType(idx)}
-			class={`bg-green-200 py-2 rounded-md ${idx == 2 && "selected"}`}
+			onclick={() => selectGameType(type)}
+			class={`cursor-pointer bg-green-200 py-2 rounded-md ${
+				type == selectedGameType && "selected"
+			}`}
 			style="min-height:85px"
 		>
 			<div class="flex">

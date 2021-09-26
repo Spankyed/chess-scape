@@ -133,7 +133,7 @@ async function fetchRooms() {
 	}
 }
 
-async function createGame(options) {
+async function createGameRoom(options) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
 	const body = JSON.stringify({ options });
@@ -142,6 +142,7 @@ async function createGame(options) {
 	if (response.ok) {
 		const room = await response.json();
 		console.log("%c New Room", "color:blue;", { room });
+		// dont do anything with response, websocket message should be sent to update room list in lobby
 		return room;
 	} else if (response.status === 401) {
 		clearSession();
@@ -192,7 +193,7 @@ export default {
 	createConnection,
 	restartConnection,
 	setMessageHandlers,
-	createGame,
+	createGameRoom,
 	joinGame,
 	sendMove,
 	sendChat,

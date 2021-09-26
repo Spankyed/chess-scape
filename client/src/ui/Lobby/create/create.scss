@@ -1,6 +1,6 @@
 .create-wrapper {
     .selected{
-        box-shadow:#cddc39 0px 0px 10px 7px !important;
+        box-shadow:#cddc39 0px 0px 5px 3px !important;
     }
     select{
         -webkit-appearance: none;
@@ -140,6 +140,11 @@
             }
         
             .opp-option-wrapper{
+                &.opp-option{
+                    &:hover{
+                        box-shadow:#cddc39 0px 0px 5px 3px !important;
+                    }
+                }
                 .computer-skill-menu{
                     select{
                         background:none;

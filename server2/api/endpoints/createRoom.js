@@ -15,14 +15,13 @@ const handler = async (event) => {
 	room.ID = await nanoid();
 	console.log("room: ", room);
 
-	// const newRoom = await Dynamo.write(room, roomsTable);
+	const newRoom = await Dynamo.write(room, roomsTable);
 
-	// if (!newRoom) {
-	// 	return Responses._400({ message: "Failed to add room with ID" });
-	// }
+	if (!newRoom) {
+		return Responses._400({ message: "Failed to add room with ID" });
+	}
 
-	return Responses._200({ room });
-	// return Responses._200({ newRoom });
+	return Responses._200({ newRoom });
 };
 
 exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);

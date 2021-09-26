@@ -1,44 +1,106 @@
 import { h } from "hyperapp";
 
-function Custom({ selectGameType, setCustomProp, customType }) {
-	const type = {
-		id: 4,
-		name: "Custom",
-		time: "— —",
-		src: `./assets/create/custom/custom.svg`,
-	};
-	return (
-		<div
-			onclick={() => selectGameType(type.id)}
-			class="custom bg-green-200 px-2 pb-2 rounded-md mt-5"
-		>
-			<div class="flex flex-col px-3">
-				<h2 class="w-full mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
-					{type.name}
-				</h2>
-				<div class="line-1 flex items-center justify-center w-full mb-2">
-					<div class="flex items-center justify-center w-full">
-						<TimeControl {...{ setCustomProp, customType }} />
-					</div>
-				</div>
-				{/* todo dropdown icon here to show more options */}
-				<OpponentSelect />
-				<PinProtect />
-			</div>
-		</div>
-	);
-}
+export default (initial) => ({
+	state: {
+		time: { minutes: 15, increment: "3" },
+		opponents: ["anyone", "angel", "computer"],
+		isSelectingOpp: false,
+		selectedOpp: "anyone",
+		computerSkill: "easy",
+		pinEnabled: false,
+		pin: null,
+	},
+	actions: {
+		setTime:
+			({ prop, value }) =>
+			({ time }) => ({ time: { ...time, [prop]: value } }),
+		setComputerSkill:(computerSkill)=>()=>({computerSkill}),
+		selectOpp: (selectedOpp) => () => ({
+			selectedOpp,
+			isSelectingOpp: false,
+		}),
+		toggleOppMenu:
+			() =>
+			({ isSelectingOpp }) => ({ isSelectingOpp: !isSelectingOpp }),
+		togglePin:
+			() =>
+			({ pinEnabled, pin }) => ({ pinEnabled: !pinEnabled, pin: !pinEnabled ? pin : null}),
+		setPin: (pin) => () => ({ pin }),
+	},
+	view:
+		(state, actions) =>
+		({ selectGameType, selectedGameType }) => {
+			const {
+				isSelectingOpp,
+				pinEnabled,
+				pin,
+				opponents,
+				selectedOpp,
+				computerSkill,
+				time,
+			} = state;
+			const { selectOpp, toggleOppMenu, togglePin, setPin, setTime, setComputerSkill } =
+				actions;
+			const type = { name: "Custom" };
 
-function TimeControl({ setCustomProp, customType }) {
-	console.log("minutes: ", customType.minutes);
+			return (
+				<div
+					onclick={() => selectGameType("custom")}
+					class="custom cursor-pointer bg-green-200 px-2 pb-2 rounded-md mt-5"
+				>
+					{selectedGameType != "custom" ? (
+						<div class="flex px-3 justify-center">
+							<img
+								class="flex-shrink h-10"
+								src="./assets/create/custom/custom.svg"
+							/>
+							<h2 class="w-1/3 mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
+								{type.name}
+							</h2>
+						</div>
+					) : (
+						<div class="flex flex-col px-3">
+							<h2 class="w-full mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
+								{type.name}
+							</h2>
+							<div class="line-1 flex items-center justify-center w-full mb-2">
+								<div class="flex items-center justify-center w-full">
+									<TimeControl {...{ setTime, time }} />
+								</div>
+							</div>
+							{/* todo dropdown icon here to show more options */}
+							<OpponentSelect
+								{...{
+									isSelectingOpp,
+									selectedOpp,
+									toggleOppMenu,
+									opponents,
+									selectOpp,
+									computerSkill,
+									setComputerSkill,
+								}}
+							/>
+							<PinProtect
+								{...{ setPin, togglePin, pinEnabled, pin }}
+							/>
+						</div>
+					)}
+				</div>
+			);
+		},
+});
+
+function TimeControl({ setTime, time }) {
+	const toPropVal = (prop, value) => ({prop, value})
 	const formatTime = (target) => {
-		target.value = Number(
+		return target.value = Number(
 			target.value
 				.toString()
 				.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
 				.substring(0, 2)
 		);
 	};
+
 	return (
 		<div class="control shadow-md relative flex">
 			<span class="ml-2 pl-3 flex items-center pointer-events-none w-12">
@@ -49,14 +111,14 @@ function TimeControl({ setCustomProp, customType }) {
 					time
 				</label>
 				<input
-					oninput={({ target }) => formatTime(target)}
+					oninput={({ target }) => setTime(toPropVal("minutes", formatTime(target)))}
 					type="number"
 					min="0"
 					max="60"
 					step="1"
 					name="time"
 					id="time"
-					value={15}
+					value={time.minutes}
 					class="focus:ring-indigo-500 focus:border-indigo-500 pl-7 bg-transparent"
 					placeholder="15"
 				/>
@@ -74,15 +136,17 @@ function TimeControl({ setCustomProp, customType }) {
 						+
 					</span>
 					<select
+						onchange={({target}) => setTime(toPropVal('increment', target.value))}
+						value={time.increment}
 						id="increment"
 						name="increment"
 						class="increment focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 px-3 bg-transparent"
 						style="margin-left: -10px;"
 					>
-						<option>1 sec</option>
-						<option selected>3 sec</option>
-						<option>10 sec</option>
-						<option>30 sec</option>
+						<option value="1">1 sec</option>
+						<option value="3">3 sec</option>
+						<option value="10">10 sec</option>
+						<option value="30">30 sec</option>
 					</select>
 				</div>
 			</div>
@@ -90,52 +154,82 @@ function TimeControl({ setCustomProp, customType }) {
 	);
 }
 
-function OpponentSelect({ toggleMenu }) {
+function OpponentSelect({
+	isSelectingOpp,
+	selectedOpp,
+	toggleOppMenu,
+	opponents,
+	selectOpp,
+	computerSkill,
+	setComputerSkill,
+}) {
 	return (
 		<div class="">
 			{/* {true ? ( */}
-			{false ? (
-				<SelectedOpponent {...{ toggleMenu }} />
+			{isSelectingOpp ? (
+				<OpponentMenu
+					{...{
+						opponents,
+						selectOpp,
+						selectedOpp,
+						computerSkill,
+						setComputerSkill,
+					}}
+				/>
 			) : (
-				<OpponentMenu {...{ toggleMenu }} />
+				<SelectedOpponent {...{ selectedOpp, toggleOppMenu }} />
 			)}
 		</div>
 	);
 }
 
-function SelectedOpponent({ opp }) {
-	const opponent = { who: "angel" };
+function SelectedOpponent({ selectedOpp, toggleOppMenu }) {
 	const capitalize = (string) =>
 		string.charAt(0).toUpperCase() + string.slice(1);
 	return (
-		<div class="opp-option-wrapper control mb-3 justify-center selected">
+		<div
+			onclick={toggleOppMenu}
+			class="cursor-pointer opp-option-wrapper control mb-3 justify-center"
+		>
 			<div class="w-3/4 flex justify-between mx-auto">
 				<span class="text-left pl-2">VS</span>
 				<img
 					class="w-8 "
-					src={`./assets/create/custom/${opponent.who}.svg`}
+					src={`./assets/create/custom/${selectedOpp}.svg`}
 				/>
-				<span class="text-left pl-2">{capitalize(opponent.who)}</span>
+				<span class="text-left pl-2">{capitalize(selectedOpp)}</span>
 				{/* todo add dropdown arrow here */}
 			</div>
 		</div>
 	);
 }
 
-function OpponentMenu() {
-	const options = [{ who: "anyone" }, { who: "angel" }, { who: "computer" }];
+function OpponentMenu({
+	opponents,
+	selectOpp,
+	selectedOpp,
+	computerSkill,
+	setComputerSkill,
+}) {
 	return (
 		<div class="w-full">
-			{options.map((option, idx) => (
+			{opponents.map((option) => (
 				<div
-					class={`opp-option-wrapper control mb-3 ${
-						idx == 1 && "selected"
+					class={`opp-option-wrapper opp-option control mb-3 ${
+						option == selectedOpp && "selected"
 					}`}
 				>
-					<div class="w-3/4 pl-4 flex items-center justify-center">
+					<div
+						onclick={() => selectOpp(option)}
+						class="w-3/4 pl-4 flex items-center justify-center"
+					>
 						<OpponentOption opponent={option} />
 					</div>
-					{option.who === "computer" && <ComputerSkillMenu />}
+					{option === "computer" && (
+						<ComputerSkillMenu
+							{...{ computerSkill, setComputerSkill }}
+						/>
+					)}
 				</div>
 			))}
 		</div>
@@ -145,48 +239,53 @@ function OpponentOption({ opponent }) {
 	const capitalize = (string) =>
 		string.charAt(0).toUpperCase() + string.slice(1);
 	return (
-		<div class="w-full flex pl-1">
-			<img
-				class="w-8"
-				src={`./assets/create/custom/${opponent.who}.svg`}
-			/>
+		<div class="w-full flex pl-1 cursor-pointer">
+			<img class="w-8" src={`./assets/create/custom/${opponent}.svg`} />
 			<span class="w-1/8 mx-2 text-lg text-center">vs</span>
-			<span class="text-left pl-2">{capitalize(opponent.who)}</span>
+			<span class="text-left pl-2">{capitalize(opponent)}</span>
 		</div>
 	);
 }
 
-function ComputerSkillMenu() {
+function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 	return (
 		<div class="computer-skill-menu ctrl-secondary absolute inset-y-0 right-0 flex items-center w-1/4">
 			<label for="difficulty" class="sr-only">
 				computer difficulty
 			</label>
 			<select
+				onchange={({ target }) =>
+					setComputerSkill(target.value)
+				}
+				value={computerSkill}
 				id="difficulty"
 				name="difficulty"
 				class="mr-3 focus:ring-indigo-500 
 				focus:border-indigo-500 h-full py-0 px-2 pr-3"
 				// focus:border-indigo-500 h-full py-0 pl-2 pr-1 bg-transparent"
 			>
-				<option>Rando</option>
-				<option selected>Easy</option>
-				<option>Hard</option>
-				<option>D00M</option>
+				<option value="random">Rando</option>
+				<option value="easy"> Easy </option>
+				<option value="hard">Hard</option>
+				<option value="doom">D00M</option>
 			</select>
 		</div>
 	);
 }
 
-function PinProtect() {
-	// comp-skill-sel absolute inset-y-0 right-0 flex items-center w-3/12
+function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 	return (
 		<div class="pin-protect control line-3 flex mt-2 w-full text-center relative">
 			<div class="pl-6">
 				<label class="flex text-center mx-auto justify-center sr-only">
 					Require pin
 				</label>
-				<input type="checkbox" class="form-checkbox h-5 w-5 mt-4" />
+				<input
+					type="checkbox"
+					class="form-checkbox h-5 w-5 mt-4"
+					onchange={(_) => togglePin()}
+					checked={pinEnabled}
+				/>
 			</div>
 			<div class="ml-4">Require Pin</div>
 			<div class="ctrl-secondary pin-wrapper w-1/4 absolute inset-y-0 right-0 flex items-center">
@@ -198,11 +297,14 @@ function PinProtect() {
 					<i class="fas fa-lock"></i>
 				</span>
 				<input
+					oninput={(e) => setPin(e.target.value)}
+					value={pin}
 					type="text"
 					pattern="\d*"
 					maxlength="4"
 					class="ml-6 pl-1 pin form-input w-full h-full"
 					placeholder="Pin"
+					disabled={!pinEnabled}
 				></input>
 			</div>
 		</div>
