@@ -1,0 +1,25 @@
+{
+	"name": "chess-scape",
+	"version": "1.0.0",
+	"description": "",
+	"main": "webpack.config.js",
+	"dependencies": {
+		"aws-sdk": "^2.991.0",
+		"lambda-hooks": "^0.2.1",
+		"yup": "^0.32.9"
+	},
+	"devDependencies": {
+		"serverless": "^2.59.0",
+		"serverless-dynamodb-local": "^0.2.40",
+		"serverless-offline": "^8.2.0",
+		"serverless-webpack": "^5.5.4",
+		"webpack": "^5.53.0"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SamWSoftware/ServerlessYoutubeSeries.git"
+	}
+}

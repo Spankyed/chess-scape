@@ -1,0 +1,22 @@
+clientsTableName: Clients
+roomsTableName: Rooms
+matchesTableName: Matches
+dynamodb: 
+  stages:
+    - local
+  start: 
+    port: 8000
+    inMemory: true
+    dbPath: offline/persist
+    migrate: true
+    # delayTransientStatuses: true # simulate real service latency
+  migration:
+    dir: offline/migrations
+
+serverless-offline:
+  # hideStackTraces: true
+  allowCache: false
+  httpPort: 9001
+  # websocketPort: 3001
+  # webSocketHardTimeout: 7200
+  # webSocketIdleTimeout: 600

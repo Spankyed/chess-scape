@@ -1,0 +1,60 @@
+Resources:
+  ClientsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.clientsTableName}
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+        - AttributeName: TOKEN
+          AttributeType: S
+        - AttributeName: connectionID
+          AttributeType: S
+        - AttributeName: room
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: token-index
+          KeySchema:
+            - AttributeName: TOKEN
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+        - IndexName: connection-index
+          KeySchema:
+            - AttributeName: connectionID
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+        - IndexName: room-index
+          KeySchema:
+            - AttributeName: room
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+  RoomsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.roomsTableName}
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+  MatchesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.matchesTableName}
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+# todo add matches table

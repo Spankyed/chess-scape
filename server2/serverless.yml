@@ -1,0 +1,28 @@
+service: chess-scape
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'local'}
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  profile: serverlessUser
+  region: us-east-1
+  environment: ${file(yml/environment.yml)}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource: '*'
+
+plugins:
+  # - serverless-webpack
+  - serverless-offline
+  - serverless-dynamodb-local
+
+custom: ${file(yml/variables.yml)}
+
+functions: ${file(yml/functions.yml)}
+
+resources:
+  - ${file(yml/dynamo.yml)}

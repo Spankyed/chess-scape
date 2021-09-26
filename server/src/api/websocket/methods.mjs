@@ -86,19 +86,26 @@ export default function(state){
         }
         sendMessageAll(response)
     }
-    function join({message, clientId}){ 
-        // const {gameId, clientId} = message;
-        const {gameId} = message;
-        const gameRoom = gameRooms[gameId];
-        if(!gameRoom) return
-        // const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
-        if (!gameRoom.clients.includes(clientId)) gameRoom.clients.push(clientId) 
-        // else // todo: reject client from joining - security
-        if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // todo: check max players instead of clients
-        const response = { "method": "join", gameId, clientId, matchStarted: gameRoom.matchStarted }
-        // todo: notify all clients in lobby a player has joined a gameRoom to update their room list 
-        gameRoom.clients.forEach( (clientId) => sendMessage(clientId, response) )
-    }
+    function join({ message, clientId }) {
+		// todo only send to users who are in room==lobby to update their list
+		// const {gameId, clientId} = message;
+		const { gameId } = message;
+		const gameRoom = gameRooms[gameId];
+		if (!gameRoom) return;
+		// const color =  {"0": "white", "1": "black"}[gameRoom.clients.length]
+		if (!gameRoom.clients.includes(clientId))
+			gameRoom.clients.push(clientId);
+		// else // todo: reject client from joining - security
+		if (gameRoom.clients.length === 2) gameRoom.matchStarted = true; // todo: check max players instead of clients
+		const response = {
+			method: "join",
+			gameId,
+			clientId,
+			matchStarted: gameRoom.matchStarted,
+		};
+		// todo: notify all clients in lobby a player has joined a gameRoom to update their room list
+		gameRoom.clients.forEach((clientId) => sendMessage(clientId, response));
+	}
     function leave({message, clientId}){ 
         const {gameId} = message;
         const gameRoom = gameRooms[gameId];

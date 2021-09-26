@@ -1,0 +1,56 @@
+createClient:
+  handler: api/endpoints/createClient.handler
+  events:
+    - http:
+        path: create-client
+        method: POST
+        cors: true
+createRoom:
+  handler: api/endpoints/createRoom.handler
+  events:
+    - http:
+        path: create-room
+        method: POST
+        cors: true
+getClient:
+  handler: api/endpoints/getClient.handler
+  events:
+    - http:
+        path: get-client/{ID}
+        method: GET
+        cors: true
+getRooms:
+  handler: api/endpoints/getRooms.handler
+  events:
+    - http:
+        path: get-rooms
+        method: GET
+        cors: true
+getRoomClients:
+  handler: api/endpoints/getRoomClients.handler
+  events:
+    - http:
+        path: get-room-clients/{room}
+        method: GET
+        cors: true
+
+websocket-connect:
+  handler: api/websockets/connect.handler
+  events:
+    - websocket:
+        route: $connect
+websocket-disconnect:
+  handler: api/websockets/disconnect.handler
+  events:
+    - websocket:
+        route: $disconnect
+websocket-default:
+  handler: api/websockets/default.handler
+  events:
+    - websocket:
+        route: $default
+websocket-message:
+  handler: api/websockets/message.handler
+  events:
+    - websocket:
+        route: message

@@ -1,0 +1,65 @@
+{
+	"Table": {
+		"TableName": "Clients",
+		"KeySchema": [
+			{
+				"AttributeName": "ID",
+				"KeyType": "HASH"
+			}
+		],
+		"AttributeDefinitions": [
+			{
+				"AttributeName": "ID",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "TOKEN",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "connectionID",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "room",
+				"AttributeType": "S"
+			}
+		],
+		"GlobalSecondaryIndexes": [
+			{
+				"IndexName": "token-index",
+				"KeySchema": [
+					{
+						"AttributeName": "TOKEN",
+						"KeyType": "HASH"
+					}
+				],
+				"Projection": { "ProjectionType": "ALL" }
+			},
+			{
+				"IndexName": "connection-index",
+				"KeySchema": [
+					{
+						"AttributeName": "connectionID",
+						"KeyType": "HASH"
+					}
+				],
+				"Projection": { "ProjectionType": "ALL" }
+			},
+			{
+				"IndexName": "room-index",
+				"KeySchema": [
+					{
+						"AttributeName": "room",
+						"KeyType": "HASH"
+					}
+				],
+				"Projection": { "ProjectionType": "ALL" }
+			}
+		],
+		"ProvisionedThroughput": {
+			"ReadCapacityUnits": 2,
+			"WriteCapacityUnits": 2
+		}
+	}
+}

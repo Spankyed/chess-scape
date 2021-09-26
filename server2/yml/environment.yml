@@ -1,0 +1,3 @@
+clientsTableName: ${self:custom.clientsTableName}
+roomsTableName: ${self:custom.roomsTableName}
+matchesTableName: ${self:custom.matchesTableName}
