@@ -4,11 +4,15 @@ import { nanoid } from 'nanoid/non-secure'
 import { serialize, deserialize } from 'bson';
 import { Buffer } from 'buffer';
 
-// const baseHttpUrl = "http://localhost:9001";
-// const baseWSUrl = 'ws://localhost:3001'
 // const baseHttpUrl = 'http://localhost:5000/api'
-const baseWSUrl = "ws://localhost:5000/api";
-let clientId = nanoid(); //localStorage.getItem('clientId'),
+// const baseWSUrl = "ws://localhost:5000/api";
+const baseHttpUrl = "http://localhost:9001/local";
+const baseWSUrl = 'ws://localhost:3001'
+const client = JSON.parse(localStorage.getItem("client") || '""');
+// let clientId = nanoid()
+// let TOKEN = null; // client.TOKEN || null
+let clientId = client.clientId || null
+let TOKEN = client.TOKEN || null
 let gameId = null;
 let connection,
 	// Message Received handlers
@@ -32,7 +36,7 @@ function setMessageHandlers(newHandlers) {
 function createConnection() {
 	// const protocol = { automaticOpen: false, debug: true }
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
-	connection = new ReconnectingWebSocket(baseWSUrl + "/rooms", clientId);
+	connection = new ReconnectingWebSocket(baseWSUrl + "/rooms", TOKEN);
 	if (connection)
 		console.log(`%c Connected [${clientId}]`, "color:white;", {
 			connection,
@@ -128,6 +132,7 @@ async function fetchRooms() {
 		return rooms;
 	}
 }
+
 async function createGame(options) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
@@ -142,27 +147,29 @@ async function createGame(options) {
 		clearSession();
 	}
 	function clearSession() {
-		localStorage.removeItem("clientId");
+		localStorage.removeItem("client");
 	}
 }
-async function setUser(username) {
+
+async function createClient(userInfo) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ username });
-	const url = `${baseHttpUrl}/user`;
+	const body = JSON.stringify(userInfo);
+	const url = `${baseHttpUrl}/create-client`;
 	// todo: wrap below in try catch?
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
-		const userData = await response.json();
-		console.log("%c User Data", "color:blue;", { userData });
-		localStorage.setItem("clientId", userData.clientId);
-		clientId = userData.clientId;
-		return userData;
+		const { newClient } = await response.json();
+		console.log("%c User Data", "color:blue;", { newClient });
+		clientId = newClient.ID;
+		TOKEN = newClient.TOKEN;
+		localStorage.setItem("client", JSON.stringify({ clientId, TOKEN }));
+		return newClient;
 	} else if (response.status === 401) {
 		clearSession();
 	}
 	function clearSession() {
-		localStorage.removeItem("clientId");
+		localStorage.removeItem("client");
 	}
 }
 async function searchSongImage(title) {
@@ -180,7 +187,7 @@ async function searchSongImage(title) {
 
 export default {
 	searchSongImage,
-	setUser,
+	createClient,
 	fetchRooms,
 	createConnection,
 	restartConnection,
@@ -190,7 +197,7 @@ export default {
 	sendMove,
 	sendChat,
 	shareVideo,
-	shareMusic
+	shareMusic,
 };
 
 function eraseCookie(name) {   

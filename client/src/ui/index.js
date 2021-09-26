@@ -12,33 +12,33 @@ const gameRoom = GameRoom()
 const lobby = Lobby()
 
 const state = {
-    entrance: entrance.state,
-    gameRoom: gameRoom.state,
-    lobby: lobby.state,
-	authorized: checkForId(),
-    inGame: false,
-	gameId: '',
-}
+	entrance: entrance.state,
+	gameRoom: gameRoom.state,
+	lobby: lobby.state,
+	authorized: checkForClient(),
+	inGame: false,
+	gameId: "",
+};
 
 const actions = {
-    entrance: entrance.actions,
-    gameRoom: gameRoom.actions,
-    lobby: lobby.actions,
-	authorize: () => ({authorized: true}),
-    // unauthorize: () => ({authorized: false}),
-    joinGame: (gameId) => ({ inGame: true, gameId }),
-    leaveGame: () => ({ inGame: false  })
-}
+	entrance: entrance.actions,
+	gameRoom: gameRoom.actions,
+	lobby: lobby.actions,
+	authorize: () => ({ authorized: true }),
+	// unauthorize: () => ({authorized: false}),
+	joinGame: (gameId) => ({ inGame: true, gameId }),
+	leaveGame: () => ({ inGame: false }),
+};
 
-const view = ( state, actions ) => {
-	const EntranceView = entrance.view(state.entrance, actions.entrance)
-	const GameRoomView = gameRoom.view(state.gameRoom, actions.gameRoom)
-	const LobbyView = lobby.view(state.lobby, actions.lobby)
+const view = (state, actions) => {
+	const EntranceView = entrance.view(state.entrance, actions.entrance);
+	const GameRoomView = gameRoom.view(state.gameRoom, actions.gameRoom);
+	const LobbyView = lobby.view(state.lobby, actions.lobby);
 
 	return (
 		<div class="h-full">
-			{/* {!state.authorized ? ( */}
-			{true ? (
+			{/* {true ? ( */}
+			{!state.authorized ? (
 				<EntranceView authorize={actions.authorize} />
 			) : state.inGame ? (
 				<GameRoomView
@@ -50,13 +50,13 @@ const view = ( state, actions ) => {
 			)}
 		</div>
 	);
-}
+};
 
 // export const App = app(state, actions, view, document.body); //withLogger(app)(state, actions, view, document.body);
-export default app(state, actions, view, document.body)
+export default app(state, actions, view, document.body);
 
-
-function checkForId() {
-	return localStorage.getItem('clientId');
+function checkForClient() {
+	const client = localStorage.getItem("client");
+	const info = JSON.parse(client || '""');
+	return info.TOKEN && info.clientId;
 }
-
