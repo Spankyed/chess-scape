@@ -17,7 +17,7 @@ const state = {
 	lobby: lobby.state,
 	authorized: checkForClient(),
 	inGame: false,
-	gameId: "",
+	roomID: "",
 };
 
 const actions = {
@@ -26,7 +26,7 @@ const actions = {
 	lobby: lobby.actions,
 	authorize: () => ({ authorized: true }),
 	// unauthorize: () => ({authorized: false}),
-	joinGame: (gameId) => ({ inGame: true, gameId }),
+	joinGame: (roomID) => ({ inGame: true, roomID }),
 	leaveGame: () => ({ inGame: false }),
 };
 
@@ -42,7 +42,7 @@ const view = (state, actions) => {
 				<EntranceView authorize={actions.authorize} />
 			) : state.inGame ? (
 				<GameRoomView
-					gameId={state.gameId}
+					roomID={state.roomID}
 					leaveGame={actions.leaveGame}
 				/>
 			) : (
@@ -58,5 +58,5 @@ export default app(state, actions, view, document.body);
 function checkForClient() {
 	const client = localStorage.getItem("client");
 	const info = JSON.parse(client || '""');
-	return info.TOKEN && info.clientId;
+	return info.TOKEN && info.clientID;
 }

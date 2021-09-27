@@ -16,7 +16,7 @@ const Scene = new class {
         this.pieces = _=> this._pieces;
         this.assetsManager;
     }
-    async setupGame(canvas, actions, gameId){
+    async setupGame(canvas, actions, roomID){
         // todo: add playerColor arg
         if(!canvas) console.warn('No canvas found')
         // this.uiActions = actions;
@@ -28,7 +28,7 @@ const Scene = new class {
         scene.manager.setEnv(canvas)
         // let board = new Board(this, scene, canvas); // dont use new
         let board = Board(this, scene, canvas); // dont use new
-        let game = new Game(this, gameId);
+        let game = new Game(this, roomID);
         let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
         // this.modelsLoaded = true;

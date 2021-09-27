@@ -25,7 +25,7 @@ export default initial => ({
 		changeTab: tab => state => ({ currTab: tab })
 	},
 
-	view: (state, actions) => ({gameId, alert}) => {
+	view: (state, actions) => ({roomID, alert}) => {
 		const {currTab} = state
 		const ChatView = chat.view(state.chat, actions.chat)
 		const MovesView = moves.view(state.moves, actions.moves)

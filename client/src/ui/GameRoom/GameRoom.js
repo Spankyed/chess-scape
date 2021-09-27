@@ -10,7 +10,7 @@ const sidePanel = SidePanel()
 const alert = Alert()
 
 // todo: alert users & handle reconnect if player disconnects in game,  
-// todo: when user leaves game remove clientId from game.clients 
+// todo: when user leaves game remove clientID from game.clients 
 export default initial => ({
 	state: { 
 		controls: controls.state,
@@ -33,23 +33,28 @@ export default initial => ({
 		hideLoader: () => () => ({isLoading: false}),
 		endGame: () => () => ({gameOver: true}),
 	},
-	view: (state, actions) => ({gameId, leaveGame}) => {
+	view: (state, actions) => ({roomID, leaveGame}) => {
 		const ControlsView = controls.view(state.controls, actions.controls)
 		const SidePanelView = sidePanel.view(state.sidePanel, actions.sidePanel)
 		const AlertView = alert.view(state.alert, actions.alert)
 		/* todo: on destroy, breakdown websocket and game */
-		return ( 
+		return (
 			<div class="h-full flex">
-				<Loader isLoading={state.isLoading} alert={actions.alert}/>
+				<Loader isLoading={state.isLoading} alert={actions.alert} />
 
 				<div class="relative flex-grow">
-					<ControlsView gameId={gameId} isLoading={state.isLoading} gameOver={state.gameOver} toggleSidePanel={actions.toggleSidePanel}/>
-					<Game gameId={gameId} actions={actions} state={state}/> 
-					<AlertView/>
+					<ControlsView
+						roomID={roomID}
+						isLoading={state.isLoading}
+						gameOver={state.gameOver}
+						toggleSidePanel={actions.toggleSidePanel}
+					/>
+					<Game {...{ roomID, actions, state }}/>
+					<AlertView />
 				</div>
 
-				<SidePanelView gameId={gameId} alert={actions.alert}/> 
+				<SidePanelView roomID={roomID} alert={actions.alert} />
 			</div>
-		)
+		);
 	}
 })

@@ -2,10 +2,10 @@ import { Chess } from 'chess.js';
 import Api from '../api/Api'; 
 
 export default class Game {
-    constructor(current, gameId){
+    constructor(current, roomID){
         this.Scene = current
         this.board = current.board
-        this.gameId = gameId
+        this.roomID = roomID
         this.isVsComputer = false;
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
@@ -47,7 +47,7 @@ export default class Game {
             if (this.isVsComputer) {
                 this.makeRandomMove()
             } else {
-                Api.sendMove(validMove, this.gameId)
+                Api.sendMove(validMove, this.roomID)
             }
             this.checkGameOver()
         }
@@ -106,13 +106,13 @@ export default class Game {
     }
 
     abandon(){
-        Api.sendMove('abandon', this.gameId)
+        Api.sendMove('abandon', this.roomID)
     }
     resign(){
-        Api.sendMove('resign', this.gameId)
+        Api.sendMove('resign', this.roomID)
     }
     offerDraw(){
-        Api.sendMove('offer_draw', this.gameId)
+        Api.sendMove('offer_draw', this.roomID)
     }
 
 

@@ -4,11 +4,11 @@ import Scene from '../../core/Scene';
 // todo: if in game and websocket disconnects, reconnect 
 // todo: make sure scene & resizeObserver get disposed when component unmount
 
-export default ({gameId, state, actions}) => {
+export default ({roomID, state, actions}) => {
 
 	const init = (canvas) => {
-		window.location.hash = `#${gameId}`
-		setTimeout(()=> Scene.setupGame(canvas, actions, gameId) , 500)
+		window.location.hash = `#${roomID}`
+		setTimeout(()=> Scene.setupGame(canvas, actions, roomID) , 500)
 		canvas.focus();
 	};
 	return ( 
