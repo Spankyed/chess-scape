@@ -29,7 +29,7 @@ export default (initial) => ({
 					gameRoom.ID == room.ID ? room : gameRoom
 				),
 			}),
-		addRoom: (room) => ({ gameRooms }) => ({ gameRooms: {...gameRooms, room} }),
+		addRoom: (room) => ({ gameRooms }) => ({ gameRooms: [...gameRooms, room] }),
 		removeRoom:
 			(room) =>
 			({ gameRooms }) => ({
@@ -49,7 +49,7 @@ export default (initial) => ({
 				Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				console.log("connection created");
 				Api.setMessageHandlers({
-					// create: (msg) => actions.updateRooms(msg.room),
+					create: (msg) => actions.addRoom(msg.newRoom),
 					join: onJoin,
 				});
 				// todo retry 3 times delayed if no rooms retrieved
