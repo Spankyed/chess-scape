@@ -52,7 +52,7 @@ const Dynamo = {
 		return data;
 	},
 	// https://stackoverflow.com/a/35051660/8723748 -- https://stackoverflow.com/questions/47415522/append-to-list-if-exist-or-add-list-in-dynamodb
-	async append({ TableName, primaryKey, primaryKeyValue, data }) {
+	async append({ TableName, primaryKey, primaryKeyValue, data, select }) {
 		const key = Object.keys(data)[0];
 		const keyNameExpr = `#${key}`;
 		const ExpressionAttributeNames = { [keyNameExpr]: key };
@@ -64,9 +64,15 @@ const Dynamo = {
 			Key: { [primaryKey]: primaryKeyValue },
 			ExpressionAttributeNames,
 			ExpressionAttributeValues,
-			ConditionExpression: `attribute_exists(${key})`,
+			// ConditionExpression: `attribute_exists(${key})`,
 			UpdateExpression,
+			ReturnValues: "ALL_NEW",
 		};
+		if (select) {
+			const projExpr = `#${select}`;
+			params.ExpressionAttributeNames[projExpr] = select;
+			params.ProjectionExpression = projExpr;
+		}
 		return documentClient.update(params).promise();
 	},
 
@@ -82,14 +88,14 @@ const Dynamo = {
 	},
 
 	remove: async ({
-		tableName,
+		TableName,
 		primaryKey,
 		primaryKeyValue,
 		attributeName,
 	}) => {
 		const keyExpr = `#${attributeName}`;
 		const params = {
-			TableName: tableName,
+			TableName,
 			Key: { [primaryKey]: primaryKeyValue },
 			UpdateExpression: `REMOVE ${keyExpr}`,
 			ExpressionAttributeNames: {
@@ -105,7 +111,7 @@ const Dynamo = {
 	// field key mapping in ExpressionAttributeNames. The same has to be done with the actual
 	// update value as well. They are prefixed with ":value" and mapped in ExpressionAttributeValues
 	// with their actual value
-	update: async ({ tableName, primaryKey, primaryKeyValue, updates }) => {
+	update: async ({ TableName, primaryKey, primaryKeyValue, updates }) => {
 		const keys = Object.keys(updates);
 		const keyNameExpressions = keys.map((key) => `#${key}`);
 		const keyValueExpressions = keys.map((key) => `:${key}`);
@@ -129,7 +135,7 @@ const Dynamo = {
 		);
 
 		const params = {
-			TableName: tableName,
+			TableName,
 			Key: { [primaryKey]: primaryKeyValue },
 			UpdateExpression,
 			ExpressionAttributeNames,
@@ -138,10 +144,10 @@ const Dynamo = {
 		return documentClient.update(params).promise();
 	},
 
-	query: async ({ tableName, queryKey, queryValue }) => {
+	query: async ({ TableName, queryKey, queryValue }) => {
 		const keyExpr = `#${queryKey}`;
 		const params = {
-			TableName: tableName,
+			TableName,
 			KeyConditionExpression: `${keyExpr}.#connected = :hkey`,
 			ExpressionAttributeNames: {
 				[keyExpr]: queryKey,
@@ -155,10 +161,10 @@ const Dynamo = {
 		return res.Items || [];
 	},
 
-	queryOn: async ({ tableName, index, queryKey, queryValue }) => {
+	queryOn: async ({ TableName, index, queryKey, queryValue, select }) => {
 		const keyExpr = `#${queryKey}`;
 		const params = {
-			TableName: tableName,
+			TableName,
 			IndexName: index,
 			KeyConditionExpression: `${keyExpr} = :hkey`,
 			ExpressionAttributeNames: {
@@ -168,6 +174,11 @@ const Dynamo = {
 				":hkey": queryValue,
 			},
 		};
+		if (select) {
+			const projExpr = `#${select}`
+			params.ExpressionAttributeNames[projExpr] = select;
+			params.ProjectionExpression = projExpr;
+		}
 		const res = await documentClient.query(params).promise();
 		return res.Items || [];
 	},
@@ -175,8 +186,8 @@ const Dynamo = {
 
 module.exports = Dynamo;
 
-// const scanTable = async (tableName) => {
-//     const params = { TableName: tableName, };
+// const scanTable = async (TableName) => {
+//     const params = { TableName: TableName, };
 //     const scanResults = [];
 //     const items;
 //     do {

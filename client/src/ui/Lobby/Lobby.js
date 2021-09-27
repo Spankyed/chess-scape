@@ -26,7 +26,7 @@ export default (initial) => ({
 			(room) =>
 			({ gameRooms }) => ({
 				gameRooms: gameRooms.map((gameRoom) =>
-					gameRoom.id == room.id ? room : gameRoom
+					gameRoom.ID == room.ID ? room : gameRoom
 				),
 			}),
 		addRoom: (room) => ({ gameRooms }) => ({ gameRooms: {...gameRooms, room} }),
@@ -34,7 +34,7 @@ export default (initial) => ({
 			(room) =>
 			({ gameRooms }) => ({
 				gameRooms: gameRooms.filter(
-					(gameRoom) => gameRoom.id != room.id
+					(gameRoom) => gameRoom.ID != room.ID
 				),
 			}),
 	},
@@ -49,9 +49,8 @@ export default (initial) => ({
 				Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				console.log("connection created");
 				Api.setMessageHandlers({
-					create: actions.updateRooms,
-					// todo: update roomlist with new player count, for only players in lobby (not those ingame rooms)
-					// join: (msg) => console.log('some1 joined', msg),
+					// create: (msg) => actions.updateRooms(msg.room),
+					join: onJoin,
 				});
 				// todo retry 3 times delayed if no rooms retrieved
 				let {rooms} = await Api.joinLobby();
@@ -59,14 +58,16 @@ export default (initial) => ({
 			};
 
 			const onJoin = (msg) => {
-				// if hosting room joined, join room 
+				// todo if hosting room joined, join room 
+				debugger
+				actions.updateRoom(msg.room);
 				// else update lobby room list client count
 			};
 
-			const join = (id) => () => {
-				// console.log('joining  ', id)
-				Api.joinGame(id);
-				joinGame(id);
+			const join = (ID) => () => {
+				// console.log('joining  ', ID)
+				Api.joinGame(ID);
+				joinGame(ID);
 			};
 
 			return (

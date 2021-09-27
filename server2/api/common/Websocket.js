@@ -12,7 +12,7 @@ const openGateway = (domainName, stage) => {
 const send = ({ domainName, stage, connectionID, message }) => {
 	const gateway = openGateway(domainName, stage);
 	const postParams = {
-		Data: message,
+		Data: JSON.stringify(message),
 		ConnectionId: connectionID,
 	};
 	return gateway.postToConnection(postParams).promise();

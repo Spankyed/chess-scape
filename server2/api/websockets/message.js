@@ -8,9 +8,10 @@ const clientsTable = process.env.clientsTableName;
 
 const handler = async (event) => {
 	const { connectionId: connectionID } = event.requestContext;
-	const { clientID, message } = event.body;
+	const message = event.body;
+	const { clientID, method } = message;
 
-	console.log(`Message [${message.method}] from [${clientID}]`, message);
+	console.log(`Message [${method}] from [${clientID}]`, message);
 
 	const client = await Dynamo.get(clientID, clientsTable);
 	const { domainName, stage } = client.connection;
@@ -21,7 +22,7 @@ const handler = async (event) => {
 	} // todo move validation to hooks, return 403, and disconnect client
 
 	await Dynamo.update({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: clientID,
 		updates: {
@@ -30,16 +31,16 @@ const handler = async (event) => {
 	});
 
 	const methods = { join }; // set message handlers
-	const messageHandler = methods[message.method];
+	const messageHandler = methods[method];
 
-	if (messageHandler) await messageHandler(event.body);
+	if (messageHandler) await messageHandler(message);
 
-	await WebSocket.send({
-		domainName,
-		stage,
-		connectionID,
-		message: "Nigga we- rrhwehewrhehwewihuwihuwrhuhwe",
-	});
+	// await WebSocket.send({
+	// 	domainName,
+	// 	stage,
+	// 	connectionID,
+	// 	message
+	// });
 
 	return Responses._200({ message: "Message received and responded" });
 };
