@@ -14,7 +14,9 @@
             "protocol": "inspector",
             "runtimeExecutable": "node",
             "env": {
-                "tableName": "Player-2"
+                "clientsTableName": "Clients",
+                "roomsTableName": "Rooms",
+                "matchesTableName": "Matches"
             },
             "windows": {
                 "program": "${workspaceFolder}\\node_modules\\serverless\\bin\\serverless",

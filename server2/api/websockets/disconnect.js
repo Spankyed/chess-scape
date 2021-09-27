@@ -6,7 +6,7 @@ const clientsTable = process.env.clientsTableName;
 
 async function findClient(connectionID) {
 	return await Dynamo.queryOn({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		index: "connection-index",
 		queryKey: "connectionID",
 		queryValue: connectionID,
@@ -23,7 +23,7 @@ const handler = async (event) => {
 	}
 
 	await Dynamo.update({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: client.ID,
 		updates: {

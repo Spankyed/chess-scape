@@ -7,7 +7,7 @@ const clientsTable = process.env.clientsTableName;
 
 async function findClient(TOKEN) {
 	return await Dynamo.queryOn({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		index: "token-index",
 		queryKey: "TOKEN",
 		queryValue: TOKEN,
@@ -42,7 +42,7 @@ const handler = async (event) => {
 	};
 
 	await Dynamo.update({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: client.ID,
 		updates: {

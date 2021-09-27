@@ -2,7 +2,7 @@ const Responses = require("../common/API_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
 
-const playerTable = process.env.tableName;
+const playerTable = process.env.TableName;
 
 const schema = {
 	body: { score: "number" },
@@ -14,7 +14,7 @@ const handler = async (event) => {
 	const { score } = event.body;
 
 	const res = await Dynamo.update({
-		tableName: playerTable,
+		TableName: playerTable,
 		primaryKey: "ID",
 		primaryKeyValue: ID,
 		updateKey: "score",

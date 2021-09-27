@@ -12,7 +12,7 @@ const handler = async (event) => {
 	}
 	const { room } = event.pathParameters;
 	const roomClients = await Dynamo.query({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		index: "room-index",
 		queryKey: "room",
 		queryValue: room,

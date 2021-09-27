@@ -19,12 +19,6 @@ const send = ({ domainName, stage, connectionID, message }) => {
 };
 
 const close = ({ domainName, stage, connectionID }) => {
-	console.log(
-		"domainName, stage, connectionID: ",
-		domainName,
-		stage,
-		connectionID
-	);
 	const gateway = openGateway(domainName, stage);
 	return gateway
 		.deleteConnection({

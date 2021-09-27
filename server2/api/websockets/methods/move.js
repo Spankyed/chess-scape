@@ -10,7 +10,7 @@ const clientsTable = process.env.clientsTableName;
 
 const method = async ({ clientID, room }) => {
 	await Dynamo.append({
-		tableName: clientsTable,
+		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: clientID,
 		data: { room },
