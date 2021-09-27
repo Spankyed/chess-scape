@@ -18,7 +18,7 @@ const handler = async (event) => {
 	const newRoom = await Dynamo.write(room, roomsTable);
 
 	if (!newRoom) {
-		return Responses._400({ message: "Failed to add room with ID" });
+		return Responses._400({ message: "Failed to add room" });
 	}
 
 	return Responses._200({ newRoom });

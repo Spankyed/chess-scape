@@ -41,7 +41,7 @@ export default initial => ({
 			}
 		})
 	},
-	view: ({alerts}, actions) => ({gameId, leaveGame}) => { 
+	view: ({alerts}, actions) => ({roomID, leaveGame}) => { 
 		// todo remove alerts when user leaves gameRoom
 		return ( 
 			<div class="alert-wrapper h-full absolute top-0 w-full">

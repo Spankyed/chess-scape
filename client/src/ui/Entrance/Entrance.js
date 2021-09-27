@@ -42,8 +42,8 @@ export default (initial) => ({
 				if (valid) {
 					try {
 						actions.attemptSubmit();
-						let clientId = await Api.createClient({username, rating});
-						if (clientId) authorize();
+						let client = await Api.createClient({username, rating});
+						if (client) authorize();
 						actions.endAttempt();
 					} catch (err) {
 						console.log(err);

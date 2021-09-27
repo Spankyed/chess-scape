@@ -52,7 +52,7 @@ export default (initial) => ({
 						<div class="flex px-3 justify-center">
 							<img
 								class="flex-shrink h-10"
-								src="./assets/create/custom/custom.svg"
+								src="./assets/create/type/custom.svg"
 							/>
 							<h2 class="w-1/3 mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
 								{type.name}
@@ -184,8 +184,7 @@ function OpponentSelect({
 }
 
 function SelectedOpponent({ selectedOpp, toggleOppMenu }) {
-	const capitalize = (string) =>
-		string.charAt(0).toUpperCase() + string.slice(1);
+	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 	return (
 		<div
 			onclick={toggleOppMenu}
