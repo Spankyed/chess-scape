@@ -9,17 +9,17 @@ import { Buffer } from 'buffer';
 const baseHttpUrl = "http://localhost:9001/local";
 const baseWSUrl = 'ws://localhost:3001'
 const client = JSON.parse(localStorage.getItem("client") || '""');
-// let clientId = nanoid()
+// let clientID = nanoid()
 // let TOKEN = null; // client.TOKEN || null
-let clientId = client.clientId || null
+let clientID = client.clientID || null
 let TOKEN = client.TOKEN || null
-let gameId = null;
+let roomID = null;
 let connection,
 	// Message Received handlers
 	handlers = {
-		// connect: msg => console.log(msg.clientId), // already setting clientId onentrance
-		// connect: msg => clientId = msg.clientId, // can't set const
-		// join: msg => gameId ??= msg.gameId,
+		// connect: msg => console.log(msg.clientID), // already setting clientID onentrance
+		// connect: msg => clientID = msg.clientID, // can't set const
+		// join: msg => roomID ??= msg.roomID,
 		create: (_) => _,
 		join: (_) => _,
 		move: (_) => _,
@@ -38,7 +38,7 @@ function createConnection() {
 	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
 	connection = new ReconnectingWebSocket(baseWSUrl + "/rooms", TOKEN);
 	if (connection)
-		console.log(`%c Connected [${clientId}]`, "color:white;", {
+		console.log(`%c Connected [${clientID}]`, "color:white;", {
 			connection,
 		});
 	connection.addEventListener("message", ({ data }) => {
@@ -62,13 +62,13 @@ function createConnection() {
 // **  Send Message Wrappers
 // ** --------------------------------------------------------------------------
 function joinGame(id) {
-	gameId ??= id;
-	sendMessage({ method: "join", gameId });
+	roomID ??= id;
+	sendMessage({ method: "join", roomID });
 }
 
 function leaveGame(id) {
-	sendMessage({ method: "leave", gameId });
-	gameId = null;
+	sendMessage({ method: "leave", roomID });
+	roomID = null;
 }
 
 function sendMove(move) {
@@ -86,9 +86,10 @@ function shareMusic(songData, rawData) {
 	let BSON = serialize({
 		method: "share",
 		type: "music",
-		gameId,
-		song, // clientId, // add clientId to msg after testing/development
+		roomID,
+		song, // clientID, // add clientID to msg after testing/development
 		rawData: Buffer.from(rawData),
+		action: 'message'
 	});
 	// let bson = serialize({ method: "share", type: "music", blob: rawData }) // test when rawData is type blob fails, file converted to obj and binary data loss
 	connection.send(BSON);
@@ -104,12 +105,14 @@ function shareVideo(videoId) {
 }
 
 function sendMessage(message) {
-	connection.send(JSON.stringify({ ...(gameId && { gameId }), ...message }));
-	console.log(`%c Message sent [${message.method}]`, "color:orange;", {
+	const body = {
 		...message,
-		clientId,
-		gameId,
-	});
+		...(roomID && { roomID }),
+		action: "message",
+		clientID, // ! send TOKEN instead
+	};
+	connection.send(JSON.stringify(body));
+	console.log(`%c Message sent [${message.method}]`, "color:orange;", body);
 }
 
 function restartConnection() {
@@ -121,11 +124,12 @@ function restartConnection() {
 // **  Http Request Wrappers
 // ** --------------------------------------------------------------------------
 // todo: wrap below in try-catches?
-async function fetchRooms() {
-	const method = "GET";
+async function joinLobby() {
+	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const url = `${baseHttpUrl}/get-rooms`;
-	const response = await fetch(url, { method, headers });
+	const body = JSON.stringify({ clientID });
+	const url = `${baseHttpUrl}/join-lobby`;
+	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
 		const rooms = await response.json();
 		console.log("%c Room List", "color:blue;", { rooms });
@@ -136,7 +140,7 @@ async function fetchRooms() {
 async function createGameRoom(options) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ ...options });
+	const body = JSON.stringify({ ...options, host: clientID});
 	const url = `${baseHttpUrl}/create-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
@@ -162,9 +166,9 @@ async function createClient(userInfo) {
 	if (response.ok) {
 		const { newClient } = await response.json();
 		console.log("%c User Data", "color:blue;", { newClient });
-		clientId = newClient.ID;
+		clientID = newClient.ID;
 		TOKEN = newClient.TOKEN;
-		localStorage.setItem("client", JSON.stringify({ clientId, TOKEN }));
+		localStorage.setItem("client", JSON.stringify({ clientID, TOKEN }));
 		return newClient;
 	} else if (response.status === 401) {
 		clearSession();
@@ -189,7 +193,7 @@ async function searchSongImage(title) {
 export default {
 	searchSongImage,
 	createClient,
-	fetchRooms,
+	joinLobby,
 	createConnection,
 	restartConnection,
 	setMessageHandlers,

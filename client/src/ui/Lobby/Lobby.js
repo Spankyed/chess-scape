@@ -5,20 +5,23 @@ import Api from '../../api/Api';
 
 const create = Create()
 
-
 export default (initial) => ({
 	state: {
 		create: create.state,
 		showCreate: false,
+		hostedRoom: null,
+
 		gameRooms: [],
 	},
 
 	actions: {
 		create: create.actions,
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
-		updateRooms:
-			({ gameRooms }) =>
-			(state) => ({ gameRooms }),
+		setHosted: (room) => () => {
+			console.log('room: ', room);
+			return ({hostedRoom: room})
+		},
+		updateRooms: ({ gameRooms }) => (state) => ({ gameRooms }),
 		updateRoom:
 			(room) =>
 			({ gameRooms }) => ({
@@ -39,7 +42,7 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ joinGame }) => {
-			const { showCreate } = state;
+			const { showCreate, hostedRoom } = state;
 			const CreateView = create.view(state.create, actions.create);
 
 			const init = async () => {
@@ -47,15 +50,18 @@ export default (initial) => ({
 				console.log("connection created");
 				Api.setMessageHandlers({
 					create: actions.updateRooms,
-					// todo: update roomlist with new player count, for only players in lobby (not ingame rooms)
+					// todo: update roomlist with new player count, for only players in lobby (not those ingame rooms)
 					// join: (msg) => console.log('some1 joined', msg),
 				});
 				// todo retry 3 times delayed if no rooms retrieved
-				let {rooms} = await Api.fetchRooms();
+				let {rooms} = await Api.joinLobby();
 				actions.updateRooms({ gameRooms: rooms });
 			};
 
-			const onJoin = (msg) => {};
+			const onJoin = (msg) => {
+				// if hosting room joined, join room 
+				// else update lobby room list client count
+			};
 
 			const join = (id) => () => {
 				// console.log('joining  ', id)
@@ -67,11 +73,12 @@ export default (initial) => ({
 				<div
 					oncreate={init}
 					class="lobby flex pt-10 justify-center min-h-screen font-sans"
-					ondestroy={(_) => console.log("destroyed!!!")}
+					// ondestroy={(_) => console.log("seek&destroy!!!")}
 				>
 					<CreateView
 						showCreate={showCreate}
 						toggleCreate={actions.toggleCreate}
+						setHosted={actions.setHosted}
 					/>
 
 					<div class="col-span-12">
@@ -85,24 +92,27 @@ export default (initial) => ({
 									Lobby
 								</h1>
 								<div>
-									<button
-										onclick={actions.toggleCreate}
-										class="flex items-center ring-2 ring-offset-2 focus:ring-indigo-900 px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none"
-									>
-										<img src="./assets/create/add.svg"></img>
-										<p class="text-xl font-medium leading-none text-white">
-											New Game
-										</p>
-									</button>
-									<button
-										onclick={actions.toggleCreate}
-										class="flex items-center ring-2 ring-offset-2 focus:ring-yellow-900-900 px-4 py-2 bg-yellow-700 hover:bg-yellow-600 focus:outline-none"
-									>
-										<img src="./assets/create/cancel.svg"></img>
-										<p class="text-xl font-medium leading-none text-white">
-											Cancel
-										</p>
-									</button>
+									{!hostedRoom ? (
+										<button
+											onclick={actions.toggleCreate}
+											class="flex items-center ring-2 ring-offset-2 focus:ring-indigo-900 px-4 py-2 bg-indigo-700 hover:bg-indigo-600 focus:outline-none"
+										>
+											<img src="./assets/create/add.svg"></img>
+											<p class="text-xl font-medium leading-none text-white">
+												New Game
+											</p>
+										</button>
+									) : (
+										<button
+											onclick={actions.toggleCreate}
+											class="flex items-center ring-2 ring-offset-2 focus:ring-yellow-900-900 px-4 py-2 bg-yellow-700 hover:bg-yellow-600 focus:outline-none"
+										>
+											<img src="./assets/create/cancel.svg"></img>
+											<p class="text-xl font-medium leading-none text-white">
+												Cancel
+											</p>
+										</button>
+									)}
 								</div>
 							</div>
 						</div>
@@ -219,7 +229,8 @@ export default (initial) => ({
 														<td class="py-3 px-6 text-center">
 															<span
 																class={`${
-																	room.clients?.length >=
+																	room.clients
+																		?.length >=
 																	2
 																		? "bg-red-200 text-red-900"
 																		: "bg-green-200 text-green-900"
@@ -227,7 +238,9 @@ export default (initial) => ({
 															>
 																<span class="hidden lg:inline">
 																	{`${
-																		room.clients?.length >=
+																		room
+																			.clients
+																			?.length >=
 																		2
 																			? "Max"
 																			: "Open"
@@ -235,7 +248,8 @@ export default (initial) => ({
 																</span>
 																(
 																{
-																	room.clients?.length
+																	room.clients
+																		?.length
 																}
 																/2)
 															</span>
@@ -246,12 +260,13 @@ export default (initial) => ({
 														<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
 															<button
 																onclick={join(
-																	room.id
+																	room.ID
 																)}
 																class="focus:outline-none"
 															>
 																{`${
-																	room.clients?.length >=
+																	room.clients
+																		?.length >=
 																	2
 																		? "Spectate"
 																		: "Join"
@@ -269,6 +284,6 @@ export default (initial) => ({
 					</div>
 				</div>
 			);
-		},
+		}
 });
 

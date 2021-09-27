@@ -5,6 +5,10 @@ const { withHooks } = require("../common/hooks");
 
 const roomsTable = process.env.roomsTableName;
 
+const schema = {
+	// path: { ID: "string" },
+};
+
 const handler = async (event) => {
 	if (!event.pathParameters.ID) {
 		// failed without an ID

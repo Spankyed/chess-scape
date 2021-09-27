@@ -5,11 +5,15 @@ const { withHooks } = require("../common/hooks");
 
 const clientsTable = process.env.clientsTableName;
 
+const schema = {
+	// path: { ID: "string" },
+};
+
 const handler = async (event) => {
-	if (!event.pathParameters.ID) {
-		// failed without an ID
-		return Responses._400({ message: "missing the ID from the path" });
-	}
+	// if (!event.pathParameters.ID) {
+	// 	// failed without an ID
+	// 	return Responses._400({ message: "missing the ID from the path" });
+	// }
 
 	let ID = event.pathParameters.ID;
 

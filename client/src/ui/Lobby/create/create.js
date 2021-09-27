@@ -7,27 +7,19 @@ const custom = Custom();
 
 const gameTypes = [
 	{
-		id: 0,
-		type: "Forever",
-		src: `./assets/create/time/forever.svg`,
+		type: "forever",
 	},
 	{
-		id: 1,
-		type: "Rapid",
+		type: "rapid",
 		time: "10 min",
-		src: `./assets/create/time/rapid.svg`,
 	},
 	{
-		id: 2,
-		type: "Blitz",
+		type: "blitz",
 		time: "5 min",
-		src: `./assets/create/time/blitz.svg`,
 	},
 	{
-		id: 3,
-		type: "Bullet",
+		type: "bullet",
 		time: "3 min",
-		src: `./assets/create/time/bullet.svg`,
 	},
 ];
 
@@ -57,7 +49,7 @@ export default (initial) => ({
 			submitText: "Create Room",
 		}),
 	},
-	view: (state, actions) => ({ showCreate, toggleCreate }) => {
+	view: (state, actions) => ({ showCreate, toggleCreate, setHosted }) => {
 		const { gameTypes, selectedColor, selectedGameType } = state;
 		const CustomView = custom.view(state.custom, actions.custom);
 
@@ -66,7 +58,6 @@ export default (initial) => ({
 			ev.stopPropagation();
 			toggleCreate();
 		};
-
 		const create = async (ev) => {
 			ev.stopPropagation();
 			const random = Math.random() >= 0.5 ? 1 : 0;
@@ -80,8 +71,9 @@ export default (initial) => ({
 			};
 			try {
 				actions.attemptSubmit();
-				let room = await Api.createGameRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
-				if (room) {
+				let { newRoom } = await Api.createGameRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
+				if (newRoom) {
+					setHosted(newRoom.ID)
 					toggleCreate();
 				}
 				actions.endAttempt();
@@ -177,6 +169,7 @@ function ColorSelect({ selectedColor, selectColor }) {
 }
 
 function GameType({ type, selectGameType, selectedGameType }) {
+	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 	return (
 		<div
 			onclick={() => selectGameType(type)}
@@ -188,7 +181,7 @@ function GameType({ type, selectGameType, selectedGameType }) {
 			<div class="flex">
 				<div class="w-2/3">
 					<h2 class="text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
-						{type.type}
+						{capitalize(type.type)}
 					</h2>
 					{type.time && (
 						<h3 class="text-base md:text-md lg:text-md px-8 py-2 text-gray-600">
@@ -197,7 +190,10 @@ function GameType({ type, selectGameType, selectedGameType }) {
 					)}
 				</div>
 				<div class="w-1/3 flex justify-center items-center mr-2">
-					<img src={type.src} alt="game type" />
+					<img
+						src={`./assets/create/type/${type.type}.svg`}
+						alt="game type"
+					/>
 				</div>
 			</div>
 		</div>
@@ -245,7 +241,6 @@ function processGameOptions(custom, selectedGameType) {
 	if (!customOpts.pinEnabled) {
 		delete customOpts.pin
 	}
-	
 	return selectedGameType == "custom"
 			? {...customOpts, type: 'custom'}
 			: selectedGameType;
