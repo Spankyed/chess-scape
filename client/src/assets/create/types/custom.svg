@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="505px" height="505px" viewBox="0 0 505 505" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <path d="M0 0L505 0L505 505L0 505L0 0Z" id="path_1" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+  </defs>
+  <g id="custom">
+    <g id="icon">
+      <path d="M0 0L505 0L505 505L0 505L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+      <g clip-path="url(#mask_1)">
+        <g id="toggles" transform="translate(20.855011 62.599976)">
+          <g id="toggle-2" transform="translate(0 144.768)">
+            <path d="M0 0L0 29.0062L464.059 29.0062L464.059 0L0 0L0 0Z" transform="translate(0 45.472107)" id="track" fill="#262626" fill-rule="evenodd" stroke="none" />
+            <path d="M0 0L0 29.0062L85.6512 29.0062L85.6512 0L0 0L0 0Z" transform="translate(0 45.472107)" id="slid" fill="#6DA140" fill-rule="evenodd" stroke="none" />
+            <path d="M0 55.3779C0 24.7935 24.7935 0 55.3779 0C85.9623 0 110.756 24.7935 110.756 55.3779C110.756 85.9623 85.9623 110.756 55.3779 110.756C24.7935 110.756 0 85.9623 0 55.3779L0 55.3779Z" transform="translate(79.03568 0)" id="switch" fill="#BCBBB8" fill-rule="evenodd" stroke="none" />
+          </g>
+          <g id="toggle-3">
+            <path d="M0 0L0 29.0062L464.059 29.0062L464.059 0L0 0L0 0Z" transform="translate(0 45.51921)" id="track" fill="#262626" fill-rule="evenodd" stroke="none" />
+            <path d="M0 0L0 29.0062L304.209 29.0062L304.209 0L0 0L0 0Z" transform="translate(0 45.51921)" id="slid" fill="#6DA140" fill-rule="evenodd" stroke="none" />
+            <path d="M0 55.3779C0 24.7935 24.7935 0 55.3779 0C85.9623 0 110.756 24.7935 110.756 55.3779C110.756 85.9623 85.9623 110.756 55.3779 110.756C24.7935 110.756 0 85.9623 0 55.3779L0 55.3779Z" transform="translate(299.84552 0)" id="switch" fill="#BCBBB8" fill-rule="evenodd" stroke="none" />
+          </g>
+          <g id="toggle-1" transform="translate(0 270.24426)">
+            <path d="M0 0L0 29.0062L464.059 29.0062L464.059 0L0 0L0 0Z" transform="translate(0 45.519073)" id="track" fill="#262626" fill-rule="evenodd" stroke="none" />
+            <path d="M0 0L0 29.0062L267.291 29.0062L267.291 0L0 0L0 0Z" transform="translate(0 45.519073)" id="slid" fill="#6DA140" fill-rule="evenodd" stroke="none" />
+            <path d="M0 55.3779C0 24.7935 24.7935 0 55.3779 0C85.9623 0 110.756 24.7935 110.756 55.3779C110.756 85.9623 85.9623 110.756 55.3779 110.756C24.7935 110.756 0 85.9623 0 55.3779L0 55.3779Z" transform="translate(250.96527 0)" id="switch" fill="#BCBBB8" fill-rule="evenodd" stroke="none" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
