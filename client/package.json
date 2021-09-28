@@ -7,7 +7,7 @@
 	"repository": "https://github.com/spankyed/chess-scape",
 	"license": "MIT",
 	"scripts": {
-		"dev": "parcel src/ui/index.html -p 3000 --no-cache",
+		"dev": "parcel src/ui/index.html -p 3000",
 		"build": "parcel build src/ui/index.html -d build"
 	},
 	"staticFiles": {
@@ -27,6 +27,7 @@
 		"hyperapp": "1.2.9",
 		"nanoid": "^3.1.23",
 		"rxjs": "^7.2.0",
+		"sockette": "^2.0.6",
 		"utilities": "^1.0.5",
 		"xstate": "^4.23.2"
 	},

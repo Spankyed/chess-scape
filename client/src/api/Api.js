@@ -1,47 +1,59 @@
 // The Api module is designed to handle all interactions with the server
-// import ReconnectingWebSocket from 'reconnecting-websocket';
 import { nanoid } from 'nanoid/non-secure'
 import { serialize, deserialize } from 'bson';
 import { Buffer } from 'buffer';
+import Sockette from "sockette";
 
-// const baseHttpUrl = 'http://localhost:5000/api'
-// const baseWSUrl = "ws://localhost:5000/api";
 const baseHttpUrl = "http://localhost:9001/local";
 const baseWSUrl = 'ws://localhost:3001'
 const client = JSON.parse(localStorage.getItem("client") || '""');
-// let clientID = nanoid()
-// let TOKEN = null; // client.TOKEN || null
 let clientID = client.clientID || null
 let TOKEN = client.TOKEN || null
+// let clientID = nanoid()
+// let TOKEN = null; // client.TOKEN || null
 let roomID = null;
-let connection,
+let connection, connected = false,
 	// Message Received handlers
 	handlers = {
-		// connect: msg => console.log(msg.clientID), // already setting clientID onentrance
-		// connect: msg => clientID = msg.clientID, // can't set const
-		// join: msg => roomID ??= msg.roomID,
-		create: (_) => _,
-		join: (_) => _,
-		move: (_) => _,
-		chat: (_) => _,
+		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
+		create: () => {},
+		join: () => {},
+		// join: msg => roomID ??= msg.roomID, // already setting roomID on send instead
+		move: () => {},
+		chat: () => {},
 		share: (msg) => handlers[msg.type]?.(msg),
-		video: (_) => _,
-		music: (_) => _,
+		video: () => {},
+		music: () => {},
+		// unauthorized: () => console.log("Unauthorized"), // todo close websocket, redirect to entrance
 	};
 
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers);
 }
 
-function createConnection() {
+async function createConnection() {
 	// const protocol = { automaticOpen: false, debug: true }
-	// connection = new ReconnectingWebSocket('ws://localhost:5000/room', protocol);
-	connection = new ReconnectingWebSocket(baseWSUrl + "/rooms", TOKEN);
-	if (connection)
-		console.log(`%c Connected [${clientID}]`, "color:white;", {
-			connection,
-		});
-	connection.addEventListener("message", ({ data }) => {
+	connection = new Sockette(baseWSUrl, {
+		timeout: 5e3,
+		maxAttempts: 4,
+		onopen,
+		onclose,
+		onmessage,
+		onreconnect: (e) => console.log("Reconnecting...", e),
+		onmaximum: (e) => console.log("Stop Attempting!", e),
+		onerror: (e) => console.log("WS Error:", e),
+		protocols: TOKEN,
+	});
+	function onopen(e) {
+		connected = true;
+		e.target.binaryType = "arraybuffer";
+		console.log(`%c Connected [${clientID}]`, "color:white;")
+	}
+	function onclose(e) {
+		connected = false;
+		console.log(`%c Disconnected [${clientID}]`, "color:red;");
+	}
+	function onmessage({ data }) {
 		// handle incoming messages from connected client
 		let isBinary = data instanceof ArrayBuffer;
 		// let isBinary = Buffer.isBuffer(data)
@@ -54,8 +66,9 @@ function createConnection() {
 		});
 		const messageHandler = handlers[message.method];
 		if (messageHandler) messageHandler(message);
-	});
-	// setTimeout(_=> connection.reconnect(), 4000)
+	}
+
+	return
 }
 
 // ** --------------------------------------------------------------------------
@@ -113,11 +126,6 @@ function sendMessage(message) {
 	};
 	connection.send(JSON.stringify(body));
 	console.log(`%c Message sent [${message.method}]`, "color:orange;", body);
-}
-
-function restartConnection() {
-	if (connection) return;
-	else createConnection();
 }
 
 // ** --------------------------------------------------------------------------
@@ -195,7 +203,7 @@ export default {
 	createClient,
 	joinLobby,
 	createConnection,
-	restartConnection,
+	restartConnection: createConnection,
 	setMessageHandlers,
 	createGameRoom,
 	joinGame,
@@ -203,6 +211,7 @@ export default {
 	sendChat,
 	shareVideo,
 	shareMusic,
+	connected
 };
 
 function eraseCookie(name) {   
