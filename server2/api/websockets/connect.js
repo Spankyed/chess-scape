@@ -27,8 +27,8 @@ const handler = async (event) => {
 	const [client] = await findClient(TOKEN);
 
 	if (!client || !client.ID) {
-		WebSocket.close({ domainName, stage, connectionID });
-		return Response._400({ message: "Unauthorized connection" });
+
+		return Response._400({ method: "Unauthorized connection" });
 	}
 
 	const connection = {
@@ -41,7 +41,7 @@ const handler = async (event) => {
 		connected: true,
 	};
 
-	await Dynamo.update({
+	const clientConn = await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: client.ID,
@@ -51,7 +51,7 @@ const handler = async (event) => {
 		},
 	});
 
-	console.log(`Connected client [${client.ID}]`);
+	console.log(`Connected client [${client.ID}]`, {clientConn});
 
 	return Response._200({ message: "connected" });
 };
