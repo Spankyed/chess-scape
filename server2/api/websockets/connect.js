@@ -27,8 +27,13 @@ const handler = async (event) => {
 	const [client] = await findClient(TOKEN);
 
 	if (!client || !client.ID) {
-
-		return Response._400({ method: "Unauthorized connection" });
+		await WebSocket.send({
+			domainName,
+			stage,
+			connectionID,
+			message: { method: "unauthorize" },
+		});
+		return Response._400({ message: "Unauthorized connection" });
 	}
 
 	const connection = {

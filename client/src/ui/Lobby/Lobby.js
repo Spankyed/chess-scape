@@ -76,7 +76,7 @@ export default (initial) => ({
 						toggleCreate={actions.toggleCreate}
 						setHosted={actions.setHosted}
 					/>
-					<div oncreate={init}class="col-span-12">
+					<div oncreate={init} class="col-span-12">
 						{/* Header */}
 						<div class="px-4 md:px-10 py-5" style="height:18vh">
 							<div class="sm:flex items-center justify-between">

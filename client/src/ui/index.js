@@ -1,5 +1,6 @@
 import { h } from 'hyperapp';
 import { app } from 'hyperapp'; 
+import Api from '../api/Api';
 // import { withLogger } from "@hyperapp/logger";
 
 import Entrance from './Entrance/Entrance';
@@ -25,7 +26,7 @@ const actions = {
 	gameRoom: gameRoom.actions,
 	lobby: lobby.actions,
 	authorize: () => ({ authorized: true }),
-	// unauthorize: () => ({authorized: false}),
+	unauthorize: () => ({authorized: false}),
 	joinGame: (roomID) => ({ inGame: true, roomID }),
 	leaveGame: () => ({ inGame: false }),
 };
@@ -35,8 +36,17 @@ const view = (state, actions) => {
 	const GameRoomView = gameRoom.view(state.gameRoom, actions.gameRoom);
 	const LobbyView = lobby.view(state.lobby, actions.lobby);
 
+	function init(){
+		Api.setMessageHandlers({
+			unauthorize: () => {
+				Api.closeConnection()
+				actions.unauthorize();
+				localStorage.clear();
+			},
+		});
+	}
 	return (
-		<div class="h-full">
+		<div oncreate={init} class="h-full">
 			{/* {false ? ( */}
 			{!state.authorized ? (
 				<EntranceView authorize={actions.authorize} />
@@ -52,8 +62,7 @@ const view = (state, actions) => {
 	);
 };
 
-// export const App = app(state, actions, view, document.body); //withLogger(app)(state, actions, view, document.body);
-export default app(state, actions, view, document.body);
+export default app(state, actions, view, document.body); // withLogger(app)(state, actions, view, document.body);
 
 function checkForClient() {
 	const client = localStorage.getItem("client");

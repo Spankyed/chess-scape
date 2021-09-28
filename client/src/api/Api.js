@@ -12,7 +12,8 @@ let TOKEN = client.TOKEN || null
 // let clientID = nanoid()
 // let TOKEN = null; // client.TOKEN || null
 let roomID = null;
-let connection, connected = false,
+let connection,
+	connected = false,
 	// Message Received handlers
 	handlers = {
 		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
@@ -24,7 +25,7 @@ let connection, connected = false,
 		share: (msg) => handlers[msg.type]?.(msg),
 		video: () => {},
 		music: () => {},
-		// unauthorized: () => console.log("Unauthorized"), // todo close websocket, redirect to entrance
+		unauthorize: () => console.log("Unauthorized"),
 	};
 
 function setMessageHandlers(newHandlers) {
@@ -69,6 +70,10 @@ async function createConnection() {
 	}
 
 	return
+}
+
+function closeConnection() {
+	connection.close()
 }
 
 // ** --------------------------------------------------------------------------
@@ -204,6 +209,7 @@ export default {
 	joinLobby,
 	createConnection,
 	restartConnection: createConnection,
+	closeConnection,
 	setMessageHandlers,
 	createGameRoom,
 	joinGame,
@@ -211,7 +217,7 @@ export default {
 	sendChat,
 	shareVideo,
 	shareMusic,
-	connected
+	connected,
 };
 
 function eraseCookie(name) {   
