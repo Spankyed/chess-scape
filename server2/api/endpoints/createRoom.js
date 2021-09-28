@@ -34,11 +34,13 @@ const handler = async (event) => {
 	return Responses._200({ newRoom });
 };
 
-exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
+// exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
+exports.handler = hooksWithSchema(schema, ["parse"])(handler);
 
 async function sendMessageToLobby(message) {
 	const connections = await getConnectionsInLobby();
 	const msgPromises = connections.map(({ connection }) => {
+		if (!connection) return
 		let { domainName, stage, ID } = connection;
 		return WebSocket.send({
 			domainName,

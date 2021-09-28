@@ -40,7 +40,8 @@ module.exports = async function ({ clientID, roomID }) {
 		const message = { method: "join", room: Attributes };
 		// todo only send back room id and client count
 		const connections = await getClientsInLobby();
-		const msgPromises = connections.map(({connection}) => {
+		const msgPromises = connections.map(({ connection }) => {
+			if (!connection) return
 			let { domainName, stage, ID } = connection
 			return WebSocket.send({
 				domainName,
