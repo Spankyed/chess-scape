@@ -83,6 +83,10 @@ export default (initial) => ({
 				actions.endAttempt();
 			}
 		};
+		
+		function checkConnection() {
+			if (!Api.connected) Api.restartConnection()
+		}
 
 		return (
 			<div
@@ -91,7 +95,10 @@ export default (initial) => ({
 				} create-wrapper modal fixed w-full h-full top-0 left-0`}
 			>
 				{showCreate && (
-					<div class="create flex items-center justify-center">
+					<div
+						oncreate={checkConnection}
+						class="create flex items-center justify-center"
+					>
 						<div
 							onclick={toggle}
 							class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"
@@ -105,10 +112,7 @@ export default (initial) => ({
 							<span class="text-sm">(Esc)</span>
 						</div> */}
 
-							<ColorSelect
-								{...actions}
-								{...{ selectedColor }}
-							/>
+							<ColorSelect {...actions} {...{ selectedColor }} />
 
 							{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
 							<div class="create-content py-4 text-left px-6 overflow-auto">
@@ -128,8 +132,7 @@ export default (initial) => ({
 								<CustomView
 									{...actions}
 									{...{
-										selectGameType:
-											actions.selectGameType,
+										selectGameType: actions.selectGameType,
 										selectedGameType,
 									}}
 								/>
