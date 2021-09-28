@@ -26,5 +26,6 @@ const handler = async (event) => {
 	return Responses._200({ rooms });
 };
 
-exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
+// exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
+exports.handler = hooksWithSchema(schema, ["parse"])(handler);
 

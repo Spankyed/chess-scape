@@ -35,7 +35,6 @@ export default (initial) => ({
 		(state, actions) =>
 		({ authorize }) => {
 			const attemptSubmit = async (e) => {
-				console.log("tryna submit");
 				e.preventDefault();
 				let { username, rating } = state
 				let valid = validate(username);

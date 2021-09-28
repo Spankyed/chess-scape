@@ -37,7 +37,7 @@ const view = (state, actions) => {
 
 	return (
 		<div class="h-full">
-			{/* {true ? ( */}
+			{/* {false ? ( */}
 			{!state.authorized ? (
 				<EntranceView authorize={actions.authorize} />
 			) : state.inGame ? (
