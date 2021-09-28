@@ -10,7 +10,6 @@ export default (initial) => ({
 		create: create.state,
 		showCreate: false,
 		hostedRoom: null,
-
 		gameRooms: [],
 	},
 
@@ -46,8 +45,7 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 
 			const init = async () => {
-				Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
-				console.log("connection created");
+				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				Api.setMessageHandlers({
 					create: (msg) => actions.addRoom(msg.newRoom),
 					join: onJoin,
@@ -59,7 +57,6 @@ export default (initial) => ({
 
 			const onJoin = (msg) => {
 				// todo if hosting room joined, join room 
-				debugger
 				actions.updateRoom(msg.room);
 				// else update lobby room list client count
 			};
@@ -71,9 +68,7 @@ export default (initial) => ({
 			};
 
 			return (
-				<div
-					oncreate={init}
-					class="lobby flex pt-10 justify-center min-h-screen font-sans"
+				<div class="lobby flex pt-10 justify-center min-h-screen font-sans"
 					// ondestroy={(_) => console.log("seek&destroy!!!")}
 				>
 					<CreateView
@@ -81,8 +76,7 @@ export default (initial) => ({
 						toggleCreate={actions.toggleCreate}
 						setHosted={actions.setHosted}
 					/>
-
-					<div class="col-span-12">
+					<div oncreate={init}class="col-span-12">
 						{/* Header */}
 						<div class="px-4 md:px-10 py-5" style="height:18vh">
 							<div class="sm:flex items-center justify-between">

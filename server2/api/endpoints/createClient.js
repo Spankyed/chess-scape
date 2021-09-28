@@ -16,9 +16,9 @@ const handler = async (event) => {
 		...form,
 		ID: uuids[0],
 		TOKEN: uuids[1],
-		// connectionID: "",
-		// connection: false,
-		// room: "",
+		connectionID: "0",
+		connection: false,
+		room: "lobby",
 	};
 
 	const newClient = await Dynamo.write(client, clientsTable);
@@ -30,4 +30,5 @@ const handler = async (event) => {
 	return Responses._200({ newClient });
 };
 
-exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
+// exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
+exports.handler = hooksWithSchema(schema, ["parse"])(handler);
