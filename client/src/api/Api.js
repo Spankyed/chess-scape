@@ -127,7 +127,8 @@ function sendMessage(message) {
 		...message,
 		...(roomID && { roomID }),
 		action: "message",
-		clientID, // ! send TOKEN instead
+		clientID, 
+		TOKEN // ! MUST SEND TOKEN FOR AUTH
 	};
 	connection.send(JSON.stringify(body));
 	console.log(`%c Message sent [${message.method}]`, "color:orange;", body);
