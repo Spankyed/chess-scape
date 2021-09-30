@@ -104,42 +104,43 @@ const Dynamo = {
 		};
 		return documentClient.update(params).promise();
 	},
-	// When we do updates we need to tell DynamoDB what fields we want updated.
-	// If that's not annoying enough, we also need to be careful as some field names
-	// are reserved - so DynamoDB won't like them in the UpdateExpressions list.
-	// To avoid passing reserved words we prefix each field with "#field" and provide the correct
-	// field key mapping in ExpressionAttributeNames. The same has to be done with the actual
-	// update value as well. They are prefixed with ":value" and mapped in ExpressionAttributeValues
-	// with their actual value
+	// When we do updates we need express to DynamoDB what attributes we want updated.
+	// If that's not annoying enough, we also need to be careful as some attribute names
+	// might conflict with reserved words - so DynamoDB won't like them in the UpdateExpression.
 	update: async ({ TableName, primaryKey, primaryKeyValue, updates }) => {
-		const keys = Object.keys(updates);
-		const keyNameExpressions = keys.map((key) => `#${key}`);
-		const keyValueExpressions = keys.map((key) => `:${key}`);
-		const UpdateExpression =
-			"SET " +
-			keyNameExpressions
-				.map(
-					(keyExpr, idx) => `${keyExpr} = ${keyValueExpressions[idx]}`
-				)
-				.join(", ");
-		const ExpressionAttributeNames = keyNameExpressions.reduce(
-			(exprs, nameExpr, idx) => ({ ...exprs, [nameExpr]: keys[idx] }),
-			{}
-		);
-		const ExpressionAttributeValues = keyValueExpressions.reduce(
-			(exprs, valueExpr, idx) => ({
-				...exprs,
-				[valueExpr]: updates[keys[idx]],
-			}),
-			{}
-		);
+		const attrLineage = Object.keys(updates);
+		const paramsMap = attrLineage.reduce((prev, lineageExpr) => {
+			const lineage = lineageExpr.split(".");
+			const attrValueExpr = `:${lineage.join("")}`;
+			const UpdateExpression = `${lineage
+				.map((key) => `#${key}`)
+				.join(".")} = ${attrValueExpr}`;
+			return {
+				UpdateExpression: [
+					...(prev.UpdateExpression || []),
+					UpdateExpression,
+				],
+				ExpressionAttributeNames: {
+					...prev.ExpressionAttributeNames,
+					...lineage.reduce(
+						(exprs, key) => ({ ...exprs, [`#${key}`]: key }),
+						{}
+					),
+				},
+				ExpressionAttributeValues: {
+					...prev.ExpressionAttributeValues,
+					[attrValueExpr]: updates[lineageExpr],
+				},
+			};
+		}, {});
+
+		const UpdateExpression = "SET " + paramsMap.UpdateExpression.join(", ");
 
 		const params = {
 			TableName,
 			Key: { [primaryKey]: primaryKeyValue },
+			...paramsMap,
 			UpdateExpression,
-			ExpressionAttributeNames,
-			ExpressionAttributeValues,
 		};
 		return documentClient.update(params).promise();
 	},
@@ -197,3 +198,4 @@ module.exports = Dynamo;
 //     } while (typeof items.LastEvaluatedKey !== "undefined");
 //     return scanResults;
 // };
+
