@@ -62,7 +62,7 @@ export default (initial) => ({
 			ev.stopPropagation();
 			const random = Math.random() >= 0.5 ? 1 : 0;
 			const gameOptions = processGameOptions(state.custom, selectedGameType);
-			let gameRoom = {
+			const gameRoom = {
 				selectedColor:
 					selectedColor == "random"
 						? [("white", "black")][random]
@@ -71,7 +71,7 @@ export default (initial) => ({
 			};
 			try {
 				actions.attemptSubmit();
-				let { newRoom } = await Api.createGameRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
+				const { newRoom } = await Api.createGameRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
 				if (newRoom) {
 					setHosted(newRoom.ID)
 					toggleCreate();

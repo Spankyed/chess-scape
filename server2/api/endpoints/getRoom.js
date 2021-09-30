@@ -17,9 +17,9 @@ const handler = async (event) => {
 
 	let ID = event.pathParameters.ID;
 
-	const client = await Dynamo.get(ID, roomsTable);
+	const room = await Dynamo.get(ID, roomsTable);
 
-	return Responses._200({ client });
+	return Responses._200({ room });
 };
 
 exports.handler = withHooks(["log", "parse"])(handler);

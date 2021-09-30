@@ -17,10 +17,12 @@ export default (initial) => ({
 		create: create.actions,
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
 		setHosted: (room) => () => {
-			console.log('room: ', room);
-			return ({hostedRoom: room})
+			console.log("room: ", room);
+			return { hostedRoom: room };
 		},
-		updateRooms: ({ gameRooms }) => (state) => ({ gameRooms }),
+		updateRooms:
+			({ gameRooms }) =>
+			(state) => ({ gameRooms }),
 		updateRoom:
 			(room) =>
 			({ gameRooms }) => ({
@@ -28,7 +30,9 @@ export default (initial) => ({
 					gameRoom.ID == room.ID ? room : gameRoom
 				),
 			}),
-		addRoom: (room) => ({ gameRooms }) => ({ gameRooms: [...gameRooms, room] }),
+		addRoom:
+			({ newRoom }) =>
+			({ gameRooms }) => ({ gameRooms: [...gameRooms, newRoom] }),
 		removeRoom:
 			(room) =>
 			({ gameRooms }) => ({
@@ -47,16 +51,16 @@ export default (initial) => ({
 			const init = async () => {
 				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				Api.setMessageHandlers({
-					create: (msg) => actions.addRoom(msg.newRoom),
+					create: actions.addRoom,
 					join: onJoin,
 				});
 				// todo retry 3 times delayed if no rooms retrieved
-				let {rooms} = await Api.joinLobby();
+				let { rooms } = await Api.joinLobby();
 				actions.updateRooms({ gameRooms: rooms });
 			};
 
 			const onJoin = (msg) => {
-				// todo if hosting room joined, join room 
+				// todo if hosting room joined, join room
 				actions.updateRoom(msg.room);
 				// else update lobby room list client count
 			};
@@ -68,7 +72,8 @@ export default (initial) => ({
 			};
 
 			return (
-				<div class="lobby flex pt-10 justify-center min-h-screen font-sans"
+				<div
+					class="lobby flex pt-10 justify-center min-h-screen font-sans"
 					// ondestroy={(_) => console.log("seek&destroy!!!")}
 				>
 					<CreateView
@@ -279,6 +284,6 @@ export default (initial) => ({
 					</div>
 				</div>
 			);
-		}
+		},
 });
 
