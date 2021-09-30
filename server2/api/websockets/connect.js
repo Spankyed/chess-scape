@@ -1,6 +1,6 @@
 const Response = require("../common/API_Responses");
 const Dynamo = require("../common/Dynamo");
-const WebSocket = require("../common/Websocket");
+const { sendMessage } = require("../common/websocket/message");
 const { withHooks } = require("../common/hooks");
 
 const clientsTable = process.env.clientsTableName;
@@ -20,29 +20,26 @@ const handler = async (event) => {
 		domainName,
 		stage,
 	} = event.requestContext;
-	// todo wrap everything in try catch, if err close websocket
-	// !parse token, and compare to DB clients before updating client connection
-	const TOKEN = event.headers["Sec-WebSocket-Protocol"];
+
+	const TOKEN = event.headers["Sec-WebSocket-Protocol"]; // ! token req to update a client's connection
 
 	const [client] = await findClient(TOKEN);
 
 	if (!client || !client.ID) {
-		await WebSocket.send({
-			domainName,
-			stage,
-			connectionID,
-			message: { method: "unauthorize" },
-		});
+		await sendMessage(
+			{ connectionID, domainName, stage },
+			{ method: "unauthorize" }
+		);
 		return Response._400({ message: "Unauthorized connection" });
 	}
 
 	const connection = {
 		// IP,
-		ID: connectionID,
+		connectionID,
 		created: Date.now(),
 		domainName,
 		stage,
-		messages: [],
+		// messages: [],
 		connected: true,
 	};
 
@@ -56,7 +53,7 @@ const handler = async (event) => {
 		},
 	});
 
-	console.log(`Connected client [${client.ID}]`, {clientConn});
+	console.log(`Connected client [${client.ID}]`, { clientConn });
 
 	return Response._200({ message: "connected" });
 };

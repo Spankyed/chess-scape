@@ -2,24 +2,25 @@ const Responses = require("../common/API_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
 const nanoid = require("nanoid/async");
-const WebSocket = require("../common/Websocket");
+const { sendMessageToLobby } = require("../common/websocket/message");
 
 const roomsTable = process.env.roomsTableName;
 const clientsTable = process.env.clientsTableName;
 
 const schema = {
 	// body: { name: "string" },
-	// path: { ID: "string" },
 };
 
 const handler = async (event) => {
-	const form = event.body;
+	const {selectedColor, host, ...form} = event.body;
 
 	const room = {
 		...form,
 		ID: await nanoid(),
+		host,
+		players: [{clientID:host, color:selectedColor}],
+		spectators: [],
 		created: Date.now(),
-		clients: [],
 	};
 	console.log("room: ", room);
 	
@@ -37,27 +38,3 @@ const handler = async (event) => {
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
 exports.handler = hooksWithSchema(schema, ["parse"])(handler);
 
-async function sendMessageToLobby(message) {
-	const connections = await getConnectionsInLobby();
-	const msgPromises = connections.map(({ connection }) => {
-		if (!connection) return
-		let { domainName, stage, ID } = connection;
-		return WebSocket.send({
-			domainName,
-			stage,
-			connectionID: ID,
-			message,
-		});
-	});
-	return Promise.all(msgPromises);
-}
-
-async function getConnectionsInLobby() {
-	return await Dynamo.queryOn({
-		TableName: clientsTable,
-		index: "room-index",
-		queryKey: "room",
-		queryValue: "lobby",
-		// select: "connection",
-	});
-}

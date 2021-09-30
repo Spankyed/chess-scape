@@ -1,7 +1,7 @@
 const Responses = require("../../common/API_Responses");
 const Dynamo = require("../../common/Dynamo");
 const { withHooks, hooksWithSchema } = require("../../common/hooks");
-const WebSocket = require("../../common/Websocket");
+const { sendMessageToLobby } = require("../../common/websocket/message");
 
 const clientsTable = process.env.clientsTableName;
 const roomsTable = process.env.roomsTableName;
@@ -9,16 +9,6 @@ const roomsTable = process.env.roomsTableName;
 // const schema = {
 // 	body: { roomID: "string", clientID: "number"  },
 // };
-
-async function getClientsInLobby() {
-	return await Dynamo.queryOn({
-		TableName: clientsTable,
-		index: "room-index",
-		queryKey: "room",
-		queryValue: 'lobby',
-		select: 'connection'
-	});
-}
 
 module.exports = async function ({ clientID, roomID }) {
 	try {
@@ -29,29 +19,18 @@ module.exports = async function ({ clientID, roomID }) {
 			updates: { room: roomID },
 		});
 
+		// const room = await Dynamo.get(roomID, roomsTable);
+		// const updateProp = room.players.length >= 2 ? 'clients' : 'players'
 		const { Attributes } = await Dynamo.append({
 			TableName: roomsTable,
 			primaryKey: "ID",
 			primaryKeyValue: roomID,
-			data: { clients: [clientID] },
-			select: "clients",
+			data: { ['players']: [clientID] },
+			// select: "clients",
 		});
 
-		const message = { method: "join", room: Attributes };
-		// todo only send back room id and client count
-		const connections = await getClientsInLobby();
-		const msgPromises = connections.map(({ connection }) => {
-			if (!connection) return
-			let { domainName, stage, ID } = connection
-			return WebSocket.send({
-				domainName,
-				stage,
-				connectionID: ID,
-				message,
-			});
-		});
-		await Promise.all(msgPromises);
-		
+		await sendMessageToLobby({ method: "join", room: Attributes });
+
 	} catch (err) {
 		console.log("grr", err);
 	}
@@ -64,10 +43,3 @@ module.exports = async function ({ clientID, roomID }) {
 
 // module.exports = method;
 // exports = withHooks(["parse"])(handler);
-
-// async function sendMessageAll(clients, message) {
-// 	const messages = clients.map(({ connectionID }) =>
-// 		WebSocket.send({ domainName, stage, connectionID, message })
-// 	);
-// 	return await Promise.all(messages);
-// }
