@@ -14,10 +14,12 @@ async function sendMessage({ domainName, stage, connectionID }, message) {
 
 async function sendMessageToLobby(message) {
 	const clients = await getClientsInLobby();
-	return Promise.all(clients.map(({ connection }) => {
-        if (!connection || !connectionID) return;
-        return sendMessage(connection, message);
-	}));
+	return Promise.all(
+		clients.map(({ connection, connectionID }) => {
+			if (!connection || !connectionID) return;
+			return sendMessage(connection, message);
+		})
+	);
 }
 
 async function getClientsInLobby() {

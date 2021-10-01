@@ -19,13 +19,13 @@ module.exports = async function ({ clientID, roomID }) {
 			updates: { room: roomID },
 		});
 
-		// const room = await Dynamo.get(roomID, roomsTable);
-		// const updateProp = room.players.length >= 2 ? 'clients' : 'players'
+		const room = await Dynamo.get(roomID, roomsTable);
+		const group = room.players.length < 2 ? 'players' : 'spectators' 
 		const { Attributes } = await Dynamo.append({
 			TableName: roomsTable,
 			primaryKey: "ID",
 			primaryKeyValue: roomID,
-			data: { ['players']: [clientID] },
+			data: { [group]: [clientID] },
 			// select: "clients",
 		});
 
