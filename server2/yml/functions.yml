@@ -19,6 +19,13 @@ getClient:
         path: get-client/{ID}
         method: GET
         cors: true
+getRooms:
+  handler: api/endpoints/getRooms.handler
+  events:
+    - http:
+        path: get-rooms
+        method: GET
+        cors: true
 joinLobby:
   handler: api/endpoints/joinLobby.handler
   events:
