@@ -52,7 +52,7 @@ export default (initial) => ({
 						<div class="flex px-3 justify-center">
 							<img
 								class="flex-shrink h-10"
-								src="./assets/create/type/custom.svg"
+								src="./assets/create/types/custom.svg"
 							/>
 							<h2 class="w-1/3 mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
 								{type.name}

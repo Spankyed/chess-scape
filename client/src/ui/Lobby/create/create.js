@@ -193,7 +193,7 @@ function GameType({ type, selectGameType, selectedGameType }) {
 				</div>
 				<div class="w-1/3 flex justify-center items-center mr-2">
 					<img
-						src={`./assets/create/type/${type.type}.svg`}
+						src={`./assets/create/types/${type.type}.svg`}
 						alt="game type"
 					/>
 				</div>
