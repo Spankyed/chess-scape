@@ -15,11 +15,25 @@ async function sendMessage({ domainName, stage, connectionID }, message) {
 async function sendMessageToLobby(message) {
 	const clients = await getClientsInLobby();
 	return Promise.all(
-		clients.map(({ connection, connectionID }) => {
+		clients.map(({ ID, connection, connectionID }) => {
 			if (!connection || !connectionID) return;
-			return sendMessage(connection, message);
+			return sendMessage(connection, message).catch((_) =>
+				removeConnection(ID)
+			);
 		})
 	);
+}
+
+async function removeConnection(ID) {
+	return await Dynamo.update({
+		TableName: clientsTable,
+		primaryKey: "ID",
+		primaryKeyValue: ID,
+		updates: {
+			connection: false,
+			connectionID: "0",
+		},
+	});
 }
 
 async function getClientsInLobby() {
