@@ -2,6 +2,8 @@ import { h } from 'hyperapp';
 import Create from "./create/create";
 // import './lobby.scss';
 import Api from '../../api/Api';
+import { fromEvent, merge } from "rxjs";
+import { take } from 'rxjs/operators';
 
 const create = Create()
 
@@ -53,16 +55,39 @@ export default (initial) => ({
 				Api.setMessageHandlers({
 					create: actions.addRoom,
 					join: onJoin,
-				});
-				// todo retry 3 times delayed if no rooms retrieved
+					idle: awaitActivity,
+				});		
 				let { rooms } = await Api.joinLobby();
 				actions.updateRooms({ gameRooms: rooms });
 			};
 
+			const awaitActivity = () => {
+				console.log('idling')
+				const activities$ = merge(
+					...[
+						"mousemove",
+						"mousedown",
+						"touchstart",
+						"keydown",
+						"click",
+						"scroll",
+					].map((ev) => fromEvent(document, ev)),
+					fromEvent(window, "focus")
+				);
+				return activities$.pipe(take(1)).subscribe(refreshConnection);
+			};
+
+			const refreshConnection = async () => {
+				console.log('ahh refershing');
+				let { rooms } = await Api.getRooms();
+				actions.updateRooms({ gameRooms: rooms });
+				Api.reconnect();
+			}
+
 			const onJoin = (msg) => {
-				// todo if hosting room joined, join room
+				// todo if hosting room and opp joins, enter game
+				//		else just update room player's count
 				actions.updateRoom(msg.room);
-				// else update lobby room list client count
 			};
 
 			const join = (ID) => () => {
@@ -80,6 +105,7 @@ export default (initial) => ({
 						showCreate={showCreate}
 						toggleCreate={actions.toggleCreate}
 						setHosted={actions.setHosted}
+						refreshConnection={refreshConnection}
 					/>
 					<div oncreate={init} class="col-span-12">
 						{/* Header */}
@@ -203,77 +229,9 @@ export default (initial) => ({
 											{state.gameRooms.map(
 												(room, idx) => (
 													// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
-													<tr
-														class={` my-3 text-lg font-large`}
-													>
-														<td class="py-3 px-6 text-left">
-															<div class="flex items-center font-lg">
-																<div class="mr-2">
-																	<img
-																		class="w-6 h-6 rounded-full"
-																		src="https://randomuser.me/api/portraits/men/1.jpg"
-																	/>
-																</div>
-																<span>
-																	John Doe
-																</span>
-															</div>
-														</td>
-														<td class="p-3 px-6">
-															Blitz 1 (lightning
-															bolt)
-														</td>
-														<td class="p-3 px-6 font-bold">
-															10 min | +3 sec/move
-														</td>
-														<td class="py-3 px-6 text-center">
-															<span
-																class={`${
-																	room.clients
-																		?.length >=
-																	2
-																		? "bg-red-200 text-red-900"
-																		: "bg-green-200 text-green-900"
-																} py-1 px-3 rounded-full  font-semibold`}
-															>
-																<span class="hidden lg:inline">
-																	{`${
-																		room
-																			.clients
-																			?.length >=
-																		2
-																			? "Max"
-																			: "Open"
-																	} `}
-																</span>
-																(
-																{
-																	room.clients
-																		?.length
-																}
-																/2)
-															</span>
-														</td>
-														<td class="p-3 px-6 font-bold">
-															Black
-														</td>
-														<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
-															<button
-																onclick={join(
-																	room.ID
-																)}
-																class="focus:outline-none"
-															>
-																{`${
-																	room.clients
-																		?.length >=
-																	2
-																		? "Spectate"
-																		: "Join"
-																} `}
-															</button>
-														</td>
-													</tr>
+													<RoomItem
+														{...{ room, join, idx }}
+													/>
 												)
 											)}
 										</tbody>
@@ -286,4 +244,80 @@ export default (initial) => ({
 			);
 		},
 });
+
+function RoomItem({room, join}) {
+	return (
+		<tr
+			class="my-3 text-lg font-large"
+		>
+			<td class="py-3 px-6 text-left">
+				<div class="flex items-center font-lg">
+					<div class="mr-2">
+						<img
+							class="w-6 h-6 rounded-full"
+							src="https://randomuser.me/api/portraits/men/1.jpg"
+						/>
+					</div>
+					<span>
+						John Does
+					</span>
+				</div>
+			</td>
+			<td class="p-3 px-6">
+				Blitz 1 (lightning
+				bolt)
+			</td>
+			<td class="p-3 px-6 font-bold">
+				10 min | +3 sec/move
+			</td>
+			<td class="py-3 px-6 text-center">
+				<span
+					class={`${
+						room.clients
+							?.length >=
+						2
+							? "bg-red-200 text-red-900"
+							: "bg-green-200 text-green-900"
+					} py-1 px-3 rounded-full  font-semibold`}
+				>
+					<span class="hidden lg:inline">
+						{`${
+							room
+								.clients
+								?.length >=
+							2
+								? "Max"
+								: "Open"
+						} `}
+					</span>
+					(
+					{
+						room.clients
+							?.length
+					}
+					/2)
+				</span>
+			</td>
+			<td class="p-3 px-6 font-bold">
+				Black
+			</td>
+			<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
+				<button
+					onclick={join(
+						room.ID
+					)}
+					class="focus:outline-none"
+				>
+					{`${
+						room.clients
+							?.length >=
+						2
+							? "Spectate"
+							: "Join"
+					} `}
+				</button>
+			</td>
+		</tr>
+	)
+}
 

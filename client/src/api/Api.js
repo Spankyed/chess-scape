@@ -17,6 +17,7 @@ let connection,
 	// Message Received handlers
 	handlers = {
 		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
+		idle: () => {},
 		create: () => {},
 		join: () => {},
 		// join: msg => roomID ??= msg.roomID, // already setting roomID on send instead
@@ -36,7 +37,7 @@ async function createConnection() {
 	// const protocol = { automaticOpen: false, debug: true }
 	connection = new Sockette(baseWSUrl, {
 		timeout: 5e3,
-		maxAttempts: 4,
+		// maxAttempts: 4,
 		onopen,
 		onclose,
 		onmessage,
@@ -52,6 +53,7 @@ async function createConnection() {
 	}
 	function onclose(e) {
 		connected = false;
+		if (e.code == 1001) handlers.idle()
 		console.log(`%c Disconnected [${clientID}]`, "color:red;");
 	}
 	function onmessage({ data }) {
@@ -70,6 +72,10 @@ async function createConnection() {
 	}
 
 	return
+}
+
+function reconnect() {
+	if (!connected) connection.reconnect()
 }
 
 function closeConnection() {
@@ -137,7 +143,18 @@ function sendMessage(message) {
 // ** --------------------------------------------------------------------------
 // **  Http Request Wrappers
 // ** --------------------------------------------------------------------------
-// todo: wrap below in try-catches?
+// todo: wrap api calls in try-catch blocks?
+async function getRooms() {
+	const method = "GET";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const url = `${baseHttpUrl}/get-rooms`;
+	const response = await fetch(url, { method, headers });
+	if (response.ok) {
+		const rooms = await response.json();
+		console.log("%c Room List Sync", "color:blue;", { rooms });
+		return rooms;
+	}
+}
 async function joinLobby() {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
@@ -146,7 +163,7 @@ async function joinLobby() {
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
 		const rooms = await response.json();
-		console.log("%c Room List", "color:blue;", { rooms });
+		console.log("%c Room List Enter", "color:blue;", { rooms });
 		return rooms;
 	}
 }
@@ -205,13 +222,14 @@ async function searchSongImage(title) {
 }
 
 export default {
-	searchSongImage,
 	createClient,
+	getRooms,
 	joinLobby,
-	createConnection,
-	restartConnection: createConnection,
-	closeConnection,
+	searchSongImage,
 	setMessageHandlers,
+	createConnection,
+	reconnect,
+	closeConnection,
 	createGameRoom,
 	joinGame,
 	sendMove,
