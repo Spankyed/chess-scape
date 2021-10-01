@@ -27,7 +27,7 @@ const handler = async (event) => {
 		primaryKey: "ID",
 		primaryKeyValue: client.ID,
 		updates: {
-			'connection.connected': false,
+			connection: false,
 			connectionID: "0",
 		},
 	});
