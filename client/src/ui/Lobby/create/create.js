@@ -49,7 +49,7 @@ export default (initial) => ({
 			submitText: "Create Room",
 		}),
 	},
-	view: (state, actions) => ({ showCreate, toggleCreate, setHosted }) => {
+	view: (state, actions) => ({ showCreate, toggleCreate, setHosted, refreshConnection }) => {
 		const { gameTypes, selectedColor, selectedGameType } = state;
 		const CustomView = custom.view(state.custom, actions.custom);
 
@@ -63,9 +63,8 @@ export default (initial) => ({
 			const random = Math.random() >= 0.5 ? 1 : 0;
 			const gameOptions = processGameOptions(state.custom, selectedGameType);
 			const gameRoom = {
-				selectedColor:
-					selectedColor == "random"
-						? [("white", "black")][random]
+				selectedColor: selectedColor == "random"
+						? ["white", "black"][random]
 						: selectedColor,
 				...gameOptions,
 			};
@@ -85,7 +84,7 @@ export default (initial) => ({
 		};
 		
 		function checkConnection() {
-			if (!Api.connected) Api.restartConnection()
+			if (!Api.connected) refreshConnection()
 		}
 
 		return (
