@@ -47,9 +47,10 @@ export default initial => ({
 						roomID={roomID}
 						isLoading={state.isLoading}
 						gameOver={state.gameOver}
+						leaveGame={leaveGame}
 						toggleSidePanel={actions.toggleSidePanel}
 					/>
-					<Game {...{ roomID, actions, state }}/>
+					<Game {...{ roomID, actions, state }} />
 					<AlertView />
 				</div>
 

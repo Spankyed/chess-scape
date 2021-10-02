@@ -42,6 +42,8 @@ export default (initial) => ({
 					(gameRoom) => gameRoom.ID != room.ID
 				),
 			}),
+		enter: () => () => ({  initialized: true }),
+		exit: () => () => ({  initialized: false })
 	},
 
 	view:
@@ -51,15 +53,21 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 
 			const init = async () => {
+				console.log('lobby joined')
 				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				Api.setMessageHandlers({
 					create: actions.addRoom,
 					join: onJoin,
-					idle: awaitActivity,
+					idle: awaitActivity, //! todo if hosting game, reconnect immediately
 				});		
+				actions.enter();
 				let { rooms } = await Api.joinLobby();
 				actions.updateRooms({ gameRooms: rooms });
 			};
+
+			if (!state.initialized) {
+				init();
+			}
 
 			const awaitActivity = () => {
 				console.log('idling')
@@ -78,7 +86,6 @@ export default (initial) => ({
 			};
 
 			const refreshConnection = async () => {
-				console.log('ahh refershing');
 				let { rooms } = await Api.getRooms();
 				actions.updateRooms({ gameRooms: rooms });
 				Api.reconnect();
@@ -93,7 +100,9 @@ export default (initial) => ({
 			const join = (ID) => () => {
 				// console.log('joining  ', ID)
 				Api.joinGame(ID);
+				cleanupHandlers();
 				joinGame(ID);
+				actions.exit();
 			};
 
 			return (
@@ -107,7 +116,7 @@ export default (initial) => ({
 						setHosted={actions.setHosted}
 						refreshConnection={refreshConnection}
 					/>
-					<div oncreate={init} class="col-span-12">
+					<div class="col-span-12">
 						{/* Header */}
 						<div class="px-4 md:px-10 py-5" style="height:18vh">
 							<div class="sm:flex items-center justify-between">
@@ -321,3 +330,12 @@ function RoomItem({room, join}) {
 	)
 }
 
+
+
+function cleanupHandlers(){
+	Api.setMessageHandlers({
+		create:()=>{},
+		join: ()=>{},
+		idle: ()=>{}
+	});	
+}

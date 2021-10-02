@@ -12,44 +12,58 @@ export default initial => ({
 		closePieceSelect: _ => _ => ({isPromoting: false}),
 		toggleMenu: (ev) => (state) => ({menuOpen: !state.menuOpen}),
 	},
-	view: (state, actions) => ({isLoading, toggleSidePanel, gameOver, color}) => {
-		return ( 
+	view: (state, actions) => ({isLoading, gameOver, leaveGame, toggleSidePanel, color}) => {
+		return (
 			// pointer-events-none controls-wrapper
-			<div class={`controls-wrapper pointer-events-none ${isLoading && 'hidden'}`}>
+			<div
+				class={`controls-wrapper pointer-events-none ${
+					isLoading && "hidden"
+				}`}
+			>
 				<div class="controls">
-					{ gameOver  &&
-						<MatchMessage/>
-					}
-					{ state.isPromoting  &&
-						<PieceSelection color={color} resolver={state.resolver} closePieceSelect={actions.closePieceSelect}/>
-					}
-					<div class="player-section"> 
-						<Player/>
-						<Opponent/>
+					{gameOver && <MatchMessage />}
+					{state.isPromoting && (
+						<PieceSelection
+							color={color}
+							resolver={state.resolver}
+							closePieceSelect={actions.closePieceSelect}
+						/>
+					)}
+					<div class="player-section">
+						<Player />
+						<Opponent />
 					</div>
 					{/* back button */}
 					<div class="btn-wrapper left">
-						<button class="control-btn">
+						<button onclick={leaveGame} class="control-btn">
 							<img src="./assets/controls/back.svg"></img>
 						</button>
 					</div>
 					<div class="btn-wrapper right">
 						{/* menu */}
 						<div class="menu-wrapper">
-							{ state.menuOpen && <Menu gameOver={gameOver}/> }
-							<button onclick={actions.toggleMenu} class="control-btn first">
+							{state.menuOpen && <Menu gameOver={gameOver} />}
+							<button
+								onclick={actions.toggleMenu}
+								class="control-btn first"
+							>
 								<img src="./assets/controls/menu.svg"></img>
 							</button>
 						</div>
-						{ // todo: hide btn on mobile
-						  /* sidePanel button */}
-						<button onclick={_=> toggleSidePanel()} class="control-btn">
+						{
+							// todo: hide btn on mobile
+							/* sidePanel button */
+						}
+						<button
+							onclick={(_) => toggleSidePanel()}
+							class="control-btn"
+						>
 							<img src="./assets/controls/sidePanel.svg"></img>
 						</button>
 					</div>
 				</div>
 			</div>
-		)
+		);
 	}
 })
 function Menu({gameOver}){

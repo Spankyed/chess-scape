@@ -28,7 +28,7 @@ const actions = {
 	authorize: () => ({ authorized: true }),
 	unauthorize: () => ({authorized: false}),
 	joinGame: (roomID) => ({ inGame: true, roomID }),
-	leaveGame: () => ({ inGame: false }),
+	leaveGame: () => ({ inGame: false }), // back to lobby
 };
 
 const view = (state, actions) => {

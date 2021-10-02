@@ -34,8 +34,10 @@ function setMessageHandlers(newHandlers) {
 }
 
 async function createConnection() {
-	// const protocol = { automaticOpen: false, debug: true }
-	connection = new Sockette(baseWSUrl, {
+	const notConnected = !connected &&
+		connection?.ws?.readyState != 0 && connection?.ws?.readyState != 1;
+
+	connection = notConnected && new Sockette(baseWSUrl, {
 		timeout: 5e3,
 		// maxAttempts: 4,
 		onopen,
@@ -46,14 +48,19 @@ async function createConnection() {
 		onerror: (e) => console.log("WS Error:", e),
 		protocols: TOKEN,
 	});
+
 	function onopen(e) {
 		connected = true;
 		e.target.binaryType = "arraybuffer";
+		connection.ws = e.target;
 		console.log(`%c Connected [${clientID}]`, "color:white;")
 	}
 	function onclose(e) {
 		connected = false;
-		if (e.code == 1001) handlers.idle()
+		if (e.code == 1001) {
+			connection = null;
+			handlers.idle()
+		}
 		console.log(`%c Disconnected [${clientID}]`, "color:red;");
 	}
 	function onmessage({ data }) {
@@ -70,8 +77,6 @@ async function createConnection() {
 		const messageHandler = handlers[message.method];
 		if (messageHandler) messageHandler(message);
 	}
-
-	return
 }
 
 function reconnect() {
