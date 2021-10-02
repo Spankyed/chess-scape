@@ -9,7 +9,7 @@ async function sendMessage({ domainName, stage, connectionID }, message) {
 		stage,
 		connectionID,
 		message,
-	});
+	}).catch((_) => removeConnection(ID));
 }
 
 async function sendMessageToLobby(message) {
@@ -17,9 +17,7 @@ async function sendMessageToLobby(message) {
 	return Promise.all(
 		clients.map(({ ID, connection, connectionID }) => {
 			if (!connection || !connectionID) return;
-			return sendMessage(connection, message).catch((_) =>
-				removeConnection(ID)
-			);
+			return sendMessage(connection, message)
 		})
 	);
 }
