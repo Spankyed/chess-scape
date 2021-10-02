@@ -91,16 +91,18 @@ export default (initial) => ({
 				Api.reconnect();
 			}
 
-			const onJoin = (msg) => {
-				// todo if hosting room and opp joins, enter game
-				//		else just update room player's count
-				actions.updateRoom(msg.room);
+			const onJoin = ({room}) => {
+				if (room.host == Api.clientID) {
+					join(room.ID, true);
+				}
+				actions.updateRoom(room);
 			};
 
-			const join = (ID) => () => {
+			const join = (ID, dontSend) => {
 				// console.log('joining  ', ID)
-				Api.joinGame(ID);
+				if (!dontSend) Api.joinGame(ID);
 				cleanupHandlers();
+				debugger
 				joinGame(ID);
 				actions.exit();
 			};
@@ -312,9 +314,7 @@ function RoomItem({room, join}) {
 			</td>
 			<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
 				<button
-					onclick={join(
-						room.ID
-					)}
+					onclick={()=>join( room.ID)}
 					class="focus:outline-none"
 				>
 					{`${
