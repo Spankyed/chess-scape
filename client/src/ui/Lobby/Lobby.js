@@ -24,7 +24,12 @@ export default (initial) => ({
 		},
 		updateRooms:
 			({ gameRooms }) =>
-			(state) => ({ gameRooms }),
+			(state) => {
+				return ({
+					gameRooms,
+					hostedRoom: gameRooms.find(room => room.host == Api.clientID)?.ID
+				})
+			},
 		updateRoom:
 			(room) =>
 			({ gameRooms }) => ({
