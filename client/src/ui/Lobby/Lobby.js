@@ -102,7 +102,6 @@ export default (initial) => ({
 				// console.log('joining  ', ID)
 				if (!dontSend) Api.joinGame(ID);
 				cleanupHandlers();
-				debugger
 				joinGame(ID);
 				actions.exit();
 			};
@@ -257,10 +256,10 @@ export default (initial) => ({
 });
 
 function RoomItem({room, join}) {
+	const isFull = room.players?.length >= 2
+	const isHost = room.host == Api.clientID
 	return (
-		<tr
-			class="my-3 text-lg font-large"
-		>
+		<tr class="my-3 text-lg font-large">
 			<td class="py-3 px-6 text-left">
 				<div class="flex items-center font-lg">
 					<div class="mr-2">
@@ -269,65 +268,38 @@ function RoomItem({room, join}) {
 							src="https://randomuser.me/api/portraits/men/1.jpg"
 						/>
 					</div>
-					<span>
-						John Does
-					</span>
+					<span>John Does</span>
 				</div>
 			</td>
-			<td class="p-3 px-6">
-				Blitz 1 (lightning
-				bolt)
-			</td>
-			<td class="p-3 px-6 font-bold">
-				10 min | +3 sec/move
-			</td>
+			<td class="p-3 px-6">Blitz 1 (lightning bolt)</td>
+			<td class="p-3 px-6 font-bold">10 min | +3 sec/move</td>
 			<td class="py-3 px-6 text-center">
 				<span
-					class={`${
-						room.clients
-							?.length >=
-						2
-							? "bg-red-200 text-red-900"
-							: "bg-green-200 text-green-900"
-					} py-1 px-3 rounded-full  font-semibold`}
+					class={`py-1 px-3 rounded-full  font-semibold 
+					${isFull ? " bg-red-200 text-red-900" : " bg-blue-200 text-blue-900"}`}
 				>
 					<span class="hidden lg:inline">
-						{`${
-							room
-								.clients
-								?.length >=
-							2
-								? "Max"
-								: "Open"
-						} `}
+						{`${isFull ? "Max" : "Open"}`}
 					</span>
-					(
-					{
-						room.clients
-							?.length
-					}
+					({room.players?.length}
 					/2)
 				</span>
 			</td>
-			<td class="p-3 px-6 font-bold">
-				Black
-			</td>
-			<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
+			<td class="p-3 px-6 font-bold">Black</td>
+			<td
+				class='px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold'
+			>
 				<button
-					onclick={()=>join( room.ID)}
-					class="focus:outline-none"
+					onclick={() =>
+						isHost ? join(room.ID, true) : join(room.ID)
+					}
+					class={`focus:outline-none ${isHost && " bg-blue-200 text-blue-900"}`}
 				>
-					{`${
-						room.clients
-							?.length >=
-						2
-							? "Spectate"
-							: "Join"
-					} `}
+					{isHost ? "Enter" : `${!isHost && isFull ? "Spectate" : "Join"} `}
 				</button>
 			</td>
 		</tr>
-	)
+	);
 }
 
 
