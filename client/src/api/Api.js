@@ -37,7 +37,7 @@ async function createConnection() {
 	const notConnected = !connected &&
 		connection?.ws?.readyState != 0 && connection?.ws?.readyState != 1;
 
-	connection = notConnected && new Sockette(baseWSUrl, {
+	connection = notConnected ? new Sockette(baseWSUrl, {
 		timeout: 5e3,
 		// maxAttempts: 4,
 		onopen,
@@ -47,7 +47,7 @@ async function createConnection() {
 		onmaximum: (e) => console.log("Stop Attempting!", e),
 		onerror: (e) => console.log("WS Error:", e),
 		protocols: TOKEN,
-	});
+	}) : connection;
 
 	function onopen(e) {
 		connected = true;
@@ -242,6 +242,7 @@ export default {
 	shareVideo,
 	shareMusic,
 	connected,
+	clientID,
 };
 
 function eraseCookie(name) {   
