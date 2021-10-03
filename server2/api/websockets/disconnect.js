@@ -5,7 +5,7 @@ const { withHooks } = require("../common/hooks");
 const clientsTable = process.env.clientsTableName;
 
 async function findClient(connectionID) {
-	return await Dynamo.queryOn({
+	return Dynamo.queryOn({
 		TableName: clientsTable,
 		index: "connection-index",
 		queryKey: "connectionID",

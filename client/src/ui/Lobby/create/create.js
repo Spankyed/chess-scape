@@ -70,7 +70,7 @@ export default (initial) => ({
 			};
 			try {
 				actions.attemptSubmit();
-				const { newRoom } = await Api.createGameRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
+				const { newRoom } = await Api.createRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
 				if (newRoom) {
 					setHosted(newRoom.ID)
 					toggleCreate();
@@ -84,7 +84,7 @@ export default (initial) => ({
 		};
 		
 		function checkConnection() {
-			if (!Api.connected) refreshConnection()
+			if (!Api.isConnected()) refreshConnection()
 		}
 
 		return (

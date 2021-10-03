@@ -12,14 +12,16 @@ const roomsTable = process.env.roomsTableName;
 
 module.exports = async function ({ clientID, roomID }) {
 	try {
-		await Dynamo.update({
-			TableName: clientsTable,
-			primaryKey: "ID",
-			primaryKeyValue: clientID,
-			updates: { room: roomID },
-		});
+		const [_,room] = await Promise.all([
+			Dynamo.update({
+				TableName: clientsTable,
+				primaryKey: "ID",
+				primaryKeyValue: clientID,
+				updates: { room: roomID },
+			}),
+			Dynamo.get(roomID, roomsTable)
+		])
 
-		const room = await Dynamo.get(roomID, roomsTable);
 		const group = room.players.length < 2 ? 'players' : 'spectators' 
 		const { Attributes } = await Dynamo.append({
 			TableName: roomsTable,
@@ -32,13 +34,12 @@ module.exports = async function ({ clientID, roomID }) {
 		await sendMessageToLobby({ method: "join", room: Attributes });
 
 	} catch (err) {
-		console.log("grr", err);
+		return Responses._400({ error: error.message });
 	}
 
 	console.log(`Joined room[${roomID}] client[${clientID}]`);
 
-	return;
-	// return Responses._200({});
+	return Responses._200({});
 };
 
 // module.exports = method;

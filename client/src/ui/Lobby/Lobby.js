@@ -18,17 +18,16 @@ export default (initial) => ({
 	actions: {
 		create: create.actions,
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
-		setHosted: (room) => () => {
-			console.log("room: ", room);
-			return { hostedRoom: room };
-		},
+		setHosted: (room) => () => ({ hostedRoom: room }),
 		updateRooms:
 			({ gameRooms }) =>
 			(state) => {
-				return ({
+				return {
 					gameRooms,
-					hostedRoom: gameRooms.find(room => room.host == Api.clientID)?.ID
-				})
+					hostedRoom: gameRooms.find(
+						(room) => room.host == Api.getClientID()
+					)?.ID,
+				};
 			},
 		updateRoom:
 			(room) =>
@@ -47,8 +46,8 @@ export default (initial) => ({
 					(gameRoom) => gameRoom.ID != room.ID
 				),
 			}),
-		enter: () => () => ({  initialized: true }),
-		exit: () => () => ({  initialized: false })
+		enter: () => () => ({ initialized: true }),
+		exit: () => () => ({ initialized: false }),
 	},
 
 	view:
@@ -58,13 +57,13 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 
 			const init = async () => {
-				console.log('lobby joined')
+				console.log(`Joined lobby [${Api.getClientID()}]`);
 				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				Api.setMessageHandlers({
 					create: actions.addRoom,
 					join: onJoin,
 					idle: awaitActivity, //! todo if hosting game, reconnect immediately
-				});		
+				});
 				actions.enter();
 				let { rooms } = await Api.joinLobby();
 				actions.updateRooms({ gameRooms: rooms });
@@ -75,7 +74,7 @@ export default (initial) => ({
 			}
 
 			const awaitActivity = () => {
-				console.log('idling')
+				console.log("idling");
 				const activities$ = merge(
 					...[
 						"mousemove",
@@ -94,10 +93,10 @@ export default (initial) => ({
 				let { rooms } = await Api.getRooms();
 				actions.updateRooms({ gameRooms: rooms });
 				Api.reconnect();
-			}
+			};
 
-			const onJoin = ({room}) => {
-				if (room.host == Api.clientID) {
+			const onJoin = ({ room }) => {
+				if (room.host == Api.getClientID()) {
 					join(room.ID, true);
 				}
 				actions.updateRoom(room);
@@ -262,7 +261,7 @@ export default (initial) => ({
 
 function RoomItem({room, join}) {
 	const isFull = room.players?.length >= 2
-	const isHost = room.host == Api.clientID
+	const isHost = room.host == Api.getClientID()
 	return (
 		<tr class="my-3 text-lg font-large">
 			<td class="py-3 px-6 text-left">

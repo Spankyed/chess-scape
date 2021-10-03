@@ -16,7 +16,7 @@ const handler = async (event) => {
 	const client = await Dynamo.get(clientID, clientsTable);
 	const { domainName, stage } = client.connection;
 
-	if (validate(connectionID, TOKEN, client)) {
+	if (!validate(connectionID, TOKEN, client)) {
 		WebSocket.close({ domainName, stage, connectionID }); // ! dont do this, send unauthorize msg instead
 		return Responses._400({ message: "Unauthorized connection" });
 	} // todo move validation to hooks, return 403, and disconnect client
@@ -35,26 +35,15 @@ const handler = async (event) => {
 
 	if (messageHandler) await messageHandler(message);
 
-	// await WebSocket.send({
-	// 	domainName,
-	// 	stage,
-	// 	connectionID,
-	// 	message
-	// });
+	// if (messageHandler) return await messageHandler(message);
+	// else return Responses._400({ error: "Message not understood" });
 
 	return Responses._200({ message: "Message received and responded" });
 };
 
 exports.handler = withHooks(["parse"])(handler);
 
-// async function sendMessageAll(clients, message) {
-// 	const messages = clients.map(({ connectionID }) =>
-// 		WebSocket.send({ domainName, stage, connectionID, message })
-// 	);
-// 	return await Promise.all(messages);
-// }
-
 
 function validate(connectionID, TOKEN, client) {
-	return (connectionID != client.connectionID || TOKEN != client.TOKEN  ) 
+	return connectionID === client.connectionID || TOKEN === client.TOKEN; 
 }

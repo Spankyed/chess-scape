@@ -14,6 +14,8 @@ const schema = {
 const handler = async (event) => {
 	const {selectedColor, host, ...form} = event.body;
 
+	// todo authorize host
+
 	const room = {
 		...form,
 		ID: await nanoid(),

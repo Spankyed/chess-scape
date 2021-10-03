@@ -173,7 +173,7 @@ async function joinLobby() {
 	}
 }
 
-async function createGameRoom(options) {
+async function createRoom(options) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
 	const body = JSON.stringify({ ...options, host: clientID});
@@ -235,14 +235,14 @@ export default {
 	createConnection,
 	reconnect,
 	closeConnection,
-	createGameRoom,
+	createRoom,
 	joinGame,
 	sendMove,
 	sendChat,
 	shareVideo,
 	shareMusic,
-	connected,
-	clientID,
+	isConnected: () => connected,
+	getClientID: () => clientID,
 };
 
 function eraseCookie(name) {   

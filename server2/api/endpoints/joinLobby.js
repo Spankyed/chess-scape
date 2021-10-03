@@ -10,19 +10,20 @@ const schema = {
 };
 
 const handler = async (event) => {
-	const rooms = await Dynamo.getAll(roomsTable);
 	const { clientID } = event.body;
 
-	await Dynamo.update({
+	const [_,rooms] = await Promise.all([
+		Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: clientID,
 		updates: {
 			room: 'lobby'
 		},
-	});
+		}),
+		Dynamo.getAll(roomsTable)
+	]);
 	
-
 	return Responses._200({ rooms });
 };
 
