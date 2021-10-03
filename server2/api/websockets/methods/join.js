@@ -31,6 +31,7 @@ module.exports = async function ({ clientID, roomID }) {
 			// select: "clients",
 		});
 
+		// ! only message lobby if player joined, not spectator
 		await sendMessageToLobby({ method: "join", room: Attributes });
 
 	} catch (err) {

@@ -58,7 +58,6 @@ async function createConnection() {
 	function onclose(e) {
 		connected = false;
 		if (e.code == 1001) {
-			connection = null;
 			handlers.idle()
 		}
 		console.log(`%c Disconnected [${clientID}]`, "color:red;");
@@ -80,7 +79,8 @@ async function createConnection() {
 }
 
 function reconnect() {
-	if (!connected) connection.reconnect()
+	if (!connected && connection) connection.reconnect();
+	else console.error("unable to reconnect", { connected, connection });
 }
 
 function closeConnection() {

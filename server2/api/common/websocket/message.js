@@ -3,22 +3,26 @@ const Dynamo = require("../Dynamo");
 
 const clientsTable = process.env.clientsTableName;
 
-async function sendMessage({ domainName, stage, connectionID }, message) {
-	return WebSocket.send({
-		domainName,
-		stage,
-		connectionID,
-		message,
-	}).catch((_) => removeConnection(ID));
+async function sendMessage(connections, message) {
+	if (!(connections instanceof Array)) connections = [connections];
+	return Promise.all(
+		connections.map(({ connectionID, domainName, stage }) => {
+			if (!connectionID || !domainName || !stage) return;
+			return WebSocket.send({
+				domainName,
+				stage,
+				connectionID,
+				message,
+			}).catch((_) => removeConnection(ID));
+		})
+	);
 }
 
 async function sendMessageToLobby(message) {
 	const clients = await getClientsInLobby();
-	return Promise.all(
-		clients.map(({ ID, connection, connectionID }) => {
-			if (!connection || !connectionID) return;
-			return sendMessage(connection, message)
-		})
+	return sendMessage(
+		clients.flatMap(c => c.connection ? [c.connection] : []),
+		message
 	);
 }
 
