@@ -45,7 +45,7 @@ export default (initial) => ({
 				gameRooms: gameRooms.filter(
 					(gameRoom) => gameRoom.ID != roomID
 				),
-				hostedRoom: hostedRoom == roomID ? null : hostedRoom
+				hostedRoom: hostedRoom == roomID ? null : hostedRoom,
 			}),
 		enter: () => () => ({ initialized: true }),
 		exit: () => () => ({ initialized: false }),
@@ -196,7 +196,7 @@ export default (initial) => ({
 													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
 												>
 													<span class="block bg-gray-700 h-full w-full">
-														Challenger
+														Host
 													</span>
 												</th>
 												<th
@@ -246,14 +246,17 @@ export default (initial) => ({
 										<tbody class="text-gray-300 border-b border-gray-500">
 											{/* if not game rooms, show some other ui */}
 
-											{state.gameRooms.map(
-												(room, idx) => (
+											{state.gameRooms
+												.sort(
+													(a, b) =>
+														b.created - a.created
+												)
+												.map((room, idx) => (
 													// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
 													<RoomItem
 														{...{ room, join, idx }}
 													/>
-												)
-											)}
+												))}
 										</tbody>
 									</table>
 								)}
