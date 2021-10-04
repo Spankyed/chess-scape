@@ -24,6 +24,9 @@ $border-color: #bdbdbd;
     --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),0 10px 10px -5px rgba(0, 0, 0, 0.04);
     box-shadow: var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);
 
+    &.none {
+        border-left-width: 0px;
+    }
     &.info {
         // background-color: rgba(191, 219, 254, 1);
         // border-color: #3B82F6;

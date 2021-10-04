@@ -199,10 +199,10 @@ async function deleteRoom(ID) {
 	const url = `${baseHttpUrl}/delete-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
-		const response = await response.json();
-		console.log(`%c ${response}`, "color:orange;");
+		const res = await response.json();
+		console.log(`%c ${res.message}`, "color:orange;");
 		// dont do anything with response, websocket message should be sent to update lobby room list
-	} else if (response.status === 401) {
+	} else if (res.status === 401) {
 		clearSession();
 	}
 	function clearSession() {

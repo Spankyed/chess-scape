@@ -72,7 +72,6 @@ export default (initial) => ({
 				actions.attemptSubmit();
 				const { newRoom } = await Api.createRoom(gameRoom); // dont update room list with response, websocket message should be sent to update room list in lobby
 				if (newRoom) {
-					setHosted(newRoom.ID)
 					toggleCreate();
 				}
 				actions.endAttempt();

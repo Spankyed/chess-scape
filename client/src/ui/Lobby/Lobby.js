@@ -1,15 +1,18 @@
 import { h } from 'hyperapp';
-import Create from "./create/create";
-// import './lobby.scss';
-import Api from '../../api/Api';
 import { fromEvent, merge } from "rxjs";
 import { take } from 'rxjs/operators';
+import Api from '../../api/Api';
+import Create from "./create/create";
+import Alert from '../Shared/Alert';
+// import './lobby.scss';
 
 const create = Create()
+const alert = Alert()
 
 export default (initial) => ({
 	state: {
 		create: create.state,
+		alert: alert.state,
 		showCreate: false,
 		hostedRoom: null,
 		gameRooms: [],
@@ -17,16 +20,18 @@ export default (initial) => ({
 
 	actions: {
 		create: create.actions,
+		alert: alert.actions,
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
-		setHosted: (room) => () => ({ hostedRoom: room }),
 		updateRooms:
 			({ gameRooms }) =>
-			(state) => {
+			(state, actions) => {
+				const hostedRoomID = gameRooms.find(
+					(room) => room.host == Api.getClientID()
+				)?.ID;
+				if (!!hostedRoomID) actions.alert.show(alert.hostAlert);
 				return {
-					gameRooms,
-					hostedRoom: gameRooms.find(
-						(room) => room.host == Api.getClientID()
-					)?.ID,
+					gameRooms: sortByCreated(gameRooms),
+					hostedRoom: hostedRoomID,
 				};
 			},
 		updateRoom:
@@ -38,7 +43,14 @@ export default (initial) => ({
 			}),
 		addRoom:
 			({ newRoom }) =>
-			({ gameRooms }) => ({ gameRooms: [...gameRooms, newRoom] }),
+			({ gameRooms, hostedRoom },actions) => {
+				const isHost = newRoom.host == Api.getClientID();
+				if (isHost) actions.alert.show(alert.hostAlert);
+				return {
+					gameRooms: sortByCreated([...gameRooms, newRoom]),
+					hostedRoom: isHost ? newRoom.ID : hostedRoom,
+				};
+			},
 		removeRoom:
 			({ roomID }) =>
 			({ gameRooms, hostedRoom }) => ({
@@ -56,9 +68,9 @@ export default (initial) => ({
 		({ joinGame }) => {
 			const { showCreate, hostedRoom } = state;
 			const CreateView = create.view(state.create, actions.create);
+			const AlertView = alert.view(state.alert, actions.alert);
 
-			const init = async () => {
-				console.log(`Joined lobby [${Api.getClientID()}]`);
+			const setupLobbyAPI = async () => {
 				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				Api.setMessageHandlers({
 					create: actions.addRoom,
@@ -66,13 +78,15 @@ export default (initial) => ({
 					join: onJoin,
 					idle: awaitActivity, //! todo if hosting game, reconnect immediately
 				});
-				actions.enter();
 				let { rooms } = await Api.joinLobby();
+				// todo stop loading
 				actions.updateRooms({ gameRooms: rooms });
 			};
 
 			if (!state.initialized) {
-				init();
+				console.log(`Joined lobby [${Api.getClientID()}]`);
+				actions.enter();
+				setupLobbyAPI();
 			}
 
 			const awaitActivity = () => {
@@ -110,10 +124,12 @@ export default (initial) => ({
 				cleanupHandlers();
 				joinGame(ID);
 				actions.exit();
+				actions.alert.close("host");
 			};
 
-			const cancel = () => {
-				Api.deleteRoom(state.hostedRoom);
+			const cancel = async () => {
+				await Api.deleteRoom(state.hostedRoom);
+				actions.alert.close("host");
 			};
 
 			return (
@@ -124,10 +140,15 @@ export default (initial) => ({
 					<CreateView
 						showCreate={showCreate}
 						toggleCreate={actions.toggleCreate}
-						setHosted={actions.setHosted}
 						refreshConnection={refreshConnection}
 					/>
-					<div class="col-span-12">
+
+					<AlertView />
+
+					<div
+						class="col-span-12"
+						onremove={() => console.log("fishducks")}
+					>
 						{/* Header */}
 						<div class="px-4 md:px-10 py-5" style="height:18vh">
 							<div class="sm:flex items-center justify-between">
@@ -246,17 +267,14 @@ export default (initial) => ({
 										<tbody class="text-gray-300 border-b border-gray-500">
 											{/* if not game rooms, show some other ui */}
 
-											{state.gameRooms
-												.sort(
-													(a, b) =>
-														b.created - a.created
-												)
-												.map((room, idx) => (
+											{state.gameRooms.map(
+												(room, idx) => (
 													// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
 													<RoomItem
 														{...{ room, join, idx }}
 													/>
-												))}
+												)
+											)}
 										</tbody>
 									</table>
 								)}
@@ -316,6 +334,9 @@ function RoomItem({room, join}) {
 }
 
 
+function sortByCreated(arr) {
+	return arr.sort((a, b) => b.created - a.created)
+}
 
 function cleanupHandlers(){
 	Api.setMessageHandlers({
@@ -324,3 +345,5 @@ function cleanupHandlers(){
 		idle: ()=>{}
 	});	
 }
+
+
