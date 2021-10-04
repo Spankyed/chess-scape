@@ -20,13 +20,24 @@ const Dynamo = {
 			},
 		};
 		const data = await documentClient.get(params).promise();
-		if (!data || !data.Item) {
-			throw Error(
-				`There was an error fetching the data for ID of ${ID} from ${TableName}`
-			);
-		}
+		// if (!data || !data.Item) {
+		// 	throw Error(
+		// 		`There was an error fetching the data for ID of ${ID} from ${TableName}`
+		// 	);
+		// }
 		console.log(data);
 		return data.Item;
+	},
+	async delete(ID, TableName) {
+		const params = {
+			TableName,
+			Key: {
+				ID,
+			},
+		};
+		const data = await documentClient.delete(params).promise();
+		console.log(data);
+		return data;
 	},
 
 	async getAll(TableName) {
@@ -86,7 +97,7 @@ const Dynamo = {
 
 		return documentClient.delete(params).promise();
 	},
-
+	// REMOVES AN ATTRIBUTE, DOESN'T DELETE
 	remove: async ({
 		TableName,
 		primaryKey,

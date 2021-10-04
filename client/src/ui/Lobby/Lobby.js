@@ -40,11 +40,12 @@ export default (initial) => ({
 			({ newRoom }) =>
 			({ gameRooms }) => ({ gameRooms: [...gameRooms, newRoom] }),
 		removeRoom:
-			(room) =>
-			({ gameRooms }) => ({
+			({ roomID }) =>
+			({ gameRooms, hostedRoom }) => ({
 				gameRooms: gameRooms.filter(
-					(gameRoom) => gameRoom.ID != room.ID
+					(gameRoom) => gameRoom.ID != roomID
 				),
+				hostedRoom: hostedRoom == roomID ? null : hostedRoom
 			}),
 		enter: () => () => ({ initialized: true }),
 		exit: () => () => ({ initialized: false }),
@@ -61,6 +62,7 @@ export default (initial) => ({
 				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
 				Api.setMessageHandlers({
 					create: actions.addRoom,
+					delete: actions.removeRoom,
 					join: onJoin,
 					idle: awaitActivity, //! todo if hosting game, reconnect immediately
 				});
@@ -110,6 +112,10 @@ export default (initial) => ({
 				actions.exit();
 			};
 
+			const cancel = () => {
+				Api.deleteRoom(state.hostedRoom);
+			};
+
 			return (
 				<div
 					class="lobby flex pt-10 justify-center min-h-screen font-sans"
@@ -144,7 +150,7 @@ export default (initial) => ({
 										</button>
 									) : (
 										<button
-											onclick={actions.toggleCreate}
+											onclick={cancel}
 											class="flex items-center ring-2 ring-offset-2 focus:ring-yellow-900-900 px-4 py-2 bg-yellow-700 hover:bg-yellow-600 focus:outline-none"
 										>
 											<img src="./assets/create/cancel.svg"></img>

@@ -19,6 +19,7 @@ let connection,
 		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
 		idle: () => {},
 		create: () => {},
+		delete: () => {},
 		join: () => {},
 		// join: msg => roomID ??= msg.roomID, // already setting roomID on send instead
 		move: () => {},
@@ -43,7 +44,7 @@ async function createConnection() {
 		onopen,
 		onclose,
 		onmessage,
-		onreconnect: (e) => console.log("Reconnecting...", e),
+		onreconnect: (e) => console.log("Reconnecting..."),
 		onmaximum: (e) => console.log("Stop Attempting!", e),
 		onerror: (e) => console.log("WS Error:", e),
 		protocols: TOKEN,
@@ -191,6 +192,23 @@ async function createRoom(options) {
 		localStorage.removeItem("client");
 	}
 }
+async function deleteRoom(ID) {
+	const method = "POST";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const body = JSON.stringify({ ID, TOKEN});
+	const url = `${baseHttpUrl}/delete-room`;
+	const response = await fetch(url, { method, headers, body });
+	if (response.ok) {
+		const response = await response.json();
+		console.log(`%c ${response}`, "color:orange;");
+		// dont do anything with response, websocket message should be sent to update lobby room list
+	} else if (response.status === 401) {
+		clearSession();
+	}
+	function clearSession() {
+		localStorage.removeItem("client");
+	}
+}
 
 async function createClient(userInfo) {
 	const method = "POST";
@@ -236,6 +254,7 @@ export default {
 	reconnect,
 	closeConnection,
 	createRoom,
+	deleteRoom,
 	joinGame,
 	sendMove,
 	sendChat,
