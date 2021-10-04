@@ -1,5 +1,5 @@
 const { useHooks, logEvent, parseEvent, handleUnexpectedError } = require('lambda-hooks');
-const Responses = require('../common/API_Responses');
+const Responses = require('./HTTP_Responses');
 const yup = require('yup');
 // const { object, string, number } = require('yup');
 

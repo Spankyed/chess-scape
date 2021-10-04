@@ -1,4 +1,4 @@
-const Responses = require("../../common/API_Responses");
+const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
 const { withHooks, hooksWithSchema } = require("../../common/hooks");
 
