@@ -38,6 +38,10 @@ export default initial => ({
 		const SidePanelView = sidePanel.view(state.sidePanel, actions.sidePanel)
 		const AlertView = alert.view(state.alert, actions.alert)
 		/* todo: on destroy, breakdown websocket and game */
+		const leave = () => {
+			actions.showLoader();
+			leaveGame()
+		}
 		return (
 			<div class="h-full flex">
 				<Loader isLoading={state.isLoading} alert={actions.alert} />
@@ -47,7 +51,7 @@ export default initial => ({
 						roomID={roomID}
 						isLoading={state.isLoading}
 						gameOver={state.gameOver}
-						leaveGame={leaveGame}
+						leaveGame={leave}
 						toggleSidePanel={actions.toggleSidePanel}
 					/>
 					<Game {...{ roomID, actions, state }} />
