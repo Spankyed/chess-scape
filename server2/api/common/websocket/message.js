@@ -13,9 +13,26 @@ async function sendMessage(connections, message) {
 				stage,
 				connectionID,
 				message,
-			}).catch((_) => removeConnection(ID));
+			}).catch(async (_) => await removeConnection(connectionID));
 		})
 	);
+	async function removeConnection(ID) {
+		const [client] = await Dynamo.query({
+			TableName: clientsTable,
+			index: "connection-index",
+			queryKey: "connectionID",
+			queryValue: ID,
+		});
+		return await Dynamo.update({
+			TableName: clientsTable,
+			primaryKey: "ID",
+			primaryKeyValue: client.ID,
+			updates: {
+				connection: false,
+				connectionID: "0",
+			},
+		});
+	}
 }
 
 async function sendMessageToLobby(message) {
@@ -25,19 +42,6 @@ async function sendMessageToLobby(message) {
 		message
 	);
 }
-
-async function removeConnection(ID) {
-	return await Dynamo.update({
-		TableName: clientsTable,
-		primaryKey: "ID",
-		primaryKeyValue: ID,
-		updates: {
-			connection: false,
-			connectionID: "0",
-		},
-	});
-}
-
 async function getClientsInLobby() {
 	return await Dynamo.queryOn({
 		TableName: clientsTable,
