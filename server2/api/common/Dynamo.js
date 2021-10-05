@@ -152,6 +152,7 @@ const Dynamo = {
 			Key: { [primaryKey]: primaryKeyValue },
 			...paramsMap,
 			UpdateExpression,
+			ReturnValues: "ALL_NEW",
 		};
 		return documentClient.update(params).promise();
 	},

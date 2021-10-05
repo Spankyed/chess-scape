@@ -269,7 +269,7 @@ export default (initial) => ({
 });
 
 function RoomItem({room, join}) {
-	const isFull = room.players?.length >= 2
+	const isFull = Object.keys(room.players)?.length >= 2
 	const isHost = room.host == Api.getClientID()
 	return (
 		<tr class="my-3 text-lg font-large">
@@ -294,7 +294,7 @@ function RoomItem({room, join}) {
 					<span class="hidden lg:inline">
 						{`${isFull ? "Max" : "Open"}`}
 					</span>
-					({room.players?.length}
+					({Object.keys(room.players)?.length}
 					/2)
 				</span>
 			</td>
