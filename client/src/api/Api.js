@@ -296,5 +296,8 @@ function awaitActivity(callback) {
 		].map((ev) => fromEvent(document, ev)),
 		fromEvent(window, "focus")
 	);
-	return activities$.pipe(take(1)).subscribe(callback);
+	return activities$.pipe(take(1)).subscribe(() => {
+		reconnect()
+		callback()
+	});
 }
