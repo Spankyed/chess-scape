@@ -128,5 +128,3 @@ function Alert({id, alert, actions}){
 			</div>
 		)
 }
-
-

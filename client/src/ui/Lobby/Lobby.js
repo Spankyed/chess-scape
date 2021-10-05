@@ -16,6 +16,7 @@ export default (initial) => ({
 		showCreate: false,
 		hostedRoom: null,
 		gameRooms: [],
+		initialized: false,
 	},
 
 	actions: {
@@ -43,7 +44,7 @@ export default (initial) => ({
 			}),
 		addRoom:
 			({ newRoom }) =>
-			({ gameRooms, hostedRoom },actions) => {
+			({ gameRooms, hostedRoom }, actions) => {
 				const isHost = newRoom.host == Api.getClientID();
 				if (isHost) actions.alert.show(alert.hostAlert);
 				return {
@@ -59,7 +60,10 @@ export default (initial) => ({
 				),
 				hostedRoom: hostedRoom == roomID ? null : hostedRoom,
 			}),
-		enter: () => () => ({ initialized: true }),
+		initialize: (rooms) => (_, actions) => {
+			actions.updateRooms({ gameRooms: rooms });
+			return { initialized: true };
+		},
 		exit: () => () => ({ initialized: false }),
 	},
 
@@ -70,45 +74,27 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
 
-			const setupLobbyAPI = async () => {
-				await Api.createConnection(); // create new connection everytime user visits lobby? should only connect once
+			const initialize = async () => {
+				await Api.createConnection(); // create new connection every time user visits lobby? should only connect once
 				Api.setMessageHandlers({
 					create: actions.addRoom,
 					delete: actions.removeRoom,
 					join: onJoin,
-					idle: awaitActivity, //! todo if hosting game, reconnect immediately
+					idleReconnect: refreshConnection, //! todo if hosting game, reconnect immediately
 				});
 				let { rooms } = await Api.joinLobby();
+				actions.initialize(rooms);
 				// todo stop loading
-				actions.updateRooms({ gameRooms: rooms });
 			};
 
 			if (!state.initialized) {
 				console.log(`Joined lobby [${Api.getClientID()}]`);
-				actions.enter();
-				setupLobbyAPI();
+				initialize();
 			}
-
-			const awaitActivity = () => {
-				console.log("idling");
-				const activities$ = merge(
-					...[
-						"mousemove",
-						"mousedown",
-						"touchstart",
-						"keydown",
-						"click",
-						"scroll",
-					].map((ev) => fromEvent(document, ev)),
-					fromEvent(window, "focus")
-				);
-				return activities$.pipe(take(1)).subscribe(refreshConnection);
-			};
 
 			const refreshConnection = async () => {
 				let { rooms } = await Api.getRooms();
 				actions.updateRooms({ gameRooms: rooms });
-				Api.reconnect();
 			};
 
 			const onJoin = ({ room }) => {
@@ -345,5 +331,3 @@ function cleanupHandlers(){
 		idle: ()=>{}
 	});	
 }
-
-

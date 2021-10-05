@@ -28,6 +28,7 @@ let connection,
 		video: () => {},
 		music: () => {},
 		unauthorize: () => console.log("Unauthorized"),
+		idleReconnect: () => {}
 	};
 
 function setMessageHandlers(newHandlers) {
@@ -59,9 +60,9 @@ async function createConnection() {
 	function onclose(e) {
 		connected = false;
 		if (e.code == 1001) {
-			handlers.idle()
+			awaitActivity(handlers.idleReconnect);
 		}
-		console.log(`%c Disconnected [${clientID}]`, "color:red;");
+		console.log(`%c Disconnected [${e.code}][${clientID}]`, "color:red;");
 	}
 	function onmessage({ data }) {
 		// handle incoming messages from connected client
@@ -150,6 +151,17 @@ function sendMessage(message) {
 // **  Http Request Wrappers
 // ** --------------------------------------------------------------------------
 // todo: wrap api calls in try-catch blocks?
+async function getRoom(ID) {
+	const method = "GET";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const url = `${baseHttpUrl}/get-room/${ID}`;
+	const response = await fetch(url, { method, headers });
+	if (response.ok) {
+		const room = await response.json();
+		console.log("%c Room ", "color:blue;", { room });
+		return room;
+	}
+}
 async function getRooms() {
 	const method = "GET";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
@@ -157,7 +169,7 @@ async function getRooms() {
 	const response = await fetch(url, { method, headers });
 	if (response.ok) {
 		const rooms = await response.json();
-		console.log("%c Room List Sync", "color:blue;", { rooms });
+		console.log("%c Fetch Rooms", "color:blue;", { rooms });
 		return rooms;
 	}
 }
@@ -169,7 +181,7 @@ async function joinLobby() {
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
 		const rooms = await response.json();
-		console.log("%c Room List Enter", "color:blue;", { rooms });
+		console.log("%c Initial Lobby Rooms", "color:blue;", { rooms });
 		return rooms;
 	}
 }
@@ -246,6 +258,7 @@ async function searchSongImage(title) {
 
 export default {
 	createClient,
+	getRoom,
 	getRooms,
 	joinLobby,
 	searchSongImage,
@@ -266,4 +279,20 @@ export default {
 
 function eraseCookie(name) {   
     document.cookie = name+'=; Max-Age=-99999999;';  
+}
+
+function awaitActivity(callback) {
+	console.log("idling");
+	const activities$ = merge(
+		...[
+			"mousemove",
+			"mousedown",
+			"touchstart",
+			"keydown",
+			"click",
+			"scroll",
+		].map((ev) => fromEvent(document, ev)),
+		fromEvent(window, "focus")
+	);
+	return activities$.pipe(take(1)).subscribe(callback);
 }
