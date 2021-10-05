@@ -72,24 +72,6 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
 
-			const initialize = async () => {
-				await Api.createConnection(); // create new connection every time user visits lobby? should only connect once
-				Api.setMessageHandlers({
-					create: actions.addRoom,
-					delete: actions.removeRoom,
-					join: onJoin,
-					idleReconnect: refreshConnection, //! todo if hosting game, reconnect immediately
-				});
-				let { rooms } = await Api.joinLobby();
-				actions.initialize(rooms);
-				// todo stop loading
-			};
-
-			if (!state.initialized) {
-				console.log(`Joined lobby [${Api.getClientID()}]`);
-				initialize();
-			}
-
 			const refreshConnection = async () => {
 				let { rooms } = await Api.getRooms();
 				actions.updateRooms({ gameRooms: rooms });
@@ -115,7 +97,24 @@ export default (initial) => ({
 				await Api.deleteRoom(state.hostedRoom);
 				actions.alert.close("host");
 			};
+			
+			const initialize = async () => {
+				await Api.createConnection(); // create new connection every time user visits lobby? should only connect once
+				Api.setMessageHandlers({
+					create: actions.addRoom,
+					delete: actions.removeRoom,
+					join: onJoin,
+					idleReconnect: refreshConnection, //! todo if hosting game, reconnect immediately
+				});
+				let { rooms } = await Api.joinLobby();
+				actions.initialize(rooms);
+				// todo stop loading
+			};
 
+			if (!state.initialized) {
+				console.log(`Joined lobby [${Api.getClientID()}]`);
+				initialize();
+			}
 			return (
 				<div
 					class="lobby flex pt-10 justify-center min-h-screen font-sans"
