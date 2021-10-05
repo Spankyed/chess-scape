@@ -1,6 +1,4 @@
 import { h } from 'hyperapp';
-import { fromEvent, merge } from "rxjs";
-import { take } from 'rxjs/operators';
 import Api from '../../api/Api';
 import Create from "./create/create";
 import Alert from '../Shared/Alert';
