@@ -1,7 +1,7 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
-const { withHooks, hooksWithSchema } = require("../../common/hooks");
-const { sendMessageToLobby } = require("../../common/websocket/message");
+const { hooksWithSchema } = require("../../common/hooks");
+const { sendMessageToLobby, sendMessageToRoom } = require("../../common/websocket/message");
 
 const clientsTable = process.env.clientsTableName;
 const roomsTable = process.env.roomsTableName;
@@ -32,7 +32,14 @@ module.exports = async function ({ clientID, roomID }) {
 		});
 
 		// ! only message lobby if player joined, not spectator
-		await sendMessageToLobby({ method: "join", room: Attributes });
+		const messageRecipients = [
+			sendMessageToRoom(roomID, { method: "join", room: Attributes, group }),
+			...(group == "players"
+				? [sendMessageToLobby({ method: "join", room: Attributes })]
+				: []),
+		];
+		Promise.all(messageRecipients);
+		// await sendMessageToHost({ method: "join", room: Attributes })
 
 	} catch (err) {
 		return Responses._400({ error: error.message });
@@ -44,4 +51,4 @@ module.exports = async function ({ clientID, roomID }) {
 };
 
 // module.exports = method;
-// exports = withHooks(["parse"])(handler);
+// exports = hooksWithSchema(schema, ["parse"])(handler);

@@ -72,7 +72,7 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
 
-			const refreshConnection = async () => {
+			const refreshRoomList = async () => {
 				let { rooms } = await Api.getRooms();
 				actions.updateRooms({ gameRooms: rooms });
 			};
@@ -104,7 +104,7 @@ export default (initial) => ({
 					create: actions.addRoom,
 					delete: actions.removeRoom,
 					join: onJoin,
-					idleReconnect: refreshConnection, //! todo if hosting game, reconnect immediately
+					idleReconnect: refreshRoomList, //! todo if hosting game, reconnect immediately
 				});
 				let { rooms } = await Api.joinLobby();
 				actions.initialize(rooms);
@@ -123,7 +123,6 @@ export default (initial) => ({
 					<CreateView
 						showCreate={showCreate}
 						toggleCreate={actions.toggleCreate}
-						refreshConnection={refreshConnection}
 					/>
 
 					<AlertView />

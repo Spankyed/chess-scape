@@ -49,7 +49,7 @@ export default (initial) => ({
 			submitText: "Create Room",
 		}),
 	},
-	view: (state, actions) => ({ showCreate, toggleCreate, setHosted, refreshConnection }) => {
+	view: (state, actions) => ({ showCreate, toggleCreate, setHosted }) => {
 		const { gameTypes, selectedColor, selectedGameType } = state;
 		const CustomView = custom.view(state.custom, actions.custom);
 
@@ -83,7 +83,7 @@ export default (initial) => ({
 		};
 		
 		function checkConnection() {
-			if (!Api.isConnected()) refreshConnection()
+			if (!Api.isConnected()) Api.reconnect()
 		}
 
 		return (
