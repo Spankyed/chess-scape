@@ -1,12 +1,11 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
-
-const { withHooks } = require("../common/hooks");
+const { hooksWithSchema } = require("../common/hooks");
 
 const roomsTable = process.env.roomsTableName;
 
 const schema = {
-	// path: { ID: "string" },
+	path: { ID: "string" },
 };
 
 const handler = async (event) => {
@@ -22,4 +21,4 @@ const handler = async (event) => {
 	return Responses._200({ room });
 };
 
-exports.handler = withHooks(["log", "parse"])(handler);
+exports.handler = hooksWithSchema(schema, ["log"])(handler);

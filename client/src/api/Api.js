@@ -159,7 +159,7 @@ async function getRoom(ID) {
 	const url = `${baseHttpUrl}/get-room/${ID}`;
 	const response = await fetch(url, { method, headers });
 	if (response.ok) {
-		const room = await response.json();
+		const {room} = await response.json();
 		console.log("%c Room ", "color:blue;", { room });
 		return room;
 	}

@@ -35,24 +35,34 @@ async function sendMessage(connections, message) {
 	}
 }
 
-async function sendMessageToLobby(message) {
-	const clients = await getClientsInLobby();
+async function sendMessageToRoom(roomID, message) {
+	const clients = await getClientsInRoom(roomID);
 	return sendMessage(
 		clients.flatMap(c => c.connection ? [c.connection] : []),
 		message
 	);
 }
-async function getClientsInLobby() {
+
+async function sendMessageToLobby(message) {
+	const clients = await getClientsInRoom('lobby');
+	return sendMessage(
+		clients.flatMap(c => c.connection ? [c.connection] : []),
+		message
+	);
+}
+
+async function getClientsInRoom(roomID) {
 	return await Dynamo.queryOn({
 		TableName: clientsTable,
 		index: "room-index",
 		queryKey: "room",
-		queryValue: "lobby",
+		queryValue: roomID,
 		// select: "connection",
 	});
 }
 
 module.exports = {
-    sendMessage,
-	sendMessageToLobby
+	sendMessage,
+	sendMessageToRoom,
+	sendMessageToLobby,
 };

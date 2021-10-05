@@ -12,11 +12,25 @@ createRoom:
         path: create-room
         method: POST
         cors: true
+deleteRoom:
+  handler: api/endpoints/deleteRoom.handler
+  events:
+    - http:
+        path: delete-room
+        method: POST
+        cors: true
 getClient:
   handler: api/endpoints/getClient.handler
   events:
     - http:
         path: get-client/{ID}
+        method: GET
+        cors: true
+getRoom:
+  handler: api/endpoints/getRoom.handler
+  events:
+    - http:
+        path: get-room/{ID}
         method: GET
         cors: true
 getRooms:
