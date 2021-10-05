@@ -22,27 +22,24 @@ module.exports = async function ({ clientID, roomID }) {
 			Dynamo.get(roomID, roomsTable)
 		])
 
-		const group = room.players.length < 2 ? 'players' : 'spectators' 
-		const { Attributes } = await Dynamo.append({
-			TableName: roomsTable,
-			primaryKey: "ID",
-			primaryKeyValue: roomID,
-			data: { [group]: [clientID] },
-			// select: "clients",
-		});
+		const [group, Attributes] = await updateRoom(room, clientID)
 
-		// ! only message lobby if player joined, not spectator
 		const messageRecipients = [
-			sendMessageToRoom(roomID, { method: "join", room: Attributes, group }),
+			sendMessageToRoom(roomID, {
+				method: "join",
+				room: Attributes,
+				group,
+			}),
+			// only message lobby if player joined, not spectator
 			...(group == "players"
 				? [sendMessageToLobby({ method: "join", room: Attributes })]
 				: []),
 		];
 		Promise.all(messageRecipients);
-		// await sendMessageToHost({ method: "join", room: Attributes })
 
 	} catch (err) {
-		return Responses._400({ error: error.message });
+		console.error(err)
+		return Responses._400({ error: err.message });
 	}
 
 	console.log(`Joined room[${roomID}] client[${clientID}]`);
@@ -52,3 +49,31 @@ module.exports = async function ({ clientID, roomID }) {
 
 // module.exports = method;
 // exports = hooksWithSchema(schema, ["parse"])(handler);
+
+
+async function updateRoom(room, clientID){
+	const playerColors = Object.keys(room.players)
+	const group = playerColors.length < 2 ? 'players' : 'spectators'
+	
+	if (group === "players") {
+		const joinedColor = playerColors[0] == "white" ? "black" : "white";
+		const { Attributes } = await Dynamo.update({
+			TableName: roomsTable,
+			primaryKey: "ID",
+			primaryKeyValue: room.ID,
+			updates: {
+				[`players.${joinedColor}`]: { clientID, ready: false },
+			},
+		});
+		return [group, Attributes];
+	} else {
+		const { Attributes } = await Dynamo.append({
+			TableName: roomsTable,
+			primaryKey: "ID",
+			primaryKeyValue: room.ID,
+			data: { spectators: [clientID] },
+			// select: "clients",
+		});
+		return [group, Attributes];
+	}
+}

@@ -20,7 +20,7 @@ const handler = async (event) => {
 		...form,
 		ID: await nanoid(),
 		host,
-		players: [{ clientID: host, color: selectedColor }],
+		players: {[selectedColor]:{clientID: host, ready: false}},
 		spectators: [],
 		created: Date.now(),
 	};
