@@ -16,10 +16,9 @@ export default (initial) => ({
 		({ roomID, state, roomActions, clockActions }) => {
 			const init = (canvas) => {
 				// window.location.hash = `#${roomID}`; // todo use hash in lobby to redirect to room
-				// Scene.onReady = () => {
-        		// 	Api.readyUp();
-					
-				// }
+				Scene.onReady = () => {
+					// console.log('litty ta bitty')
+				}
 				setTimeout(() => Scene.setupGame(canvas, roomActions, roomID), 500);
 				canvas.focus();
 			};

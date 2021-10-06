@@ -2,7 +2,7 @@ const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const WebSocket = require("../common/websocket/Websocket");
 const { withHooks } = require("../common/hooks");
-const { join } = require("./methods");
+const methods = require("./methods");
 
 const clientsTable = process.env.clientsTableName;
 
@@ -30,7 +30,6 @@ const handler = async (event) => {
 		},
 	});
 
-	const methods = { join }; // set message handlers
 	const messageHandler = methods[method];
 
 	if (messageHandler) await messageHandler(message);

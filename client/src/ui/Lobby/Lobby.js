@@ -94,7 +94,8 @@ export default (initial) => ({
 
 			const join = (ID, dontSend) => {
 				// console.log('joining  ', ID)
-				if (!dontSend) Api.joinRoom(ID);
+				if (dontSend) Api.enterRoom(ID)
+				else Api.joinRoom(ID);
 				joinRoom(ID);
 				actions.exit();
 			};

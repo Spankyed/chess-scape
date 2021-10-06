@@ -9,12 +9,10 @@ import { take } from "rxjs/operators";
 const baseHttpUrl = "http://localhost:9001/local";
 const baseWSUrl = 'ws://localhost:3001'
 const client = JSON.parse(localStorage.getItem("client") || '""');
-let clientID = client.clientID || null
-let TOKEN = client.TOKEN || null
-// let clientID = nanoid()
-// let TOKEN = null; // client.TOKEN || null
-let roomID = null;
-let connection,
+let clientID = client.clientID || null,
+	TOKEN = client.TOKEN || null,
+	roomID = null,
+	connection,
 	connected = false,
 	// Message Received handlers
 	handlers = {
@@ -91,16 +89,25 @@ function closeConnection() {
 	connection.close()
 }
 
+
 // ** --------------------------------------------------------------------------
 // **  Send Message Wrappers
 // ** --------------------------------------------------------------------------
+function enterRoom(id) {
+	roomID ??= id;
+}
+
 function joinRoom(id) {
 	roomID ??= id;
 	sendMessage({ method: "join", roomID });
 }
 
-function leaveRoom(id) {
-	sendMessage({ method: "leave", roomID: id });
+function ready(color) {
+	sendMessage({ method: "ready", color });
+}
+
+function leaveRoom() {
+	sendMessage({ method: "leave"});
 	roomID = null;
 }
 
@@ -270,7 +277,9 @@ export default {
 	closeConnection,
 	createRoom,
 	deleteRoom,
+	enterRoom,
 	joinRoom,
+	ready,
 	leaveRoom,
 	sendMove,
 	sendChat,

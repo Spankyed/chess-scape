@@ -3,6 +3,7 @@ import utils from './utils/utils';
 import Board from './board/Board';
 import Game from './Game';
 import loadPieces  from './Pieces'; 
+// import Api from '../api/Api'; 
 // import { Scene, Engine } from 'babylonjs';
 
 const Scene = new class {
@@ -14,6 +15,7 @@ const Scene = new class {
         this.game = _=> this._game;
         this.board = _=> this._board;
         this.pieces = _=> this._pieces;
+        this.onReady = _ => {};
         this.assetsManager;
     }
     async setupGame(canvas, actions, roomID){
@@ -38,6 +40,8 @@ const Scene = new class {
         // todo: signal to server player is ready. Used for syncing start timing
 /
         engine.runRenderLoop(_ => scene.render()) // todo: manually render scene updates with xstate activities?
+
+        this.onReady()
 
         window.interact = { engine: engine, scene: this, game, board }
 

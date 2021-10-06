@@ -27,6 +27,7 @@ export default (initial) => ({
 		initialized: false,
 		// matchStarted: false,
 		gameOver: false,
+		// playerColor: null,
 	},
 	actions: {
 		game: game.actions,
@@ -54,19 +55,23 @@ export default (initial) => ({
 		},
 		completeFetch: (room) => (_, actions) => {
 			const isHost = room.host == Api.getClientID();
+			const players = Object.entries(room.players);
+			const [color, player] = players.find(p => p[1].clientID == Api.getClientID()) || []
 			if (!room.matchStarted) {
-				if ( Object.keys(room.players).length == 1 && isHost ) {
+				if ( players.length == 1 && isHost ) {
 					actions.alert.show(alert.waitAlert);
 				} else {
 					actions.alert.show(alert.startAlert);
 				}
 			}
-			return ({
+        	if (player) Api.ready(color); // ! only ready if isPlayer
+			return {
+				// playerColor: color,
 				isHost,
 				room,
 				isFetching: false,
 				initialized: true,
-			});
+			};
 		},
 		endGame: () => () => ({ gameOver: true }),
 		exit: () => (_, { alert }) => {
