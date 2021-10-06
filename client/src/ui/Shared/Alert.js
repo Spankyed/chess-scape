@@ -55,19 +55,17 @@ export default (initial) => ({
 				},
 			}),
 	},
-	view:
-		({ alerts }, actions) =>
-		({ roomID, leaveGame }) => {
-			// todo remove alerts when user leaves gameRoom
-			return (
-				<div class="alert-wrapper h-full absolute top-0 w-full">
-					{Object.entries(alerts).map(([id, alert]) => (
-						<Alert {...{ actions, id, alert }} />
-					))}
-				</div>
-			);
-		},
-	hostAlert: {
+	view: ({ alerts }, actions) => () => {
+		// todo remove alerts when user leaves gameRoom
+		return (
+			<div class="alert-wrapper h-full absolute top-0 w-full">
+				{Object.entries(alerts).map(([id, alert]) => (
+					<Alert {...{ actions, id, alert }} />
+				))}
+			</div>
+		);
+	},
+	waitAlert: {
 		// icon: "./assets/create/host.svg",
 		id: "host",
 		role: "none",

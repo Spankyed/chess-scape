@@ -27,7 +27,7 @@ export default (initial) => ({
 				const hostedRoomID = gameRooms.find(
 					(room) => room.host == Api.getClientID()
 				)?.ID;
-				if (!!hostedRoomID) actions.alert.show(alert.hostAlert);
+				if (!!hostedRoomID) actions.alert.show(alert.waitAlert);
 				return {
 					gameRooms: sortByCreated(gameRooms),
 					hostedRoom: hostedRoomID,
@@ -44,7 +44,7 @@ export default (initial) => ({
 			({ newRoom }) =>
 			({ gameRooms, hostedRoom }, actions) => {
 				const isHost = newRoom.host == Api.getClientID();
-				if (isHost) actions.alert.show(alert.hostAlert);
+				if (isHost) actions.alert.show(alert.waitAlert);
 				return {
 					gameRooms: sortByCreated([...gameRooms, newRoom]),
 					hostedRoom: isHost ? newRoom.ID : hostedRoom,
@@ -62,12 +62,16 @@ export default (initial) => ({
 			actions.updateRooms({ gameRooms: rooms });
 			return { initialized: true };
 		},
-		exit: () => () => ({ initialized: false }),
+		exit: () => (_, { alert }) => {
+			cleanupHandlers();
+			alert.closeAll();
+			return { initialized: false };
+		},
 	},
 
 	view:
 		(state, actions) =>
-		({ joinGame }) => {
+		({ joinRoom }) => {
 			const { showCreate, hostedRoom } = state;
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
@@ -86,11 +90,9 @@ export default (initial) => ({
 
 			const join = (ID, dontSend) => {
 				// console.log('joining  ', ID)
-				if (!dontSend) Api.joinGame(ID);
-				cleanupHandlers();
-				joinGame(ID);
+				if (!dontSend) Api.joinRoom(ID);
+				joinRoom(ID);
 				actions.exit();
-				actions.alert.close("host");
 			};
 
 			const cancel = async () => {
@@ -115,6 +117,7 @@ export default (initial) => ({
 				console.log(`Joined lobby [${Api.getClientID()}]`);
 				initialize();
 			}
+			
 			return (
 				<div
 					class="lobby flex pt-10 justify-center min-h-screen font-sans"
@@ -129,7 +132,7 @@ export default (initial) => ({
 
 					<div
 						class="col-span-12"
-						onremove={() => console.log("fishducks")}
+						// onremove={() => console.log("fishducks")}
 					>
 						{/* Header */}
 						<div class="px-4 md:px-10 py-5" style="height:18vh">

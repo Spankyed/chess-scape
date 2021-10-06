@@ -1,5 +1,5 @@
 import { h } from 'hyperapp';
-import { cancel } from 'xstate/lib/actionTypes';
+// import { cancel } from 'xstate/lib/actionTypes';
 
 export default initial => ({
 	state: { 
@@ -12,7 +12,7 @@ export default initial => ({
 		closePieceSelect: _ => _ => ({isPromoting: false}),
 		toggleMenu: (ev) => (state) => ({menuOpen: !state.menuOpen}),
 	},
-	view: (state, actions) => ({isLoading, gameOver, leaveGame, toggleSidePanel, color}) => {
+	view: (state, actions) => ({isLoading, gameOver, leaveRoom, toggleSidePanel, color}) => {
 		return (
 			// pointer-events-none controls-wrapper
 			<div
@@ -35,7 +35,7 @@ export default initial => ({
 					</div>
 					{/* back button */}
 					<div class="btn-wrapper left">
-						<button onclick={leaveGame} class="control-btn">
+						<button onclick={leaveRoom} class="control-btn">
 							<img src="./assets/controls/back.svg"></img>
 						</button>
 					</div>

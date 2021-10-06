@@ -94,12 +94,12 @@ function closeConnection() {
 // ** --------------------------------------------------------------------------
 // **  Send Message Wrappers
 // ** --------------------------------------------------------------------------
-function joinGame(id) {
+function joinRoom(id) {
 	roomID ??= id;
 	sendMessage({ method: "join", roomID });
 }
 
-function leaveGame(id) {
+function leaveRoom(id) {
 	sendMessage({ method: "leave", roomID });
 	roomID = null;
 }
@@ -270,7 +270,7 @@ export default {
 	closeConnection,
 	createRoom,
 	deleteRoom,
-	joinGame,
+	joinRoom,
 	sendMove,
 	sendChat,
 	shareVideo,

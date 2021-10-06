@@ -4,7 +4,7 @@ import Api from '../api/Api';
 // import { withLogger } from "@hyperapp/logger";
 
 import Entrance from './Entrance/Entrance';
-import GameRoom from './GameRoom/GameRoom';
+import GameRoom from './GameRoom/Room';
 import Lobby from './Lobby/Lobby';
 import './index.scss';
 
@@ -27,8 +27,8 @@ const actions = {
 	lobby: lobby.actions,
 	authorize: () => ({ authorized: true }),
 	unauthorize: () => ({authorized: false}),
-	joinGame: (roomID) => ({ inGame: true, roomID }),
-	leaveGame: () => ({ inGame: false }), // back to lobby
+	joinRoom: (roomID) => ({ inGame: true, roomID }),
+	joinLobby: () => ({ inGame: false }), // back to lobby
 };
 
 const view = (state, actions) => {
@@ -53,10 +53,10 @@ const view = (state, actions) => {
 			) : state.inGame ? (
 				<GameRoomView
 					roomID={state.roomID}
-					leaveGame={actions.leaveGame}
+					joinLobby={actions.joinLobby}
 				/>
 			) : (
-				<LobbyView joinGame={actions.joinGame} />
+				<LobbyView joinRoom={actions.joinRoom} />
 			)}
 		</div>
 	);

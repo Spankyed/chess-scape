@@ -6,6 +6,7 @@ import SidePanel from './sidePanel/sidePanel';
 import Alert from '../Shared/Alert';
 import Api from "../../api/Api";
 
+const game = Game();
 const controls = Controls()
 const sidePanel = SidePanel()
 const alert = Alert()
@@ -15,16 +16,20 @@ const alert = Alert()
 export default (initial) => ({
 	state: {
 		room: null,
+		game: game.state,
+		alert: alert.state,
 		controls: controls.state,
 		sidePanel: sidePanel.state,
-		alert: alert.state,
-		isLoading: true,
 		sidePanelOpen: false,
-		gameOver: false,
+		isHost: false,
+		isLoading: true,
+		isFetching: false,
 		initialized: false,
-		fetching: false,
+		// matchStarted: false,
+		gameOver: false,
 	},
 	actions: {
+		game: game.actions,
 		controls: controls.actions,
 		sidePanel: sidePanel.actions,
 		alert: alert.actions,
@@ -43,23 +48,47 @@ export default (initial) => ({
 		showLoader: () => () => ({ isLoading: true }),
 		hideLoader: () => () => ({ isLoading: false }),
 		updateRoom: (room) => () => ({ room }),
-		beginFetching: () => () => ({ fetching: true }),
-		completeFetch: (room) => () => ({
-			room,
-			fetching: false,
-			initialized: true,
-		}),
+		fetchRoom: (roomID) => (_,actions) => {
+			Api.getRoom(roomID).then(actions.completeFetch)
+			return { isFetching: true }
+		},
+		completeFetch: (room) => (_, actions) => {
+			const isHost = room.host == Api.getClientID();
+			if (!room.matchStarted) {
+				if ( Object.keys(room.players).length == 1 && isHost ) {
+					actions.alert.show(alert.waitAlert);
+				} else {
+					actions.alert.show(alert.startAlert);
+				}
+			}
+			return ({
+				isHost,
+				room,
+				isFetching: false,
+				initialized: true,
+			});
+		},
 		endGame: () => () => ({ gameOver: true }),
-		exit: () => () => ({
-			isLoading: true,
-			fetching: false,
-			initialized: false,
-		}),
+		exit: () => (_, { alert }) => {
+			cleanupHandlers();
+			alert.closeAll();
+			// ! todo update DB client.room to 'lobby' otherwise wont recieve join msgs
+			return {
+				isHost: false,
+				isLoading: true,
+				isFetching: false,
+				initialized: false,
+				matchStarted: false,
+			};
+		},
 	},
 	view:
 		(state, actions) =>
-		({ roomID, leaveGame }) => {
-
+		({ roomID, joinLobby }) => {
+			const GameView = game.view(
+				state.game,
+				actions.game
+			);
 			const ControlsView = controls.view(
 				state.controls,
 				actions.controls
@@ -69,15 +98,9 @@ export default (initial) => ({
 				actions.sidePanel
 			);
 			const AlertView = alert.view(state.alert, actions.alert);
-			/* todo: on total disconnect, breakdown websocket and game */
-			const leave = () => {
-				actions.alert.close("host");
-				actions.exit();
-				leaveGame();
-				// todo update client.room to 'lobby'
-			};
 
 			const onJoin = ({ room, group }) => {
+				// todo check if group == players & !matchStarted
 				if (Object.keys(room.players).length == 2) {
 					actions.alert.close("host");
 					actions.alert.show(alert.startAlert); // alert match is starting soon
@@ -88,43 +111,31 @@ export default (initial) => ({
 
 			const readyUp = () => {
 				// console.log('joining  ', ID)
-				if (!dontSend) Api.ready(roomID);
-				cleanupHandlers();
-				joinGame(ID);
-				actions.exit();
-				actions.alert.close("host");
+				Api.ready(roomID);
 			};
 
 			const initialize = async () => {
 				// todo if player is opp & !matchStarted, alert match starting soon
+				// todo: on total disconnect, breakdown websocket and game 
 				Api.setMessageHandlers({
 					join: onJoin, // todo if players == 2 alert match starting soon
 					start: () => {}, // todo begin whites clock
-					idleReconnect: () => {}, 
+					idleReconnect: () => {},
 				});
-				actions.beginFetching();
-				let room = await Api.getRoom(roomID);
-				actions.completeFetch(room);
-				const isHost = room.host == Api.getClientID();
-				if (
-					Object.keys(room.players).length == 1 &&
-					isHost
-				) {
-					actions.alert.show(alert.hostAlert);
-				} else if (
-					Object.keys(room.players).length == 2 &&
-					!room.matchStarted
-				) {
-					actions.alert.close("host");
-					actions.alert.show(alert.startAlert);
-				}
+				actions.fetchRoom(roomID);
 				// todo stop loading
 			};
 
-			if (!state.initialized && !state.fetching) {
+			if (!state.isLoading && !state.initialized && !state.isFetching) {
 				console.log(`Joined room [${Api.getClientID()}]`);
 				initialize();
 			}
+
+			const leave = () => {
+				// Api.leaveRoom(ID);
+				actions.exit();
+				joinLobby();
+			};
 
 			return (
 				<div class="h-full flex">
@@ -135,10 +146,10 @@ export default (initial) => ({
 							roomID={roomID}
 							isLoading={state.isLoading}
 							gameOver={state.gameOver}
-							leaveGame={leave}
+							leaveRoom={leave}
 							toggleSidePanel={actions.toggleSidePanel}
 						/>
-						<Game {...{ roomID, actions, state }} />
+						<GameView {...{ roomID, roomActions: actions, state }} />
 						<AlertView />
 					</div>
 
@@ -147,3 +158,11 @@ export default (initial) => ({
 			);
 		},
 });
+
+function cleanupHandlers(){
+	Api.setMessageHandlers({
+		join: () => {},
+		start: () => {},
+		idleReconnect: () => {},
+	});	
+}
