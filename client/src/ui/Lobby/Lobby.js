@@ -13,7 +13,8 @@ export default (initial) => ({
 		alert: alert.state,
 		showCreate: false,
 		hostedRoom: null,
-		gameRooms: [],
+		rooms: [],
+		isFetching: false,
 		initialized: false,
 	},
 
@@ -22,51 +23,54 @@ export default (initial) => ({
 		alert: alert.actions,
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
 		updateRooms:
-			({ gameRooms }) =>
-			(state, actions) => {
-				const hostedRoomID = gameRooms.find(
-					(room) => room.host == Api.getClientID()
-				)?.ID;
-				if (!!hostedRoomID) actions.alert.show(alert.waitAlert);
-				return {
-					gameRooms: sortByCreated(gameRooms),
-					hostedRoom: hostedRoomID,
-				};
-			},
+			(rooms) =>
+			(state, actions) => ({ rooms: sortByCreated(rooms) }),
 		updateRoom:
 			(room) =>
-			({ gameRooms }) => ({
-				gameRooms: gameRooms.map((gameRoom) =>
-					gameRoom.ID == room.ID ? room : gameRoom
+			({ rooms }) => ({
+				rooms: rooms.map((r) =>
+					r.ID == room.ID ? room : r
 				),
 			}),
 		addRoom:
 			({ newRoom }) =>
-			({ gameRooms, hostedRoom }, actions) => {
+			({ rooms, hostedRoom }, actions) => {
 				const isHost = newRoom.host == Api.getClientID();
 				if (isHost) actions.alert.show(alert.waitAlert);
 				return {
-					gameRooms: sortByCreated([...gameRooms, newRoom]),
+					rooms: sortByCreated([...rooms, newRoom]),
 					hostedRoom: isHost ? newRoom.ID : hostedRoom,
 				};
 			},
 		removeRoom:
 			({ roomID }) =>
-			({ gameRooms, hostedRoom }) => ({
-				gameRooms: gameRooms.filter(
-					(gameRoom) => gameRoom.ID != roomID
-				),
+			({ rooms, hostedRoom }) => ({
+				rooms: rooms.filter((r) => r.ID != roomID),
 				hostedRoom: hostedRoom == roomID ? null : hostedRoom,
 			}),
-		initialize: (rooms) => (_, actions) => {
-			actions.updateRooms({ gameRooms: rooms });
-			return { initialized: true };
+		fetchRooms: () => (_, actions) => {
+			Api.joinLobby().then(actions.completeFetch);
+			return { isFetching: true };
 		},
-		exit: () => (_, { alert }) => {
-			cleanupHandlers();
-			alert.closeAll();
-			return { initialized: false };
+		completeFetch: ({rooms}) => (_, actions) => {
+			const hostedRoomID = rooms.find(
+				(room) => room.host == Api.getClientID()
+			)?.ID;
+			if (!!hostedRoomID) actions.alert.show(alert.waitAlert);
+			actions.updateRooms(rooms);
+			return {
+				hostedRoom: hostedRoomID,
+				isFetching: false,
+				initialized: true,
+			};
 		},
+		exit:
+			() =>
+			(_, { alert }) => {
+				cleanupHandlers();
+				alert.closeAll();
+				return { initialized: false };
+			},
 	},
 
 	view:
@@ -78,7 +82,7 @@ export default (initial) => ({
 
 			const refreshRoomList = async () => {
 				let { rooms } = await Api.getRooms();
-				actions.updateRooms({ gameRooms: rooms });
+				actions.updateRooms({ rooms });
 			};
 
 			const onJoin = ({ room }) => {
@@ -99,7 +103,7 @@ export default (initial) => ({
 				await Api.deleteRoom(state.hostedRoom);
 				actions.alert.close("host");
 			};
-			
+
 			const initialize = async () => {
 				await Api.createConnection(); // create new connection every time user visits lobby? should only connect once
 				Api.setMessageHandlers({
@@ -108,16 +112,15 @@ export default (initial) => ({
 					join: onJoin,
 					idleReconnect: refreshRoomList, //! todo if hosting game, reconnect immediately
 				});
-				let { rooms } = await Api.joinLobby();
-				actions.initialize(rooms);
+				actions.fetchRooms();
 				// todo stop loading
 			};
 
-			if (!state.initialized) {
+			if (!state.initialized && !state.isFetching) {
 				console.log(`Joined lobby [${Api.getClientID()}]`);
 				initialize();
 			}
-			
+
 			return (
 				<div
 					class="lobby flex pt-10 justify-center min-h-screen font-sans"
@@ -173,7 +176,7 @@ export default (initial) => ({
 								class="table_wrapper overflow-auto pr-3"
 								style="height:55vh"
 							>
-								{!state.gameRooms?.length > 0 ? (
+								{!state.rooms?.length > 0 ? (
 									<div
 										class="w-full h-64 text-center"
 										style="justify-content: center; align-items: center"
@@ -252,7 +255,7 @@ export default (initial) => ({
 										<tbody class="text-gray-300 border-b border-gray-500">
 											{/* if not game rooms, show some other ui */}
 
-											{state.gameRooms.map(
+											{state.rooms.map(
 												(room, idx) => (
 													// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
 													<RoomItem

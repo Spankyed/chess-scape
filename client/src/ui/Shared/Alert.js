@@ -56,7 +56,6 @@ export default (initial) => ({
 			}),
 	},
 	view: ({ alerts }, actions) => () => {
-		// todo remove alerts when user leaves gameRoom
 		return (
 			<div class="alert-wrapper h-full absolute top-0 w-full">
 				{Object.entries(alerts).map(([id, alert]) => (
