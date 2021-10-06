@@ -259,20 +259,27 @@ function promptShare(videoId, alert, actions){
 	// videoId = '3vBwRfQbXkg'
 	alert.show({
 		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
-		icon: "./assets/sidePanel/controls/yt_play.svg", 
-		heading: 'Video Shared',
-		message: 'A user wants to share a video with you.', 
+		role: "info",
+		icon: "./assets/sidePanel/controls/yt_play.svg",
+		heading: "Video Shared",
+		message: "A user wants to share a video with you.",
 		actions: {
-			confirm: { text: 'Allow', handler: (bool, persist) => {
-				setShare({bool, persist})
-				addVideo(videoId)
-			}},
-			default: { text: 'Deny', handler: (bool, persist) => {
-				if (persist) setShare({bool, persist})
-			}}, 
+			confirm: {
+				text: "Allow",
+				handler: (bool, persist) => {
+					setShare({ bool, persist });
+					addVideo(videoId);
+				},
+			},
+			default: {
+				text: "Deny",
+				handler: (bool, persist) => {
+					if (persist) setShare({ bool, persist });
+				},
+			},
 		},
-		dontAskAgain: false
-	})
+		dontAskAgain: false,
+	});
 }
 
 function parseYoutubeUrl(url) {

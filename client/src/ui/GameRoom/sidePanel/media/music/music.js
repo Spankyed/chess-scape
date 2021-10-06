@@ -70,6 +70,7 @@ export default initial => ({
 			let {setShare, addVideo} = actions
 			// songId = '3vBwRfQbXkg'
 			alert.show({
+				role: 'info',
 				icon: "./assets/sidePanel/controls/music_icon.svg",
 				heading: 'Music Shared',
 				message: 'A user wants to share a song with you.', 

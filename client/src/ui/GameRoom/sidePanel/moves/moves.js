@@ -86,16 +86,20 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 }
 function promptReview(alert, endReview){
 	alert.show({
-		id: 'review',
+		role: "info",
+		id: "review",
 		icon: "./assets/sidePanel/controls/review_icon.svg",
-		heading: 'Reviewing Moves',
-		// message: "You are currently reviewing moves. The board does not reflect current game state.", 
-		message: "The board does not reflect current game.", 
+		heading: "Reviewing Moves",
+		// message: "You are currently reviewing moves. The board does not reflect current game state.",
+		message: "The board does not reflect current game.",
 		actions: {
-			default: { text: 'End', handler: _ => {
-				endReview()
-				interact.board.moveService.send({type: 'END_REVIEW'}) 
-			}}
-		}
-	})
+			default: {
+				text: "End",
+				handler: (_) => {
+					endReview();
+					interact.board.moveService.send({ type: "END_REVIEW" });
+				},
+			},
+		},
+	});
 }

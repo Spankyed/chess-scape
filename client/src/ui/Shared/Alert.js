@@ -105,7 +105,7 @@ function Alert({id, alert, actions}){
 			close(id, true)
 		}
 		return (
-			<div class={`alert ${alert.role || 'info'} mx-auto flex-row justify-between`}>
+			<div class={`alert ${alert.role} mx-auto flex-row justify-between`}>
 				{	alert.icon && 
 					<div class="alert-icon flex items-center bg-blue-100 border-r border-blue-500 justify-center w-20 flex-shrink-0">
 						<span class="text-blue-500 px-3 h-full">
