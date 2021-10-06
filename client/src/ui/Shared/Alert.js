@@ -30,6 +30,7 @@ export default (initial) => ({
 					},
 				};
 			},
+		closeAll: () => () => ({ alerts: {} }),
 		close:
 			(id, completed) =>
 			({ alerts }) => {
