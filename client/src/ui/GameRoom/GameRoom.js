@@ -59,6 +59,7 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ roomID, leaveGame }) => {
+
 			const ControlsView = controls.view(
 				state.controls,
 				actions.controls
@@ -76,8 +77,10 @@ export default (initial) => ({
 				// todo update client.room to 'lobby'
 			};
 
-			const onJoin = ({ room }) => {
-				if (room.players.length == 2) {
+			const onJoin = ({ room, group }) => {
+				if (Object.keys(room.players).length == 2) {
+					actions.alert.close("host");
+					actions.alert.show(alert.startAlert); // alert match is starting soon
 					// ready up player after camera animation
 				}
 				actions.updateRoom(room);
@@ -103,8 +106,17 @@ export default (initial) => ({
 				let room = await Api.getRoom(roomID);
 				actions.completeFetch(room);
 				const isHost = room.host == Api.getClientID();
-				if (room.players.length == 1 && isHost) {
+				if (
+					Object.keys(room.players).length == 1 &&
+					isHost
+				) {
 					actions.alert.show(alert.hostAlert);
+				} else if (
+					Object.keys(room.players).length == 2 &&
+					!room.matchStarted
+				) {
+					actions.alert.close("host");
+					actions.alert.show(alert.startAlert);
 				}
 				// todo stop loading
 			};

@@ -18,15 +18,18 @@ export default (initial) => ({
 	actions: {
 		show:
 			(options) =>
-			({ alerts }) => ({
-				alerts: {
-					...alerts,
-					[options.id || nanoid()]: {
-						...options,
-						showDAG: typeof options?.dontAskAgain === "boolean",
+			({ alerts }, actions) => {
+				if (options.time) setTimeout(() => actions.close(options.id), options.time);
+				return {
+					alerts: {
+						...alerts,
+						[options.id || nanoid()]: {
+							...options,
+							showDAG: typeof options?.dontAskAgain === "boolean",
+						},
 					},
-				},
-			}),
+				};
+			},
 		close:
 			(id, completed) =>
 			({ alerts }) => {
@@ -69,6 +72,22 @@ export default (initial) => ({
 		role: "none",
 		heading: "Room Host",
 		message: "Waiting for a player to join your room.",
+		// actions: {
+		// 	default: {
+		// 		text: "Abort",
+		// 		handler: (_) => {
+		// 			Api.deleteRoom(state.hostedRoom);
+		// 		},
+		// 	},
+		// },
+	},
+	startAlert: {
+		// icon: "./assets/create/host.svg",
+		id: "start",
+		role: "none",
+		heading: "Both Players Joined",
+		message: "The match will now begin.",
+		time: 2500
 		// actions: {
 		// 	default: {
 		// 		text: "Abort",
