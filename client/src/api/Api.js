@@ -47,7 +47,7 @@ async function createConnection() {
 		onopen,
 		onclose,
 		onmessage,
-		onreconnect: (e) => console.log("Reconnecting..."),
+		onreconnect: (e) => console.log("Reconnecting..."), // todo refresh room list here instead on idleReconnect
 		onmaximum: (e) => console.log("Stop Attempting!", e),
 		onerror: (e) => console.log("WS Error:", e),
 		protocols: TOKEN,
@@ -100,7 +100,7 @@ function joinRoom(id) {
 }
 
 function leaveRoom(id) {
-	sendMessage({ method: "leave", roomID });
+	sendMessage({ method: "leave", roomID: id });
 	roomID = null;
 }
 
@@ -271,6 +271,7 @@ export default {
 	createRoom,
 	deleteRoom,
 	joinRoom,
+	leaveRoom,
 	sendMove,
 	sendChat,
 	shareVideo,

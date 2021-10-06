@@ -110,7 +110,8 @@ export default (initial) => ({
 					create: actions.addRoom,
 					delete: actions.removeRoom,
 					join: onJoin,
-					idleReconnect: refreshRoomList, //! todo if hosting game, reconnect immediately
+					// disconnect: Api.reconnect(), //! if hosting game, reconnect immediately
+					idleReconnect: refreshRoomList, // todo refreshRoomList on all reconnects instead
 				});
 				actions.fetchRooms();
 				// todo stop loading

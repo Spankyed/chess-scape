@@ -119,6 +119,7 @@ export default (initial) => ({
 				// todo: on total disconnect, breakdown websocket and game 
 				Api.setMessageHandlers({
 					join: onJoin, // todo if players == 2 alert match starting soon
+					leave: ({ clientID }) => console.log(`[${clientID}] left the room`),
 					start: () => {}, // todo begin whites clock
 					idleReconnect: () => {},
 				});
@@ -132,7 +133,7 @@ export default (initial) => ({
 			}
 
 			const leave = () => {
-				// Api.leaveRoom(ID);
+				Api.leaveRoom(roomID);
 				actions.exit();
 				joinLobby();
 			};
