@@ -21,6 +21,7 @@ let clientID = client.clientID || null,
 		create: () => {},
 		delete: () => {},
 		join: () => {},
+		start: () => {},
 		// join: msg => roomID ??= msg.roomID, // already setting roomID on send instead
 		move: () => {},
 		chat: () => {},

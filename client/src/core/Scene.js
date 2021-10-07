@@ -15,7 +15,7 @@ const Scene = new class {
         this.game = _=> this._game;
         this.board = _=> this._board;
         this.pieces = _=> this._pieces;
-        this.onReady = _ => {};
+        // this.onReady = _ => {};
         this.assetsManager;
     }
     async setupGame(canvas, actions, roomID){
@@ -41,8 +41,6 @@ const Scene = new class {
 /
         engine.runRenderLoop(_ => scene.render()) // todo: manually render scene updates with xstate activities?
 
-        this.onReady()
-
         window.interact = { engine: engine, scene: this, game, board }
 
         Object.assign(this, {
@@ -50,16 +48,9 @@ const Scene = new class {
             _game: game, _board: board, _pieces: piecesMap,
             uiActions: actions, 
         });
+
+        // this.onReady()
     }
-
-    // methods below not used
-
-    // openPromotionUI(){ 
-    //     this.uiActions.showPromotionUI(); 
-    // }
-    // hideLoader(){
-    //     this.engine.hideLoadingUI()
-    // }
 }
 
 export default Scene;

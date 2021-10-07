@@ -19,9 +19,23 @@ module.exports = async function ({ clientID, roomID, color }) {
 			updates: { [`players.${color}.ready`]: true },
 		});
 
-		// todo if both players ready, send message to begin match
-
-		await sendMessageToRoom(roomID, { method: "ready", player: color });
+		const playersReady = Object.values(Attributes.players).filter(
+			(player) => player.ready
+		);
+		if (playersReady.length == 2) {
+			const startTime = Date.now();
+			await sendMessageToRoom(roomID, {
+				method: "start",
+				startTime,
+			});
+			await Dynamo.update({
+				TableName: roomsTable,
+				primaryKey: "ID",
+				primaryKeyValue: roomID,
+				updates: { matchStarted: true },
+				// todo update database match startTime
+			});
+		}
 
 	} catch (err) {
 		// console.error(err);

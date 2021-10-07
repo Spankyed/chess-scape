@@ -64,15 +64,19 @@ export default (initial) => ({
 					actions.alert.show(alert.startAlert);
 				}
 			}
-        	if (player) Api.ready(color); // ! only ready if isPlayer
+			if (player) actions.game.setPlayer({
+				player,
+				playerColor: color,
+			});
+			
 			return {
-				// playerColor: color,
-				isHost,
 				room,
+				isHost,
 				isFetching: false,
 				initialized: true,
 			};
 		},
+		getPlayerColor: () => () => ({ gameOver: true }),
 		endGame: () => () => ({ gameOver: true }),
 		exit: () => (_, { alert }) => {
 			cleanupHandlers();
@@ -114,18 +118,12 @@ export default (initial) => ({
 				actions.updateRoom(room);
 			};
 
-			const readyUp = () => {
-				// console.log('joining  ', ID)
-				Api.ready(roomID);
-			};
-
 			const initialize = async () => {
 				// todo if player is opp & !matchStarted, alert match starting soon
 				// todo: on total disconnect, breakdown websocket and game 
 				Api.setMessageHandlers({
 					join: onJoin, // todo if players == 2 alert match starting soon
 					leave: ({ clientID }) => console.log(`[${clientID}] left the room`),
-					start: () => {}, // todo begin whites clock
 					idleReconnect: () => {},
 				});
 				actions.fetchRoom(roomID);
@@ -155,7 +153,7 @@ export default (initial) => ({
 							leaveRoom={leave}
 							toggleSidePanel={actions.toggleSidePanel}
 						/>
-						<GameView {...{ roomID, roomActions: actions, state }} />
+						<GameView {...{ roomID, roomActions: actions, roomState: state }} />
 						<AlertView />
 					</div>
 

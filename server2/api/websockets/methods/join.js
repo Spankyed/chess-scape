@@ -24,7 +24,7 @@ module.exports = async function ({ clientID, roomID }) {
 
 		const [group, Attributes] = await updateRoom(room, clientID)
 
-		if (room.host != clientID) {
+		if (room.host != clientID) { // prob dont need to do this
 			const messageRecipients = [
 				sendMessageToRoom(roomID, {
 					method: "join",
