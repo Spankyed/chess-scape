@@ -25,292 +25,393 @@ import { startMovingPiece } from './navigationSystem';
 
 function setupMoveMachine(current, game, squares, pieces){
 	const moveMachine = createMachine({
-		id: 'move_machine',
-		initial: 'moving',
+		id: "move_machine",
+		initial: "spectating",
 		context: {
-            squares: squares,
-			currPlayer: 'white',
-			colorToMove: 'white',
+			squares: squares,
+			playerColor: null,
+			isPlayer: false,
+			// colorToMove: 'white',
 			canMove: true, // initially set t/f depending on player color
 			toSq: undefined,
 			fromSq: undefined,
-            hoveredSq: undefined,
-            dragPos: undefined,
+			hoveredSq: undefined,
+			dragPos: undefined,
 			lastMove: undefined,
-            promotedPieces: undefined,
-            faded: undefined,
-            captured: {white: 0, black: 0},
-            moves: []
+			promotedPieces: undefined,
+			faded: undefined,
+			captured: { white: 0, black: 0 },
+			moves: [],
 		},
 		states: {
+			spectating: {id: "spectating"},
 			moving: {
-                id: 'moving',
-				initial: 'notSelected',
+				id: "moving",
+				initial: "notSelected",
 				states: {
-					notSelected: { 
-						id: 'notSelected',
-                        // entry:{} // consider deselect, reset move  
+					notSelected: {
+						id: "notSelected",
+						// entry:{} // consider deselect, reset move
 					},
 					selected: {
-						initial: 'dragging',
+						initial: "dragging",
 						states: {
 							dragging: {
 								on: {
-									'DRAG': {
-										actions: assign({ 
-                                            dragPos: (_, { value }) => value.boardPos,
-                                            hoveredSq: (_, { value }) => value.hoveredSq
-                                        })
+									DRAG: {
+										actions: assign({
+											dragPos: (_, { value }) =>
+												value.boardPos,
+											hoveredSq: (_, { value }) =>
+												value.hoveredSq,
+										}),
 									},
-									'END_DRAG': {
-                                        target:'notDragging', 
-                                        actions: send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                                    }
-								}
+									END_DRAG: {
+										target: "notDragging",
+										actions: send({
+											type: "UPDATE",
+											value: [
+												{ type: "faded", piece: null },
+											],
+										}),
+									},
+								},
 							},
-							notDragging: { }
+							notDragging: {},
 						},
 						on: {
-							'ATTEMPT_MOVE': {
-								actions: assign({ toSq: (_, event) => event.value }),
-								target: '#validatingMove'
-							}
-						}
-					}
+							ATTEMPT_MOVE: {
+								actions: assign({
+									toSq: (_, event) => event.value,
+								}),
+								target: "#validatingMove",
+							},
+						},
+					},
 				},
 				on: {
-                    'DESELECT': {
-                        actions: send({type: 'RESET'}),
-                        target: '.notSelected'
-                    },
-					'SELECT': {
-                        cond: (_, {value}) => !!value.piece, // todo also check if player's color/piece
-						actions: assign({ fromSq: (_, {value}) => value }),
-						target: '.selected.dragging',
+					DESELECT: {
+						actions: send({ type: "RESET" }),
+						target: ".notSelected",
+					},
+					SELECT: {
+						cond: (_, { value }) => !!value.piece, // todo also check if player's color/piece
+						actions: assign({ fromSq: (_, { value }) => value }),
+						target: ".selected.dragging",
 						// in: '#light.red.stop'
-					}
-				}
+					},
+				},
 			},
-            validatingMove: {
-                id:'validatingMove',
-                invoke: {
-                    src: ctx => async (sendBack) => {
-                        let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                        let validMove = await game().handlePlayerMove(move)
-                        sendBack({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
-                    },
-                    onError: '#moving.selected'
-                },
-                on: {
-                    'ALLOW': {
-                        // todo: indicate square of prev move (change tile material color)
-                        actions: [
-                            ({fromSq, toSq}) => startMovingPiece(fromSq.piece, toSq.coords),
-                            assign({ 
-                                canMove: false,
-                                lastMove: (_, {value}) => value,
-                            }),
-                            send({type: 'RESET'})
-                        ],
-                        target: '#waiting'
-                    },
-                    'DENY': {
-                        actions: send({type: 'RESET'}),
-                        target: '#moving.notSelected'
-                    }
-                }
-            },
+			validatingMove: {
+				id: "validatingMove",
+				invoke: {
+					src: (ctx) => async (sendBack) => {
+						let move = {
+							from: ctx.fromSq.sqName,
+							to: ctx.toSq.sqName,
+						};
+						let validMove = await game().handlePlayerMove(move);
+						sendBack({
+							type: !!validMove ? "ALLOW" : "DENY",
+							value: validMove,
+						});
+					},
+					onError: "#moving.selected",
+				},
+				on: {
+					ALLOW: {
+						// todo: indicate square of prev move (change tile material color)
+						actions: [
+							({ fromSq, toSq }) =>
+								startMovingPiece(fromSq.piece, toSq.coords),
+							assign({
+								canMove: false,
+								lastMove: (_, { value }) => value,
+							}),
+							send({ type: "RESET" }),
+						],
+						target: "#waiting",
+					},
+					DENY: {
+						actions: send({ type: "RESET" }),
+						target: "#moving.notSelected",
+					},
+				},
+			},
 			waiting: {
-				id: 'waiting',
-				on: { }
+				id: "waiting",
+				on: {},
 			},
-            // ___________________________________________________________________________________________________________________
-            reviewing: {
-                id: 'reviewing',
-                initial: 'setup',
-                entry: [
-                    send({type: 'DESELECT'}),
-                ],
-                exit: [
-                    send({type: 'DESELECT'}),
-                    send(({moves, squares}) => ({
-                        type: 'SET_BOARD',
-                        value: { ...DeserializeBoard(moves[moves.length-1]?.board, squares) }
-                    })),
-                    _ => current.uiActions.alert.close('review'),
-                ],
-                states: {
-                    setup: {
-                        invoke: {
-                            src: ({moves, squares}, {value}) => sendBack =>{
-                                game().reviewEngine.load(moves[value?.id]?.fen),
-                                sendBack({
-                                    type: 'SET_BOARD', 
-                                    value:{ ...DeserializeBoard(moves[value?.id]?.board, squares) }
-                                })
-                                return
-                            }
-                        }
-                    },
-                    moving: {
-                        id: 'r_moving',
-                        initial: 'notSelected',
-                        states: {
-                            notSelected: { },
-                            selected: {
-                                initial: 'dragging',
-                                states: {
-                                    dragging: {
-                                        on: {
-                                            'DRAG': {
-                                                actions: assign({ 
-                                                    dragPos: (_, { value }) => value.boardPos,
-                                                    hoveredSq: (_, { value }) => value.hoveredSq
-                                                })
-                                            },
-                                            'END_DRAG': {
-                                                target: 'notDragging',
-                                                actions: send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
-                                            } 
-                                        }
-                                    },
-                                    notDragging: { }
-                                },
-                                on: {
-                                    'ATTEMPT_MOVE': {
-                                        actions: assign({ toSq: (_, event) => event.value }),
-                                        target: '#reviewing.validatingMove'
-                                    }
-                                }
-                            }
-                        },
-                        on: { 
-                            'DESELECT': {
-                                actions: send({type: 'RESET'}),
-                                target: '.notSelected'
-                            },
-                            'SELECT': {
-                                cond: (_, {value}) => !!value.piece, // todo also check if player's color/piece
-                                actions: assign({ fromSq: (ctx, {value}) => value }),
-                                target: '.selected.dragging',
-                            }
-                        }
-                    },
-                    validatingMove: {
-                        id:'r_validatingMove',
-                        invoke:{
-                            src: ctx => async (sendBack) => {
-                                let move = { from: ctx.fromSq.sqName, to: ctx.toSq.sqName }
-                                let validMove = await game().handlePlayerMove(move)
-                                sendBack({type: !!validMove ? 'ALLOW' : 'DENY', value: validMove })
-                            },
-                            onError: '#moving.selected'
-                        },
-                        on: {
-                            'ALLOW': {
-                                // todo: indicate square of prev move (change tile material color)
-                                actions: [
-                                    ({fromSq, toSq}) => startMovingPiece(fromSq.piece, toSq.coords),
-                                    assign({ 
-                                        lastMove: (_, {value}) => value,
-                                    }),
-                                    send({type: 'RESET'})
-                                ],
-                                target: '#reviewing.moving.notSelected'
-                            },
-                            'DENY': {
-                                actions: send({type: 'RESET'}),
-                                target: '#reviewing.moving.notSelected'
-                            }
-                        }
-                    },
+			// ___________________________________________________________________________________________________________________
+			reviewing: {
+				id: "reviewing",
+				initial: "setup",
+				entry: [send({ type: "DESELECT" })],
+				exit: [
+					send({ type: "DESELECT" }),
+					send(({ moves, squares }) => ({
+						type: "SET_BOARD",
+						value: {
+							...DeserializeBoard(
+								moves[moves.length - 1]?.board,
+								squares
+							),
+						},
+					})),
+					(_) => current.uiActions.alert.close("review"),
+				],
+				states: {
+					setup: {
+						invoke: {
+							src:
+								({ moves, squares }, { value }) =>
+								(sendBack) => {
+									game().reviewEngine.load(
+										moves[value?.id]?.fen
+									),
+										sendBack({
+											type: "SET_BOARD",
+											value: {
+												...DeserializeBoard(
+													moves[value?.id]?.board,
+													squares
+												),
+											},
+										});
+									return;
+								},
+						},
+					},
+					moving: {
+						id: "r_moving",
+						initial: "notSelected",
+						states: {
+							notSelected: {},
+							selected: {
+								initial: "dragging",
+								states: {
+									dragging: {
+										on: {
+											DRAG: {
+												actions: assign({
+													dragPos: (_, { value }) =>
+														value.boardPos,
+													hoveredSq: (_, { value }) =>
+														value.hoveredSq,
+												}),
+											},
+											END_DRAG: {
+												target: "notDragging",
+												actions: send({
+													type: "UPDATE",
+													value: [
+														{
+															type: "faded",
+															piece: null,
+														},
+													],
+												}),
+											},
+										},
+									},
+									notDragging: {},
+								},
+								on: {
+									ATTEMPT_MOVE: {
+										actions: assign({
+											toSq: (_, event) => event.value,
+										}),
+										target: "#reviewing.validatingMove",
+									},
+								},
+							},
+						},
+						on: {
+							DESELECT: {
+								actions: send({ type: "RESET" }),
+								target: ".notSelected",
+							},
+							SELECT: {
+								cond: (_, { value }) => !!value.piece, // todo also check if player's color/piece
+								actions: assign({
+									fromSq: (ctx, { value }) => value,
+								}),
+								target: ".selected.dragging",
+							},
+						},
+					},
+					validatingMove: {
+						id: "r_validatingMove",
+						invoke: {
+							src: (ctx) => async (sendBack) => {
+								let move = {
+									from: ctx.fromSq.sqName,
+									to: ctx.toSq.sqName,
+								};
+								let validMove = await game().handlePlayerMove(
+									move
+								);
+								sendBack({
+									type: !!validMove ? "ALLOW" : "DENY",
+									value: validMove,
+								});
+							},
+							onError: "#moving.selected",
+						},
+						on: {
+							ALLOW: {
+								// todo: indicate square of prev move (change tile material color)
+								actions: [
+									({ fromSq, toSq }) =>
+										startMovingPiece(
+											fromSq.piece,
+											toSq.coords
+										),
+									assign({
+										lastMove: (_, { value }) => value,
+									}),
+									send({ type: "RESET" }),
+								],
+								target: "#reviewing.moving.notSelected",
+							},
+							DENY: {
+								actions: send({ type: "RESET" }),
+								target: "#reviewing.moving.notSelected",
+							},
+						},
+					},
 
-                    // finished: { type: 'final' }
-                },
-                on: {
-                    'SET_BOARD': {
-                        ...setupBoard(pieces),
-                        target: ".moving"
-                    },
-                    'REVIEW': {
-                        target: '#reviewing.setup',
-                        internal: true 
-                    },
-                    'END_REVIEW': [
-                        {  target: '#moving', cond: ctx => ctx.canMove},
-                        {  target: '#waiting', cond: ctx => !ctx.canMove}
-                    ]
-                }
+					// finished: { type: 'final' }
+				},
+				on: {
+					SET_BOARD: {
+						...setupBoard(pieces),
+						target: ".moving",
+					},
+					REVIEW: {
+						target: "#reviewing.setup",
+						internal: true,
+					},
+					END_REVIEW: [
+						{ target: "#spectating", cond: (ctx) => !ctx.isPlayer },
+						{ target: "#moving", cond: (ctx) => ctx.canMove },
+						{ target: "#waiting", cond: (ctx) => !ctx.canMove },
+					],
+				},
 			},
 		},
-        // ___________________________________________________________________________________________________________________
-        on:{
-            'RESET': {
-                actions: [
-                    assign({ fromSq: undefined, toSq: undefined }),
-                    send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]}),
-                ]
-            },
-            'OPP_MOVE': { // todo test if user in review selections are reset
-                actions: [
-                    ({squares}, {value}) => {
-                        let { from, to } = value
-                        startMovingPiece(squares[from].piece, squares[to].coords)
-                    },
-                    assign({ 
-                        canMove: true,
-                        lastMove: (_, {value}) => value
-                    })
-                ],
-                target: 'moving'
+		// ___________________________________________________________________________________________________________________
+		on: {
+			SET_PLAYER: {
+				actions: [
+					assign({
+						isPlayer: (_, { value }) => value.isPlayer,
+						playerColor: (_, { value }) => value.playerColor,
+					}),
+					send({ type: "START_GAME" }),
+				],
 			},
-            'UPDATE': {
-                actions: [
-                    pure((_, {value}) => {
-                        let types = [
-                            ['squares', updateSquares], 
-                            ['captured', updateCaptured], 
-                            ['faded', updateFaded]
-                        ] 
-                        let updates = value.reduce((changes, { type, ...change }) => {
-                            return {...changes, [type]: [...(changes[type]||[]), change]}
-                        }, {}) // sort list of changes into updates
-                        let assignments = types.reduce((props, [type, factory]) =>{
-                            return {
-                                ...props, 
-                                ...(updates[type] ? {[type]: factory(updates[type])}: {}), // if updates.type not empty add prop assigner to assignment
-                            }
-                        }, {}) // partially input updates to designated assigner factoryFn for assignments
-                        return assign(assignments)
-                    }),
-                    pure((_, {addMove})=>{
-                        if (!addMove) return
-                        return assign({
-                            moves: (ctx, {value}) => ([ 
-                                ...ctx.moves,
-                                {   
-                                    board: SerializeBoard(ctx.squares, pieces, ctx.captured), 
-                                    fen: game().engine.fen()
-                                }
-                            ])
-                        })
-                    }),
-                    (ctx, {addMove})=>{
-                        if (!addMove) return
-                        let { piece, san, color} = ctx.lastMove
-                        current.uiActions.sidePanel.moves.addMove({ piece, san, id: ctx.moves.length-1, color})
-                    }
-                ]
-            },
-            'POSITION': {
-                actions: (_, {value}) => positionPieces(value)
-            },
-            'REVIEW': {
-                target: '#reviewing',
-            },
-            'SET_BOARD': setupBoard(pieces)
-        }
-	})
+            START_GAME: [
+                { target: "#spectating", cond: (ctx) => !ctx.isPlayer },
+                {
+                    target: "#moving",
+                    cond: (ctx) => ctx.playerColor == "white",
+                },
+                { target: "#waiting" },
+            ],
+			RESET: {
+				actions: [
+					assign({ fromSq: undefined, toSq: undefined }),
+					send({
+						type: "UPDATE",
+						value: [{ type: "faded", piece: null }],
+					}),
+				],
+			},
+			OPP_MOVE: {
+				// todo test if user in review selections are reset
+				actions: [
+					({ squares }, { value }) => {
+						let { from, to } = value;
+						startMovingPiece(
+							squares[from].piece,
+							squares[to].coords
+						);
+					},
+					assign({
+						canMove: true,
+						lastMove: (_, { value }) => value,
+					}),
+				],
+				target: "moving",
+			},
+			UPDATE: {
+				actions: [
+					pure((_, { value }) => {
+						let types = [
+							["squares", updateSquares],
+							["captured", updateCaptured],
+							["faded", updateFaded],
+						];
+						let updates = value.reduce(
+							(changes, { type, ...change }) => {
+								return {
+									...changes,
+									[type]: [...(changes[type] || []), change],
+								};
+							},
+							{}
+						); // sort list of changes into updates
+						let assignments = types.reduce(
+							(props, [type, factory]) => {
+								return {
+									...props,
+									...(updates[type]
+										? { [type]: factory(updates[type]) }
+										: {}), // if updates.type not empty add prop assigner to assignment
+								};
+							},
+							{}
+						); // partially input updates to designated assigner factoryFn for assignments
+						return assign(assignments);
+					}),
+					pure((_, { addMove }) => {
+						if (!addMove) return;
+						return assign({
+							moves: (ctx, { value }) => [
+								...ctx.moves,
+								{
+									board: SerializeBoard(
+										ctx.squares,
+										pieces,
+										ctx.captured
+									),
+									fen: game().engine.fen(),
+								},
+							],
+						});
+					}),
+					(ctx, { addMove }) => {
+						if (!addMove) return;
+						let { piece, san, color } = ctx.lastMove;
+						current.uiActions.sidePanel.moves.addMove({
+							piece,
+							san,
+							id: ctx.moves.length - 1,
+							color,
+						});
+					},
+				],
+			},
+			POSITION: {
+				actions: (_, { value }) => positionPieces(value),
+			},
+			REVIEW: {
+				target: "#reviewing",
+			},
+			SET_BOARD: setupBoard(pieces),
+		},
+	});
 
 	return interpret(moveMachine)
     // .onTransition((state) => console.log('state changed', state))
