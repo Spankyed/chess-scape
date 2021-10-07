@@ -19,13 +19,14 @@ deleteRoom:
         path: delete-room
         method: POST
         cors: true
-getClient:
-  handler: api/endpoints/getClient.handler
-  events:
-    - http:
-        path: get-client/{ID}
-        method: GET
-        cors: true
+# ! GET CLIENT WILL PUBLICLY EXPOSE CLIENT TOKEN
+# getClient:
+#   handler: api/endpoints/getClient.handler
+#   events:
+#     - http:
+#         path: get-client/{ID}
+#         method: GET
+#         cors: true
 getRoom:
   handler: api/endpoints/getRoom.handler
   events:
