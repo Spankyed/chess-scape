@@ -93,9 +93,6 @@ function closeConnection() {
 // ** --------------------------------------------------------------------------
 // **  Send Message Wrappers
 // ** --------------------------------------------------------------------------
-function enterRoom(id) {
-	roomID ??= id;
-}
 
 function joinRoom(id) {
 	roomID ??= id;
@@ -277,7 +274,6 @@ export default {
 	closeConnection,
 	createRoom,
 	deleteRoom,
-	enterRoom,
 	joinRoom,
 	ready,
 	leaveRoom,

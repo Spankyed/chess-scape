@@ -24,18 +24,26 @@ module.exports = async function ({ clientID, roomID }) {
 
 		const [group, Attributes] = await updateRoom(room, clientID)
 
-		const messageRecipients = [
-			sendMessageToRoom(roomID, {
-				method: "join",
-				room: Attributes,
-				group,
-			}),
-			// only message lobby if player joined, not spectator
-			...(group == "players"
-				? [sendMessageToLobby({ method: "join", room: Attributes })]
-				: []),
-		];
-		Promise.all(messageRecipients);
+		if (room.host != clientID) {
+			const messageRecipients = [
+				sendMessageToRoom(roomID, {
+					method: "join",
+					room: Attributes,
+					group,
+				}),
+				// only message lobby if player joined, not spectator
+				// ...(group == "players"
+				...(true
+					? [
+							sendMessageToLobby({
+								method: "join",
+								room: Attributes,
+							}),
+					  ]
+					: []),
+			];
+			Promise.all(messageRecipients);
+		}
 
 	} catch (err) {
 		console.error(err)
