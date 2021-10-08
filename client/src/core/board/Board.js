@@ -82,7 +82,7 @@ export default function Board(current, scene, canvas){
             document.body.style.cursor = 'grabbing';
             if (!pickedPoint) return;  // todo drag piece along sides of board if mouse is off board
             send({ type: "DRAG", value: {boardPos: pickedPoint, hoveredSq: square} })
-        } else {
+        } else if (stateIs("moving")) {
             if (square?.piece) document.body.style.cursor = 'grab';
             else document.body.style.cursor = 'default';
             return

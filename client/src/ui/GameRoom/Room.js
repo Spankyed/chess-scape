@@ -79,6 +79,7 @@ export default (initial) => ({
 		getPlayerColor: () => () => ({ gameOver: true }),
 		endGame: () => () => ({ gameOver: true }),
 		exit: () => (_, { alert }) => {
+			document.body.style.cursor = "default";
 			cleanupHandlers();
 			alert.closeAll();
 			// ! todo update DB client.room to 'lobby' otherwise wont recieve join msgs
@@ -88,6 +89,12 @@ export default (initial) => ({
 				isFetching: false,
 				initialized: false,
 				matchStarted: false,
+				game: {
+					player: false,
+					playerColor: null,
+					ready: false,
+					matchStarted: false,
+				},
 			};
 		},
 	},
