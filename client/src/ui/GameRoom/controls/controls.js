@@ -167,3 +167,13 @@ function PieceSelection({resolver, closePieceSelect, color}){
 		</div>
 	)
 }
+
+    // abandon(){
+    //     Api.sendMove('abandon', this.roomID)
+    // }
+    // resign(){
+    //     Api.sendMove('resign', this.roomID)
+    // }
+    // offerDraw(){
+    //     Api.sendMove('offer_draw', this.roomID)
+    // }

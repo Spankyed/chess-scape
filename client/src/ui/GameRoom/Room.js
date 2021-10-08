@@ -113,7 +113,6 @@ export default (initial) => ({
 				if (Object.keys(room.players).length == 2) {
 					actions.alert.close("host");
 					actions.alert.show(alert.startAlert); // alert match is starting soon
-					// ready up player after camera animation
 				}
 				actions.updateRoom(room);
 			};

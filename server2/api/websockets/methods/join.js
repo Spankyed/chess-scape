@@ -22,6 +22,11 @@ module.exports = async function ({ clientID, roomID }) {
 			Dynamo.get(roomID, roomsTable)
 		])
 
+		if (!room) {
+			// todo force client back to lobby
+			return Responses._400({ error: 'Room not found' });
+		}
+
 		const [group, Attributes] = await updateRoom(room, clientID)
 
 		if (room.host != clientID) { // prob dont need to do this

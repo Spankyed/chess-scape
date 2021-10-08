@@ -25,7 +25,7 @@ const Dynamo = {
 		// 		`There was an error fetching the data for ID of ${ID} from ${TableName}`
 		// 	);
 		// }
-		console.log(data);
+		// console.log(data);
 		return data.Item;
 	},
 	async delete(ID, TableName) {
@@ -36,7 +36,7 @@ const Dynamo = {
 			},
 		};
 		const data = await documentClient.delete(params).promise();
-		console.log(data);
+		// console.log(data);
 		return data;
 	},
 
