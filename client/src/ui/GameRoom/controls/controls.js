@@ -28,7 +28,7 @@ export default (initial) => ({
 	},
 	view:
 		(state, actions) =>
-		({ isLoading, gameOver, leaveRoom, toggleSidePanel, color }) => {
+		({ isLoading, gameOver, matchInfo, leaveRoom, toggleSidePanel }) => {
 			return (
 				// pointer-events-none controls-wrapper
 				<div
@@ -37,7 +37,7 @@ export default (initial) => ({
 					}`}
 				>
 					<div class="controls">
-						{gameOver && <MatchMessage />}
+						{gameOver && <MatchMessage matchInfo={matchInfo}/>}
 						{state.isPromoting && (
 							<PieceSelection
 								color={state.playerColor}
@@ -151,19 +151,28 @@ function Opponent(){
 		</div>
 	)
 }
-function MatchMessage(){
+function MatchMessage({ matchInfo }) {
+	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 	return (
 		<div class="message-wrapper">
-			<div class='match-message'>
+			<div class={`match-message ${matchInfo.color}`}>
 				<div class="messages">
-					<div id="topic-1" class="message-topic">MATCH</div>
+					<div id="topic-1" class="message-topic">
+						MATCH
+					</div>
 					<div id="message-1" class="message-content">
-						<span>White is Victorious</span>
+						{matchInfo.win ? (
+							<span>
+								{capitalize(matchInfo.color)} is Victorious
+							</span>
+						) : (
+							<span>There is no winner</span>
+						)}
 					</div>
 				</div>
 			</div>
 		</div>
-	)
+	);
 }
 function PieceSelection({resolve, closePieceSelect, color}){
 	color = color.charAt(0)

@@ -38,6 +38,10 @@ module.exports = async function ({ clientID, roomID, move }) {
 	} else {
 		// todo when game over store match in completeMatchesTable
 		const gameOver = engine.game_over();
+		const mated = gameOver && engine.in_checkmate();
+		const win = mated;
+		const way = gameOver && mated ? 'checkmate' : gameOver && 'draw'
+		const info = gameOver && { clientID, color: colorToMove, way, win };
 		// todo if time controlled game, get stepFN task token and send to machine to end prev exec,
 		// todo then exec new state machine
 		await Promise.all([
@@ -47,7 +51,7 @@ module.exports = async function ({ clientID, roomID, move }) {
 				primaryKeyValue: roomID,
 				updates: {
 					"lastMove.fen": engine.fen(),
-					colorToMove: nextColor(colorToMove),
+					colorToMove: !gameOver && nextColor(colorToMove),
 				},
 			}),
 			sendMessageToRoom(roomID, {
@@ -55,11 +59,12 @@ module.exports = async function ({ clientID, roomID, move }) {
 				move: validMove,
 				clientID,
 				gameOver,
+				info,
 			}),
 		]);
 	}
 
-	console.log(`Player[${clientID}][${colorToMove}] moved`, { move }); // todo add playerColor to log
+	console.log(`Player[${clientID}][${colorToMove}] moved`, { move, info }); // todo add playerColor to log
 
 	return Responses._200({});
 };

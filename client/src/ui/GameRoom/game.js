@@ -39,19 +39,18 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ roomID, roomState, roomActions, clockActions }) => {
-			const onMove = ({move, clientID, gameOver}) => {
+			const onMove = ({move, clientID, gameOver, info}) => {
 				// todo retrieve time left on each players clock &..
 				// todo retrieve time msg sent and calc diff time now &...
 				// todo adjust time left from time diff
 				if (clientID != Api.getClientID()) {
 					Scene.game().handleOpponentMove(move);
 				} 
-				if (gameOver){
-					// this.engine.reset()
-       				// this.game_over = true
-					// todo: if gameover indicate how: 'time/checkmate/3foldrep...'
-					const info = { winningColor: 'white' || 'black', way: 'resign' || 'draw' || 'abandon'}
-					roomActions.endGame(info)
+				if (gameOver && info){
+					// Scene.resetGame()
+					// this.game_over = true
+					// checkmate|abort|abandon|resign|draw|stalemate|time|3foldrep
+					roomActions.endGame(info);
 				} 
 			}
 			const onAbort = ({gameOver})=>{

@@ -27,6 +27,7 @@ export default (initial) => ({
 		initialized: false,
 		// matchStarted: false,
 		gameOver: false,
+		matchInfo: null,
 		// playerColor: null,
 	},
 	actions: {
@@ -49,16 +50,17 @@ export default (initial) => ({
 		showLoader: () => () => ({ isLoading: true }),
 		hideLoader: () => () => ({ isLoading: false }),
 		updateRoom: (room) => () => ({ room }),
-		fetchRoom: (roomID) => (_,actions) => {
-			Api.getRoom(roomID).then(actions.completeFetch)
-			return { isFetching: true }
+		fetchRoom: (roomID) => (_, actions) => {
+			Api.getRoom(roomID).then(actions.completeFetch);
+			return { isFetching: true };
 		},
 		completeFetch: (room) => (_, actions) => {
 			const isHost = room.host == Api.getClientID();
 			const players = Object.entries(room.players);
-			const [color, player] = players.find(p => p[1].clientID == Api.getClientID()) || []
+			const [color, player] =
+				players.find((p) => p[1].clientID == Api.getClientID()) || [];
 			if (!room.matchStarted) {
-				if ( players.length == 1 && isHost ) {
+				if (players.length == 1 && isHost) {
 					actions.alert.show(alert.waitAlert);
 				} else {
 					actions.alert.show(alert.startAlert);
@@ -69,7 +71,7 @@ export default (initial) => ({
 				player,
 				playerColor: color,
 			});
-				
+
 			return {
 				room,
 				isHost,
@@ -78,34 +80,34 @@ export default (initial) => ({
 			};
 		},
 		getPlayerColor: () => () => ({ gameOver: true }),
-		endGame: () => () => ({ gameOver: true }),
-		exit: () => (_, { alert }) => {
-			document.body.style.cursor = "default";
-			cleanupHandlers();
-			alert.closeAll();
-			// ! todo update DB client.room to 'lobby' otherwise wont recieve join msgs
-			return {
-				isHost: false,
-				isLoading: true,
-				isFetching: false,
-				initialized: false,
-				matchStarted: false,
-				game: {
-					player: false,
-					playerColor: null,
-					ready: false,
+		endGame: (info) => () => ({ gameOver: true, matchInfo: info }),
+		exit:
+			() =>
+			(_, { alert }) => {
+				document.body.style.cursor = "default";
+				cleanupHandlers();
+				alert.closeAll();
+				// ! todo update DB client.room to 'lobby' otherwise wont receive join msgs
+				return {
+					isHost: false,
+					isLoading: true,
+					isFetching: false,
+					initialized: false,
 					matchStarted: false,
-				},
-			};
-		},
+					gameOver: false,
+					game: {
+						player: false,
+						playerColor: null,
+						ready: false,
+						matchStarted: false,
+					},
+				};
+			},
 	},
 	view:
 		(state, actions) =>
 		({ roomID, joinLobby }) => {
-			const GameView = game.view(
-				state.game,
-				actions.game
-			);
+			const GameView = game.view(state.game, actions.game);
 			const ControlsView = controls.view(
 				state.controls,
 				actions.controls
@@ -117,9 +119,11 @@ export default (initial) => ({
 			const AlertView = alert.view(state.alert, actions.alert);
 
 			const onJoin = ({ room, group }) => {
-				if (group == 'players' &&
+				if (
+					group == "players" &&
 					Object.keys(room.players).length == 2 &&
-					!room.matchStarted) {
+					!room.matchStarted
+				) {
 					actions.alert.close("host");
 					actions.alert.show(alert.startAlert); // alert match is starting soon
 				}
@@ -128,10 +132,11 @@ export default (initial) => ({
 
 			const initialize = async () => {
 				// todo if player is opp & !matchStarted, alert match starting soon
-				// todo: on total disconnect, breakdown websocket and game 
+				// todo: on total disconnect, breakdown websocket and game
 				Api.setMessageHandlers({
 					join: onJoin, // todo if players == 2 alert match starting soon
-					leave: ({ clientID }) => console.log(`[${clientID}] left the room`),
+					leave: ({ clientID }) =>
+						console.log(`[${clientID}] left the room`),
 					idleReconnect: () => {},
 				});
 				actions.fetchRoom(roomID);
@@ -158,10 +163,17 @@ export default (initial) => ({
 							roomID={roomID}
 							isLoading={state.isLoading}
 							gameOver={state.gameOver}
+							matchInfo={state.matchInfo}
 							leaveRoom={leave}
 							toggleSidePanel={actions.toggleSidePanel}
 						/>
-						<GameView {...{ roomID, roomActions: actions, roomState: state }} />
+						<GameView
+							{...{
+								roomID,
+								roomActions: actions,
+								roomState: state,
+							}}
+						/>
 						<AlertView />
 					</div>
 
