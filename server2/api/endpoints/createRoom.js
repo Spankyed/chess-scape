@@ -34,8 +34,8 @@ const handler = async (event) => {
 	} else {
 		const match = {
 			ID: room.ID,
-			host,
-			players: { [selectedColor]: host },
+			host: room.host,
+			players: { [selectedColor]: room.host },
 			lastMove: {
 				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 			},
@@ -48,7 +48,7 @@ const handler = async (event) => {
 		])
 	}
 
-	console.log(`Player[${host}] created room[${newRoom.ID}]`);
+	console.log(`Player[${clientID}] created room[${newRoom.ID}]`);
 
 	return Responses._200({ newRoom });
 };

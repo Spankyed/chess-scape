@@ -228,7 +228,6 @@ function Footer({ create, toggle }) {
 	);
 }
 
-
 function processGameOptions(custom, selectedGameType) {
 	const {
 		opponents,

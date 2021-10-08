@@ -28,7 +28,7 @@ export default (initial) => ({
 				},
 			});
 			return { matchStarted: true };
-		}
+		},
 	},
 	view:
 		(state, actions) =>

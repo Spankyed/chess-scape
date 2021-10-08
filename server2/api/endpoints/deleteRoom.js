@@ -10,7 +10,7 @@ const schema = {
 };
 
 const handler = async (event) => {
-	const {ID} = event.body;
+	const { clientID, ID } = event.body;
 
 	const deletedRoom = await Dynamo.delete(ID, roomsTable);
 
@@ -20,6 +20,8 @@ const handler = async (event) => {
 
 	// todo notify anyone who may be in room, room was deleted
 	await sendMessageToLobby({ method: "delete", roomID: ID });
+
+	console.log(`Player[${clientID}] deleted room[${ID}]`);
 
 	return Responses._200({ message: `Room successfully deleted [${ID}]` });
 };
