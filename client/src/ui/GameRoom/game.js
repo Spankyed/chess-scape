@@ -7,13 +7,16 @@ import Api from "../../api/Api";
 export default (initial) => ({
 	state: {
 		player: false,
-		playerColor: null,
+		playerColor: 'white',
 		ready: false,
 		// initialized: false,
 		matchStarted: false,
 	},
 	actions: {
-		setPlayer: ({ player, playerColor }) => () => ({ player, playerColor }),
+		setPlayer: ({ player, playerColor }) => (state) => {
+			Scene.manager.animateCameraIntoPosition(playerColor || state.playerColor);
+			return ({ player, playerColor });
+		},
 		ready: () => ({ playerColor }) => {
 			Api.ready(playerColor);
 			return { ready: true };

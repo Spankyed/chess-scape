@@ -51,7 +51,7 @@ export default class SceneManager {
         this._scene.clearColor = new BABYLON.Color4(0,0,0,0);
         const narrowDevice = (window.innerWidth/window.innerHeight) < 1.1
         let cameraDistance = narrowDevice ? 33 : 25
-        var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI/2, .6, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
+        var camera = new BABYLON.ArcRotateCamera("Camera", 0, 3, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.attachControl(canvas, true);
         camera.inputs.attached.pointers.detachControl();
         // camera.inputs.attached.keyboard.detachControl();
@@ -103,5 +103,35 @@ export default class SceneManager {
         this._scene.activeCamera.beta = 2.5;
         this._scene.activeCamera.wheelPrecision = 5;
 		this._scene.activeCamera.upperBetaLimit=1.5; //Math.PI*(0)/180;
+    }
+
+    animateCameraIntoPosition(color) {
+        const ease = new BABYLON.CubicEase();
+		ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEOUT);
+		// ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+        const alphas = { white: -Math.PI / 2, black: Math.PI / 2 };
+        const camera = this._scene.activeCamera;
+		BABYLON.Animation.CreateAndStartAnimation(
+			"rotate",
+			camera,
+			"alpha",
+			20,
+			50,
+			camera.alpha,
+			alphas[color],
+			0,
+			ease
+		);
+		BABYLON.Animation.CreateAndStartAnimation(
+			"tilt",
+			camera,
+			"beta",
+			20,
+			50,
+			camera.beta,
+			0.6,
+			0,
+			ease
+		);
     }
 }

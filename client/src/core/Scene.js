@@ -44,7 +44,8 @@ const Scene = new class {
         window.interact = { engine: engine, scene: this, game, board }
 
         Object.assign(this, {
-            canvas, engine, scene,  
+            canvas, engine, scene,
+            manager: scene.manager,
             _game: game, _board: board, _pieces: piecesMap,
             uiActions: actions, 
         });

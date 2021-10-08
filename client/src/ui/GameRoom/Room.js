@@ -64,11 +64,12 @@ export default (initial) => ({
 					actions.alert.show(alert.startAlert);
 				}
 			}
-			if (player) actions.game.setPlayer({
+
+			actions.game.setPlayer({
 				player,
 				playerColor: color,
 			});
-			
+				
 			return {
 				room,
 				isHost,
