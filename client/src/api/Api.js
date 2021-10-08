@@ -28,7 +28,7 @@ let clientID = client.clientID || null,
 		share: (msg) => handlers[msg.type]?.(msg),
 		video: () => {},
 		music: () => {},
-		unauthorize: () => console.log("Unauthorized"),
+		unauthorize: () => {},
 		idleReconnect: () => {}
 	};
 
@@ -183,20 +183,23 @@ async function getRooms() {
 async function joinLobby() {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ clientID });
+	const body = JSON.stringify({ clientID, TOKEN });
 	const url = `${baseHttpUrl}/join-lobby`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
 		const rooms = await response.json();
 		console.log("%c Initial Lobby Rooms", "color:blue;", { rooms });
 		return rooms;
+	} else if (response.status === 401) {
+		handlers.unauthorize();
+        throw Error("Unauthorized");
 	}
 }
 
 async function createRoom(options) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ ...options, host: clientID});
+	const body = JSON.stringify({ ...options, clientID, TOKEN });
 	const url = `${baseHttpUrl}/create-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
@@ -205,16 +208,14 @@ async function createRoom(options) {
 		// dont do anything with response, websocket message should be sent to update room list in lobby
 		return room;
 	} else if (response.status === 401) {
-		clearSession();
-	}
-	function clearSession() {
-		localStorage.removeItem("client");
+		handlers.unauthorize();
+		throw Error("Unauthorized");
 	}
 }
 async function deleteRoom(ID) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ ID, TOKEN});
+	const body = JSON.stringify({ ID, clientID, TOKEN});
 	const url = `${baseHttpUrl}/delete-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
@@ -222,10 +223,8 @@ async function deleteRoom(ID) {
 		console.log(`%c ${res.message}`, "color:orange;");
 		// dont do anything with response, websocket message should be sent to update lobby room list
 	} else if (res.status === 401) {
-		clearSession();
-	}
-	function clearSession() {
-		localStorage.removeItem("client");
+		handlers.unauthorize();
+		throw Error("Unauthorized");
 	}
 }
 
@@ -243,11 +242,6 @@ async function createClient(userInfo) {
 		TOKEN = newClient.TOKEN;
 		localStorage.setItem("client", JSON.stringify({ clientID, TOKEN }));
 		return newClient;
-	} else if (response.status === 401) {
-		clearSession();
-	}
-	function clearSession() {
-		localStorage.removeItem("client");
 	}
 }
 async function searchSongImage(title) {

@@ -14,15 +14,13 @@ const schema = {
 };
 
 const handler = async (event) => {
-	const {selectedColor, host, ...form} = event.body;
-
-	// todo authorize host
+	const {clientID, selectedColor, ...form} = event.body;
 
 	const room = {
 		...form,
 		ID: await nanoid(),
-		host,
-		players: { [selectedColor]: { clientID: host, ready: false } },
+		host: clientID,
+		players: { [selectedColor]: { clientID, ready: false } },
 		spectators: [],
 		created: Date.now(),
 		matchStarted: false,
@@ -56,5 +54,5 @@ const handler = async (event) => {
 };
 
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
-exports.handler = hooksWithSchema(schema, ["parse"])(handler);
+exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
 

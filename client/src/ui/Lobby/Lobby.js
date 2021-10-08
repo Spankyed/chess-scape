@@ -49,7 +49,7 @@ export default (initial) => ({
 				hostedRoom: hostedRoom == roomID ? null : hostedRoom,
 			}),
 		fetchRooms: () => (_, actions) => {
-			Api.joinLobby().then(actions.completeFetch);
+			Api.joinLobby().then(actions.completeFetch).catch(actions.exit);
 			return { isFetching: true };
 		},
 		completeFetch: ({rooms}) => (_, actions) => {
@@ -69,7 +69,7 @@ export default (initial) => ({
 			(_, { alert }) => {
 				cleanupHandlers();
 				alert.closeAll();
-				return { initialized: false };
+				return { initialized: false, isFetching: false };
 			},
 	},
 
@@ -100,7 +100,7 @@ export default (initial) => ({
 			};
 
 			const cancel = async () => {
-				await Api.deleteRoom(state.hostedRoom);
+				await Api.deleteRoom(state.hostedRoom).catch(actions.exit);
 				actions.alert.close("host");
 			};
 

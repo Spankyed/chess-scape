@@ -2,24 +2,29 @@ const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const WebSocket = require("../common/websocket/Websocket");
 const { withHooks } = require("../common/hooks");
+const { authorize } = require("../common/authorize");
 const methods = require("./methods");
 
 const clientsTable = process.env.clientsTableName;
 
 const handler = async (event) => {
-	const { connectionId: connectionID } = event.requestContext;
+	const {
+		connectionId: connectionID,
+		domainName,
+		stage
+	} = event.requestContext;
 	const message = event.body;
 	const { clientID, TOKEN, method } = message;
+	// console.log(`Message [${method}] from [${clientID}]`, message);
+	const [isAuthorized, client] = await authorize(clientID, TOKEN, connectionID);
 
-	console.log(`Message [${method}] from [${clientID}]`, message);
-
-	const client = await Dynamo.get(clientID, clientsTable);
-	const { domainName, stage } = client.connection;
-
-	if (!validate(connectionID, TOKEN, client)) {
-		WebSocket.close({ domainName, stage, connectionID }); // ! dont do this, send unauthorize msg instead
-		return Responses._400({ message: "Unauthorized connection" });
-	} // todo move validation to hooks, return 403, and disconnect client
+	if (!isAuthorized) {
+		await sendMessage(
+			{ connectionID, domainName, stage },
+			{ method: "unauthorize" }
+		);
+		return Responses._401({ message: "Unauthorized connection" });
+	}
 
 	await Dynamo.update({
 		TableName: clientsTable,
@@ -42,7 +47,18 @@ const handler = async (event) => {
 
 exports.handler = withHooks(["parse"])(handler);
 
+// const { deserialize } = require('bson');
 
-function validate(connectionID, TOKEN, client) {
-	return connectionID === client.connectionID || TOKEN === client.TOKEN; 
-}
+// const parseMessage = (state) => {
+//     const { body } = state.event
+//     let isBinary = Buffer.isBuffer(body)
+//     let message = isBinary ? deserialize(body, {  promoteBuffers: true }) : JSON.parse(body)
+//     if (!message) {
+//         state.response = Responses._400({ error: 'No message found' })
+//     }
+//     if (isBinary && !isValidFileType(message.rawData)) {
+//         state.response = Responses._400({ error: 'Invalid file type' })
+//     }
+//     state.event.message = message
+//     return state
+// }

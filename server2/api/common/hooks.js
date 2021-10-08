@@ -1,23 +1,23 @@
 const { useHooks, logEvent, parseEvent, handleUnexpectedError } = require('lambda-hooks');
 const Responses = require('./HTTP_Responses');
+const { authorize } = require("./authorize");
 const yup = require('yup');
 // const { object, string, number } = require('yup');
 
-// const { deserialize } = require('bson');
-
-// const parseMessage = (state) => {
-//     const { body } = state.event
-//     let isBinary = Buffer.isBuffer(body)
-//     let message = isBinary ? deserialize(body, {  promoteBuffers: true }) : JSON.parse(body)
-//     if (!message) {
-//         state.response = Responses._400({ error: 'No message found' })
-//     }
-//     if (isBinary && !isValidFileType(message.rawData)) {
-//         state.response = Responses._400({ error: 'Invalid file type' })
-//     }
-//     state.event.message = message
-//     return state
-// }
+const checkToken = async state => {
+    const { clientID, TOKEN } = state.event.body;
+    try {
+        const [isAuthorized, client] = await authorize( clientID, TOKEN );
+        if (!isAuthorized) {
+            throw Error("unauthorized");
+        }
+    } catch (error) {
+        console.log('Unauthorized user', { clientID, TOKEN });
+        state.exit = true;
+        state.response = Responses._401({ error: error.message  })
+    }
+    return state;
+};
 
 const validateBody = async state => {
     const { bodySchema } = state.config;
@@ -52,11 +52,12 @@ const validatePath = async state => {
 };
 
 const hookHandlers = {
-    log: logEvent,
-    parse: parseEvent,
-    // parseMessage,
-    validateBody, validatePath
-}
+	log: logEvent,
+	parse: parseEvent,
+	validateBody,
+	validatePath,
+	authorize: checkToken,
+};
 
 const withHooks = (hooks, config) => useHooks({
     before: hooks.map(hook => hookHandlers[hook]),

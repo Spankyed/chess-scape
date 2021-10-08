@@ -22,15 +22,13 @@ const handler = async (event) => {
 	} = event.requestContext;
 
 	const TOKEN = event.headers["Sec-WebSocket-Protocol"]; // ! token req to update a client's connection
-
 	const [client] = await findClient(TOKEN);
-
 	if (!client || !client.ID) {
 		await sendMessage(
 			{ connectionID, domainName, stage },
 			{ method: "unauthorize" }
 		);
-		return Response._400({ message: "Unauthorized connection" });
+		return Response._401({ message: "Unauthorized connection" });
 	}
 
 	const connection = {

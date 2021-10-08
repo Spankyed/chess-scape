@@ -11,7 +11,6 @@ const schema = {
 
 const handler = async (event) => {
 	const { clientID } = event.body;
-	// todo get TOKEN and validate client (create hook for this?)
 	const [_,rooms] = await Promise.all([
 		Dynamo.update({
 		TableName: clientsTable,
@@ -28,5 +27,5 @@ const handler = async (event) => {
 };
 
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
-exports.handler = hooksWithSchema(schema, ["parse"])(handler);
+exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
 
