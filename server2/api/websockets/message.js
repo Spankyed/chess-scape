@@ -1,6 +1,6 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
-const WebSocket = require("../common/websocket/Websocket");
+const { sendMessage } = require("../common/websocket/message");
 const { withHooks } = require("../common/hooks");
 const { authorize } = require("../common/authorize");
 const methods = require("./methods");

@@ -27,15 +27,17 @@ async function sendMessage(connections, message) {
 			queryKey: "connectionID",
 			queryValue: ID,
 		});
-		return await Dynamo.update({
-			TableName: clientsTable,
-			primaryKey: "ID",
-			primaryKeyValue: client.ID,
-			updates: {
-				connection: false,
-				connectionID: "0",
-			},
-		});
+		if (client) {
+			return await Dynamo.update({
+				TableName: clientsTable,
+				primaryKey: "ID",
+				primaryKeyValue: client.ID,
+				updates: {
+					connection: false,
+					connectionID: "0",
+				},
+			});
+		}
 	}
 }
 
