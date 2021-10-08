@@ -1,14 +1,9 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
-const { hooksWithSchema } = require("../../common/hooks");
 const { sendMessageToLobby, sendMessageToRoom } = require("../../common/websocket/message");
 
 const clientsTable = process.env.clientsTableName;
 const roomsTable = process.env.roomsTableName;
-
-// const schema = {
-// 	body: { roomID: "string", clientID: "number"  },
-// };
 
 module.exports = async function ({ clientID, roomID }) {
 	try {
@@ -27,28 +22,25 @@ module.exports = async function ({ clientID, roomID }) {
 			return Responses._400({ error: 'Room not found' });
 		}
 
-		const [group, Attributes] = await updateRoom(room, clientID)
+		const [group, Attributes] = (room.host != clientID) && await updateRoom(room, clientID) || [];
 
-		if (room.host != clientID) { // prob dont need to do this
-			const messageRecipients = [
-				sendMessageToRoom(roomID, {
-					method: "join",
-					room: Attributes,
-					group,
-				}),
-				// only message lobby if player joined, not spectator
-				// ...(group == "players"
-				...(true
-					? [
-							sendMessageToLobby({
-								method: "join",
-								room: Attributes,
-							}),
-					  ]
-					: []),
-			];
-			Promise.all(messageRecipients);
-		}
+		const messageRecipients = [
+			sendMessageToRoom(roomID, {
+				method: "join",
+				room: Attributes,
+				group,
+			}),
+			// only message lobby if player joined, not spectator
+			...(group == "players"
+				? [
+					sendMessageToLobby({
+						method: "join",
+						room: Attributes,
+					}),
+				]
+				: []),
+		];
+		Promise.all(messageRecipients);
 
 	} catch (err) {
 		console.error(err)
