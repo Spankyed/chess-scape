@@ -1,6 +1,7 @@
 
 import { ClonePiece } from '../utils/utils'; 
 import { setupMoveMachine } from './moveMachines';
+import { delay } from "nanodelay";
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
@@ -322,7 +323,7 @@ function createBoard(scene){ //!
         return {...ranks, ...rankSquares}
     },{});
     
-    setTimeout(_=> boardTiles.dispose() , 50) // todo: create board using prefab
+    delay(50).then(_ => boardTiles.dispose())// todo: create board using prefab
 
     // console.log('squares', squares)
 

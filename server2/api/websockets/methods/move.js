@@ -66,7 +66,7 @@ module.exports = async function ({ clientID, roomID, move }) {
 
 // exports = withHooks(["parse"])(handler);
 
-function syncPlayer(clientID, {board}) {
+async function syncPlayer(clientID, {board}) {
 	const {connection} = await Dynamo.get(clientID, clientsTable);
 	return sendMessage(connection, { method: "sync", board });
 }

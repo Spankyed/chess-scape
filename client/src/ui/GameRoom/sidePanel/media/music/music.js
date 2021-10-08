@@ -1,6 +1,7 @@
 import { h } from 'hyperapp';
 import Api from '../../../../../api/Api';
 import { nanoid } from 'nanoid/non-secure'
+import { delay } from "nanodelay";
 
 export default initial => ({
 	state: {
@@ -132,7 +133,7 @@ function SongPlayer({ state, actions }){
 			Api.shareMusic(song, rawData)
 		}
 		form.reset()
-		setTimeout(_=> form.song.value = [], 500)
+		delay(500).then(_ =>  form.song.value = [])
 	}
 	return(
 		<form name='song-form'>

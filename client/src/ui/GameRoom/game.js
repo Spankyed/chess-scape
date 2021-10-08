@@ -1,4 +1,5 @@
 import { h } from 'hyperapp';
+import { delay } from "nanodelay";
 import Scene from '../../core/Scene';
 import Api from "../../api/Api"; 
 
@@ -22,17 +23,18 @@ export default (initial) => ({
 			Api.ready(playerColor);
 			return { ready: true };
 		},
-		startMatch: () => ({ player, playerColor }) => {
-			// ! only transition moveMachine if is player
-			if (player) Scene.board().moveService.send({
-				type: "SET_PLAYER",
-				value: {
-					isPlayer: true,
-					playerColor,
-				},
-			});
-			return { matchStarted: true };
-		},
+		startMatch: () =>
+			({ player, playerColor }) => {
+				if (player) // ! only transition moveMachine if is player
+					Scene.board().moveService.send({
+						type: "SET_PLAYER",
+						value: {
+							isPlayer: true,
+							playerColor,
+						},
+					});
+				return { matchStarted: true };
+			},
 	},
 	view:
 		(state, actions) =>
@@ -72,14 +74,17 @@ export default (initial) => ({
 			}
 
 			Api.setMessageHandlers({
-				start: actions.startMatch,
+				start: () => {
+					actions.startMatch()
+					delay(300).then(_ => roomActions.alert.close("start"))
+				},
 				move: onMove,
 			});
 
 			const createScene = (canvas) => {
 				// window.location.hash = `#${roomID}`; // todo use hash in lobby to redirect to room
 				// Scene.onReady = () => {};
-				setTimeout(_ => Scene.setupGame(canvas, roomActions, roomID), 500);
+				delay(300).then(_ => Scene.setupGame(canvas, roomActions, roomID))
 				canvas.focus();
 			};
 

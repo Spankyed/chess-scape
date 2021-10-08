@@ -56,7 +56,7 @@ export default initial => ({
 				// console.log('evt.target',evt.target)
 				message = { text: message, user: 'Kathie M.', img: 'https://www.w3schools.com//w3images/avatar_g2.jpg',time: '11:26'}
 				actions.addMessage(message) 
-				setTimeout(_=> evt.target.value = "", 0)
+				setTimeout(_=> evt.target.value = "", 1)
 				Api.sendChat(message)
 				// actions.modify({ message: '' })
 				// todo: scrollBottom();

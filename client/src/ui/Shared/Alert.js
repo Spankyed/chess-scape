@@ -1,5 +1,6 @@
 import { h } from 'hyperapp';
 import { nanoid } from 'nanoid/non-secure'
+import { delay } from "nanodelay";
 
 /*
 {
@@ -19,7 +20,7 @@ export default (initial) => ({
 		show:
 			(options) =>
 			({ alerts }, actions) => {
-				if (options.time) setTimeout(() => actions.close(options.id), options.time);
+				if (options.time) delay(options.time).then((_) => actions.close(options.id));
 				return {
 					alerts: {
 						...alerts,
@@ -85,15 +86,7 @@ export default (initial) => ({
 		role: "none",
 		heading: "Both Players Joined",
 		message: "The match will now begin.",
-		time: 2500
-		// actions: {
-		// 	default: {
-		// 		text: "Abort",
-		// 		handler: (_) => {
-		// 			Api.deleteRoom(state.hostedRoom);
-		// 		},
-		// 	},
-		// },
+		// time: 2500
 	},
 });
 
