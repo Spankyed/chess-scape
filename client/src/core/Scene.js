@@ -38,7 +38,7 @@ const Scene = new class {
         engine.hideLoadingUI()
         // todo: begin camera animation
         // todo: signal to server player is ready. Used for syncing start timing
-/
+
         engine.runRenderLoop(_ => scene.render()) // todo: manually render scene updates with xstate activities?
 
         window.interact = { engine: engine, scene: this, game, board }

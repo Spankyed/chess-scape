@@ -61,8 +61,7 @@ export default (initial) => ({
 			const onSync = ({board})=>{
 			}
 
-			if (state.player && !state.ready) {
-				// ! only ready if player not spectator
+			if (state.player && !state.ready && Api.isConnected()) {
 				// todo ready up player after camera animation
 				console.log(`Player ready [${state.playerColor}]`);
 				actions.ready();

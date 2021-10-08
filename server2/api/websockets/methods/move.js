@@ -55,15 +55,6 @@ module.exports = async function ({ clientID, TOKEN, roomID, move }) {
 
 // exports = withHooks(["parse"])(handler);
 
-async function findClient(TOKEN) {
-	return Dynamo.queryOn({
-		TableName: clientsTable,
-		index: "token-index",
-		queryKey: "TOKEN",
-		queryValue: TOKEN,
-	});
-}
-
 function constructHeadings() {
 	return {
 		Site: "Chess-Scape",
