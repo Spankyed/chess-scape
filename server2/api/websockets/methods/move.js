@@ -22,7 +22,7 @@ module.exports = async function ({ clientID, roomID, move }) {
 
 	const { players, started, lastMove, colorToMove } = match;
 
-	const isPlayersTurn = players[colorToMove].clientID === clientID
+	const isPlayersTurn = players[colorToMove] === clientID
 
 	if (!isPlayersTurn || !started) {
 		// await syncPlayer(clientID, match.moves)

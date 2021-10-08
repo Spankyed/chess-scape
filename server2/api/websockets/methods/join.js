@@ -3,6 +3,7 @@ const Dynamo = require("../../common/Dynamo");
 const { sendMessageToLobby, sendMessageToRoom } = require("../../common/websocket/message");
 
 const clientsTable = process.env.clientsTableName;
+const matchesTable = process.env.matchesTableName;
 const roomsTable = process.env.roomsTableName;
 
 module.exports = async function ({ clientID, roomID }) {
@@ -62,14 +63,24 @@ async function updateRoom(room, clientID){
 	
 	if (group === "players") {
 		const joinedColor = playerColors[0] == "white" ? "black" : "white";
-		const { Attributes } = await Dynamo.update({
-			TableName: roomsTable,
-			primaryKey: "ID",
-			primaryKeyValue: room.ID,
-			updates: {
-				[`players.${joinedColor}`]: { clientID, ready: false },
-			},
-		});
+		const [{ Attributes }] = await Promise.all([
+			Dynamo.update({
+				TableName: roomsTable,
+				primaryKey: "ID",
+				primaryKeyValue: room.ID,
+				updates: {
+					[`players.${joinedColor}`]: { clientID, ready: false },
+				},
+			}),
+			Dynamo.update({
+				TableName: matchesTable,
+				primaryKey: "ID",
+				primaryKeyValue: room.ID,
+				updates: {
+					[`players.${joinedColor}`]: clientID,
+				},
+			})
+		]);
 		return [group, Attributes];
 	} else {
 		const { Attributes } = await Dynamo.append({
