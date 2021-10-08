@@ -33,7 +33,7 @@ const handler = async (event) => {
 
 	const connection = {
 		// IP,
-		connectionID,
+		connectionID: connectionID || 0,
 		created: Date.now(),
 		domainName,
 		stage,
