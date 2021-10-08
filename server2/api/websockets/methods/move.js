@@ -8,36 +8,47 @@ const {
 const { Chess } = require("chess.js");
 
 const matchesTable = process.env.matchesTableName;
+const roomsTable = process.env.roomsTableName;
 const engine = new Chess();
 
 // const schema = {
 // 	body: { room: "number", clientID: "number"  },
 // };
 
-module.exports = async function ({ clientID, TOKEN, roomID, move }) {
-	// todo when game over store match in completeMatchesTable
-	// ! ensure matchStarted first
+module.exports = async function ({ clientID, roomID, move }) {
 	const match = await Dynamo.get(roomID, matchesTable);
 
-	engine.load(match.lastMove.fen);
-	// ! validate client TOKEN and make sure its players turn/color to move
+	if (!match) return Responses._400({message:  'Match not found'});
+
+	const { players, started, lastMove, colorToMove } = match;
+
+	const isPlayersTurn = players[colorToMove].clientID === clientID
+
+	if (!isPlayersTurn || !started) {
+		// await syncPlayer(clientID, match.moves)
+		return Responses._400({ message: "Out of sync" });
+	}
+
+	engine.load(lastMove.fen);
 	const validMove = engine.move(move);
 
 	if (!validMove) {
-		// todo: if not valid move, send game state to sync client, and alert user board was synced
-		// const client = await Dynamo.get(clientID, clientsTable);
-		// sendMessage(client.connection, { method: "sync" })
+		// await syncPlayer(clientID, match.moves)
+		return Responses._400({ message: "Out of sync" });
 	} else {
+		// todo when game over store match in completeMatchesTable
 		const gameOver = engine.game_over();
 		// todo if time controlled game, get stepFN task token and send to machine to end prev exec,
 		// todo then exec new state machine
-		// await sendMessageToRoom(roomID, {
 		await Promise.all([
 			Dynamo.update({
 				TableName: matchesTable,
 				primaryKey: "ID",
 				primaryKeyValue: roomID,
-				updates: { "lastMove.fen": engine.fen() },
+				updates: {
+					"lastMove.fen": engine.fen(),
+					colorToMove: nextColor(colorToMove),
+				},
 			}),
 			sendMessageToRoom(roomID, {
 				method: "move",
@@ -48,12 +59,17 @@ module.exports = async function ({ clientID, TOKEN, roomID, move }) {
 		]);
 	}
 
-	console.log(`Player[${clientID}][color] moved`, { move }); // todo add playerColor to log
+	console.log(`Player[${clientID}][${colorToMove}] moved`, { move }); // todo add playerColor to log
 
 	return Responses._200({});
 };
 
 // exports = withHooks(["parse"])(handler);
+
+function syncPlayer(clientID, {board}) {
+	const {connection} = await Dynamo.get(clientID, clientsTable);
+	return sendMessage(connection, { method: "sync", board });
+}
 
 function constructHeadings() {
 	return {
@@ -73,4 +89,8 @@ function getDate() {
 	return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
 		.toISOString()
 		.split("T")[0];
+}
+
+function nextColor(color) {
+	return color == "white" ? "black" : "white";
 }

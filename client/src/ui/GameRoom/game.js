@@ -15,6 +15,7 @@ export default (initial) => ({
 	actions: {
 		setPlayer: ({ player, playerColor }) => (state) => {
 			Scene.manager.animateCameraIntoPosition(playerColor || state.playerColor);
+			Scene.game().playerColor = playerColor;
 			return ({ player, playerColor });
 		},
 		ready: () => ({ playerColor }) => {

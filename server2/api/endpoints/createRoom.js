@@ -39,6 +39,7 @@ const handler = async (event) => {
 			lastMove: {
 				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 			},
+			colorToMove: 'white',
 			created: room.created,
 			started: false,
 		};

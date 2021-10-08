@@ -41,7 +41,7 @@ module.exports = async function ({ clientID, roomID, color }) {
 					primaryKey: "ID",
 					primaryKeyValue: roomID,
 					updates: {
-						matchStarted: true,
+						// matchStarted: true,
 						started: startTime,
 					},
 				}),

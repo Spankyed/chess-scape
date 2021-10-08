@@ -10,7 +10,7 @@ export default class Game {
         // this.mainPlayer = scene;  
         // this.opponentPlayer = canvas;  
         // this.computerColor = 'black';
-        // this.playerColor = 'black';
+        this.playerColor = null;
         // this.game_over = false;
         this.engine = new Chess()
         this.reviewEngine = new Chess()
@@ -36,7 +36,7 @@ export default class Game {
             if (this.isVsComputer) {
                 this.makeRandomMove()
             } else {
-                Api.sendMove(validMove, this.roomID)
+                Api.sendMove(validMove)
             }
         }
         return validMove
