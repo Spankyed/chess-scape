@@ -161,10 +161,9 @@ const Dynamo = {
 		const keyExpr = `#${queryKey}`;
 		const params = {
 			TableName,
-			KeyConditionExpression: `${keyExpr}.#connected = :hkey`,
+			KeyConditionExpression: `${keyExpr} = :hkey`,
 			ExpressionAttributeNames: {
-				[keyExpr]: queryKey,
-				"#connected": "connected",
+				[keyExpr]: queryKey
 			},
 			ExpressionAttributeValues: {
 				":hkey": queryValue,

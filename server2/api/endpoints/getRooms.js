@@ -11,4 +11,5 @@ const handler = async (event) => {
 	return Responses._200({ rooms });
 };
 
-exports.handler = withHooks(["log", "parse"])(handler);
+// exports.handler = withHooks(["log", "parse"])(handler);
+exports.handler = withHooks(["parse"])(handler);

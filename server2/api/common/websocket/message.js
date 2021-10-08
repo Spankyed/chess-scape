@@ -7,17 +7,21 @@ async function sendMessage(connections, message) {
 	if (!(connections instanceof Array)) connections = [connections];
 	return Promise.all(
 		connections.map(({ connectionID, domainName, stage }) => {
-			if (!connectionID || !domainName || !stage) return;
+			if (connectionID == '0' || !domainName || !stage) return;
 			return WebSocket.send({
 				domainName,
 				stage,
 				connectionID,
 				message,
-			}).catch(async (_) => await removeConnection(connectionID));
+			}).catch(async (err) => {
+				console.error(err)
+				console.warn({ connectionID });
+				await removeConnection(connectionID);
+			});
 		})
 	);
 	async function removeConnection(ID) {
-		const [client] = await Dynamo.query({
+		const [client] = await Dynamo.queryOn({
 			TableName: clientsTable,
 			index: "connection-index",
 			queryKey: "connectionID",
@@ -52,7 +56,7 @@ async function sendMessageToRoomExcept(roomID, ignoreID, message) {
 }
 
 async function sendMessageToLobby(message) {
-	const clients = await getClientsInRoom('lobby');
+	const clients = await getClientsInRoom("lobby");
 	return sendMessage(
 		clients.flatMap(c => c.connection ? [c.connection] : []),
 		message
