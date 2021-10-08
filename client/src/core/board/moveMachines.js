@@ -44,6 +44,7 @@ function setupMoveMachine(current, game, squares, pieces){
 			moves: [],
 		},
 		states: {
+			gameOver: {id: "gameOver"},
 			spectating: {id: "spectating"},
 			moving: {
 				id: "moving",

@@ -5,6 +5,7 @@
 	"main": "webpack.config.js",
 	"dependencies": {
 		"aws-sdk": "^2.991.0",
+		"chess.js": "^0.12.0",
 		"lambda-hooks": "^0.2.1",
 		"yup": "^0.32.9"
 	},

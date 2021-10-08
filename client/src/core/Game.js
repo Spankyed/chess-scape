@@ -15,18 +15,7 @@ export default class Game {
         this.engine = new Chess()
         this.reviewEngine = new Chess()
         this.inReview = _ => this.board().moveService.state.matches('reviewing');
-        this.setupWebhookHandlers()
         return this
-    }
-    setupWebhookHandlers() {
-        // console.log('bind socket handlers')
-        Api.setMessageHandlers({
-            // join: this.onJoin, 
-            move: this.handleOpponentMove.bind(this), 
-            resign: this.handleOpponentMove.bind(this), 
-            draw: this.handleOpponentMove.bind(this), 
-            // chat: this.onChat,
-        })
     }
     getCurrentEngine(isOpponentMove){
         return (this.inReview() && !isOpponentMove) ? this.reviewEngine : this.engine
@@ -49,18 +38,15 @@ export default class Game {
             } else {
                 Api.sendMove(validMove, this.roomID)
             }
-            this.checkGameOver()
         }
-
         return validMove
     }
-    handleOpponentMove({move}){
+    handleOpponentMove(move){
         if (!move) return
         var validMove = this.makeMove(move, true);
         if (!validMove) return // todo: should make request to sync player boards or invalidate game
         this.board().moveService.send({type:'OPP_MOVE', value: validMove})
         // console.log('opponent move', validMove)
-        this.checkGameOver()
     }
     makeRandomMove(){
         // console.log('turn', this.engine.turn())
@@ -76,20 +62,6 @@ export default class Game {
             }, 3000)
         }
     }
-    checkGameOver(){
-        // todo: if gameover indicate how: 'time/checkmate/3foldrep...'
-        if (this.engine.game_over()) {
-            this.Scene.uiActions.endGame()
-            // this.piecesContainer.removeAllFromScene()
-        }
-    }
-    
-    endGame(info){ // { winningColor: white || black, way: resign || draw || abandon}
-        // this.engine.reset()
-        // this.game_over = true
-        this.Scene.uiActions.endGame(info)
-        // todo highlight losers kingSq white
-    }
     isPromoting(move) {
         let engine = this.getCurrentEngine()
         if(!move.to?.match(/1|8/)) return false;
@@ -104,17 +76,6 @@ export default class Game {
     promptPieceSelect() {
         return new Promise(this.Scene.uiActions.controls.openPieceSelect)
     }
-
-    abandon(){
-        Api.sendMove('abandon', this.roomID)
-    }
-    resign(){
-        Api.sendMove('resign', this.roomID)
-    }
-    offerDraw(){
-        Api.sendMove('offer_draw', this.roomID)
-    }
-
 
     // getCapturePieces(color) {
     //     const captured = {'p': 0, 'n': 0, 'b': 0, 'r': 0, 'q': 0}

@@ -13,14 +13,11 @@ export default (initial) => ({
 		matchStarted: false,
 	},
 	actions: {
-		setPlayer:
-			({ player, playerColor }) =>
-			() => ({ player, playerColor }),
-		ready:
-			() => ({ playerColor }) => {
-				Api.ready(playerColor);
-				return { ready: true };
-			},
+		setPlayer: ({ player, playerColor }) => () => ({ player, playerColor }),
+		ready: () => ({ playerColor }) => {
+			Api.ready(playerColor);
+			return { ready: true };
+		},
 		startMatch: () => ({ player, playerColor }) => {
 			// ! only transition moveMachine if is player
 			if (player) Scene.board().moveService.send({
@@ -36,24 +33,44 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ roomID, roomState, roomActions, clockActions }) => {
-
-			const move = (msg) => {
+			const onMove = ({move, clientID, gameOver}) => {
 				// todo retrieve time left on each players clock &..
 				// todo retrieve time msg sent and calc diff time now &...
 				// todo adjust time left from time diff
-				console.log("move msg", msg);
-				// Scene.game().handleOpponentMove(msg.move);
-			};
+				if (clientID != Api.getClientID()) {
+					Scene.game().handleOpponentMove(move);
+				} 
+				if (gameOver){
+					// this.engine.reset()
+       				// this.game_over = true
+					// todo: if gameover indicate how: 'time/checkmate/3foldrep...'
+					const info = { winningColor: 'white' || 'black', way: 'resign' || 'draw' || 'abandon'}
+					roomActions.endGame(info)
+				} 
+			}
+			const onAbort = ({gameOver})=>{
+			}
+			const onAbandon = ({gameOver})=>{
+			}
+			const onResign = ({gameOver})=>{
+			}
+			const onDrawOffer = ({})=>{
+			}
+			const onDraw = ({gameOver})=>{
+			}
+			const onSync = ({board})=>{
+			}
 
 			if (state.player && !state.ready) {
 				// ! only ready if player not spectator
+				// todo ready up player after camera animation
 				console.log(`Player ready [${state.playerColor}]`);
 				actions.ready();
 			}
 
 			Api.setMessageHandlers({
 				start: actions.startMatch,
-				// move: Scene.game().handleOpponentMove,
+				move: onMove,
 			});
 
 			const createScene = (canvas) => {

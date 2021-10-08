@@ -43,6 +43,14 @@ async function sendMessageToRoom(roomID, message) {
 	);
 }
 
+async function sendMessageToRoomExcept(roomID, ignoreID, message) {
+	const clients = await getClientsInRoom(roomID);
+	return sendMessage(
+		clients.flatMap(c => c.connection && c.ID != ignoreID ? [c.connection] : []),
+		message
+	);
+}
+
 async function sendMessageToLobby(message) {
 	const clients = await getClientsInRoom('lobby');
 	return sendMessage(
@@ -64,5 +72,6 @@ async function getClientsInRoom(roomID) {
 module.exports = {
 	sendMessage,
 	sendMessageToRoom,
+	sendMessageToRoomExcept,
 	sendMessageToLobby,
 };

@@ -5,8 +5,10 @@ const nanoid = require("nanoid/async");
 const { sendMessageToLobby } = require("../common/websocket/message");
 
 const roomsTable = process.env.roomsTableName;
+const matchesTable = process.env.matchesTableName;
 const clientsTable = process.env.clientsTableName;
 
+// todo validate schema
 const schema = {
 	// body: { name: "string" },
 };
@@ -25,15 +27,30 @@ const handler = async (event) => {
 		created: Date.now(),
 		matchStarted: false,
 	};
-	console.log("room: ", room);
 	
 	const newRoom = await Dynamo.write(room, roomsTable);
 
-	await sendMessageToLobby({method:'create', newRoom})
-
 	if (!newRoom) {
-		return Responses._400({ message: "Failed to add room" });
+		console.log("Failed to create room");
+		return Responses._400({ message: "Failed to create room" });
+	} else {
+		const match = {
+			ID: room.ID,
+			host,
+			players: { [selectedColor]: host },
+			lastMove: {
+				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+			},
+			created: room.created,
+			started: false,
+		};
+		await Promise.all([
+			sendMessageToLobby({ method: "create", newRoom }),
+			Dynamo.write(match, matchesTable)
+		])
 	}
+
+	console.log(`Player[${host}] created room[${newRoom.ID}]`);
 
 	return Responses._200({ newRoom });
 };

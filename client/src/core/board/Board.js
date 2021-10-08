@@ -39,7 +39,6 @@ export default function Board(current, scene, canvas){
         return state.matches(check) || state.matches('reviewing.' + check)  
     }
 	function onPointerDown(evt) {
-        // todo checkGameOver
 	    const { send, state } = moveService
         if (evt.button !== 0) return;
         let pickInfo = pickWhere( mesh => mesh.isPickable); // pick square
