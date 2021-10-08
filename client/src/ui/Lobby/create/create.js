@@ -1,5 +1,6 @@
 import { h } from "hyperapp";
-// todo: if in game and websocket disconnects, reconnect
+import { delay } from "nanodelay";
+import debounce from "tiny-debounce";
 import Api from "../../../api/Api";
 import Custom from "./Custom";
 
@@ -59,6 +60,9 @@ export default (initial) => ({
 			toggleCreate();
 		};
 		const create = async (ev) => {
+			if (state.attemptingSubmit || !showCreate) {
+				return;
+			}
 			ev.stopPropagation();
 			const random = Math.random() >= 0.5 ? 1 : 0;
 			const gameOptions = processGameOptions(state.custom, selectedGameType);
@@ -74,11 +78,11 @@ export default (initial) => ({
 				if (newRoom) {
 					toggleCreate();
 				}
-				actions.endAttempt();
+				delay(300).then(actions.endAttempt);
 			} catch (err) {
 				console.log(err);
 				// if (!err.hidden) actions.showError(err);
-				actions.endAttempt();
+				delay(300).then(actions.endAttempt);
 			}
 		};
 		
@@ -204,7 +208,7 @@ function GameType({ type, selectGameType, selectedGameType }) {
 function Footer({ create, toggle }) {
 	return (
 		<div
-			onclick={create}
+			onclick={debounce(create, 400)}
 			class="modal-footer bg-gray-50 pb-3 px-6 flex flex-row-reverse "
 		>
 			<button
