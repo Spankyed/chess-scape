@@ -1,71 +1,87 @@
 import { h } from 'hyperapp';
 // import { cancel } from 'xstate/lib/actionTypes';
 
-export default initial => ({
-	state: { 
+export default (initial) => ({
+	state: {
 		menuOpen: false,
 		isPromoting: false,
-		resolver: null
+		playerColor: "white",
+		resolve: null,
+		reject: null,
 	},
-	actions: { 
-		openPieceSelect: resolver => _ => ({resolver, isPromoting: true}),
-		closePieceSelect: _ => _ => ({isPromoting: false}),
-		toggleMenu: (ev) => (state) => ({menuOpen: !state.menuOpen}),
+	actions: {
+		openPieceSelect:
+			({ color, resolve, reject }) =>
+			(_) => ({
+				playerColor: color,
+				resolve,
+				reject,
+				isPromoting: true,
+			}),
+		closePieceSelect:
+			(reject) =>
+			({ reject }) => {
+				reject && reject();
+				return { isPromoting: false };
+			},
+		toggleMenu: (ev) => (state) => ({ menuOpen: !state.menuOpen }),
 	},
-	view: (state, actions) => ({isLoading, gameOver, leaveRoom, toggleSidePanel, color}) => {
-		return (
-			// pointer-events-none controls-wrapper
-			<div
-				class={`controls-wrapper pointer-events-none ${
-					isLoading && "hidden"
-				}`}
-			>
-				<div class="controls">
-					{gameOver && <MatchMessage />}
-					{state.isPromoting && (
-						<PieceSelection
-							color={color}
-							resolver={state.resolver}
-							closePieceSelect={actions.closePieceSelect}
-						/>
-					)}
-					<div class="player-section">
-						<Player />
-						<Opponent />
-					</div>
-					{/* back button */}
-					<div class="btn-wrapper left">
-						<button onclick={leaveRoom} class="control-btn">
-							<img src="./assets/controls/back.svg"></img>
-						</button>
-					</div>
-					<div class="btn-wrapper right">
-						{/* menu */}
-						<div class="menu-wrapper">
-							{state.menuOpen && <Menu gameOver={gameOver} />}
-							<button
-								onclick={actions.toggleMenu}
-								class="control-btn first"
-							>
-								<img src="./assets/controls/menu.svg"></img>
+	view:
+		(state, actions) =>
+		({ isLoading, gameOver, leaveRoom, toggleSidePanel, color }) => {
+			return (
+				// pointer-events-none controls-wrapper
+				<div
+					class={`controls-wrapper pointer-events-none ${
+						isLoading && "hidden"
+					}`}
+				>
+					<div class="controls">
+						{gameOver && <MatchMessage />}
+						{state.isPromoting && (
+							<PieceSelection
+								color={state.playerColor}
+								resolve={state.resolve}
+								closePieceSelect={actions.closePieceSelect}
+							/>
+						)}
+						<div class="player-section">
+							<Player />
+							<Opponent />
+						</div>
+						{/* back button */}
+						<div class="btn-wrapper left">
+							<button onclick={leaveRoom} class="control-btn">
+								<img src="./assets/controls/back.svg"></img>
 							</button>
 						</div>
-						{
-							// todo: hide btn on mobile
-							/* sidePanel button */
-						}
-						<button
-							onclick={(_) => toggleSidePanel()}
-							class="control-btn"
-						>
-							<img src="./assets/controls/sidePanel.svg"></img>
-						</button>
+						<div class="btn-wrapper right">
+							{/* menu */}
+							<div class="menu-wrapper">
+								{state.menuOpen && <Menu gameOver={gameOver} />}
+								<button
+									onclick={actions.toggleMenu}
+									class="control-btn first"
+								>
+									<img src="./assets/controls/menu.svg"></img>
+								</button>
+							</div>
+							{
+								// todo: hide btn on mobile
+								/* sidePanel button */
+							}
+							<button
+								onclick={(_) => toggleSidePanel()}
+								class="control-btn"
+							>
+								<img src="./assets/controls/sidePanel.svg"></img>
+							</button>
+						</div>
 					</div>
 				</div>
-			</div>
-		);
-	}
-})
+			);
+		},
+});
 function Menu({gameOver}){
 	return (
 		// needs pointer events
@@ -149,10 +165,10 @@ function MatchMessage(){
 		</div>
 	)
 }
-function PieceSelection({resolver, closePieceSelect, color}){
-	color = color || 'b'
+function PieceSelection({resolve, closePieceSelect, color}){
+	color = color.charAt(0)
 	function select(piece){
-		if (resolver) resolver(piece)
+		if (resolve) resolve(piece);
 		closePieceSelect()
 	}
 	return (
@@ -160,7 +176,7 @@ function PieceSelection({resolver, closePieceSelect, color}){
 			<h2 class='w-full mx-auto text-gray-600'>Select a piece</h2>
 			<div onclick={_=> select('q')} class="piece w-1/2"><img src={`./assets/controls/pieces/queen_${color}.png`}/></div>
 			<div onclick={_=> select('n')} class="piece w-1/2"><img src={`./assets/controls/pieces/knight_${color}.png`}/></div>
-			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_w.png`}/></div>
+			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_${color}.png`}/></div>
 			<div onclick={_=> select('b')} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.png`}/></div>
 			{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
 			<button onclick={_=> select(null)}>Cancel</button>

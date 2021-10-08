@@ -74,7 +74,14 @@ export default class Game {
         ).length > 0
     }
     promptPieceSelect() {
-        return new Promise(this.Scene.uiActions.controls.openPieceSelect)
+        const color = this.playerColor;
+        return new Promise((resolve, reject) =>
+			this.Scene.uiActions.controls.openPieceSelect({
+				color,
+				resolve,
+				reject,
+			})
+		);
     }
 
     // getCapturePieces(color) {
