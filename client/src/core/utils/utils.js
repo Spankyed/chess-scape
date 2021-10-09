@@ -18,13 +18,13 @@ const FromResize = (element) => {
 	return resize$.pipe(debounceTime(1));
 }
 
-function SerializeBoard(squares, pieces, captured){ // returns a boardMap to be deserialized into changes
+function SerializeBoard(squares, pieces, captured) { // returns a boardMap to be deserialized into changes
 	return {
-		squares: Object.entries(squares).reduce((sqs, [sqName, { piece } ]) => (
+		squares: Object.entries(squares).reduce((sqs, [sqName, { piece }]) => (
 			[...sqs, { sqName, piece }]
 		), []),
-		pieces: Object.entries(pieces()).reduce((pcs, [id, piece ]) => (
-			{ ...pcs,  [id]:{ isEnabled: piece?.isEnabled()} } 
+		pieces: Object.entries(pieces()).reduce((pcs, [id, piece]) => (
+			{ ...pcs, [id]: { isEnabled: piece?.isEnabled() } }
 		), {}),
 		captured
 	}
@@ -37,16 +37,41 @@ function DeserializeBoard(boardMap, squares){ // returns list of square changes 
 		), [])
 	return {
 		sqChanges: [
-			...resetCaptured(squares), // add changes to reset captured(ghost) sqs; is overwritten by new boardMap
-			...boardMap.squares.reduce((changes, { sqName, piece }) => (
+			...resetCaptured(squares), // add changes that reset captured(ghost) sqs; gets overwritten below
+			...boardMap.squares.reduce((changes, { sqName, piece }) => ( // create a change for every square
 				[ ...changes, { type: 'squares', name: sqName, piece} ]
 			), [])
 		],
-		piecesMap: boardMap.pieces,
+		piecesMap: boardMap.pieces, // todo spawn promotion pieces and add to list
 		captured: boardMap.captured
 	}
 }
 
+
+function mapBoardJSON(boardMap) {
+	const { squares, pieces, captured } = boardMap;
+	const squaresJSON = squares.map(({ sqName, piece }) => ({
+		sqName,
+		piece: piece ? piece.id : null,
+	}));
+	return {
+		pieces,
+		captured,
+		squaresJSON,
+	};
+}
+function remapBoardJSON(boardMap, pieceMeshes) {
+	const { squaresJSON, pieces, captured } = boardMap;
+	const squares = squaresJSON.map(({ sqName, piece }) => ({
+		sqName,
+		piece: piece ? pieceMeshes[piece] : null,
+	}));
+	return {
+		pieces,
+		captured,
+		squares,
+	};
+}
 
 function ClonePiece({type, color, pieces}){
 	// let origPiecesCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1} // todo allow recycle prev cloned piece
@@ -62,8 +87,9 @@ function ClonePiece({type, color, pieces}){
 export {
 	SerializeBoard,
 	DeserializeBoard,
+	remapBoardJSON,
 	ClonePiece,
-	FromResize
+	FromResize,
 };
 
 

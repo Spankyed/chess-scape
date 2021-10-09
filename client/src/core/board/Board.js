@@ -1,7 +1,9 @@
 
+import { delay } from "nanodelay";
 import { ClonePiece } from '../utils/utils'; 
 import { setupMoveMachine } from './moveMachines';
-import { delay } from "nanodelay";
+import initial from './state';
+import { remapBoardJSON, DeserializeBoard  } from '../utils/utils'; 
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
@@ -255,10 +257,20 @@ export default function Board(current, scene, canvas){
             canvas.removeEventListener("pointerup", onPointerUp);
         }
     };
-    return {
-        mapPiecesToSquares,
-        moveService
+    function resetBoard(){
+        const { send, state  } = moveService;
+        let { squares } = state.context;
+        let boardMap = remapBoardJSON(initial, pieces())
+        send({
+			type: "SET_BOARD",
+			value: { ...DeserializeBoard(boardMap, squares) },
+		});
     }
+    return {
+		mapPiecesToSquares,
+		moveService,
+		resetBoard,
+	};
 }
 
 function createBoard(scene){ //!

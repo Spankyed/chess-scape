@@ -442,6 +442,7 @@ function positionPieces(pieces) {
     })
 }
 function togglePieces(pieces) {
+	 // todo spawn promotion pieces and add to list
     return (_, { value }) => {
         Object.entries(pieces()).forEach( ([id, piece]) =>{
             if (!value.piecesMap[id]) {
