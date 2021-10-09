@@ -84,6 +84,7 @@ $controls-color: #464341;
           }
 
           .menu-item {
+            pointer-events: all;
             color: rgba(255, 255, 255, 1);
             display: flex;
             align-items: center;
@@ -95,6 +96,7 @@ $controls-color: #464341;
             font-size: 0.875rem/* 14px */;
             line-height: 1.25rem/* 20px */;
             &:hover {
+              cursor: pointer;
               background-color: #525357;
             }
             .menu-icon {

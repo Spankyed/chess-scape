@@ -77,7 +77,7 @@ async function updateRoom(room, clientID){
 				primaryKey: "ID",
 				primaryKeyValue: room.ID,
 				updates: {
-					[`players.${joinedColor}`]: clientID,
+					[`players.${joinedColor}`]: {clientID, committed: false},
 				},
 			})
 		]);

@@ -2,30 +2,40 @@ import { h } from 'hyperapp';
 import { delay } from "nanodelay";
 import Scene from '../../core/Scene';
 import Api from "../../api/Api"; 
+import { draw } from "./controls/prompts.js";
 
 // todo: if in game and websocket disconnects, reconnect
 // todo: make sure scene & resizeObserver get disposed when component unmount
 export default (initial) => ({
 	state: {
 		player: false,
-		playerColor: 'white',
+		playerColor: "white",
 		ready: false,
 		// initialized: false,
 		matchStarted: false,
+		committed: false,
 	},
 	actions: {
-		setPlayer: ({ player, playerColor }) => (state) => {
-			Scene.manager.animateCameraIntoPosition(playerColor || state.playerColor);
-			Scene.game().playerColor = playerColor;
-			return ({ player, playerColor });
-		},
-		ready: () => ({ playerColor }) => {
-			Api.ready(playerColor);
-			return { ready: true };
-		},
-		startMatch: () =>
+		setPlayer:
+			({ player, playerColor }) =>
+			(state) => {
+				Scene.manager.animateCameraIntoPosition(
+					playerColor || state.playerColor
+				);
+				Scene.game().playerColor = playerColor;
+				return { player, playerColor };
+			},
+		ready:
+			() =>
+			({ playerColor }) => {
+				Api.ready(playerColor);
+				return { ready: true };
+			},
+		startMatch:
+			() =>
 			({ player, playerColor }) => {
-				if (player) // ! only transition moveMachine if is player
+				if (player)
+					// ! only transition moveMachine if is player
 					Scene.board().moveService.send({
 						type: "SET_PLAYER",
 						value: {
@@ -35,36 +45,38 @@ export default (initial) => ({
 					});
 				return { matchStarted: true };
 			},
+		finish: () => () => ({ finished: true }),
+		commit: () => () => ({ committed: true }),
 	},
 	view:
 		(state, actions) =>
 		({ roomID, roomState, roomActions, clockActions }) => {
-			const onMove = ({move, clientID, gameOver, info}) => {
+			const onMove = ({ move, clientID, gameOver, info }) => {
 				// todo retrieve time left on each players clock &..
 				// todo retrieve time msg sent and calc diff time now &...
 				// todo adjust time left from time diff
-				if (clientID != Api.getClientID()) {
+
+				if (clientID != Api.getClientID() && !roomState.gameOver) {
 					Scene.game().handleOpponentMove(move);
-				} 
-				if (gameOver && info){
+				} else if (!state.committed) {
+					actions.commit();
+				}
+				if (gameOver && info) {
 					// Scene.resetGame()
 					// this.game_over = true
 					// checkmate|abort|abandon|resign|draw|stalemate|time|3foldrep
 					roomActions.endGame(info);
-				} 
-			}
-			const onAbort = ({gameOver})=>{
-			}
-			const onAbandon = ({gameOver})=>{
-			}
-			const onResign = ({gameOver})=>{
-			}
-			const onDrawOffer = ({})=>{
-			}
-			const onDraw = ({gameOver})=>{
-			}
-			const onSync = ({board})=>{
-			}
+				}
+			};
+			const onEnd = (info) => {
+				roomActions.endGame(info);
+			};
+			// const onEnd = ({ info }) => { roomActions.endGame({info}) };
+			const onDrawOffer = ({ to }) => {
+				if (Api.getClientID() == to) {
+					roomActions.alert.show(draw);
+				}
+			};
 
 			if (state.player && !state.ready && Api.isConnected()) {
 				// todo ready up player after camera animation
@@ -74,16 +86,20 @@ export default (initial) => ({
 
 			Api.setMessageHandlers({
 				start: () => {
-					actions.startMatch()
-					delay(300).then(_ => roomActions.alert.close("start"))
+					actions.startMatch();
+					delay(300).then((_) => roomActions.alert.close("start"));
 				},
 				move: onMove,
+				end: onEnd,
+				offerDraw: onDrawOffer,
 			});
 
 			const createScene = (canvas) => {
 				// window.location.hash = `#${roomID}`; // todo use hash in lobby to redirect to room
 				// Scene.onReady = () => {};
-				delay(300).then(_ => Scene.setupGame(canvas, roomActions, roomID))
+				delay(300).then((_) =>
+					Scene.setupGame(canvas, roomActions, roomID)
+				);
 				canvas.focus();
 			};
 

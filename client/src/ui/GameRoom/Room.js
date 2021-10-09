@@ -88,6 +88,7 @@ export default (initial) => ({
 				cleanupHandlers();
 				alert.closeAll();
 				// ! todo update DB client.room to 'lobby' otherwise wont receive join msgs
+				// todo reset sidepanel state
 				return {
 					isHost: false,
 					isLoading: true,
@@ -100,6 +101,7 @@ export default (initial) => ({
 						playerColor: null,
 						ready: false,
 						matchStarted: false,
+						committed: false,
 					},
 				};
 			},
@@ -161,11 +163,10 @@ export default (initial) => ({
 					<div class="relative flex-grow">
 						<ControlsView
 							roomID={roomID}
-							isLoading={state.isLoading}
-							gameOver={state.gameOver}
-							matchInfo={state.matchInfo}
 							leaveRoom={leave}
+							roomState={state}
 							toggleSidePanel={actions.toggleSidePanel}
+							alert={actions.alert}
 						/>
 						<GameView
 							{...{

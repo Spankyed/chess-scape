@@ -117,6 +117,14 @@ function sendChat(text) {
 	sendMessage({ method: "chat", text });
 }
 
+function offerDraw() {
+	sendMessage({ method: "offerDraw" });
+}
+
+function end(endMethod) {
+	sendMessage({ method: "end", endMethod });
+}
+
 // function shareMusic(rawData){ connection.send(rawData) }
 // function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
 function shareMusic(songData, rawData) {
@@ -272,6 +280,8 @@ export default {
 	joinRoom,
 	ready,
 	leaveRoom,
+	end,
+	offerDraw,
 	sendMove,
 	sendChat,
 	shareVideo,

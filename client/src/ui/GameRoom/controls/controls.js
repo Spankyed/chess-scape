@@ -1,6 +1,6 @@
 import { h } from 'hyperapp';
+import prompts from './prompts.js';
 // import { cancel } from 'xstate/lib/actionTypes';
-
 export default (initial) => ({
 	state: {
 		menuOpen: false,
@@ -28,7 +28,16 @@ export default (initial) => ({
 	},
 	view:
 		(state, actions) =>
-		({ isLoading, gameOver, matchInfo, leaveRoom, toggleSidePanel }) => {
+		({ leaveRoom, toggleSidePanel, roomState, alert}) => {
+			const { isLoading, gameOver, matchInfo, game } = roomState;
+
+			const leave = () => {
+				if (gameOver) leaveRoom();
+				else {
+					const method = !game.committed ? "abort" : "abandon";
+					alert.show(prompts[method](leaveRoom));
+				}
+			};
 			return (
 				// pointer-events-none controls-wrapper
 				<div
@@ -37,7 +46,7 @@ export default (initial) => ({
 					}`}
 				>
 					<div class="controls">
-						{gameOver && <MatchMessage matchInfo={matchInfo}/>}
+						{gameOver && <MatchMessage matchInfo={matchInfo} />}
 						{state.isPromoting && (
 							<PieceSelection
 								color={state.playerColor}
@@ -51,14 +60,19 @@ export default (initial) => ({
 						</div>
 						{/* back button */}
 						<div class="btn-wrapper left">
-							<button onclick={leaveRoom} class="control-btn">
+							<button onclick={leave} class="control-btn">
 								<img src="./assets/controls/back.svg"></img>
 							</button>
 						</div>
 						<div class="btn-wrapper right">
 							{/* menu */}
 							<div class="menu-wrapper">
-								{state.menuOpen && <Menu gameOver={gameOver} />}
+								{state.menuOpen && (
+									<Menu
+										toggleMenu={actions.toggleMenu}
+										{...{ game, alert, gameOver }}
+									/>
+								)}
 								<button
 									onclick={actions.toggleMenu}
 									class="control-btn first"
@@ -82,42 +96,114 @@ export default (initial) => ({
 			);
 		},
 });
-function Menu({gameOver}){
+function Menu({ alert, game, gameOver, toggleMenu }) {
+
+	const openPanel = (tab) => () => {
+		toggleMenu();
+		toggleSidePanel(tab);
+	};
+	const prompt = (method) => () => {
+		toggleMenu();
+		alert.show(prompts[method]);
+	};
+
 	return (
 		// needs pointer events
-		<div class="menu" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-			<div class="menu-item" role="menu-item" id="menu-item-0" tabindex="-1">
-				<div class='menu-icon'><img src='./assets/controls/menu/resign.svg'/></div>
-				<span>Resign</span>
-			</div>
-			{ true && // gameOver  && 
-				<div class="menu-item" role="menu-item" id="menu-item-0" tabindex="-1">
-					<div class='menu-icon'><img src='./assets/controls/menu/rematch.svg'/></div>
+		<div
+			class="menu pointer-events-auto"
+			role="menu"
+			aria-orientation="vertical"
+			aria-labelledby="menu-button"
+			tabindex="-1"
+		>
+			{game.committed && (
+				<div
+					onclick={prompt("resign")}
+					class="menu-item"
+					role="menu-item"
+					id="menu-item-0"
+					tabindex="-1"
+				>
+					<div class="menu-icon">
+						<img src="./assets/controls/menu/resign.svg" />
+					</div>
+					<span>Resign</span>
+				</div>
+			)}
+			{/* { true && */}
+			{gameOver && (
+				<div
+					class="menu-item"
+					role="menu-item"
+					id="menu-item-0"
+					tabindex="-1"
+				>
+					<div class="menu-icon">
+						<img src="./assets/controls/menu/rematch.svg" />
+					</div>
 					<span>Rematch</span>
 				</div>
-			}
-			<div class="menu-item" role="menu-item" id="menu-item-2" tabindex="-1">
-				<div class='menu-icon'><img src='./assets/controls/menu/draw.svg'/></div>
+			)}
+			<div
+				onclick={prompt("draw")}
+				class="menu-item"
+				role="menu-item"
+				id="menu-item-2"
+				tabindex="-1"
+			>
+				<div class="menu-icon">
+					<img src="./assets/controls/menu/draw.svg" />
+				</div>
 				<span>Offer Draw</span>
 			</div>
-			<div class="menu-item" role="menu-item" id="menu-item-2" tabindex="-1">
-				<div class='menu-icon'><img src='./assets/controls/menu/chat.svg'/></div>
+			<div
+				class="menu-item"
+				role="menu-item"
+				id="menu-item-2"
+				tabindex="-1"
+			>
+				<div class="menu-icon">
+					<img src="./assets/controls/menu/chat.svg" />
+				</div>
 				<span>Chat</span>
 			</div>
-			<div class="menu-item" role="menu-item" id="menu-item-2" tabindex="-1">
-				<div class='menu-icon'><img src='./assets/controls/menu/review.svg'/></div>
+			<div
+				class="menu-item"
+				role="menu-item"
+				id="menu-item-2"
+				tabindex="-1"
+			>
+				<div class="menu-icon">
+					<img src="./assets/controls/menu/review.svg" />
+				</div>
 				<span>Review Moves</span>
 			</div>
-			<div onclick={_=> toggleSidePanel("media")} class="menu-item" role="menu-item" id="menu-item-4" tabindex="-1">
-				<div class='menu-icon'><img src='./assets/controls/menu/media.svg'/></div>
+			<div
+				onclick={openPanel("media")}
+				class="menu-item"
+				role="menu-item"
+				id="menu-item-4"
+				tabindex="-1"
+			>
+				<div class="menu-icon">
+					<img src="./assets/controls/menu/media.svg" />
+				</div>
 				<span>Play Media</span>
 			</div>
-			<div onclick={_=> toggleSidePanel("media")} class="menu-item" role="menu-item" id="menu-item-4" tabindex="-1">
-				<div class='menu-icon'><img src='./assets/controls/menu/rotate-camera.svg'/></div>
+			<div
+				onclick={openPanel("media")}
+				class="menu-item"
+				role="menu-item"
+				id="menu-item-4"
+				tabindex="-1"
+			>
+				<div class="menu-icon">
+					<img src="./assets/controls/menu/rotate-camera.svg" />
+				</div>
 				<span>Flip Camera</span>
 			</div>
 		</div>
-	)
+	);
 }
 function Player(){
 	let defaultSrc = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
@@ -152,22 +238,27 @@ function Opponent(){
 	)
 }
 function MatchMessage({ matchInfo }) {
+	const {endMethod, winningColor, mated} = matchInfo
 	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
+	const headers = {
+		abort: 'Aborted',
+		abandon: 'Abandoned',
+		resign: 'Resigned',
+		draw: 'Draw',
+	};
+	const header = mated ? 'Checkmate' : headers[endMethod]
+	const victorMessage = `${capitalize(winningColor)} Is Victorious` 
+	const message = endMethod == "draw" || endMethod == "abort" ? "There Is No Winner" : victorMessage;
 	return (
 		<div class="message-wrapper">
-			<div class={`match-message ${matchInfo.color}`}>
+			<div class={`match-message ${winningColor}`}>
 				<div class="messages">
 					<div id="topic-1" class="message-topic">
-						MATCH
+						{header}
 					</div>
 					<div id="message-1" class="message-content">
-						{matchInfo.win ? (
-							<span>
-								{capitalize(matchInfo.color)} is Victorious
-							</span>
-						) : (
-							<span>There is no winner</span>
-						)}
+						<span>{message}</span>
 					</div>
 				</div>
 			</div>
@@ -192,13 +283,3 @@ function PieceSelection({resolve, closePieceSelect, color}){
 		</div>
 	)
 }
-
-    // abandon(){
-    //     Api.sendMove('abandon', this.roomID)
-    // }
-    // resign(){
-    //     Api.sendMove('resign', this.roomID)
-    // }
-    // offerDraw(){
-    //     Api.sendMove('offer_draw', this.roomID)
-    // }

@@ -35,11 +35,13 @@ const handler = async (event) => {
 		const match = {
 			ID: room.ID,
 			host: room.host,
-			players: { [selectedColor]: room.host },
+			players: {
+				[selectedColor]: { clientID: room.host, committed: false },
+			},
 			lastMove: {
 				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 			},
-			colorToMove: 'white',
+			colorToMove: "white",
 			created: room.created,
 			started: false,
 		};

@@ -18,11 +18,17 @@ const engine = new Chess();
 module.exports = async function ({ clientID, roomID, move }) {
 	const match = await Dynamo.get(roomID, matchesTable);
 
-	if (!match) return Responses._400({message:  'Match not found'});
-
+	if (!match) return Responses._400({ message: 'Match not found' });
+	
+	if (match.finished) {
+		return Responses._400({ message: "Match already ended" }); // prob should msg client to show end ui
+	}
+	
 	const { players, started, lastMove, colorToMove } = match;
 
-	const isPlayersTurn = players[colorToMove] === clientID
+	const player = players[colorToMove];
+
+	const isPlayersTurn = player.clientID === clientID;
 
 	if (!isPlayersTurn || !started) {
 		// await syncPlayer(clientID, match.moves)
@@ -39,11 +45,17 @@ module.exports = async function ({ clientID, roomID, move }) {
 		// todo when game over store match in completeMatchesTable
 		const gameOver = engine.game_over();
 		const mated = gameOver && engine.in_checkmate();
-		const win = mated;
-		const way = gameOver && mated ? 'checkmate' : gameOver && 'draw'
-		const info = gameOver && { clientID, color: colorToMove, way, win };
+		const endMethod = gameOver && mated ? 'checkmate' : gameOver && 'draw'
+		const info = gameOver && {
+			clientID,
+			winningColor: colorToMove,
+			endMethod,
+			mated,
+		};
 		// todo if time controlled game, get stepFN task token and send to machine to end prev exec,
 		// todo then exec new state machine
+		
+		const commit = !player.committed
 		await Promise.all([
 			Dynamo.update({
 				TableName: matchesTable,
@@ -52,6 +64,11 @@ module.exports = async function ({ clientID, roomID, move }) {
 				updates: {
 					"lastMove.fen": engine.fen(),
 					colorToMove: !gameOver && nextColor(colorToMove),
+					...(
+						commit ?
+						{[`players.${colorToMove}.committed`]: true}
+						: {}
+					)
 				},
 			}),
 			sendMessageToRoom(roomID, {
@@ -62,9 +79,9 @@ module.exports = async function ({ clientID, roomID, move }) {
 				info,
 			}),
 		]);
-	}
 
-	console.log(`Player[${clientID}][${colorToMove}] moved`, { move, info }); // todo add playerColor to log
+		console.log(`Player[${clientID}][${colorToMove}] moved`, { move, info }); // todo add playerColor to log
+	}
 
 	return Responses._200({});
 };
