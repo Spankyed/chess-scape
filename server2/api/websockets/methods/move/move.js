@@ -1,10 +1,11 @@
-const Responses = require("../../common/HTTP_Responses");
-const Dynamo = require("../../common/Dynamo");
+const Responses = require("../../../common/HTTP_Responses");
+const Dynamo = require("../../../common/Dynamo");
+const update = require("./update");
 // const { withHooks, hooksWithSchema } = require("../../common/hooks");
 const {
 	sendMessageToRoom,
 	// sendMessageToRoomExcept,
-} = require("../../common/websocket/message");
+} = require("../../../common/websocket/message");
 const { Chess } = require("chess.js");
 
 const matchesTable = process.env.matchesTableName;
@@ -54,7 +55,7 @@ module.exports = async function ({ clientID, roomID, move }) {
 		};
 		// todo if time controlled game, get stepFN task token and send to machine to end prev exec,
 		// todo then exec new state machine
-		
+		const changes = update(move, match);
 		const commit = !player.committed
 		await Promise.all([
 			Dynamo.update({
@@ -63,13 +64,19 @@ module.exports = async function ({ clientID, roomID, move }) {
 				primaryKeyValue: roomID,
 				updates: {
 					"lastMove.fen": engine.fen(),
+					...changes,
 					colorToMove: !gameOver && nextColor(colorToMove),
-					...(
-						commit ?
-						{[`players.${colorToMove}.committed`]: true}
-						: {}
-					)
+					...(commit
+						? { [`players.${colorToMove}.committed`]: true }
+						: {}),
 				},
+			}),
+			Dynamo.append({
+				TableName: matchesTable,
+				primaryKey: "ID",
+				primaryKeyValue: roomID,
+				data: { moves: [changes] },
+				// select: "clients",
 			}),
 			sendMessageToRoom(roomID, {
 				method: "move",

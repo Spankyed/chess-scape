@@ -3,6 +3,7 @@ const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
 const nanoid = require("nanoid/async");
 const { sendMessageToLobby } = require("../common/websocket/message");
+const State = require("../websockets/methods/move/state");
 
 const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
@@ -27,7 +28,6 @@ const handler = async (event) => {
 	};
 	
 	const newRoom = await Dynamo.write(room, roomsTable);
-
 	if (!newRoom) {
 		console.log("Failed to create room");
 		return Responses._400({ message: "Failed to create room" });
@@ -44,6 +44,8 @@ const handler = async (event) => {
 			colorToMove: "white",
 			created: room.created,
 			started: false,
+			state,
+			moves: []
 		};
 		await Promise.all([
 			sendMessageToLobby({ method: "create", newRoom }),
