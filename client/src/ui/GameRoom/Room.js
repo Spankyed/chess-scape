@@ -13,23 +13,26 @@ const alert = Alert()
 
 // todo: alert users & handle reconnect if player disconnects in game,  
 // todo: when user leaves game remove clientID from game.clients 
+
+const initialState = {
+	room: null,
+	game: game.state,
+	alert: alert.state,
+	controls: controls.state,
+	sidePanel: sidePanel.state,
+	sidePanelOpen: false,
+	isHost: false,
+	isLoading: true,
+	isFetching: false,
+	initialized: false,
+	// matchStarted: false,
+	gameOver: false,
+	matchInfo: null,
+	// playerColor: null,
+}
+
 export default (initial) => ({
-	state: {
-		room: null,
-		game: game.state,
-		alert: alert.state,
-		controls: controls.state,
-		sidePanel: sidePanel.state,
-		sidePanelOpen: false,
-		isHost: false,
-		isLoading: true,
-		isFetching: false,
-		initialized: false,
-		// matchStarted: false,
-		gameOver: false,
-		matchInfo: null,
-		// playerColor: null,
-	},
+	state: initialState,
 	actions: {
 		game: game.actions,
 		controls: controls.actions,
@@ -89,21 +92,7 @@ export default (initial) => ({
 				alert.closeAll();
 				// ! todo update DB client.room to 'lobby' otherwise wont receive join msgs
 				// todo reset sidepanel state
-				return {
-					isHost: false,
-					isLoading: true,
-					isFetching: false,
-					initialized: false,
-					matchStarted: false,
-					gameOver: false,
-					game: {
-						player: false,
-						playerColor: null,
-						ready: false,
-						matchStarted: false,
-						committed: false,
-					},
-				};
+				return initialState;
 			},
 	},
 	view:
