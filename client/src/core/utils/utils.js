@@ -44,17 +44,29 @@ function DeserializeBoard(boardMap, squares, pieces) {
 	const resetCaptured = Object.entries(squares)
 		.filter(([name]) => name.startsWith("cp"))
 		.map(([name]) => ({ type: "squares", name, piece: null }));
-	// if (!pieces()[pieceId]){ //  clone/add promotion pieces that dont exist
-	// 	let [type, color] = pieceId.split('_')
-	// 	ClonePiece({type, color, pieces})
-	// }
+	
+	// Object.entries(boardMap.pieces).forEach(([pieceId]) => {
+	// 	//  clone/add promotion pieces that dont exist
+	// 	if (!pieces()[pieceId]) {
+	// 		let [type, color] = pieceId.split("_");
+	// 		console.log(ClonePiece({ type, color, pieces }));
+	// 	}
+	// });
+
 	return {
 		sqChanges: [
-			...resetCaptured, // add changes that reset captured(ghost) sqs; gets overwritten below
+			...resetCaptured,
 			...Object.entries(boardMap.squares).map(([name, pieceId]) => ({
 				type: "squares",
 				name,
 				piece: pieces()[pieceId],
+				// ...(!squares[name] && name.startsWith("cp")
+				// 	? {
+				// 			coords: createCaptureSq(
+				// 				...name.split("_").slice(1)
+				// 			).coords,
+				// 	  }
+				// 	: {}),
 			})),
 		],
 		piecesMap: boardMap.pieces,
@@ -62,32 +74,46 @@ function DeserializeBoard(boardMap, squares, pieces) {
 	};
 }
 
-// function MapChangesToStates(moves) {
-// 	let [initial, ...movesStates] = moves.reduce(
-// 		(states, { pieces, squares, captured, fen }, idx) => {
-// 			let lastState = states[idx - 1].board;
-// 			return [
-// 				...states,
-// 				{
-// 					board: {
-// 						captured,
-// 						pieces: {
-// 							...lastState.pieces,
-// 							pieces,
-// 						},
-// 						squares: {
-// 							...lastState.squares,
-// 							squares,
-// 						},
-// 					},
-// 					fen,
-// 				},
-// 			];
-// 		},
-// 		initialState
-// 	);
-// 	return movesStates;
-// }
+function createCaptureSq(count, color) {
+	--count;
+	let columnsCoords = [10, 11.5, 13]; // start columns horizontal: 2 units from board(8x8) & spread 1.5 units apart
+	let column = (count / 8) | 0;
+	let offsetMultiplier = count % 8;
+	let x = columnsCoords[column];
+	let z = -6.5 + 1.3 * offsetMultiplier; // start rows vertical: -6.5 and move each piece up 1.3 units
+	let coords = color == "white" ? [-1 * x, 0, -1 * z] : [x, 0, z]; // invert coords for whites pieces
+	return { coords: new BABYLON.Vector3(...coords), newCount: ++count };
+};
+
+function moveChangesToBoardMaps(moves) {
+	let [initial, ...movesStates] = moves.reduce(
+		(states, { pieces, squares, captured, fen }, idx) => {
+			let lastState = states[idx].board;
+			return [
+				...states,
+				{
+					board: {
+						captured: {
+							...lastState.captured,
+							...captured,
+						},
+						pieces: {
+							...lastState.pieces,
+							...pieces,
+						},
+						squares: {
+							...lastState.squares,
+							...squares,
+						},
+					},
+					fen,
+				},
+			];
+		},
+		[{board: initialState}]
+	);
+	return movesStates;
+}
 
 function ClonePiece({type, color, pieces}){
 	// let origPiecesCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1} // todo allow recycle prev cloned piece
@@ -104,8 +130,9 @@ function ClonePiece({type, color, pieces}){
 export {
 	SerializeBoard,
 	DeserializeBoard,
-	// MapChangesToStates,
+	moveChangesToBoardMaps,
 	ClonePiece,
+	createCaptureSq,
 	FromResize,
 };
 

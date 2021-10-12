@@ -81,7 +81,7 @@ module.exports = async function ({ clientID, roomID, move }, connection) {
 							...changes.move,
 							piece: move.piece,
 							san: move.san,
-							color: move.san,
+							color: move.color,
 							fen: engine.fen(),
 						},
 					],

@@ -306,23 +306,27 @@ function setupMoveMachine(current, game, squares, pieces){
 		},
 		// ___________________________________________________________________________________________________________________
 		on: {
-		// 	SYNC: {
-		// 		actions: [
-		// 			send((_,{value}) => ({
-		// 				type: "SET_BOARD",
-		// 				value: {
-		// 					...DeserializeBoard(
-		// 						moves[value.moves.length - 1]?.board,
-		// 						squares,
-		// 						pieces
-		// 					),
-		// 				},
-		// 			})),
-		// 			assign({
-		// 				moves: (_, { value }) => value.moves,
-		// 			}),
-		// 		],
-		// 	},
+			SYNC: {
+				actions: [
+					send((_, { value }) => {
+						console.log("value: ", value);
+						return {
+							type: "SET_BOARD",
+							value: {
+								...DeserializeBoard(
+									value.moves[value.moves.length - 1]?.board,
+									squares,
+									pieces
+								),
+							},
+						};
+					}),
+					assign({
+						moves: (_, { value }) => value.moves,
+					}),
+					(_, { value }) => game().engine.load(value.moves[value.moves.length - 1]?.fen),
+				],
+			},
 			SET_PLAYER: {
 				actions: [
 					assign({
@@ -336,11 +340,7 @@ function setupMoveMachine(current, game, squares, pieces){
 				actions: send(({ squares }) => ({
 					type: "SET_BOARD",
 					value: {
-						...DeserializeBoard(
-							initialState,
-							squares,
-							pieces
-						),
+						...DeserializeBoard(initialState, squares, pieces),
 					},
 				})),
 			},
@@ -452,17 +452,21 @@ function setupMoveMachine(current, game, squares, pieces){
 }
 function setupBoard(pieces){
     return {
-        actions: [
-            togglePieces(pieces),
-            assign({
-                squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges   
-                captured: (_,{value}) => value.captured
-            }), 
-            ({squares}) => positionPieces(Object.entries(squares).map(([_,{ piece, coords }]) => ({
-                piece, newPos: coords
-            })))
-        ]
-    }
+		actions: [
+			togglePieces(pieces),
+			assign({
+				squares: updateSquares(), // updateSquares() defaults to ev.val.sqChanges
+				captured: (_, { value }) => value.captured,
+			}),
+			({ squares }) =>
+				positionPieces(
+					Object.entries(squares).map(([_, { piece, coords }]) => ({
+						piece,
+						newPos: coords,
+					}))
+				),
+		],
+	};
 }
 function positionPieces(pieces) {
     if (!(pieces instanceof Array)) pieces = [pieces]

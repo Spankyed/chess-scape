@@ -17,19 +17,18 @@ let clientID = client.clientID || null,
 	// Message Received handlers
 	handlers = {
 		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
-		idle: () => {},
 		create: () => {},
 		delete: () => {},
 		join: () => {},
 		start: () => {},
-		// join: msg => roomID ??= msg.roomID, // already setting roomID on send instead
+		sync: () => {},
 		move: () => {},
 		chat: () => {},
 		share: (msg) => handlers[msg.type]?.(msg),
 		video: () => {},
 		music: () => {},
 		unauthorize: () => {},
-		idleReconnect: () => {}
+		idleReconnect: () => {},
 	};
 
 function setMessageHandlers(newHandlers) {
@@ -98,6 +97,10 @@ function closeConnection() {
 function joinRoom(id) {
 	roomID ??= id;
 	sendMessage({ method: "join", roomID });
+}
+
+function sync() {
+	sendMessage({ method: "sync" });
 }
 
 function ready(color) {
@@ -278,6 +281,7 @@ export default {
 	createRoom,
 	deleteRoom,
 	joinRoom,
+	sync,
 	ready,
 	leaveRoom,
 	end,

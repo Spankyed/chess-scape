@@ -68,6 +68,8 @@ export default (initial) => ({
 				} else {
 					actions.alert.show(alert.startAlert);
 				}
+			} else {
+				Api.sync()
 			}
 
 			actions.game.setPlayer({

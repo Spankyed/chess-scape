@@ -51,6 +51,17 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ roomID, roomState, roomActions, clockActions }) => {
+			const onSync = ({ moves }) => {
+				Scene.board().syncBoard(moves);
+				moves.forEach((move, idx) =>
+					roomActions.sidePanel.moves.addMove({
+						piece: move.piece,
+						san: move.san,
+						color: move.color,
+						id: idx,
+					})
+				);
+			};
 			const onMove = ({ move, clientID, gameOver, info }) => {
 				// todo retrieve time left on each players clock &..
 				// todo retrieve time msg sent and calc diff time now &...
@@ -67,6 +78,10 @@ export default (initial) => ({
 					// checkmate|abort|abandon|resign|draw|stalemate|time|3foldrep
 					roomActions.endGame(info);
 				}
+			};
+			const onStart = () => {
+				actions.startMatch();
+				delay(300).then((_) => roomActions.alert.close("start"));
 			};
 			const onEnd = (info) => {
 				roomActions.endGame(info);
@@ -85,10 +100,8 @@ export default (initial) => ({
 			}
 
 			Api.setMessageHandlers({
-				start: () => {
-					actions.startMatch();
-					delay(300).then((_) => roomActions.alert.close("start"));
-				},
+				sync: onSync,
+				start: onStart,
 				move: onMove,
 				end: onEnd,
 				offerDraw: onDrawOffer,

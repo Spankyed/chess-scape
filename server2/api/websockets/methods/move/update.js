@@ -21,7 +21,9 @@ module.exports = function update(move, match) {
 	};
 
 	const extend = (change) => {
-		changes = Object.entries(change).reduce(
+		changes = {
+			...changes,
+			...Object.entries(change).reduce(
 			(all, [target, values]) => ({
 				...all,
 				[target]: {
@@ -30,8 +32,8 @@ module.exports = function update(move, match) {
 				},
 			}),
 			{}
-		);
-	};
+		)
+	}};
 
 	if (flags) {
 		// p + c is only combination possible

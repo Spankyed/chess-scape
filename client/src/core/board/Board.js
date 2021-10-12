@@ -2,9 +2,9 @@
 import { delay } from "nanodelay";
 import { ClonePiece } from '../utils/utils'; 
 import { setupMoveMachine } from './moveMachines';
-import { fromEvent } from "rxjs";
-import { throttleTime } from "rxjs/operators";
-// import { MapChangesToStates } from "../utils/utils"; 
+// import { fromEvent } from "rxjs";
+// import { throttleTime } from "rxjs/operators";
+import { moveChangesToBoardMaps, createCaptureSq } from "../utils/utils"; 
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
@@ -161,22 +161,15 @@ export default function Board(current, scene, canvas){
     //================================================================================
     function positionCapturedPiece(piece, state){
         let { captured } = state.context
-        let pieceColor = getColor(piece)
-        const processCapturedPiece = (pieceColor) =>  { //!
-            let columnsCoords = [10, 11.5, 13]  // start columns horizontal: 2 units from board(8x8) & spread 1.5 units apart
-            let count = captured[pieceColor] || 0
-            let column = count / 8 | 0
-            let offsetMultiplier = count % 8 
-            let x = columnsCoords[column]
-            let z = -6.5 + (1.3 * (offsetMultiplier)) // start rows vertical: -6.5 and move each piece up 1.3 units 
-            let coords = pieceColor == 'white' ? [-1*x, 0, -1*z] : [x, 0, z] // invert coords for whites pieces
-            return { nextPosition: new BABYLON.Vector3(...coords), newCount: ++count}
-        } 
-        let { nextPosition, newCount } = processCapturedPiece(pieceColor)
-        changePosition(piece, nextPosition)
+        let color = getColor(piece)
+        let { coords, newCount } = createCaptureSq(
+			++(captured[color] || 0),
+			color
+		);
+        changePosition(piece, coords)
         return [
-            { type: 'squares', name: `cp_${newCount}_${pieceColor}`, coords: nextPosition, piece },
-            { type: 'captured', pieceColor, newCount }
+            { type: 'squares', name: `cp_${newCount}_${color}`, coords, piece },
+            { type: 'captured', color, newCount }
         ]
     }
     function captureEnPassant(moveTo, state) {
@@ -264,26 +257,19 @@ export default function Board(current, scene, canvas){
             // pointerMove$.unsubscribe()
         }
     };
-    // function syncBoard(moves) {
-    //     moves.forEach((move, idx) =>
-	// 		current.uiActions.sidePanel.moves.addMove({
-	// 			piece: move.piece,
-	// 			san: move.san,
-	// 			color: move.san,
-	// 			id: idx,
-	// 		})
-	// 	);
-	// 	send({ type: "SYNC", value: { moves: MapChangesToStates(moves) } });
-	// }
+    function syncBoard(moves) {
+	    const { send } = moveService;
+		send({ type: "SYNC", value: { moves: moveChangesToBoardMaps(moves) } });
+	}
     function resetBoard(){
-	    const { send } = moveService
+        const { send } = moveService
         send({ type: "RESET_BOARD" });
     }
     return {
 		mapPiecesToSquares,
 		moveService,
 		resetBoard,
-		// syncBoard,
+		syncBoard,
 	};
 }
 

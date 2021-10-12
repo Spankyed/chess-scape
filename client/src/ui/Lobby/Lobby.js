@@ -331,6 +331,5 @@ function cleanupHandlers(){
 	Api.setMessageHandlers({
 		create:()=>{},
 		join: ()=>{},
-		idle: ()=>{}
 	});	
 }
