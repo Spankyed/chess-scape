@@ -120,7 +120,7 @@ function ClonePiece({type, color, pieces}){
 	let pieceId = `${type}_${color}`
 	let firstPiece = pieces()[pieceId + '_1']
     let clonedPiece = firstPiece.clone(firstPiece.name +  '_clone')
-	let count = Object.entries(pieces).filter(([id]) => id.startsWith(pieceId)).length;
+	let count = Object.entries(pieces()).filter(([id]) => id.startsWith(pieceId)).length;
 	clonedPiece.makeGeometryUnique()
 	clonedPiece.id = `${pieceId}_${count+1}_p` //_p indicates its promotion piece 
 	pieces()[clonedPiece.id] = clonedPiece;
