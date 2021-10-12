@@ -45,13 +45,13 @@ function DeserializeBoard(boardMap, squares, pieces) {
 		.filter(([name]) => name.startsWith("cp"))
 		.map(([name]) => ({ type: "squares", name, piece: null }));
 	
-	// Object.entries(boardMap.pieces).forEach(([pieceId]) => {
-	// 	//  clone/add promotion pieces that dont exist
-	// 	if (!pieces()[pieceId]) {
-	// 		let [type, color] = pieceId.split("_");
-	// 		console.log(ClonePiece({ type, color, pieces }));
-	// 	}
-	// });
+	Object.entries(boardMap.pieces).forEach(([pieceId]) => {
+		//  clone/add promotion pieces that dont exist
+		if (!pieces()[pieceId]) {
+			let [type, color] = pieceId.split("_");
+			console.log(ClonePiece({ type, color, pieces }));
+		}
+	});
 
 	return {
 		sqChanges: [
