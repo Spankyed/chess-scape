@@ -4,359 +4,104 @@ export default {
 		black: 0,
 	},
 	pieces: {
-		b_w_1: {
-			isEnabled: true,
-		},
-		b_w_2: {
-			isEnabled: true,
-		},
-		p_w_1: {
-			isEnabled: true,
-		},
-		p_w_2: {
-			isEnabled: true,
-		},
-		p_w_3: {
-			isEnabled: true,
-		},
-		p_w_4: {
-			isEnabled: true,
-		},
-		p_w_5: {
-			isEnabled: true,
-		},
-		p_w_6: {
-			isEnabled: true,
-		},
-		p_w_7: {
-			isEnabled: true,
-		},
-		p_w_8: {
-			isEnabled: true,
-		},
-		q_w_1: {
-			isEnabled: true,
-		},
-		r_w_1: {
-			isEnabled: true,
-		},
-		r_w_2: {
-			isEnabled: true,
-		},
-		n_w_1: {
-			isEnabled: true,
-		},
-		n_w_2: {
-			isEnabled: true,
-		},
-		k_w_1: {
-			isEnabled: true,
-		},
-		b_b_1: {
-			isEnabled: true,
-		},
-		b_b_2: {
-			isEnabled: true,
-		},
-		p_b_1: {
-			isEnabled: true,
-		},
-		p_b_2: {
-			isEnabled: true,
-		},
-		p_b_3: {
-			isEnabled: true,
-		},
-		p_b_4: {
-			isEnabled: true,
-		},
-		p_b_5: {
-			isEnabled: true,
-		},
-		p_b_6: {
-			isEnabled: true,
-		},
-		p_b_7: {
-			isEnabled: true,
-		},
-		p_b_8: {
-			isEnabled: true,
-		},
-		q_b_1: {
-			isEnabled: true,
-		},
-		r_b_1: {
-			isEnabled: true,
-		},
-		r_b_2: {
-			isEnabled: true,
-		},
-		n_b_1: {
-			isEnabled: true,
-		},
-		n_b_2: {
-			isEnabled: true,
-		},
-		k_b_1: {
-			isEnabled: true,
-		},
+		b_w_1: true,
+		b_w_2: true,
+		p_w_1: true,
+		p_w_2: true,
+		p_w_3: true,
+		p_w_4: true,
+		p_w_5: true,
+		p_w_6: true,
+		p_w_7: true,
+		p_w_8: true,
+		q_w_1: true,
+		r_w_1: true,
+		r_w_2: true,
+		n_w_1: true,
+		n_w_2: true,
+		k_w_1: true,
+		b_b_1: true,
+		b_b_2: true,
+		p_b_1: true,
+		p_b_2: true,
+		p_b_3: true,
+		p_b_4: true,
+		p_b_5: true,
+		p_b_6: true,
+		p_b_7: true,
+		p_b_8: true,
+		q_b_1: true,
+		r_b_1: true,
+		r_b_2: true,
+		n_b_1: true,
+		n_b_2: true,
+		k_b_1: true,
 	},
-	squaresJSON: [
-		{
-			sqName: "a1",
-			piece: "r_w_2",
-		},
-		{
-			sqName: "b1",
-			piece: "n_w_1",
-		},
-		{
-			sqName: "c1",
-			piece: "b_w_1",
-		},
-		{
-			sqName: "d1",
-			piece: "q_w_1",
-		},
-		{
-			sqName: "e1",
-			piece: "k_w_1",
-		},
-		{
-			sqName: "f1",
-			piece: "b_w_2",
-		},
-		{
-			sqName: "g1",
-			piece: "n_w_2",
-		},
-		{
-			sqName: "h1",
-			piece: "r_w_1",
-		},
-		{
-			sqName: "a2",
-			piece: "p_w_7",
-		},
-		{
-			sqName: "b2",
-			piece: "p_w_6",
-		},
-		{
-			sqName: "c2",
-			piece: "p_w_5",
-		},
-		{
-			sqName: "d2",
-			piece: "p_w_4",
-		},
-		{
-			sqName: "e2",
-			piece: "p_w_3",
-		},
-		{
-			sqName: "f2",
-			piece: "p_w_2",
-		},
-		{
-			sqName: "g2",
-			piece: "p_w_1",
-		},
-		{
-			sqName: "h2",
-			piece: "p_w_8",
-		},
-		{
-			sqName: "a3",
-			piece: null,
-		},
-		{
-			sqName: "b3",
-			piece: null,
-		},
-		{
-			sqName: "c3",
-			piece: null,
-		},
-		{
-			sqName: "d3",
-			piece: null,
-		},
-		{
-			sqName: "e3",
-			piece: null,
-		},
-		{
-			sqName: "f3",
-			piece: null,
-		},
-		{
-			sqName: "g3",
-			piece: null,
-		},
-		{
-			sqName: "h3",
-			piece: null,
-		},
-		{
-			sqName: "a4",
-			piece: null,
-		},
-		{
-			sqName: "b4",
-			piece: null,
-		},
-		{
-			sqName: "c4",
-			piece: null,
-		},
-		{
-			sqName: "d4",
-			piece: null,
-		},
-		{
-			sqName: "e4",
-			piece: null,
-		},
-		{
-			sqName: "f4",
-			piece: null,
-		},
-		{
-			sqName: "g4",
-			piece: null,
-		},
-		{
-			sqName: "h4",
-			piece: null,
-		},
-		{
-			sqName: "a5",
-			piece: null,
-		},
-		{
-			sqName: "b5",
-			piece: null,
-		},
-		{
-			sqName: "c5",
-			piece: null,
-		},
-		{
-			sqName: "d5",
-			piece: null,
-		},
-		{
-			sqName: "e5",
-			piece: null,
-		},
-		{
-			sqName: "f5",
-			piece: null,
-		},
-		{
-			sqName: "g5",
-			piece: null,
-		},
-		{
-			sqName: "h5",
-			piece: null,
-		},
-		{
-			sqName: "a6",
-			piece: null,
-		},
-		{
-			sqName: "b6",
-			piece: null,
-		},
-		{
-			sqName: "c6",
-			piece: null,
-		},
-		{
-			sqName: "d6",
-			piece: null,
-		},
-		{
-			sqName: "e6",
-			piece: null,
-		},
-		{
-			sqName: "f6",
-			piece: null,
-		},
-		{
-			sqName: "g6",
-			piece: null,
-		},
-		{
-			sqName: "h6",
-			piece: null,
-		},
-		{
-			sqName: "a7",
-			piece: "p_b_7",
-		},
-		{
-			sqName: "b7",
-			piece: "p_b_6",
-		},
-		{
-			sqName: "c7",
-			piece: "p_b_5",
-		},
-		{
-			sqName: "d7",
-			piece: "p_b_4",
-		},
-		{
-			sqName: "e7",
-			piece: "p_b_3",
-		},
-		{
-			sqName: "f7",
-			piece: "p_b_2",
-		},
-		{
-			sqName: "g7",
-			piece: "p_b_1",
-		},
-		{
-			sqName: "h7",
-			piece: "p_b_8",
-		},
-		{
-			sqName: "a8",
-			piece: "r_b_2",
-		},
-		{
-			sqName: "b8",
-			piece: "n_b_1",
-		},
-		{
-			sqName: "c8",
-			piece: "b_b_1",
-		},
-		{
-			sqName: "d8",
-			piece: "q_b_1",
-		},
-		{
-			sqName: "e8",
-			piece: "k_b_1",
-		},
-		{
-			sqName: "f8",
-			piece: "b_b_2",
-		},
-		{
-			sqName: "g8",
-			piece: "n_b_2",
-		},
-		{
-			sqName: "h8",
-			piece: "r_b_1",
-		},
-	],
+	squares: {
+		a1: "r_w_2",
+		b1: "n_w_1",
+		c1: "b_w_1",
+		d1: "q_w_1",
+		e1: "k_w_1",
+		f1: "b_w_2",
+		g1: "n_w_2",
+		h1: "r_w_1",
+		a2: "p_w_7",
+		b2: "p_w_6",
+		c2: "p_w_5",
+		d2: "p_w_4",
+		e2: "p_w_3",
+		f2: "p_w_2",
+		g2: "p_w_1",
+		h2: "p_w_8",
+		a3: null,
+		b3: null,
+		c3: null,
+		d3: null,
+		e3: null,
+		f3: null,
+		g3: null,
+		h3: null,
+		a4: null,
+		b4: null,
+		c4: null,
+		d4: null,
+		e4: null,
+		f4: null,
+		g4: null,
+		h4: null,
+		a5: null,
+		b5: null,
+		c5: null,
+		d5: null,
+		e5: null,
+		f5: null,
+		g5: null,
+		h5: null,
+		a6: null,
+		b6: null,
+		c6: null,
+		d6: null,
+		e6: null,
+		f6: null,
+		g6: null,
+		h6: null,
+		a7: "p_b_7",
+		b7: "p_b_6",
+		c7: "p_b_5",
+		d7: "p_b_4",
+		e7: "p_b_3",
+		f7: "p_b_2",
+		g7: "p_b_1",
+		h7: "p_b_8",
+		a8: "r_b_2",
+		b8: "n_b_1",
+		c8: "b_b_1",
+		d8: "q_b_1",
+		e8: "k_b_1",
+		f8: "b_b_2",
+		g8: "n_b_2",
+		h8: "r_b_1",
+	},
+	fen:'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 };

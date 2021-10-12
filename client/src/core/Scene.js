@@ -52,8 +52,6 @@ const Scene = new class {
 
         // this.onReady()
     }
-    async resetGame(canvas, actions, roomID){
-    }
 }
 
 export default Scene;

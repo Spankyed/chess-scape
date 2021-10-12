@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 // import { debounceTime, map, filter, pairwise, startWith } from 'rxjs/operators';
 import { debounceTime } from 'rxjs/operators';
+import initialState from "../board/state";
 
 // https://github.com/twig-it/from-resize/blob/main/projects/from-resize/src/resize/resize.ts
 const FromResize = (element) => {
@@ -20,58 +21,73 @@ const FromResize = (element) => {
 
 function SerializeBoard(squares, pieces, captured) { // returns a boardMap to be deserialized into changes
 	return {
-		squares: Object.entries(squares).reduce((sqs, [sqName, { piece }]) => (
-			[...sqs, { sqName, piece }]
-		), []),
-		pieces: Object.entries(pieces()).reduce((pcs, [id, piece]) => (
-			{ ...pcs, [id]: { isEnabled: piece?.isEnabled() } }
-		), {}),
-		captured
-	}
+		squares: Object.entries(squares).reduce(
+			(sqs, [sqName, { piece }]) => ({
+				...sqs,
+				[sqName]: piece ? piece.id : null,
+			}),
+			{}
+		),
+		pieces: Object.entries(pieces()).reduce(
+			(pcs, [pieceId, piece]) => ({
+				...pcs,
+				[pieceId]: piece?.isEnabled(),
+			}),
+			{}
+		),
+		captured,
+	};
 }
 
-function DeserializeBoard(boardMap, squares){ // returns list of square changes & map of pieces 
-	const resetCaptured = squares => Object.entries(squares)
-		.reduce((captured, [ name ]) =>(
-			name.startsWith('cp') ? [...captured, { type: 'squares', name, piece: null }] : captured
-		), [])
+// returns list of square changes & map of pieces
+function DeserializeBoard(boardMap, squares, pieces) {
+	const resetCaptured = Object.entries(squares)
+		.filter(([name]) => name.startsWith("cp"))
+		.map(([name]) => ({ type: "squares", name, piece: null }));
+	// if (!pieces()[pieceId]){ //  clone/add promotion pieces that dont exist
+	// 	let [type, color] = pieceId.split('_')
+	// 	ClonePiece({type, color, pieces})
+	// }
 	return {
 		sqChanges: [
-			...resetCaptured(squares), // add changes that reset captured(ghost) sqs; gets overwritten below
-			...boardMap.squares.reduce((changes, { sqName, piece }) => ( // create a change for every square
-				[ ...changes, { type: 'squares', name: sqName, piece} ]
-			), [])
+			...resetCaptured, // add changes that reset captured(ghost) sqs; gets overwritten below
+			...Object.entries(boardMap.squares).map(([name, pieceId]) => ({
+				type: "squares",
+				name,
+				piece: pieces()[pieceId],
+			})),
 		],
-		piecesMap: boardMap.pieces, // todo spawn promotion pieces and add to list
-		captured: boardMap.captured
-	}
-}
-
-
-function mapBoardJSON(boardMap) {
-	const { squares, pieces, captured } = boardMap;
-	const squaresJSON = squares.map(({ sqName, piece }) => ({
-		sqName,
-		piece: piece ? piece.id : null,
-	}));
-	return {
-		pieces,
-		captured,
-		squaresJSON,
+		piecesMap: boardMap.pieces,
+		captured: boardMap.captured,
 	};
 }
-function remapBoardJSON(boardMap, pieceMeshes) {
-	const { squaresJSON, pieces, captured } = boardMap;
-	const squares = squaresJSON.map(({ sqName, piece }) => ({
-		sqName,
-		piece: piece ? pieceMeshes[piece] : null,
-	}));
-	return {
-		pieces,
-		captured,
-		squares,
-	};
-}
+
+// function MapChangesToStates(moves) {
+// 	let [initial, ...movesStates] = moves.reduce(
+// 		(states, { pieces, squares, captured, fen }, idx) => {
+// 			let lastState = states[idx - 1].board;
+// 			return [
+// 				...states,
+// 				{
+// 					board: {
+// 						captured,
+// 						pieces: {
+// 							...lastState.pieces,
+// 							pieces,
+// 						},
+// 						squares: {
+// 							...lastState.squares,
+// 							squares,
+// 						},
+// 					},
+// 					fen,
+// 				},
+// 			];
+// 		},
+// 		initialState
+// 	);
+// 	return movesStates;
+// }
 
 function ClonePiece({type, color, pieces}){
 	// let origPiecesCount = {'p':8,'r':2,'n':2,'b':2,'q':1,'k':1} // todo allow recycle prev cloned piece
@@ -81,13 +97,14 @@ function ClonePiece({type, color, pieces}){
 	let count = Object.entries(pieces).filter(([id]) => id.startsWith(pieceId)).length;
 	clonedPiece.makeGeometryUnique()
 	clonedPiece.id = `${pieceId}_${count+1}_p` //_p indicates its promotion piece 
-	return clonedPiece
+	pieces()[clonedPiece.id] = clonedPiece;
+	return clonedPiece;
 }
 
 export {
 	SerializeBoard,
 	DeserializeBoard,
-	remapBoardJSON,
+	// MapChangesToStates,
 	ClonePiece,
 	FromResize,
 };

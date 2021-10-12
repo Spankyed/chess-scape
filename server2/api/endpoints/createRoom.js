@@ -3,7 +3,7 @@ const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
 const nanoid = require("nanoid/async");
 const { sendMessageToLobby } = require("../common/websocket/message");
-const State = require("../websockets/methods/move/state");
+const initialState = require("../websockets/methods/move/state");
 
 const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
@@ -44,8 +44,8 @@ const handler = async (event) => {
 			colorToMove: "white",
 			created: room.created,
 			started: false,
-			state,
-			moves: []
+			state: initialState,
+			moves: [],
 		};
 		await Promise.all([
 			sendMessageToLobby({ method: "create", newRoom }),

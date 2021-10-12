@@ -9,57 +9,55 @@
 module.exports = function update(move, match) {
 	const { from, to, piece, color, flags, promotion, captured: cap } = move;
 	const { squares, pieces, captured } = match.state;
-	console.log('match: ', match);
 
 	const fromPiece = squares[from];
 	const toPiece = squares[to];
 
-	const changes = [
-		{
-			squares: {
-				[from]: null,
-				[to]: fromPiece,
-			},
+	let changes = {
+		squares: {
+			[from]: null,
+			[to]: fromPiece,
 		},
-	];
+	};
+
+	const extend = (change) => {
+		changes = Object.entries(change).reduce(
+			(all, [target, values]) => ({
+				...all,
+				[target]: {
+					...changes[target],
+					...values,
+				},
+			}),
+			{}
+		);
+	};
 
 	if (flags) {
 		// p + c is only combination possible
 		if (flags.includes("p"))
-			changes.push(...promotePawn(move, squares, pieces));
+			extend(promotePawn(move, squares, pieces));
 		if (flags.includes("e"))
-			changes.push(...captureEnPassant(to, squares, color, captured));
+			extend(captureEnPassant(to, squares, color, captured));
 		else if (flags.includes("c"))
-			changes.push(...capture(toPiece, color, captured));
+			extend(capture(toPiece, color, captured));
 		else if ((castled = flags.match(/k|q/)))
-			changes.push(...moveCastledRook(castled[0], to, squares));
+			extend(moveCastledRook(castled[0], to, squares));
 	}
 
-	return changes.reduce((all, change) => {
-		let [target, update] = Object.entries(change)[0];
-		let updates = Object.entries(update).reduce(
-			(rest, [attr, val]) => ({
+	let stateChanges = Object.entries(changes).flatMap(
+		([target, values]) => Object.entries(values).map(([name, val]) => [`state.${target}.${name}`, val]))
+	
+	return {
+		move: changes,
+		state: stateChanges.reduce(
+			(rest, [target, val]) => ({
 				...rest,
-				[`state.${target}.${attr}`]: val,
+				[target]: val,
 			}),
 			{}
-		);
-		return {
-			...all,
-			...updates,
-		};
-	}, {});
-
-	// return changes.reduce((all, change) => {
-	// 	let [attr, values] = Object.entries(change)[0];
-	// 	return {
-	// 		...all,
-	// 		[attr]: {
-	// 			...all[attr],
-	// 			...values,
-	// 		},
-	// 	};
-	// }, {});
+		),
+	};
 };
 
 function promotePawn({ color, promotion, from, to }, squares, pieces) {
@@ -69,19 +67,15 @@ function promotePawn({ color, promotion, from, to }, squares, pieces) {
 	).length;
 	promoID = `${promoType}_${count + 1}_p`; //_p indicates its promo piece
 	let pawn = squares[from];
-	return [
-		{
-			pieces: {
-				[promoID]: true,
-				[pawn]: false,
-			},
+	return {
+		pieces: {
+			[promoID]: true,
+			[pawn]: false,
 		},
-		{
-			squares: {
-				[to]: promoID,
-			},
+		squares: {
+			[to]: promoID,
 		},
-	];
+	};
 }
 
 function captureEnPassant(to, squares, color, captured) {
@@ -96,15 +90,15 @@ function capture(piece, color, captured) {
 	oppColor = color == "w" ? "black" : "white";
 	let newCount = ++captured[oppColor];
 	let capSq = `cp_${newCount}_${oppColor}`;
-	return [
-		{ squares: { [capSq]: piece } },
-		{ captured: { [oppColor]: newCount } },
-	];
+	return {
+		squares: { [capSq]: piece },
+		captured: { [oppColor]: newCount }
+	}
 }
 
 function moveCastledRook(side, kingSq, squares) {
 	let rank = kingSq.charAt(1);
-	let rookFiles = { q: ["a", "d"], k: ["h", "f"] }; // q: queenside, k:  kingside
+	let rookFiles = { q: ["a", "d"], k: ["h", "f"] }; // q: queenside[from,to], k:  kingside[from,to]
 	let sqs = rookFiles[side].map((file) => file + rank);
 	return {
 		squares: {

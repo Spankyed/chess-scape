@@ -13,6 +13,11 @@ const handler = async (event) => {
 		domainName,
 		stage
 	} = event.requestContext;
+	const connection = {
+		connectionId: connectionID,
+		domainName,
+		stage
+	}
 	const message = event.body;
 	const { clientID, TOKEN, method } = message;
 	// console.log(`Message [${method}] from [${clientID}]`, message);
@@ -20,7 +25,7 @@ const handler = async (event) => {
 
 	if (!isAuthorized) {
 		await sendMessage(
-			{ connectionID, domainName, stage },
+			connection,
 			{ method: "unauthorize" }
 		);
 		return Responses._401({ message: "Unauthorized connection" });
@@ -37,12 +42,14 @@ const handler = async (event) => {
 
 	const messageHandler = methods[method];
 
-	if (messageHandler) await messageHandler(message);
+	if (messageHandler) await messageHandler(message, connection);
 
 	// if (messageHandler) return await messageHandler(message);
 	// else return Responses._400({ error: "Message not understood" });
 
-	return Responses._200({ message: "Message received and responded" });
+	return Responses._200({
+		message: `Message[${method}] from[${clientID}] received and responded`,
+	});
 };
 
 exports.handler = withHooks(["parse"])(handler);

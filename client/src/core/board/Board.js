@@ -2,8 +2,7 @@
 import { delay } from "nanodelay";
 import { ClonePiece } from '../utils/utils'; 
 import { setupMoveMachine } from './moveMachines';
-import initial from './state';
-import { remapBoardJSON, DeserializeBoard  } from '../utils/utils'; 
+// import { MapChangesToStates } from "../utils/utils"; 
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
@@ -200,7 +199,6 @@ export default function Board(current, scene, canvas){
     function addPromotionPiece({color, promotion, from, to}, state){
         let { squares } =  state.context
         let promotionPiece = ClonePiece({pieces, color, type: promotion})
-        pieces()[promotionPiece.id] = promotionPiece
         let toSq = squares[to]
         let fromSq = squares[from]
         // fromSq.piece.setEnabled(false) 
@@ -257,19 +255,26 @@ export default function Board(current, scene, canvas){
             canvas.removeEventListener("pointerup", onPointerUp);
         }
     };
+    // function syncBoard(moves) {
+    //     moves.forEach((move, idx) =>
+	// 		current.uiActions.sidePanel.moves.addMove({
+	// 			piece: move.piece,
+	// 			san: move.san,
+	// 			color: move.san,
+	// 			id: idx,
+	// 		})
+	// 	);
+	// 	send({ type: "SYNC", value: { moves: MapChangesToStates(moves) } });
+	// }
     function resetBoard(){
-        const { send, state  } = moveService;
-        let { squares } = state.context;
-        let boardMap = remapBoardJSON(initial, pieces())
-        send({
-			type: "SET_BOARD",
-			value: { ...DeserializeBoard(boardMap, squares) },
-		});
+	    const { send } = moveService
+        send({ type: "RESET_BOARD" });
     }
     return {
 		mapPiecesToSquares,
 		moveService,
 		resetBoard,
+		// syncBoard,
 	};
 }
 

@@ -3,6 +3,7 @@ import { createMachine, interpret, assign, send } from 'xstate';
 import { pure } from 'xstate/lib/actions';
 import { SerializeBoard, DeserializeBoard  } from '../utils/utils'; 
 import { startMovingPiece } from './navigationSystem';
+import initialState from "./state";
 
 /*
 ** --------------------------------------------------------------------------
@@ -38,14 +39,14 @@ function setupMoveMachine(current, game, squares, pieces){
 			hoveredSq: undefined,
 			dragPos: undefined,
 			lastMove: undefined,
-			promotedPieces: undefined,
+			// promotedPieces: undefined,
 			faded: undefined,
 			captured: { white: 0, black: 0 },
 			moves: [],
 		},
 		states: {
-			gameOver: {id: "gameOver"},
-			spectating: {id: "spectating"},
+			gameOver: { id: "gameOver" },
+			spectating: { id: "spectating" },
 			moving: {
 				id: "moving",
 				initial: "notSelected",
@@ -155,7 +156,8 @@ function setupMoveMachine(current, game, squares, pieces){
 						value: {
 							...DeserializeBoard(
 								moves[moves.length - 1]?.board,
-								squares
+								squares,
+								pieces
 							),
 						},
 					})),
@@ -175,7 +177,8 @@ function setupMoveMachine(current, game, squares, pieces){
 											value: {
 												...DeserializeBoard(
 													moves[value?.id]?.board,
-													squares
+													squares,
+													pieces
 												),
 											},
 										});
@@ -303,6 +306,23 @@ function setupMoveMachine(current, game, squares, pieces){
 		},
 		// ___________________________________________________________________________________________________________________
 		on: {
+		// 	SYNC: {
+		// 		actions: [
+		// 			send((_,{value}) => ({
+		// 				type: "SET_BOARD",
+		// 				value: {
+		// 					...DeserializeBoard(
+		// 						moves[value.moves.length - 1]?.board,
+		// 						squares,
+		// 						pieces
+		// 					),
+		// 				},
+		// 			})),
+		// 			assign({
+		// 				moves: (_, { value }) => value.moves,
+		// 			}),
+		// 		],
+		// 	},
 			SET_PLAYER: {
 				actions: [
 					assign({
@@ -312,14 +332,26 @@ function setupMoveMachine(current, game, squares, pieces){
 					send({ type: "START_GAME" }),
 				],
 			},
-            START_GAME: [
-                { target: "#spectating", cond: (ctx) => !ctx.isPlayer },
-                {
-                    target: "#moving",
-                    cond: (ctx) => ctx.playerColor == "white",
-                },
-                { target: "#waiting" },
-            ],
+			RESET_BOARD: {
+				actions: send(({ squares }) => ({
+					type: "SET_BOARD",
+					value: {
+						...DeserializeBoard(
+							initialState,
+							squares,
+							pieces
+						),
+					},
+				})),
+			},
+			START_GAME: [
+				{ target: "#spectating", cond: (ctx) => !ctx.isPlayer },
+				{
+					target: "#moving",
+					cond: (ctx) => ctx.playerColor == "white",
+				},
+				{ target: "#waiting" },
+			],
 			RESET: {
 				actions: [
 					assign({ fromSq: undefined, toSq: undefined }),
@@ -445,18 +477,14 @@ function togglePieces(pieces) {
 	 // todo spawn promotion pieces and add to list
     return (_, { value }) => {
         Object.entries(pieces()).forEach( ([id, piece]) =>{
-            if (!value.piecesMap[id]) {
-                piece.setEnabled(false)
-                return
-            }
-            let isEnabled = value.piecesMap[id].isEnabled
-            if (piece.isEnabled != isEnabled) piece.setEnabled(isEnabled)
+            let isEnabled = value.piecesMap[id] // isEnabled can be undefined
+            if (piece.isEnabled != isEnabled) piece.setEnabled(!!isEnabled)
         })
     }
 }
 function updateSquares(changes) {
     return (ctx, { value }) => ({
-        ...ctx['squares'], // some/all these prev squares will be overwritten
+        ...ctx['squares'], // some these prev squares will be overwritten
         ...(changes||value.sqChanges) // defaults to ev.val.sqChanges for SET_BOARD
         .reduce( (sqs, {type, name, piece, ...square}) => ({
             ...sqs, 

@@ -16,7 +16,7 @@ const engine = new Chess();
 // 	body: { room: "number", clientID: "number"  },
 // };
 
-module.exports = async function ({ clientID, roomID, move }) {
+module.exports = async function ({ clientID, roomID, move }, connection) {
 	const match = await Dynamo.get(roomID, matchesTable);
 
 	if (!match) return Responses._400({ message: 'Match not found' });
@@ -32,10 +32,10 @@ module.exports = async function ({ clientID, roomID, move }) {
 	const isPlayersTurn = player.clientID === clientID;
 
 	if (!isPlayersTurn || !started) {
-		// await syncPlayer(clientID, match.moves)
+		// await syncPlayer(connection, match.moves)
 		return Responses._400({ message: "Out of sync" });
 	}
-
+	
 	engine.load(lastMove.fen);
 	const validMove = engine.move(move);
 
@@ -64,7 +64,7 @@ module.exports = async function ({ clientID, roomID, move }) {
 				primaryKeyValue: roomID,
 				updates: {
 					"lastMove.fen": engine.fen(),
-					...changes,
+					...changes.state,
 					colorToMove: !gameOver && nextColor(colorToMove),
 					...(commit
 						? { [`players.${colorToMove}.committed`]: true }
@@ -75,7 +75,17 @@ module.exports = async function ({ clientID, roomID, move }) {
 				TableName: matchesTable,
 				primaryKey: "ID",
 				primaryKeyValue: roomID,
-				data: { moves: [changes] },
+				data: {
+					moves: [
+						{
+							...changes.move,
+							piece: move.piece,
+							san: move.san,
+							color: move.san,
+							fen: engine.fen(),
+						},
+					],
+				},
 				// select: "clients",
 			}),
 			sendMessageToRoom(roomID, {
@@ -95,9 +105,12 @@ module.exports = async function ({ clientID, roomID, move }) {
 
 // exports = withHooks(["parse"])(handler);
 
-async function syncPlayer(clientID, {board}) {
-	const {connection} = await Dynamo.get(clientID, clientsTable);
-	return sendMessage(connection, { method: "sync", board });
+async function syncPlayer(connection, moves) {
+	return sendMessage(connection, { method: "sync", moveChanges: moves });
+}
+
+function nextColor(color) {
+	return color == "white" ? "black" : "white";
 }
 
 function constructHeadings() {
@@ -118,8 +131,4 @@ function getDate() {
 	return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
 		.toISOString()
 		.split("T")[0];
-}
-
-function nextColor(color) {
-	return color == "white" ? "black" : "white";
 }
