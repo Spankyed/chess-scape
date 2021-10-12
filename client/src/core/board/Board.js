@@ -2,6 +2,8 @@
 import { delay } from "nanodelay";
 import { ClonePiece } from '../utils/utils'; 
 import { setupMoveMachine } from './moveMachines';
+import { fromEvent } from "rxjs";
+import { throttleTime } from "rxjs/operators";
 // import { MapChangesToStates } from "../utils/utils"; 
 
 export default function Board(current, scene, canvas){
@@ -251,11 +253,15 @@ export default function Board(current, scene, canvas){
         canvas.addEventListener("contextmenu", onRightPointerDown, false);
         canvas.addEventListener("pointerup", onPointerUp, false);
         canvas.addEventListener("pointermove", onPointerMove, false);
+        // let pointerMove$ = fromEvent(canvas, "pointermove")
+		// 	.pipe(throttleTime(1))
+		// 	.subscribe(onPointerMove);
         scene.onDispose = () => {
             canvas.removeEventListener("pointerdown", onPointerDown);
             canvas.removeEventListener("contextmenu", onRightPointerDown);
             canvas.removeEventListener("pointerup", onPointerUp);
             canvas.removeEventListener("pointermove", onPointerMove);
+            // pointerMove$.unsubscribe()
         }
     };
     // function syncBoard(moves) {
