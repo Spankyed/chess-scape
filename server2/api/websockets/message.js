@@ -14,7 +14,7 @@ const handler = async (event) => {
 		stage
 	} = event.requestContext;
 	const connection = {
-		connectionId: connectionID,
+		connectionID,
 		domainName,
 		stage
 	}
