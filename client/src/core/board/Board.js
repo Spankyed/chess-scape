@@ -80,15 +80,18 @@ export default function Board(current, scene, canvas){
 	    const { send, state } = moveService
         let {pickedPoint, pickedMesh} = pickWhere(mesh => mesh.isPickable)
         let square = state.context.squares[pickedMesh?.name]
-        if (stateIs("moving.selected.dragging")){ 
-            document.body.style.cursor = 'grabbing';
-            if (!pickedPoint) return;  // todo drag piece along sides of board if mouse is off board
-            send({ type: "DRAG", value: {boardPos: pickedPoint, hoveredSq: square} })
-        } else if (stateIs("moving")) {
-            if (square?.piece) document.body.style.cursor = 'grab';
-            else document.body.style.cursor = 'default';
-            return
-        }
+        if (stateIs("moving.selected.dragging")) {
+			document.body.style.cursor = "grabbing";
+			if (!pickedPoint) return; // todo drag piece along sides of board if mouse is off board
+			send({
+				type: "DRAG",
+				value: { boardPos: pickedPoint, hoveredSq: square },
+			});
+		} else if (stateIs("moving") && square?.piece) {
+			document.body.style.cursor = "grab";
+		} else {
+			document.body.style.cursor = "default";
+		}
     }
     function onRightPointerDown(evt) {
 	    const { send } = moveService
@@ -245,14 +248,14 @@ export default function Board(current, scene, canvas){
     function pickWhere (predicate) { return scene.pick(scene.pointerX, scene.pointerY, predicate) }
     function setupClickListeners(canvas) {
         canvas.addEventListener("pointerdown", onPointerDown, false);
-        canvas.addEventListener("pointermove", onPointerMove, false); // todo: rxjs fromEvent to throttle
         canvas.addEventListener("contextmenu", onRightPointerDown, false);
         canvas.addEventListener("pointerup", onPointerUp, false);
+        canvas.addEventListener("pointermove", onPointerMove, false);
         scene.onDispose = () => {
             canvas.removeEventListener("pointerdown", onPointerDown);
-            canvas.removeEventListener("pointermove", onPointerMove);
             canvas.removeEventListener("contextmenu", onRightPointerDown);
             canvas.removeEventListener("pointerup", onPointerUp);
+            canvas.removeEventListener("pointermove", onPointerMove);
         }
     };
     // function syncBoard(moves) {
