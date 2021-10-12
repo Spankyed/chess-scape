@@ -60,13 +60,13 @@ function DeserializeBoard(boardMap, squares, pieces) {
 				type: "squares",
 				name,
 				piece: pieces()[pieceId],
-				// ...(!squares[name] && name.startsWith("cp")
-				// 	? {
-				// 			coords: createCaptureSq(
-				// 				...name.split("_").slice(1)
-				// 			).coords,
-				// 	  }
-				// 	: {}),
+				...(!squares[name] && name.startsWith("cp")
+					? {
+							coords: createCaptureSq(
+								...name.split("_").slice(1)
+							).coords,
+					  }
+					: {}),
 			})),
 		],
 		piecesMap: boardMap.pieces,
