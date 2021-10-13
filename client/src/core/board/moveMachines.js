@@ -481,7 +481,7 @@ function positionPieces(pieces) {
     pieces.forEach(({ piece, newPos }) => {
         if (piece && !piece.position.equals(newPos)){
             let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-			piece.position = updatedPos;
+			startMovingPiece(piece, updatedPos)
         }
     })
 }
