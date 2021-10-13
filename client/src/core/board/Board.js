@@ -108,7 +108,7 @@ export default function Board(current, scene, canvas){
     function selectSq(fromSq, state){
         if (state.history.context.fromSq){ // reset prev piece
             let {piece, coords} = state.history.context.fromSq
-            changePosition(piece, coords) 
+            changePosition(piece, coords, true) 
         }
         selectedHighlightLayer.removeAllMeshes();
         selectedHighlightLayer.addMesh(fromSq.mesh, BABYLON.Color3.Yellow()); // highlight
@@ -116,7 +116,7 @@ export default function Board(current, scene, canvas){
     function deselectSq(_, state){
 	    const { send } = moveService
         let { fromSq } = state.history.context
-		if (fromSq) changePosition(fromSq.piece, fromSq.coords) 
+		if (fromSq) changePosition(fromSq.piece, fromSq.coords, true) 
         selectedHighlightLayer.removeAllMeshes();
     }
     function dragPiece(_, state){
@@ -129,12 +129,12 @@ export default function Board(current, scene, canvas){
         } else if (isFaded){ // else restore any faded pieces 
             send({type: 'UPDATE', value: [{ type: 'faded', piece: null}]})
         }
-        if (dragPos) changePosition(fromSq.piece, dragPos.clone())
+        if (dragPos) changePosition(fromSq.piece, dragPos.clone(), true)
     }
     function endPieceDrag(_, state){
 	    // const { send } = moveService
         let { fromSq } = state.context
-		changePosition(fromSq.piece, fromSq.coords)
+		changePosition(fromSq.piece, fromSq.coords, true)
     }
     function handleMove(move, state){
 	    const { send } = moveService
