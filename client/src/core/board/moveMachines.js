@@ -341,13 +341,14 @@ function setupMoveMachine(current, game, squares, pieces){
 			},
 			RESET_BOARD: {
 				actions: [
+					() => game().engine.load(initialState.fen),
 					send(({ squares }) => ({
 						type: "SET_BOARD",
 						value: {
 							...DeserializeBoard(initialState, squares, pieces),
 						},
 					})),
-					// todo start game & transition players to init state
+					send({ type: "START_GAME" }),
 				],
 			},
 			START_GAME: [
