@@ -258,7 +258,7 @@ export default function Board(current, scene, canvas){
         }
     };
     function syncBoard(moves) {
-        if (moves.length > 1) return
+        if (moves.length < 1) return
 	    const { send } = moveService;
 		send({ type: "SYNC", value: { moves: moveChangesToBoardMaps(moves) } });
 	}

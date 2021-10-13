@@ -29,6 +29,10 @@ export default class Game {
 	async handlePlayerMove(move) {
 		// console.log('checking',{move})
 		let validMove = null;
+		if (!this.inReview() && this.engine.turn() != this.playerColor?.charAt(0)) {
+			// todo: sync player
+			return validMove;
+		}
 		if (this.isPromoting(move)) {
 			const piece = await this.promptPieceSelect();
 			validMove = piece

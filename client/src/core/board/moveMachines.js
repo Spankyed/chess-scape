@@ -308,8 +308,11 @@ function setupMoveMachine(current, game, squares, pieces){
 		on: {
 			SYNC: {
 				actions: [
+					(_, { value }) =>
+						game().engine.load(
+							value.moves[value.moves.length - 1]?.fen
+						),
 					send((_, { value }) => {
-						console.log("value: ", value);
 						return {
 							type: "SET_BOARD",
 							value: {
@@ -324,7 +327,7 @@ function setupMoveMachine(current, game, squares, pieces){
 					assign({
 						moves: (_, { value }) => value.moves,
 					}),
-					(_, { value }) => game().engine.load(value.moves[value.moves.length - 1]?.fen),
+					send({ type: "START_GAME" }),
 				],
 			},
 			SET_PLAYER: {
@@ -337,18 +340,22 @@ function setupMoveMachine(current, game, squares, pieces){
 				],
 			},
 			RESET_BOARD: {
-				actions: send(({ squares }) => ({
-					type: "SET_BOARD",
-					value: {
-						...DeserializeBoard(initialState, squares, pieces),
-					},
-				})),
+				actions: [
+					send(({ squares }) => ({
+						type: "SET_BOARD",
+						value: {
+							...DeserializeBoard(initialState, squares, pieces),
+						},
+					})),
+					// todo start game & transition players to init state
+				],
 			},
 			START_GAME: [
 				{ target: "#spectating", cond: (ctx) => !ctx.isPlayer },
 				{
 					target: "#moving",
-					cond: (ctx) => ctx.playerColor == "white",
+					cond: (ctx) =>
+						ctx.playerColor.charAt(0) == game().engine.turn(),
 				},
 				{ target: "#waiting" },
 			],
@@ -473,7 +480,7 @@ function positionPieces(pieces) {
     pieces.forEach(({ piece, newPos }) => {
         if (piece && !piece.position.equals(newPos)){
             let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-            piece.position = updatedPos
+			piece.position = updatedPos;
         }
     })
 }
