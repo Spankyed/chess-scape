@@ -1,7 +1,7 @@
 
 import { createMachine, interpret, assign, send } from 'xstate';
 import { pure } from 'xstate/lib/actions';
-import { SerializeBoard, DeserializeBoard  } from '../utils/utils'; 
+import { SerializeBoard, DeserializeBoard, getColor } from "../utils/utils"; 
 import { startMovingPiece } from './navigationSystem';
 import initialState from "./state";
 
@@ -97,7 +97,8 @@ function setupMoveMachine(current, game, squares, pieces){
 						target: ".notSelected",
 					},
 					SELECT: {
-						cond: (_, { value }) => !!value.piece, // todo also check if player's color/piece
+						cond: ({ playerColor }, { value }) =>
+							!!value.piece && playerColor == getColor(value.piece),
 						actions: assign({ fromSq: (_, { value }) => value }),
 						target: ".selected.dragging",
 						// in: '#light.red.stop'
@@ -395,6 +396,7 @@ function setupMoveMachine(current, game, squares, pieces){
 							["faded", updateFaded],
 						];
 						let updates = value.reduce(
+							// sort list of changes into updates
 							(changes, { type, ...change }) => {
 								return {
 									...changes,
@@ -402,8 +404,9 @@ function setupMoveMachine(current, game, squares, pieces){
 								};
 							},
 							{}
-						); // sort list of changes into updates
+						);
 						let assignments = types.reduce(
+							// partially input updates to designated assigner factoryFn for assignments
 							(props, [type, factory]) => {
 								return {
 									...props,
@@ -413,7 +416,7 @@ function setupMoveMachine(current, game, squares, pieces){
 								};
 							},
 							{}
-						); // partially input updates to designated assigner factoryFn for assignments
+						);
 						return assign(assignments);
 					}),
 					pure((_, { addMove }) => {
