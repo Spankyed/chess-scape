@@ -94,7 +94,6 @@ export default (initial) => ({
 			};
 
 			if (state.player && !state.ready && Api.isConnected()) {
-				// todo ready up player after camera animation
 				console.log(`Player ready [${state.playerColor}]`);
 				actions.ready();
 			}

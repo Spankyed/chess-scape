@@ -4,7 +4,7 @@ import { ClonePiece } from '../utils/utils';
 import { setupMoveMachine } from './moveMachines';
 // import { fromEvent } from "rxjs";
 // import { throttleTime } from "rxjs/operators";
-import { moveChangesToBoardMaps, createCaptureSq } from "../utils/utils"; 
+import { moveChangesToBoardMaps, createCaptureSq, getColor } from "../utils/utils"; 
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
@@ -213,10 +213,7 @@ export default function Board(current, scene, canvas){
 	    const { send } = moveService
         send({type: 'POSITION', value: { piece, newPos, ...(dontSlide ? {dontSlide} : {})} })
     }
-    function getColor(piece){ //!
-        if (!piece) return null
-        return piece.name.match(/white|black/)[0]
-    }
+
     function getClosestSq(fromPos){ //! highly inefficient when used to mapPieces
         // let { squares } =  moveService.state.context
         if (!fromPos) return

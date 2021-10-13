@@ -93,7 +93,6 @@ export default (initial) => ({
 				cleanupHandlers();
 				alert.closeAll();
 				// ! todo update DB client.room to 'lobby' otherwise wont receive join msgs
-				// todo reset sidepanel state
 				return initialState;
 			},
 	},

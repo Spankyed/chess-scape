@@ -127,12 +127,18 @@ function ClonePiece({type, color, pieces}){
 	return clonedPiece;
 }
 
+function getColor(piece) {
+	if (!piece) return null;
+	return piece.name.match(/white|black/)[0];
+}
+
 export {
 	SerializeBoard,
 	DeserializeBoard,
 	moveChangesToBoardMaps,
 	ClonePiece,
 	createCaptureSq,
+	getColor,
 	FromResize,
 };
 
