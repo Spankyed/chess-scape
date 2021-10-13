@@ -478,10 +478,11 @@ function setupBoard(pieces){
 }
 function positionPieces(pieces) {
     if (!(pieces instanceof Array)) pieces = [pieces]
-    pieces.forEach(({ piece, newPos }) => {
-        if (piece && !piece.position.equals(newPos)){
-            let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
-			startMovingPiece(piece, updatedPos)
+    pieces.forEach(({ piece, newPos, dontSlide }) => {
+		if (piece && !piece.position.equals(newPos)){
+			let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+			if (!dontSlide) startMovingPiece(piece, updatedPos);
+			else piece.position = updatedPos;
         }
     })
 }

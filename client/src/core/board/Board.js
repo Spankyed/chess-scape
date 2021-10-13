@@ -166,7 +166,7 @@ export default function Board(current, scene, canvas){
 			++(captured[color] || 0),
 			color
 		);
-        changePosition(piece, coords)
+        changePosition(piece, coords, true)
         return [
             { type: 'squares', name: `cp_${newCount}_${color}`, coords, piece },
             { type: 'captured', color, newCount }
@@ -203,15 +203,15 @@ export default function Board(current, scene, canvas){
         // this.promotedPawns.push[fromSq.piece]
         let pawn = fromSq.piece
         pawn.setEnabled(false) // hide pawn 
-        changePosition(promotionPiece, toSq.coords)
+        changePosition(promotionPiece, toSq.coords, true)
         return [
             { type: 'squares', name: from, piece: null },
             { type: 'squares', name: to, piece: promotionPiece }, // overrides pawn to promo sq update in handleMove
         ]
     }
-    function changePosition(piece, newPos){
+    function changePosition(piece, newPos, dontSlide){
 	    const { send } = moveService
-        send({type: 'POSITION', value: { piece, newPos }})
+        send({type: 'POSITION', value: { piece, newPos, ...(dontSlide ? {dontSlide} : {})} })
     }
     function getColor(piece){ //!
         if (!piece) return null
