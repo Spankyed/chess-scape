@@ -135,7 +135,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 			)}
 			{(!gameOver && game.committed && game.player) && (
 				<div
-					// onclick={offer("draw")}
+					onclick={offer("draw")}
 					class="menu-item"
 					role="menu-item"
 					id="menu-item-2"

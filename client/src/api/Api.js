@@ -125,9 +125,11 @@ function sendChat(text) {
 function offer(type) {
 	sendMessage({ method: "offer", type });
 }
-// function draw(accepted) {
-// 	sendMessage({ method: "draw", accepted });
-// }
+
+function draw(accepted) {
+	sendMessage({ method: "draw", accepted });
+}
+
 function rematch(accepted) {
 	sendMessage({ method: "rematch", accepted });
 }
@@ -294,7 +296,7 @@ export default {
 	leaveRoom,
 	end,
 	offer,
-	// draw,
+	draw,
 	rematch,
 	sendMove,
 	sendChat,
