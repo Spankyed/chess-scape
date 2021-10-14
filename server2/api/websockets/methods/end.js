@@ -38,7 +38,10 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 
 	// todo if time controlled game, get stepFN task token and end prev exec,
 	// abort|abandon|resign|draw
-	winningColor = color == "white" ? "black" : "white";
+	const opponentColor = color == "white" ? "black" : "white";
+	const winningColor =  endMethod == "draw" || endMethod == "abort"
+		? null
+		: opponentColor
 	await Promise.all([
 		// todo when game over store match in completeMatchesTable
 		Dynamo.update({
@@ -46,17 +49,16 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 			primaryKey: "ID",
 			primaryKeyValue: roomID,
 			updates: {
-				finish: true,
+				finished: true,
 				endTime: Date.now(),
+				winningColor,
+				endMethod
 			},
 		}),
 		sendMessageToRoom(roomID, {
 			method: "end",
-			winningColor:
-				endMethod == "draw" || endMethod == "abort"
-					? null
-					: winningColor,
 			player,
+			winningColor,
 			endMethod,
 		}),
 	]);

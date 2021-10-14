@@ -16,15 +16,19 @@ const engine = new Chess();
 // 	body: { room: "number", clientID: "number"  },
 // };
 
-module.exports = async function ({ clientID, roomID, move }, connection) {
+module.exports = async function (
+	{ clientID, roomID, move },
+	client,
+	connection
+) {
 	const match = await Dynamo.get(roomID, matchesTable);
 
-	if (!match) return Responses._400({ message: 'Match not found' });
-	
+	if (!match) return Responses._400({ message: "Match not found" });
+
 	if (match.finished) {
 		return Responses._400({ message: "Match already ended" }); // prob should msg client to show end ui
 	}
-	
+
 	const { players, started, lastMove, colorToMove } = match;
 
 	const player = players[colorToMove];
@@ -35,7 +39,7 @@ module.exports = async function ({ clientID, roomID, move }, connection) {
 		// await syncPlayer(connection, match.moves)
 		return Responses._400({ message: "Out of sync" });
 	}
-	
+
 	engine.load(lastMove.fen);
 	const validMove = engine.move(move);
 
@@ -46,9 +50,8 @@ module.exports = async function ({ clientID, roomID, move }, connection) {
 		// todo when game over store match in completeMatchesTable
 		const gameOver = engine.game_over();
 		const mated = gameOver && engine.in_checkmate();
-		const endMethod = gameOver && mated ? 'checkmate' : gameOver && 'draw'
+		const endMethod = gameOver && mated ? "checkmate" : gameOver && "draw";
 		const info = gameOver && {
-			clientID,
 			winningColor: colorToMove,
 			endMethod,
 			mated,
@@ -56,7 +59,7 @@ module.exports = async function ({ clientID, roomID, move }, connection) {
 		// todo if time controlled game, get stepFN task token and send to machine to end prev exec,
 		// todo then exec new state machine
 		const changes = update(move, match);
-		const commit = !player.committed
+		const commit = !player.committed;
 		await Promise.all([
 			Dynamo.update({
 				TableName: matchesTable,
@@ -69,6 +72,7 @@ module.exports = async function ({ clientID, roomID, move }, connection) {
 					...(commit
 						? { [`players.${colorToMove}.committed`]: true }
 						: {}),
+					...(gameOver ? info : {}),
 				},
 			}),
 			Dynamo.append({
@@ -97,7 +101,10 @@ module.exports = async function ({ clientID, roomID, move }, connection) {
 			}),
 		]);
 
-		console.log(`Player[${clientID}][${colorToMove}] moved`, { move, info }); // todo add playerColor to log
+		console.log(`Player[${clientID}][${colorToMove}] moved`, {
+			move,
+			info,
+		});
 	}
 
 	return Responses._200({});
