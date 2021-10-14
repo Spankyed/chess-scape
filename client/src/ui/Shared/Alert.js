@@ -33,7 +33,7 @@ export default (initial) => ({
 			},
 		closeAll: () => () => ({ alerts: {} }),
 		close:
-			(id, completed) =>
+			({id, completed}) =>
 			({ alerts }) => {
 				if (!alerts[id]) return;
 				if (!completed)
@@ -85,7 +85,7 @@ export default (initial) => ({
 		id: "start",
 		role: "none",
 		heading: "Both Players Joined",
-		message: "The match will now begin.",
+		message: "The match will begin shortly.",
 		// time: 2500
 	},
 });
@@ -95,7 +95,7 @@ function Alert({id, alert, actions}){
 		const handleAction = type => _ => {
 			const result = type == 'confirm'
 			alert.actions?.[type].handler(result, alert.dontAskAgain)
-			close(id, true)
+			close({id, completed:true})
 		}
 		return (
 			<div class={`alert ${alert.role} mx-auto flex-row justify-between`}>
