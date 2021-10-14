@@ -21,7 +21,6 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 
 	if (!accepted) {
 		// handle reject response
-		// todo handle dont ask again
 		await removeOffer(roomID);
 		return Responses._400({ message: "Opponent rejected" }); 
 	}

@@ -1,7 +1,6 @@
 const Responses = require("../../../common/HTTP_Responses");
 const Dynamo = require("../../../common/Dynamo");
 const update = require("./update");
-// const { withHooks, hooksWithSchema } = require("../../common/hooks");
 const {
 	sendMessageToRoom,
 	// sendMessageToRoomExcept,
@@ -11,10 +10,6 @@ const { Chess } = require("chess.js");
 const matchesTable = process.env.matchesTableName;
 const roomsTable = process.env.roomsTableName;
 const engine = new Chess();
-
-// const schema = {
-// 	body: { room: "number", clientID: "number"  },
-// };
 
 module.exports = async function (
 	{ clientID, roomID, move },
@@ -109,8 +104,6 @@ module.exports = async function (
 
 	return Responses._200({});
 };
-
-// exports = withHooks(["parse"])(handler);
 
 async function syncPlayer(connection, moves) {
 	return sendMessage(connection, { method: "sync", moveChanges: moves });

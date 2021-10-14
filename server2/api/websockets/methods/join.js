@@ -53,10 +53,6 @@ module.exports = async function ({ clientID, roomID }, client) {
 	return Responses._200({});
 };
 
-// module.exports = method;
-// exports = hooksWithSchema(schema, ["parse"])(handler);
-
-
 async function updateRoom(room, clientID){
 	const playerColors = Object.keys(room.players)
 	const group = playerColors.length < 2 ? 'players' : 'spectators'

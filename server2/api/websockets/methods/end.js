@@ -3,7 +3,7 @@ const Dynamo = require("../../common/Dynamo");
 const { sendMessageToRoom } = require("../../common/websocket/message");
 
 const matchesTable = process.env.matchesTableName;
-const roomsTable = process.env.roomsTableName;
+// const roomsTable = process.env.roomsTableName;
 
 module.exports = async function ({ clientID, roomID, endMethod }) {
 	const match = await Dynamo.get(roomID, matchesTable);
@@ -67,8 +67,6 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 
 	return Responses._200({});
 };
-
-// exports = withHooks(["parse"])(handler);
 
 function constructHeadings() {
 	return {

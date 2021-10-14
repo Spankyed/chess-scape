@@ -1,13 +1,8 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
-const { hooksWithSchema } = require("../../common/hooks");
 const { sendMessageToRoom } = require("../../common/websocket/message");
 
-const roomsTable = process.env.roomsTableName;
-
-// const schema = {
-// 	body: { roomID: "string", clientID: "number"  },
-// };
+// const roomsTable = process.env.roomsTableName;
 
 module.exports = async function ({ clientID, roomID }) {
 	try {
@@ -22,6 +17,3 @@ module.exports = async function ({ clientID, roomID }) {
 
 	return Responses._200({});
 };
-
-// module.exports = method;
-// exports = withHooks(["parse"])(handler);

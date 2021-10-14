@@ -33,10 +33,10 @@ module.exports = async function ({ clientID, roomID, type }, client, connection)
 
 	if (offerType == 'draw') {
 		if (match.finished) {
-			// todo sync player
+			// todo sync player!
 			return Responses._400({ message: "Match already ended" }); 
 		}
-		// if (match.dontAskDraw[opponent.clientID]) {
+		// if (match.dontAskDraw[opponent.clientID]) { // todo needs to be reset on rematch
 		// 	return Responses._400({ message: "Draw offer not allowed by opponent" }); 
 		// }
 	}
