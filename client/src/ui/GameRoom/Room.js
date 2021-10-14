@@ -60,6 +60,7 @@ export default (initial) => ({
 		completeFetch:
 			({ room, match }) =>
 			(_, actions) => {
+				if (!room || !match) return { isFetching: false, initialized: true };
 				const isHost = room.host == Api.getClientID();
 				const players = Object.entries(room.players);
 				const [color, player] =
@@ -79,12 +80,12 @@ export default (initial) => ({
 				if (match.finished) {
 					actions.endGame(match);
 				}
-
-				actions.game.setPlayer({
+				const setup = player ? {
 					player,
 					playerColor: color,
-					committed: match.players[color].committed,
-				});
+					committed: match.players[color]?.committed,
+				} : {}
+				actions.game.setPlayer(setup);
 
 				return {
 					room,
