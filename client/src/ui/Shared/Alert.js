@@ -33,6 +33,9 @@ export default (initial) => ({
 				};
 			},
 		closeAll: () => () => ({ alerts: {} }),
+		closeSome: (some) => (_,{close}) => {
+			some.forEach(([id, completed]) => close({ id, completed }));
+		},
 		close:
 			({id, completed}) =>
 			({ alerts }) => {
