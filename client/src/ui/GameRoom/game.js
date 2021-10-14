@@ -101,7 +101,9 @@ export default (initial) => ({
 				);
 			};
 			const onOffer = ({ type }) => {
-				roomActions.alert.show(OfferAlert(type));
+				// if (!roomState.controls.recentlyOffered) {
+					roomActions.alert.show(OfferAlert(type));
+				// }
 			};
 
 			if (state.player && !state.ready && Api.isConnected()) {

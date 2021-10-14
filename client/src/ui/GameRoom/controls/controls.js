@@ -1,6 +1,7 @@
 import { h } from 'hyperapp';
 import prompts from './prompts.js';
 import Api from "../../../api/Api"; 
+import { delay } from "nanodelay";
 
 export default (initial) => ({
 	state: {
@@ -8,6 +9,7 @@ export default (initial) => ({
 		isPromoting: false,
 		resolve: null,
 		reject: null,
+		recentlyOffered: false
 	},
 	actions: {
 		openPieceSelect:
@@ -24,10 +26,12 @@ export default (initial) => ({
 				return { isPromoting: false };
 			},
 		toggleMenu: (ev) => (state) => ({ menuOpen: !state.menuOpen }),
+		disableOffers: () => ({ recentlyOffered: true }),
+		enableOffers: () => ({ recentlyOffered: false }),
 	},
 	view:
 		(state, actions) =>
-		({ leaveRoom, toggleSidePanel, roomState, alert}) => {
+		({ leaveRoom, toggleSidePanel, roomState, alert }) => {
 			const { isLoading, gameOver, matchInfo, game } = roomState;
 
 			const leave = () => {
@@ -68,8 +72,15 @@ export default (initial) => ({
 							<div class="menu-wrapper">
 								{state.menuOpen && (
 									<Menu
-										toggleMenu={actions.toggleMenu}
-										{...{ game, alert, gameOver, toggleSidePanel }}
+										{...{
+											actions,
+											state,
+											game,
+											alert,
+											gameOver,
+											toggleSidePanel,
+											state
+										}}
 									/>
 								)}
 								<button
@@ -95,8 +106,16 @@ export default (initial) => ({
 			);
 		},
 });
-function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
-
+function Menu({
+	alert,
+	game,
+	gameOver,
+	toggleSidePanel,
+	actions,
+	state
+}) {
+	let {toggleMenu, disableOffers, enableOffers} = actions
+	let {recentlyOffered} = state
 	const openPanel = (tab) => () => {
 		toggleMenu();
 		toggleSidePanel(tab);
@@ -107,8 +126,11 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 	};
 
 	const offer = (type) => () => {
+		disableOffers();
+		alert.close({id:type, completed:true}) // close any duplicate offer
 		Api.offer(type);
-	}
+		delay(7000).then(enableOffers);
+	};
 
 	return (
 		// needs pointer events
@@ -119,7 +141,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 			aria-labelledby="menu-button"
 			tabindex="-1"
 		>
-			{(!gameOver && game.committed && game.player) && (
+			{!gameOver && game.committed && game.player && (
 				<div
 					onclick={prompt("resign")}
 					class="menu-item"
@@ -133,7 +155,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 					<span>Resign</span>
 				</div>
 			)}
-			{(!gameOver && game.committed && game.player) && (
+			{!recentlyOffered && !gameOver && game.player && game.committed && (
 				<div
 					onclick={offer("draw")}
 					class="menu-item"
@@ -147,7 +169,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 					<span>Offer Draw</span>
 				</div>
 			)}
-			{(gameOver && game.player) && (
+			{!recentlyOffered && gameOver && game.player && (
 				<div
 					onclick={offer("rematch")}
 					class="menu-item"
