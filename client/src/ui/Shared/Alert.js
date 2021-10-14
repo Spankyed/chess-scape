@@ -20,7 +20,7 @@ export default (initial) => ({
 		show:
 			(options) =>
 			({ alerts }, actions) => {
-				if (options.time) delay(options.time).then((_) => actions.close(options.id));
+				if (options.time) delay(options.time).then((_) => actions.close({ id: options.id }));
 				return {
 					alerts: {
 						...alerts,

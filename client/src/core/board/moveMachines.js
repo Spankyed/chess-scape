@@ -99,7 +99,8 @@ function setupMoveMachine(current, game, squares, pieces){
 					},
 					SELECT: {
 						cond: ({ playerColor }, { value }) =>
-							!!value.piece && playerColor == getColor(value.piece),
+							!!value.piece &&
+							playerColor == getColor(value.piece),
 						actions: assign({ fromSq: (_, { value }) => value }),
 						target: ".selected.dragging",
 						// in: '#light.red.stop'
@@ -163,7 +164,7 @@ function setupMoveMachine(current, game, squares, pieces){
 							),
 						},
 					})),
-					(_) => current.uiActions.alert.close("review"),
+					(_) => current.uiActions.alert.close({ id: "review" }),
 				],
 				states: {
 					setup: {

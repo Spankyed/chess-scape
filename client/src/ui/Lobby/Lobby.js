@@ -101,7 +101,7 @@ export default (initial) => ({
 
 			const cancel = async () => {
 				await Api.deleteRoom(state.hostedRoom).catch(actions.exit);
-				actions.alert.close("host");
+				actions.alert.close({ id: "host"});
 			};
 
 			const initialize = async () => {

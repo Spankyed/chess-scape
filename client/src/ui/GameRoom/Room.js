@@ -132,7 +132,7 @@ export default (initial) => ({
 					Object.keys(room.players).length == 2 &&
 					!room.matchStarted
 				) {
-					actions.alert.close("host");
+					actions.alert.close({ id: "host"});
 					actions.alert.show(alert.startAlert); // alert match is starting soon
 				}
 				actions.updateRoom(room);

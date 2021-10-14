@@ -83,7 +83,7 @@ export default (initial) => ({
 			const onStart = () => {
 				actions.startMatch();
 				delay(300).then((_) =>
-					roomActions.alert.close("start")
+					roomActions.alert.close({ id: "start"})
 				);
 			};
 			const onEnd = (info) => {
@@ -97,7 +97,7 @@ export default (initial) => ({
 				roomActions.alert.show(RematchAlert());
 				actions.uncommit();
 				delay(300).then((_) =>
-					roomActions.alert.close("rematch")
+					roomActions.alert.close({ id: "rematch"})
 				);
 			};
 			const onOffer = ({ type }) => {
