@@ -3,6 +3,7 @@ const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
 
 const roomsTable = process.env.roomsTableName;
+const matchesTable = process.env.matchesTableName;
 
 const schema = {
 	path: { ID: "string" },
@@ -17,8 +18,9 @@ const handler = async (event) => {
 	let ID = event.pathParameters.ID;
 
 	const room = await Dynamo.get(ID, roomsTable);
+	const match = await Dynamo.get(ID, matchesTable);
 
-	return Responses._200({ room });
+	return Responses._200({ room, match });
 };
 
 exports.handler = hooksWithSchema(schema, [])(handler);

@@ -57,35 +57,51 @@ export default (initial) => ({
 			Api.getRoom(roomID).then(actions.completeFetch);
 			return { isFetching: true };
 		},
-		completeFetch: (room) => (_, actions) => {
-			const isHost = room.host == Api.getClientID();
-			const players = Object.entries(room.players);
-			const [color, player] =
-				players.find((p) => p[1].clientID == Api.getClientID()) || [];
-			if (!room.matchStarted) {
-				if (players.length == 1 && isHost) {
-					actions.alert.show(alert.waitAlert);
+		completeFetch:
+			({ room, match }) =>
+			(_, actions) => {
+				const isHost = room.host == Api.getClientID();
+				const players = Object.entries(room.players);
+				const [color, player] =
+					players.find((p) => p[1].clientID == Api.getClientID()) ||
+					[];
+
+				if (!room.matchStarted) {
+					if (players.length == 1 && isHost) {
+						actions.alert.show(alert.waitAlert);
+					} else {
+						actions.alert.show(alert.startAlert);
+					}
 				} else {
-					actions.alert.show(alert.startAlert);
+					Api.sync();
 				}
-			} else {
-				Api.sync()
-			}
 
-			actions.game.setPlayer({
-				player,
-				playerColor: color,
-			});
+				if (match.finished) {
+					actions.endGame(match);
+				}
 
-			return {
-				room,
-				isHost,
-				isFetching: false,
-				initialized: true,
-			};
-		},
+				actions.game.setPlayer({
+					player,
+					playerColor: color,
+					committed: match.players[color].committed,
+				});
+
+				return {
+					room,
+					isHost,
+					gameOver: !!match.finished,
+					isFetching: false,
+					initialized: true,
+				};
+			},
 		getPlayerColor: () => () => ({ gameOver: true }),
-		endGame: (info) => () => ({ gameOver: true, matchInfo: info }),
+		restartGame: () => () => ({ gameOver: false, matchInfo: null }),
+		endGame:
+			({ winningColor, endMethod, mated }) =>
+			() => ({
+				gameOver: true,
+				matchInfo: { winningColor, endMethod, mated },
+			}),
 		exit:
 			() =>
 			(_, { alert }) => {

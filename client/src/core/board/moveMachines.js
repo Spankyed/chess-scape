@@ -4,6 +4,7 @@ import { pure } from 'xstate/lib/actions';
 import { SerializeBoard, DeserializeBoard, getColor } from "../utils/utils"; 
 import { startMovingPiece } from './navigationSystem';
 import initialState from "./state";
+// import { cancel } from 'xstate/lib/actionTypes';
 
 /*
 ** --------------------------------------------------------------------------
