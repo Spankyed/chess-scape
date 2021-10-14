@@ -6,7 +6,7 @@ const clientsTable = process.env.clientsTableName;
 const matchesTable = process.env.matchesTableName;
 const roomsTable = process.env.roomsTableName;
 
-module.exports = async function ({ clientID, roomID }) {
+module.exports = async function ({ clientID, roomID }, client) {
 	try {
 		const [_,room] = await Promise.all([
 			Dynamo.update({

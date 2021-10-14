@@ -20,17 +20,23 @@ const handler = async (event) => {
 	}
 	const message = event.body;
 	const { clientID, TOKEN, method } = message;
-	// console.log(`Message [${method}] from [${clientID}]`, message);
 	const [isAuthorized, client] = await authorize(clientID, TOKEN, connectionID);
 
+	console.log(`Message [${method}] from [${clientID}]`, {
+		message,
+		isAuthorized,
+		client,
+	});
+	
 	if (!isAuthorized) {
+		console.warn(`Unauthorized message[${method}] from [${clientID}] token[${TOKEN}]`)
 		await sendMessage(
 			connection,
 			{ method: "unauthorize" }
 		);
 		return Responses._401({ message: "Unauthorized connection" });
 	}
-
+	
 	await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",
@@ -42,7 +48,7 @@ const handler = async (event) => {
 
 	const messageHandler = methods[method];
 
-	if (messageHandler) await messageHandler(message, connection);
+	if (messageHandler) await messageHandler(message, client, connection);
 
 	// if (messageHandler) return await messageHandler(message);
 	// else return Responses._400({ error: "Message not understood" });
