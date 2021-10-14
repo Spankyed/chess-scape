@@ -68,6 +68,7 @@ module.exports = async function (
 						? { [`players.${colorToMove}.committed`]: true }
 						: {}),
 					...(gameOver ? info : {}),
+					offer: null,
 				},
 			}),
 			Dynamo.append({

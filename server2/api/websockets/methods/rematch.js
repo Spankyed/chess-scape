@@ -15,8 +15,12 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 		return Responses._400({ message: "Match not finished" }); // prob should msg client to show end ui
 	}
 
-	if (match.offer.type != "rematch" || match.offer.to != clientID) {
-		return Responses._400({ message: "Bad offer or recipient" }); 
+	if (
+		!match.offer ||
+		match.offer.type != "rematch" ||
+		match.offer.to != clientID
+	) {
+		return Responses._400({ message: "Bad offer or recipient" });
 	}
 
 	if (!accepted) {

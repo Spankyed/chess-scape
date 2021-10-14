@@ -1,6 +1,10 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
 const { sendMessage } = require("../../common/websocket/message");
+const draw = require("./draw");
+const rematch = require("./rematch");
+
+const offerHandlers = {draw, rematch}
 
 const matchesTable = process.env.matchesTableName;
 const clientsTable = process.env.clientsTableName;
@@ -29,6 +33,15 @@ module.exports = async function ({ clientID, roomID, type }, client, connection)
 	
 	if (!offerType) {
 		return Responses._400({ message: "Offer not recognized" }); 
+	}
+
+	if (match.offer && match.offer.type == type) {
+		if (match.offer.to != opponent.clientID) { // both players offered same thing
+			offerHandlers[type]({ clientID, roomID, accepted:true });
+			return Responses._200({ message: `Both players offered to ${type}` })
+		} else {
+			return Responses._400({ message: "Duplicate offer" })
+		}
 	}
 
 	if (offerType == 'draw') {
