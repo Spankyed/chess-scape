@@ -31,7 +31,7 @@ export default (initial) => ({
 			const { isLoading, gameOver, matchInfo, game } = roomState;
 
 			const leave = () => {
-				if (gameOver) leaveRoom();
+				if (gameOver || !game.player) leaveRoom();
 				else {
 					const method = !game.committed ? "abort" : "abandon";
 					alert.show(prompts[method](leaveRoom));
