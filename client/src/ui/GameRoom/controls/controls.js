@@ -119,7 +119,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 			aria-labelledby="menu-button"
 			tabindex="-1"
 		>
-			{game.committed && (
+			{(!gameOver && game.committed && game.player) && (
 				<div
 					onclick={prompt("resign")}
 					class="menu-item"
@@ -133,8 +133,21 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 					<span>Resign</span>
 				</div>
 			)}
-			{/* { true && */}
-			{gameOver && (
+			{(!gameOver && game.committed && game.player) && (
+				<div
+					// onclick={offer("draw")}
+					class="menu-item"
+					role="menu-item"
+					id="menu-item-2"
+					tabindex="-1"
+				>
+					<div class="menu-icon">
+						<img src="./assets/controls/menu/draw.svg" />
+					</div>
+					<span>Offer Draw</span>
+				</div>
+			)}
+			{(gameOver && game.player) && (
 				<div
 					onclick={offer("rematch")}
 					class="menu-item"
@@ -148,18 +161,6 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 					<span>Rematch</span>
 				</div>
 			)}
-			<div
-				// onclick={offer("draw")}
-				class="menu-item"
-				role="menu-item"
-				id="menu-item-2"
-				tabindex="-1"
-			>
-				<div class="menu-icon">
-					<img src="./assets/controls/menu/draw.svg" />
-				</div>
-				<span>Offer Draw</span>
-			</div>
 			<div
 				class="menu-item"
 				role="menu-item"
