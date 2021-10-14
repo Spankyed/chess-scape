@@ -94,7 +94,6 @@ export default class Game {
 		const color = this.playerColor;
 		return new Promise((resolve, reject) =>
 			this.Scene.uiActions.controls.openPieceSelect({
-				color,
 				resolve,
 				reject,
 			})

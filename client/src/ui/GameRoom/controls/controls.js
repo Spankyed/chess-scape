@@ -1,19 +1,18 @@
 import { h } from 'hyperapp';
 import prompts from './prompts.js';
-// import { cancel } from 'xstate/lib/actionTypes';
+import Api from "../../../api/Api"; 
+
 export default (initial) => ({
 	state: {
 		menuOpen: false,
 		isPromoting: false,
-		playerColor: "white",
 		resolve: null,
 		reject: null,
 	},
 	actions: {
 		openPieceSelect:
-			({ color, resolve, reject }) =>
+			({ resolve, reject }) =>
 			(_) => ({
-				playerColor: color,
 				resolve,
 				reject,
 				isPromoting: true,
@@ -49,7 +48,7 @@ export default (initial) => ({
 						{gameOver && <MatchMessage matchInfo={matchInfo} />}
 						{state.isPromoting && (
 							<PieceSelection
-								color={state.playerColor}
+								color={game.playerColor}
 								resolve={state.resolve}
 								closePieceSelect={actions.closePieceSelect}
 							/>
@@ -70,7 +69,7 @@ export default (initial) => ({
 								{state.menuOpen && (
 									<Menu
 										toggleMenu={actions.toggleMenu}
-										{...{ game, alert, gameOver }}
+										{...{ game, alert, gameOver, toggleSidePanel }}
 									/>
 								)}
 								<button
@@ -96,8 +95,7 @@ export default (initial) => ({
 			);
 		},
 });
-function Menu({ alert, game, gameOver, toggleMenu }) {
-
+function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 	const openPanel = (tab) => () => {
 		toggleMenu();
 		toggleSidePanel(tab);
