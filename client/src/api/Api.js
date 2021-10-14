@@ -21,6 +21,8 @@ let clientID = client.clientID || null,
 		delete: () => {},
 		join: () => {},
 		start: () => {},
+		rematch: () => {},
+		offer: () => {},
 		sync: () => {},
 		move: () => {},
 		chat: () => {},
@@ -120,8 +122,14 @@ function sendChat(text) {
 	sendMessage({ method: "chat", text });
 }
 
-function offerDraw() {
-	sendMessage({ method: "offerDraw" });
+function offer(type) {
+	sendMessage({ method: "offer", type });
+}
+// function draw(accepted) {
+// 	sendMessage({ method: "draw", accepted });
+// }
+function rematch(accepted) {
+	sendMessage({ method: "rematch", accepted });
 }
 
 function end(endMethod) {
@@ -175,9 +183,9 @@ async function getRoom(ID) {
 	const url = `${baseHttpUrl}/get-room/${ID}`;
 	const response = await fetch(url, { method, headers });
 	if (response.ok) {
-		const {room} = await response.json();
-		console.log("%c Room ", "color:blue;", { room });
-		return room;
+		const {room, match} = await response.json();
+		console.log("%c Room ", "color:blue;", { room, match });
+		return {room, match};
 	}
 }
 async function getRooms() {
@@ -285,7 +293,9 @@ export default {
 	ready,
 	leaveRoom,
 	end,
-	offerDraw,
+	offer,
+	// draw,
+	rematch,
 	sendMove,
 	sendChat,
 	shareVideo,

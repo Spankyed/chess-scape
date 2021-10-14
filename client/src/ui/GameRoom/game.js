@@ -9,7 +9,7 @@ import { draw } from "./controls/prompts.js";
 export default (initial) => ({
 	state: {
 		player: false,
-		playerColor: "white",
+		playerColor: "white", // ! should be null?
 		ready: false,
 		// initialized: false,
 		matchStarted: false,
@@ -17,13 +17,13 @@ export default (initial) => ({
 	},
 	actions: {
 		setPlayer:
-			({ player, playerColor }) =>
+			({ player, playerColor, committed }) =>
 			(state) => {
 				Scene.manager.animateCameraIntoPosition(
 					playerColor || state.playerColor
 				);
 				Scene.game().playerColor = playerColor;
-				return { player, playerColor };
+				return { player, playerColor, committed };
 			},
 		ready:
 			() =>
@@ -47,6 +47,7 @@ export default (initial) => ({
 			},
 		finish: () => () => ({ finished: true }),
 		commit: () => () => ({ committed: true }),
+		uncommit: () => () => ({ committed: false }),
 	},
 	view:
 		(state, actions) =>
@@ -81,16 +82,26 @@ export default (initial) => ({
 			};
 			const onStart = () => {
 				actions.startMatch();
-				delay(300).then((_) => roomActions.alert.close("start"));
+				delay(300).then((_) =>
+					roomActions.alert.close("start")
+				);
 			};
 			const onEnd = (info) => {
 				roomActions.endGame(info);
 			};
 			// const onEnd = ({ info }) => { roomActions.endGame({info}) };
-			const onDrawOffer = ({ to }) => {
-				if (Api.getClientID() == to) {
-					roomActions.alert.show(draw);
-				}
+			const onRematch = () => {
+				roomActions.restartGame();
+				roomActions.sidePanel.moves.clear();
+				Scene.board().moveService.send({ type: "RESET_BOARD" });
+				roomActions.alert.show(RematchAlert());
+				actions.uncommit();
+				delay(300).then((_) =>
+					roomActions.alert.close("rematch")
+				);
+			};
+			const onOffer = ({ type }) => {
+				roomActions.alert.show(OfferAlert(type));
 			};
 
 			if (state.player && !state.ready && Api.isConnected()) {
@@ -101,9 +112,10 @@ export default (initial) => ({
 			Api.setMessageHandlers({
 				sync: onSync,
 				start: onStart,
+				rematch: onRematch,
+				offer: onOffer,
 				move: onMove,
 				end: onEnd,
-				offerDraw: onDrawOffer,
 			});
 
 			const createScene = (canvas) => {
@@ -119,3 +131,49 @@ export default (initial) => ({
 		},
 });
 
+function OfferAlert(type) {
+	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+	const message =
+		type == "draw"
+			? "Opponent would like to draw the match."
+			: "Opponent would like a rematch";
+	return {
+		// icon: "./assets/create/host.svg",
+		id: type,
+		role: "none",
+		heading: `${capitalize(type)} Offered`,
+		message,
+		actions: {
+			confirm: {
+				text: "Accept",
+				handler: (bool, persist) => {
+					// setShare({ bool, persist });
+					Api[type](true);
+				},
+			},
+			default: {
+				text: "Deny",
+				handler: (bool, persist) => {
+					Api[type](false);
+				},
+			},
+		},
+	};
+}
+function RematchAlert() {
+	return {
+		// icon: "./assets/create/host.svg",
+		id: "rematch",
+		role: "none",
+		heading: "Rematch Agreed",
+		message: "A new match will begin shortly.",
+		// actions: {
+		// 	default: {
+		// 		text: "Abort",
+		// 		handler: (_) => {
+		// 			Api.deleteRoom(state.hostedRoom);
+		// 		},
+		// 	},
+		// },
+	};
+}

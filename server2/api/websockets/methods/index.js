@@ -4,6 +4,8 @@ const ready = require("./ready");
 const leave = require("./leave");
 const move = require("./move/move");
 const end = require("./end");
+const offer = require("./offer");
+const rematch = require("./rematch");
 
 module.exports = {
 	join,
@@ -12,4 +14,6 @@ module.exports = {
 	leave,
 	move,
 	end,
+	offer,
+	rematch,
 };

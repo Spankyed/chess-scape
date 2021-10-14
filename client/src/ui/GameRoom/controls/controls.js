@@ -96,6 +96,7 @@ export default (initial) => ({
 		},
 });
 function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
+
 	const openPanel = (tab) => () => {
 		toggleMenu();
 		toggleSidePanel(tab);
@@ -104,6 +105,10 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 		toggleMenu();
 		alert.show(prompts[method]);
 	};
+
+	const offer = (type) => () => {
+		Api.offer(type);
+	}
 
 	return (
 		// needs pointer events
@@ -131,6 +136,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 			{/* { true && */}
 			{gameOver && (
 				<div
+					onclick={offer("rematch")}
 					class="menu-item"
 					role="menu-item"
 					id="menu-item-0"
@@ -143,7 +149,7 @@ function Menu({ alert, game, gameOver, toggleMenu, toggleSidePanel }) {
 				</div>
 			)}
 			<div
-				onclick={prompt("draw")}
+				// onclick={offer("draw")}
 				class="menu-item"
 				role="menu-item"
 				id="menu-item-2"

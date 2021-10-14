@@ -18,6 +18,7 @@ export default initial => ({
 		}),
 		startReview: move => () => ({inReview: true, currMove: move}),
 		endReview: _=> _=> ({inReview: false, currMove: null}),
+		clear: _=> _=> ({moves: { w:[], b:[] }}),
 	},
 	view: (state, actions) => ({alert}) => {
 		function download(type){
@@ -27,7 +28,7 @@ export default initial => ({
 			let content = interact.game.engine[type]() //! 
 			let filename = `match-${date}.${type}`;
 			let blob = new Blob([content], {
-			 type: "text/plain;charset=utf-8"
+				type: "text/plain;charset=utf-8"
 			});
 			saveAs(blob, filename);
 		}
