@@ -9,7 +9,7 @@ import { draw } from "./controls/prompts.js";
 export default (initial) => ({
 	state: {
 		player: false,
-		playerColor: "white", // ! should be null?
+		playerColor: null,
 		ready: false,
 		// initialized: false,
 		matchStarted: false,
@@ -20,7 +20,7 @@ export default (initial) => ({
 			({ player, playerColor, committed }) =>
 			(state) => {
 				Scene.manager.animateCameraIntoPosition(
-					playerColor || state.playerColor
+					playerColor || 'white'
 				);
 				Scene.game().playerColor = playerColor;
 				return { player, playerColor, committed };

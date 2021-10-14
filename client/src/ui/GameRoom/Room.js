@@ -94,7 +94,6 @@ export default (initial) => ({
 					initialized: true,
 				};
 			},
-		getPlayerColor: () => () => ({ gameOver: true }),
 		restartGame: () => () => ({ gameOver: false, matchInfo: null }),
 		endGame:
 			({ winningColor, endMethod, mated }) =>
