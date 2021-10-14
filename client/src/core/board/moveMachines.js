@@ -372,23 +372,19 @@ function setupMoveMachine(current, game, squares, pieces){
 					}),
 				],
 			},
-			OPP_MOVE: {
-				// todo test if user in review selections are reset
-				actions: [
-					({ squares }, { value }) => {
-						let { from, to } = value;
-						startMovingPiece(
-							squares[from].piece,
-							squares[to].coords
-						);
-					},
-					assign({
-						canMove: true,
-						lastMove: (_, { value }) => value,
-					}),
-				],
-				target: "moving",
-			},
+			// todo test if selections are reset on transition to review
+			OPP_MOVE: [
+				{
+					actions: handleOppMove(),
+					target: "#spectating",
+					cond: (ctx) => !ctx.isPlayer,
+				},
+				{
+					actions: handleOppMove(),
+					target: "moving",
+					cond: (ctx) => ctx.isPlayer,
+				},
+			],
 			UPDATE: {
 				actions: [
 					pure((_, { value }) => {
@@ -462,6 +458,21 @@ function setupMoveMachine(current, game, squares, pieces){
 	return interpret(moveMachine)
     // .onTransition((state) => console.log('state changed', state))
     .start();
+}
+function handleOppMove(){
+	return [
+		({ squares }, { value }) => {
+			let { from, to } = value;
+			startMovingPiece(
+				squares[from].piece,
+				squares[to].coords
+			);
+		},
+		assign({
+			canMove: true,
+			lastMove: (_, { value }) => value,
+		}),
+	]
 }
 function setupBoard(pieces){
     return {
