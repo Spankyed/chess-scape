@@ -12,13 +12,18 @@ const entrance = Entrance()
 const gameRoom = GameRoom()
 const lobby = Lobby()
 
-const state = {
+const initialState = {
 	entrance: entrance.state,
 	gameRoom: gameRoom.state,
 	lobby: lobby.state,
-	authorized: checkForClient(),
+	authorized: false,
 	inGame: false,
 	roomID: "",
+};
+
+const state = {
+	...initialState,
+	authorized: checkForClient(),
 };
 
 const actions = {
@@ -26,7 +31,7 @@ const actions = {
 	gameRoom: gameRoom.actions,
 	lobby: lobby.actions,
 	authorize: () => ({ authorized: true }),
-	unauthorize: () => ({authorized: false}),
+	unauthorize: () => ({ ...initialState }),
 	joinRoom: (roomID) => ({ inGame: true, roomID }),
 	joinLobby: () => ({ inGame: false }), // back to lobby
 };
