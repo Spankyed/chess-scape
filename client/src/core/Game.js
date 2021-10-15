@@ -23,8 +23,9 @@ export default class Game {
 			? this.reviewEngine
 			: this.engine;
 	}
+
 	makeMove(move, isOpponentMove) {
-		return this.getCurrentEngine(isOpponentMove).move(move);
+		return this.appendIfChecked(this.getCurrentEngine(isOpponentMove).move(move));
 	}
 	async handlePlayerMove(move) {
 		// console.log('checking',{move})
@@ -73,6 +74,10 @@ export default class Game {
 				// console.log('computer move', validMove)
 			}, 3000);
 		}
+	}
+	appendIfChecked(validMove){
+		if (!validMove || !this.getCurrentEngine().in_check()) return validMove;
+		return { ...validMove, inCheck: true };
 	}
 	isPromoting(move) {
 		let engine = this.getCurrentEngine();
