@@ -11,6 +11,7 @@ export default function Board(current, scene, canvas){
 	pieces = current.pieces,
 	[board, squares] = createBoard(scene), // board var not used
 	selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", scene),
+	checkedHighlightLayer = new BABYLON.HighlightLayer("checked_sq", scene),
 	moveService = setupMoveMachine(current, game, squares, pieces);
 	// $moveState = subscribeChanges(moveService)
 	subscribeChanges(moveService)
@@ -139,7 +140,7 @@ export default function Board(current, scene, canvas){
     function handleMove(move, state){
 	    const { send } = moveService
         let { squares } =  state.context
-        let { from, to, flags } = move
+        let { from, to, flags, inCheck, color } = move
         let fromSq = squares[from]
         let toSq = squares[to]
         let changes = [
@@ -152,10 +153,13 @@ export default function Board(current, scene, canvas){
             else if (flags.includes('c')) changes.push( ...positionCapturedPiece(toSq.piece, state))
             else if (castled = flags.match(/k|q/)) changes.push( ...positionCastledRook(castled[0], to, state))
         }
+        resetHighlights()
+        if (inCheck) showCheckedHL(color)
         send({type: 'UPDATE', value: changes, addMove: !stateIs('reviewing') }) // add from/to to pos inside machine
         console.log('handled move',{move})
-        selectedHighlightLayer.removeAllMeshes();
     }
+
+
     //================================================================================
     // Board Utilities
     //================================================================================
@@ -213,7 +217,18 @@ export default function Board(current, scene, canvas){
 	    const { send } = moveService
         send({type: 'POSITION', value: { piece, newPos, ...(dontSlide ? {dontSlide} : {})} })
     }
-
+    function showCheckedHL(movingColor){
+        let { squares } =  moveService.state.context
+        let kingColor = movingColor == 'w' ? 'b' : 'w'
+        let kingSq = Object.values(squares).find(({piece}) => piece?.id == `k_${kingColor}_1`)
+        if (kingSq) {
+            checkedHighlightLayer.addMesh(kingSq.mesh, BABYLON.Color3.Red()); // highlight
+        }
+    }
+    function resetHighlights(){
+        selectedHighlightLayer.removeAllMeshes();
+        checkedHighlightLayer.removeAllMeshes();
+    }
     function getClosestSq(fromPos){ //! highly inefficient when used to mapPieces
         // let { squares } =  moveService.state.context
         if (!fromPos) return
@@ -268,6 +283,8 @@ export default function Board(current, scene, canvas){
 		moveService,
 		resetBoard,
 		syncBoard,
+        showCheckedHL,
+        resetHighlights,
 	};
 }
 

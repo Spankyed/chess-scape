@@ -162,6 +162,7 @@ function setupMoveMachine(current, game, squares, pieces){
 								squares,
 								pieces
 							),
+							info: moves[moves.length - 1]?.info
 						},
 					})),
 					(_) => current.uiActions.alert.close({ id: "review" }),
@@ -183,6 +184,7 @@ function setupMoveMachine(current, game, squares, pieces){
 													squares,
 													pieces
 												),
+												info: moves[value?.id]?.info,
 											},
 										});
 									return;
@@ -292,7 +294,7 @@ function setupMoveMachine(current, game, squares, pieces){
 				},
 				on: {
 					SET_BOARD: {
-						...setupBoard(pieces),
+						...setupBoard(pieces, current),
 						target: ".moving",
 					},
 					REVIEW: {
@@ -316,14 +318,16 @@ function setupMoveMachine(current, game, squares, pieces){
 							value.moves[value.moves.length - 1]?.fen
 						),
 					send((_, { value }) => {
+						let lastMove = value.moves[value.moves.length - 1];
 						return {
 							type: "SET_BOARD",
 							value: {
 								...DeserializeBoard(
-									value.moves[value.moves.length - 1]?.board,
+									lastMove?.board,
 									squares,
 									pieces
 								),
+								info: lastMove.info
 							},
 						};
 					}),
@@ -429,6 +433,7 @@ function setupMoveMachine(current, game, squares, pieces){
 										pieces,
 										ctx.captured
 									),
+									info: ctx.lastMove,
 									fen: game().engine.fen(),
 								},
 							],
@@ -452,7 +457,7 @@ function setupMoveMachine(current, game, squares, pieces){
 			REVIEW: {
 				target: "#reviewing",
 			},
-			SET_BOARD: setupBoard(pieces),
+			SET_BOARD: setupBoard(pieces, current),
 		},
 	});
 
@@ -475,7 +480,7 @@ function handleOppMove(){
 		}),
 	]
 }
-function setupBoard(pieces){
+function setupBoard(pieces, current){
     return {
 		actions: [
 			togglePieces(pieces),
@@ -490,6 +495,12 @@ function setupBoard(pieces){
 						newPos: coords,
 					}))
 				),
+			(_, { value }) => {
+				current.board().resetHighlights();
+				if (value.info?.inCheck){
+					current.board().showCheckedHL(value.info.color);
+				}
+			},
 		],
 	};
 }

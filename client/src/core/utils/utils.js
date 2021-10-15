@@ -87,7 +87,7 @@ function createCaptureSq(count, color) {
 
 function moveChangesToBoardMaps(moves) {
 	let [initial, ...movesStates] = moves.reduce(
-		(states, { pieces, squares, captured, fen }, idx) => {
+		(states, { pieces, squares, captured, fen, info }, idx) => {
 			let lastState = states[idx].board;
 			return [
 				...states,
@@ -106,6 +106,7 @@ function moveChangesToBoardMaps(moves) {
 							...squares,
 						},
 					},
+					info,
 					fen,
 				},
 			];
