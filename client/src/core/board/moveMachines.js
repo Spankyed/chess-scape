@@ -493,6 +493,7 @@ function setupBoard(pieces, current){
 					Object.entries(squares).map(([_, { piece, coords }]) => ({
 						piece,
 						newPos: coords,
+						dontSlide: true
 					}))
 				),
 			(_, { value }) => {
