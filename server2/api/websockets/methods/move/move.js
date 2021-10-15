@@ -2,6 +2,7 @@ const Responses = require("../../../common/HTTP_Responses");
 const Dynamo = require("../../../common/Dynamo");
 const update = require("./update");
 const {
+	sendMessage,
 	sendMessageToRoom,
 	// sendMessageToRoomExcept,
 } = require("../../../common/websocket/message");
@@ -30,16 +31,11 @@ module.exports = async function (
 
 	const isPlayersTurn = player.clientID === clientID;
 
-	if (!isPlayersTurn || !started) {
-		// await syncPlayer(connection, match.moves)
-		return Responses._400({ message: "Out of sync" });
-	}
-
 	engine.load(lastMove.fen);
 	const validMove = engine.move(move);
 
-	if (!validMove) {
-		// await syncPlayer(clientID, match.moves)
+	if (!validMove || !isPlayersTurn || !started) {
+		await syncPlayer(connection, match.moves);
 		return Responses._400({ message: "Out of sync" });
 	} else {
 		// todo when game over store match in completeMatchesTable
@@ -107,7 +103,7 @@ module.exports = async function (
 };
 
 async function syncPlayer(connection, moves) {
-	return sendMessage(connection, { method: "sync", moveChanges: moves });
+	return sendMessage(connection, { method: "sync", moves });
 }
 
 function nextColor(color) {
