@@ -7,6 +7,8 @@ const matchesTable = process.env.matchesTableName;
 module.exports = async function ({ clientID, roomID }, client, connection) {
 	const match = await Dynamo.get(roomID, matchesTable);
 
+	if (!match) return Responses._400({ message: "Match not found" });
+	
 	if (match.moves.length < 1) {
 		return Responses._400({ message: 'No moves found for sync '});
 	};

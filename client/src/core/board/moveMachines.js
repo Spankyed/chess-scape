@@ -329,6 +329,7 @@ function setupMoveMachine(current, game, squares, pieces){
 					}),
 					assign({
 						moves: (_, { value }) => value.moves,
+						lastMove: (_, { value }) => value.lastMove,
 					}),
 					send({ type: "START_GAME" }),
 				],

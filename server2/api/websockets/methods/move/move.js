@@ -25,17 +25,17 @@ module.exports = async function (
 		return Responses._400({ message: "Match already ended" }); // prob should msg client to show end ui
 	}
 
-	const { players, started, lastMove, colorToMove } = match;
+	const { players, started, lastMove, colorToMove, moves } = match;
 
 	const player = players[colorToMove];
 
 	const isPlayersTurn = player.clientID === clientID;
 
 	engine.load(lastMove.fen);
-	const validMove = engine.move(move);
+	const validMove = appendIfChecked(engine.move(move));
 
 	if (!validMove || !isPlayersTurn || !started) {
-		await syncPlayer(connection, match.moves);
+		await syncPlayer(connection, {moves, lastMove});
 		return Responses._400({ message: "Out of sync" });
 	} else {
 		// todo when game over store match in completeMatchesTable
@@ -58,7 +58,7 @@ module.exports = async function (
 				primaryKeyValue: roomID,
 				updates: {
 					"lastMove.fen": engine.fen(),
-					"lastMove.move": validMove,
+					"lastMove.info": validMove,
 					...changes.state,
 					colorToMove: !gameOver && nextColor(colorToMove),
 					...(commit
@@ -76,9 +76,7 @@ module.exports = async function (
 					moves: [
 						{
 							...changes.move,
-							piece: move.piece,
-							san: move.san,
-							color: move.color,
+							info: { ...validMove },
 							fen: engine.fen(),
 						},
 					],
@@ -103,8 +101,13 @@ module.exports = async function (
 	return Responses._200({});
 };
 
-async function syncPlayer(connection, moves) {
-	return sendMessage(connection, { method: "sync", moves });
+async function syncPlayer(connection, board) {
+	return sendMessage(connection, { method: "sync", ...board });
+}
+
+function appendIfChecked(validMove) {
+	if (!validMove || !engine.in_check()) return validMove;
+	return { ...validMove, inCheck: true };
 }
 
 function nextColor(color) {

@@ -254,10 +254,10 @@ export default function Board(current, scene, canvas){
             // pointerMove$.unsubscribe()
         }
     };
-    function syncBoard(moves) {
+    function syncBoard({moves, lastMove}) {
         if (moves.length < 1) return
 	    const { send } = moveService;
-		send({ type: "SYNC", value: { moves: moveChangesToBoardMaps(moves) } });
+		send({ type: "SYNC", value: { moves: moveChangesToBoardMaps(moves), lastMove: lastMove.info } });
 	}
     function resetBoard(){
         const { send } = moveService

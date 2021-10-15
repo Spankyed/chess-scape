@@ -52,13 +52,13 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ roomID, roomState, roomActions, clockActions }) => {
-			const onSync = ({ moves }) => {
-				Scene.board().syncBoard(moves);
-				moves.forEach((move, idx) =>
+			const onSync = (board) => {
+				Scene.board().syncBoard(board);
+				board.moves.forEach(({info}, idx) =>
 					roomActions.sidePanel.moves.addMove({
-						piece: move.piece,
-						san: move.san,
-						color: move.color,
+						piece: info.piece,
+						san: info.san,
+						color: info.color,
 						id: idx,
 					})
 				);
