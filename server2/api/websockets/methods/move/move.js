@@ -58,6 +58,7 @@ module.exports = async function (
 				primaryKeyValue: roomID,
 				updates: {
 					"lastMove.fen": engine.fen(),
+					"lastMove.move": validMove,
 					...changes.state,
 					colorToMove: !gameOver && nextColor(colorToMove),
 					...(commit
