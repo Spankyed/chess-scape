@@ -18,25 +18,7 @@ module.exports = async function ({ clientID, roomID }) {
 			([_, player]) => player.clientID == clientID
 		)[0];
 
-		if (player) {
-			let tasks = [
-				Dynamo.update({
-					TableName: matchesTable,
-					primaryKey: "ID",
-					primaryKeyValue: roomID,
-					updates: {
-						[`players.${color}`]: null,
-					},
-				}),
-			];
-			if (match.finished) { // if player leaves after game ends, delete room
-				tasks.push(
-					Dynamo.delete(roomID, roomsTable),
-					sendMessageToLobby({ method: "delete", roomID: ID })
-				);
-			}
-			Promise.all(tasks);
-		} else {
+		if (!player) {
 			Dynamo.update({
 				TableName: matchesTable,
 				primaryKey: "ID",
@@ -48,6 +30,20 @@ module.exports = async function ({ clientID, roomID }) {
 					},
 				},
 			})
+		} else if (match.finished) {
+			// if player leaves after game ends, delete room
+			Promise.all([
+				Dynamo.update({
+					TableName: matchesTable,
+					primaryKey: "ID",
+					primaryKeyValue: roomID,
+					updates: {
+						[`players.${color}`]: null,
+					},
+				}),
+				Dynamo.delete(roomID, roomsTable),
+				sendMessageToLobby({ method: "delete", roomID }),
+			]);
 		}
 
 		sendMessageToRoom(roomID, {
