@@ -1,8 +1,11 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
-const { sendMessageToRoom } = require("../../common/websocket/message");
+const {
+	sendMessageToRoom,
+	sendMessageToLobby,
+} = require("../../common/websocket/message");
 
-// const roomsTable = process.env.roomsTableName;
+const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
 
 module.exports = async function ({ clientID, roomID }) {
@@ -15,35 +18,44 @@ module.exports = async function ({ clientID, roomID }) {
 			([_, player]) => player.clientID == clientID
 		)[0];
 
-		Promise.all([
-			...[
-				player
-					? Dynamo.update({
-							TableName: matchesTable,
-							primaryKey: "ID",
-							primaryKeyValue: roomID,
-							updates: {
-								[`players.${color}`]: null,
-							},
-					  })
-					: Dynamo.update({
-							TableName: matchesTable,
-							primaryKey: "ID",
-							primaryKeyValue: roomID,
-							updates: {
-								[`spectators.${clientID}`]: {
-									clientID,
-									watching: false,
-								},
-							},
-					  }),
-			],
-			sendMessageToRoom(roomID, {
-				method: "leave",
-				clientID, // todo add username to leave message
-				group: player ? "players" : "spectators",
-			}),
-		]);
+		if (player) {
+			let tasks = [
+				Dynamo.update({
+					TableName: matchesTable,
+					primaryKey: "ID",
+					primaryKeyValue: roomID,
+					updates: {
+						[`players.${color}`]: null,
+					},
+				}),
+			];
+			if (match.finished) { // if player leaves after game ends, delete room
+				tasks.push(
+					Dynamo.delete(roomID, roomsTable),
+					sendMessageToLobby({ method: "delete", roomID: ID })
+				);
+			}
+			Promise.all(tasks);
+		} else {
+			Dynamo.update({
+				TableName: matchesTable,
+				primaryKey: "ID",
+				primaryKeyValue: roomID,
+				updates: {
+					[`spectators.${clientID}`]: {
+						clientID,
+						watching: false,
+					},
+				},
+			})
+		}
+
+		sendMessageToRoom(roomID, {
+			method: "leave",
+			clientID, // todo add username to leave message
+			group: player ? "players" : "spectators",
+		});
+
 
 		console.log(`Client[${clientID}] left room[${roomID}]`);
 
