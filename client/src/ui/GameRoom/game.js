@@ -14,6 +14,7 @@ export default (initial) => ({
 		// initialized: false,
 		matchStarted: false,
 		committed: false,
+		type: 'forever' //! hardcoded for now, replace when clocks implemented
 	},
 	actions: {
 		setPlayer:
@@ -22,7 +23,7 @@ export default (initial) => ({
 				Scene.manager.animateCameraIntoPosition(playerColor || "white");
 				Scene.game().playerColor = playerColor;
 				if (matchStarted) startMatch({ player, playerColor });
-				return { player, playerColor, committed };
+				return { player, playerColor, committed, matchStarted: !!matchStarted };
 			},
 		ready:
 			() =>
