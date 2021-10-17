@@ -338,15 +338,27 @@ function setupMoveMachine(current, game, squares, pieces){
 					send({ type: "START_GAME" }),
 				],
 			},
-			SET_PLAYER: {
-				actions: [
-					assign({
-						isPlayer: (_, { value }) => value.isPlayer,
-						playerColor: (_, { value }) => value.playerColor,
-					}),
-					send({ type: "START_GAME" }),
-				],
-			},
+			SET_PLAYER: [
+				{
+					actions: setPlayer(),
+					cond: (_, { value }) => !value.isPlayer,
+					target: '#spectating'
+				},
+				{
+					actions: setPlayer(),
+					cond: (_, { value }) => {
+						return (
+							game().engine.turn() == value.playerColor.charAt(0)
+						);
+					},
+					target: '#moving'
+				},
+				{
+					actions: setPlayer(),
+					target: '#waiting'
+				}
+			]
+			,
 			RESET_BOARD: {
 				actions: [
 					() => game().engine.load(initialState.fen),
@@ -464,6 +476,16 @@ function setupMoveMachine(current, game, squares, pieces){
 	return interpret(moveMachine)
     // .onTransition((state) => console.log('state changed', state))
     .start();
+}
+
+function setPlayer(){
+	return [
+		assign({
+			isPlayer: (_, { value }) => value.isPlayer,
+			playerColor: (_, { value }) => value.playerColor,
+		}),
+		send({ type: "START_GAME" }),
+	]
 }
 function handleOppMove(){
 	return [
