@@ -242,7 +242,7 @@ async function deleteRoom(ID) {
 	if (response.ok) {
 		const res = await response.json();
 		console.log(`%c ${res.message}`, "color:orange;");
-		// dont do anything with response, websocket message should be sent to update lobby room list
+		handlers.delete(res);
 	} else if (res.status === 401) {
 		handlers.unauthorize();
 		throw Error("Unauthorized");

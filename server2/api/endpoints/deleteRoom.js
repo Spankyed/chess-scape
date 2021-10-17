@@ -1,7 +1,7 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-const { sendMessageToLobby } = require("../common/websocket/message");
+const { sendMessageToRoomExcept } = require("../common/websocket/message");
 
 const roomsTable = process.env.roomsTableName;
 
@@ -19,11 +19,17 @@ const handler = async (event) => {
 	}
 
 	// todo notify anyone who may be in room, room was deleted
-	await sendMessageToLobby({ method: "delete", roomID: ID });
+	await sendMessageToRoomExcept("lobby", clientID, {
+		method: "delete",
+		roomID: ID,
+	});
 
 	console.log(`Player[${clientID}] deleted room[${ID}]`);
 
-	return Responses._200({ message: `Room successfully deleted [${ID}]` });
+	return Responses._200({
+		message: `Room successfully deleted [${ID}]`,
+		roomID: ID,
+	});
 };
 
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
