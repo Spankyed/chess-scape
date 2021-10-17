@@ -103,7 +103,7 @@ export default (initial) => ({
 				gameOver: true,
 				matchInfo: { winningColor, endMethod, mated },
 				}),
-		// close: () => () => ({ closed: true }),
+		close: () => () => ({ closed: true }),
 		exit:
 			() =>
 			(_, { alert }) => {
@@ -140,11 +140,19 @@ export default (initial) => ({
 				actions.updateRoom(room);
 			};
 
+			const onLeave = ({ clientID, group }) => {
+				// todo log in chat user has left room
+				if (group == "players") {
+					// todo log that room has been closed, if haven't already
+					actions.close();
+				}
+			};
+
 			const initialize = async () => {
 				// todo: on total disconnect, breakdown websocket and game
 				Api.setMessageHandlers({
 					join: onJoin, // todo if players == 2 alert match starting soon
-					// leave: onLeave,
+					leave: onLeave,
 					idleReconnect: () => {},
 				});
 				actions.fetchRoom(roomID);

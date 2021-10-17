@@ -32,7 +32,7 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ leaveRoom, toggleSidePanel, roomState, alert }) => {
-			const { isLoading, gameOver, matchInfo, game } = roomState;
+			const { isLoading, gameOver, matchInfo, game, closed } = roomState;
 
 			const leave = () => {
 				if (gameOver || !game.player) leaveRoom();
@@ -79,7 +79,8 @@ export default (initial) => ({
 											alert,
 											gameOver,
 											toggleSidePanel,
-											state
+											state,
+											closed,
 										}}
 									/>
 								)}
@@ -112,10 +113,11 @@ function Menu({
 	gameOver,
 	toggleSidePanel,
 	actions,
-	state
+	state,
+	closed,
 }) {
-	let {toggleMenu, disableOffers, enableOffers} = actions
-	let {recentlyOffered} = state
+	let { toggleMenu, disableOffers, enableOffers } = actions;
+	let { recentlyOffered } = state;
 	const openPanel = (tab) => () => {
 		toggleMenu();
 		toggleSidePanel(tab);
@@ -127,7 +129,7 @@ function Menu({
 
 	const offer = (type) => () => {
 		disableOffers();
-		alert.close({id:type, completed:true}) // close any duplicate offer
+		alert.close({ id: type, completed: true }); // close any duplicate offer
 		Api.offer(type);
 		delay(7000).then(enableOffers);
 	};
@@ -169,7 +171,7 @@ function Menu({
 					<span>Offer Draw</span>
 				</div>
 			)}
-			{!recentlyOffered && gameOver && game.player && (
+			{!recentlyOffered && gameOver && game.player && !closed && (
 				<div
 					onclick={offer("rematch")}
 					class="menu-item"

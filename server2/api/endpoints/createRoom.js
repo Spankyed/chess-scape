@@ -22,7 +22,7 @@ const handler = async (event) => {
 		ID: await nanoid(),
 		host: clientID,
 		players: { [selectedColor]: { clientID } },
-		spectators: [],
+		spectators: {},
 		created: Date.now(),
 		matchStarted: false,
 	};
