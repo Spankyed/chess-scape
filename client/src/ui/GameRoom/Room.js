@@ -81,12 +81,15 @@ export default (initial) => ({
 				if (match.finished) {
 					actions.endGame(match);
 				}
-				const setup = player ? {
+				
+				const setup = player && {
 					player,
 					playerColor: color,
 					committed: match.players[color]?.committed,
-				} : {}
-				actions.game.setPlayer(setup);
+					matchStarted: match.matchStarted,
+				};
+
+				actions.game.setPlayer(setup || {});
 
 				return {
 					room,

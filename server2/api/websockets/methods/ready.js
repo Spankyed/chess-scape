@@ -17,7 +17,7 @@ module.exports = async function ({ clientID, roomID, color }) {
 		const playersReady = Object.values(Attributes.players).filter(
 			(player) => player.ready
 		);
-		if (playersReady.length == 2) {
+		if (playersReady.length == 2 && !Attributes.matchStarted) {
 			const startTime = Date.now();
 
 			await Promise.all([

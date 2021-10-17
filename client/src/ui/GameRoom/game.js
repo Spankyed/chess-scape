@@ -17,12 +17,11 @@ export default (initial) => ({
 	},
 	actions: {
 		setPlayer:
-			({ player, playerColor, committed }) =>
-			(state) => {
-				Scene.manager.animateCameraIntoPosition(
-					playerColor || 'white'
-				);
+			({ player, playerColor, committed, matchStarted }) =>
+			(_, { startMatch }) => {
+				Scene.manager.animateCameraIntoPosition(playerColor || "white");
 				Scene.game().playerColor = playerColor;
+				if (matchStarted) startMatch({ player, playerColor });
 				return { player, playerColor, committed };
 			},
 		ready:
@@ -32,15 +31,14 @@ export default (initial) => ({
 				return { ready: true };
 			},
 		startMatch:
-			() =>
-			({ player, playerColor }) => {
-				if (player)
-					// ! only transition moveMachine if is player
+			({ player, playerColor }) =>
+			(state) => {
+				if (player || state.player)
 					Scene.board().moveService.send({
 						type: "SET_PLAYER",
 						value: {
 							isPlayer: true,
-							playerColor,
+							playerColor: playerColor || state.playerColor,
 						},
 					});
 				return { matchStarted: true };
@@ -54,7 +52,7 @@ export default (initial) => ({
 		({ roomID, roomState, roomActions, clockActions }) => {
 			const onSync = (board) => {
 				Scene.board().syncBoard(board);
-				board.moves.forEach(({info}, idx) =>
+				board.moves.forEach(({ info }, idx) =>
 					roomActions.sidePanel.moves.addMove({
 						piece: info.piece,
 						san: info.san,
@@ -81,9 +79,9 @@ export default (initial) => ({
 				}
 			};
 			const onStart = () => {
-				actions.startMatch();
+				actions.startMatch({});
 				delay(300).then((_) =>
-					roomActions.alert.close({ id: "start"})
+					roomActions.alert.close({ id: "start" })
 				);
 			};
 			const onEnd = (info) => {
@@ -97,12 +95,12 @@ export default (initial) => ({
 				roomActions.alert.show(RematchAlert());
 				actions.uncommit();
 				delay(300).then((_) =>
-					roomActions.alert.close({ id: "rematch"})
+					roomActions.alert.close({ id: "rematch" })
 				);
 			};
 			const onOffer = ({ type }) => {
 				// if (!roomState.controls.recentlyOffered) {
-					roomActions.alert.show(OfferAlert(type));
+				roomActions.alert.show(OfferAlert(type));
 				// }
 			};
 
@@ -118,7 +116,7 @@ export default (initial) => ({
 				offer: onOffer,
 				move: onMove,
 				end: onEnd,
-				disconnect: Api.reconnect(), //! if hosting game, reconnect immediately
+				// disconnect: Api.reconnect(), //! if hosting game, reconnect immediately
 			});
 
 			const createScene = (canvas) => {
