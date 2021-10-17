@@ -4,6 +4,7 @@ import { delay } from "nanodelay";
 // abort|abandon|resign|draw
 export default {
 	abort: (callback) => ({
+		id:'abort',
 		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
@@ -24,6 +25,7 @@ export default {
 		},
 	}),
 	abandon: (callback) => ({
+		id:'abandon',
 		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
