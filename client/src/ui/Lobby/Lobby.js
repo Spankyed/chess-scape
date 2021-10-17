@@ -324,7 +324,7 @@ function RoomItem({room, join}) {
 
 
 function sortByCreated(arr) {
-	return arr.sort((a, b) => b.created - a.created)
+	return (arr || []).sort((a, b) => b.created - a.created)
 }
 
 function cleanupHandlers(){
