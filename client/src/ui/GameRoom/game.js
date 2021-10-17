@@ -118,6 +118,7 @@ export default (initial) => ({
 				offer: onOffer,
 				move: onMove,
 				end: onEnd,
+				disconnect: Api.reconnect(), //! if hosting game, reconnect immediately
 			});
 
 			const createScene = (canvas) => {

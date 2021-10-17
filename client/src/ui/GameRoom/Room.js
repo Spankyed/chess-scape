@@ -201,7 +201,14 @@ export default (initial) => ({
 function cleanupHandlers(){
 	Api.setMessageHandlers({
 		join: () => {},
+		leave: () => {},
+		sync: () => {},
 		start: () => {},
+		rematch: () => {},
+		offer: () => {},
+		move: () => {},
+		end: () => {},
 		idleReconnect: () => {},
+		disconnect: () => {},
 	});	
 }
