@@ -29,7 +29,7 @@ module.exports = async function (
 
 	const player = players[colorToMove];
 
-	const isPlayersTurn = player.clientID === clientID;
+	const isPlayersTurn = player && player.clientID === clientID;
 
 	engine.load(lastMove.fen);
 	const validMove = appendIfChecked(engine.move(move));
