@@ -15,7 +15,7 @@ const schema = {
 };
 
 const handler = async (event) => {
-	const {clientID, selectedColor, ...form} = event.body;
+	const {TOKEN, clientID, selectedColor, ...form} = event.body;
 
 	const room = {
 		...form,
