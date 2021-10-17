@@ -43,12 +43,13 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 		created: now,
 		started: now,
 		state: initialState,
+		matchStarted: true,
 		moves: [],
 	};
 
 	await Promise.all([
 		sendMessageToRoom(roomID, {
-			method: "rematch",
+			method: "rematch", // todo rename restart
 			newMatch,
 		}),
 		Dynamo.write(newMatch, matchesTable),

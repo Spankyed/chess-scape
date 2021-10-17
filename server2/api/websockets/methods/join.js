@@ -65,7 +65,7 @@ async function updateRoom(room, clientID){
 				primaryKey: "ID",
 				primaryKeyValue: room.ID,
 				updates: {
-					[`players.${joinedColor}`]: { clientID, ready: false },
+					[`players.${joinedColor}`]: { clientID },
 				},
 			}),
 			Dynamo.update({
@@ -73,18 +73,19 @@ async function updateRoom(room, clientID){
 				primaryKey: "ID",
 				primaryKeyValue: room.ID,
 				updates: {
-					[`players.${joinedColor}`]: {clientID, committed: false},
+					[`players.${joinedColor}`]: {clientID, ready: false, committed: false},
 				},
 			})
 		]);
 		return [group, Attributes];
 	} else {
-		const { Attributes } = await Dynamo.append({
+		const { Attributes } = await Dynamo.update({
 			TableName: roomsTable,
 			primaryKey: "ID",
 			primaryKeyValue: room.ID,
-			data: { spectators: [clientID] },
-			// select: "clients",
+			updates: {
+				[`spectators.${clientID}`]: { clientID, watching: true },
+			},
 		});
 		return [group, Attributes];
 	}

@@ -43,6 +43,8 @@ module.exports = async function (
 		const mated = gameOver && engine.in_checkmate();
 		const endMethod = gameOver && mated ? "checkmate" : gameOver && "draw";
 		const info = gameOver && {
+			finished: true,
+			endTime: Date.now(),
 			winningColor: colorToMove,
 			endMethod,
 			mated,
@@ -95,6 +97,7 @@ module.exports = async function (
 		console.log(`Player[${clientID}][${colorToMove}] moved`, {
 			move,
 			info,
+			gameOver
 		});
 	}
 

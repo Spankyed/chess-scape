@@ -21,7 +21,7 @@ const handler = async (event) => {
 		...form,
 		ID: await nanoid(),
 		host: clientID,
-		players: { [selectedColor]: { clientID, ready: false } },
+		players: { [selectedColor]: { clientID } },
 		spectators: [],
 		created: Date.now(),
 		matchStarted: false,
@@ -36,7 +36,11 @@ const handler = async (event) => {
 			ID: room.ID,
 			host: room.host,
 			players: {
-				[selectedColor]: { clientID: room.host, committed: false },
+				[selectedColor]: {
+					clientID: room.host,
+					ready: false,
+					committed: false,
+				},
 			},
 			lastMove: {
 				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",

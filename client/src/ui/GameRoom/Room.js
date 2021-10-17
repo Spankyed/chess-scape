@@ -28,8 +28,9 @@ const initialState = {
 	// matchStarted: false,
 	gameOver: false,
 	matchInfo: null,
+	closed: false,
 	// playerColor: null,
-}
+};
 
 export default (initial) => ({
 	state: initialState,
@@ -67,7 +68,7 @@ export default (initial) => ({
 					players.find((p) => p[1].clientID == Api.getClientID()) ||
 					[];
 
-				if (!room.matchStarted) {
+				if (!match.matchStarted) {
 					if (players.length == 1 && isHost) {
 						actions.alert.show(alert.waitAlert);
 					} else {
@@ -101,7 +102,8 @@ export default (initial) => ({
 			() => ({
 				gameOver: true,
 				matchInfo: { winningColor, endMethod, mated },
-			}),
+				}),
+		// close: () => () => ({ closed: true }),
 		exit:
 			() =>
 			(_, { alert }) => {
@@ -139,12 +141,10 @@ export default (initial) => ({
 			};
 
 			const initialize = async () => {
-				// todo if player is opp & !matchStarted, alert match starting soon
 				// todo: on total disconnect, breakdown websocket and game
 				Api.setMessageHandlers({
 					join: onJoin, // todo if players == 2 alert match starting soon
-					leave: ({ clientID }) =>
-						console.log(`[${clientID}] left the room`),
+					// leave: onLeave,
 					idleReconnect: () => {},
 				});
 				actions.fetchRoom(roomID);

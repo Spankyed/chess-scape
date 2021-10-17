@@ -85,18 +85,18 @@ export default (initial) => ({
 				actions.updateRooms({ rooms });
 			};
 
-			const onJoin = ({ room }) => {
-				if (room.host == Api.getClientID()) {
-					join(room.ID, true);
-				}
-				actions.updateRoom(room);
-			};
-
 			const join = (ID) => {
 				// console.log('joining  ', ID)
-				Api.joinRoom(ID);
 				joinRoom(ID);
 				actions.exit();
+				Api.joinRoom(ID);
+			};
+
+			const onJoin = ({ room }) => {
+				if (room.host == Api.getClientID()) { // if someone joins room hosted by user, move user into room
+					join(room.ID);
+				}
+				actions.updateRoom(room);
 			};
 
 			const cancel = async () => {
@@ -306,16 +306,16 @@ function RoomItem({room, join}) {
 				</span>
 			</td>
 			<td class="p-3 px-6 font-bold">Black</td>
-			<td
-				class='px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold'
-			>
+			<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
 				<button
-					onclick={() =>
-						isHost ? join(room.ID, true) : join(room.ID)
-					}
-					class={`focus:outline-none ${isHost && " bg-blue-200 text-blue-900"}`}
+					onclick={() => join(room.ID)}
+					class={`focus:outline-none ${
+						isHost && " bg-blue-200 text-blue-900"
+					}`}
 				>
-					{isHost ? "Enter" : `${!isHost && isFull ? "Spectate" : "Join"} `}
+					{isHost
+						? "Enter"
+						: `${!isHost && isFull ? "Spectate" : "Play"} `}
 				</button>
 			</td>
 		</tr>
@@ -330,6 +330,8 @@ function sortByCreated(arr) {
 function cleanupHandlers(){
 	Api.setMessageHandlers({
 		create:()=>{},
+		delete:()=>{},
 		join: ()=>{},
+		idleReconnect: ()=>{},
 	});	
 }
