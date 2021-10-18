@@ -276,8 +276,10 @@ export default (initial) => ({
 });
 
 function RoomItem({room, join}) {
-	const isFull = Object.keys(room.players)?.length >= 2
+	const players = Object.values(room.players)
 	const isHost = room.host == Api.getClientID()
+	const isPlayer = isHost || players.find((p) => p.clientID == Api.getClientID());
+	const isFull = players?.length > 1
 	return (
 		<tr class="my-3 text-lg font-large">
 			<td class="py-3 px-6 text-left">
@@ -301,7 +303,7 @@ function RoomItem({room, join}) {
 					<span class="hidden lg:inline">
 						{`${isFull ? "Max" : "Open"}`}
 					</span>
-					({Object.keys(room.players)?.length}
+					({players?.length}
 					/2)
 				</span>
 			</td>
@@ -315,7 +317,7 @@ function RoomItem({room, join}) {
 				>
 					{isHost
 						? "Enter"
-						: `${!isHost && isFull ? "Spectate" : "Play"} `}
+						: `${isPlayer || !isFull ? "Play" : "Spectate"} `}
 				</button>
 			</td>
 		</tr>
