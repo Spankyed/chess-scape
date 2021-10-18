@@ -1,17 +1,18 @@
 import { h } from 'hyperapp';
 import prompts from './prompts.js';
-import Api from "../../../api/Api"; 
-import { delay } from "nanodelay";
+import Menu from './menu.js';
+
+const menu = Menu()
 
 export default (initial) => ({
 	state: {
-		menuOpen: false,
+		menu: menu.state,
 		isPromoting: false,
 		resolve: null,
 		reject: null,
-		recentlyOffered: false
 	},
 	actions: {
+		menu: menu.actions,
 		openPieceSelect:
 			({ resolve, reject }) =>
 			(_) => ({
@@ -25,14 +26,14 @@ export default (initial) => ({
 				reject && reject();
 				return { isPromoting: false };
 			},
-		toggleMenu: (ev) => (state) => ({ menuOpen: !state.menuOpen }),
-		disableOffers: () => ({ recentlyOffered: true }),
-		enableOffers: () => ({ recentlyOffered: false }),
 	},
 	view:
 		(state, actions) =>
 		({ leaveRoom, toggleSidePanel, roomState, alert }) => {
-			const { isLoading, gameOver, matchInfo, game, closed } = roomState;
+
+			const MenuView = menu.view(state.menu, actions.menu)
+			
+			const { isLoading, gameOver, matchInfo, game, closed: roomClosed } = roomState;
 
 			const leave = () => {
 				if (roomState.room.players > 1 && !game.matchStarted) return; // player cant leave until match started
@@ -42,6 +43,7 @@ export default (initial) => ({
 					alert.show(prompts[method](leaveRoom));
 				}
 			};
+
 			return (
 				// pointer-events-none controls-wrapper
 				<div
@@ -69,29 +71,20 @@ export default (initial) => ({
 							</button>
 						</div>
 						<div class="btn-wrapper right">
-							{/* menu */}
-							<div class="menu-wrapper">
-								{state.menuOpen && (
-									<Menu
-										{...{
-											actions,
-											state,
-											game,
-											alert,
-											gameOver,
-											toggleSidePanel,
-											state,
-											closed,
-										}}
-									/>
-								)}
-								<button
-									onclick={actions.toggleMenu}
-									class="control-btn first"
-								>
-									<img src="./assets/controls/menu.svg"></img>
-								</button>
-							</div>
+
+							<MenuView
+								{...{
+									actions,
+									state,
+									game,
+									alert,
+									gameOver,
+									toggleSidePanel,
+									state,
+									roomClosed,
+								}}
+							/>
+
 							{
 								// todo: hide btn on mobile
 								/* sidePanel button */
@@ -108,133 +101,7 @@ export default (initial) => ({
 			);
 		},
 });
-function Menu({
-	alert,
-	game,
-	gameOver,
-	toggleSidePanel,
-	actions,
-	state,
-	closed,
-}) {
-	let { toggleMenu, disableOffers, enableOffers } = actions;
-	let { recentlyOffered } = state;
-	const openPanel = (tab) => () => {
-		toggleMenu();
-		toggleSidePanel(tab);
-	};
-	const prompt = (method) => () => {
-		toggleMenu();
-		alert.show(prompts[method]);
-	};
 
-	const offer = (type) => () => {
-		disableOffers();
-		alert.close({ id: type, completed: true }); // close any duplicate offer
-		Api.offer(type);
-		delay(7000).then(enableOffers);
-	};
-
-	return (
-		// needs pointer events
-		<div
-			class="menu pointer-events-auto"
-			role="menu"
-			aria-orientation="vertical"
-			aria-labelledby="menu-button"
-			tabindex="-1"
-		>
-			{!gameOver && game.committed && game.player && (
-				<div
-					onclick={prompt("resign")}
-					class="menu-item"
-					role="menu-item"
-					id="menu-item-0"
-					tabindex="-1"
-				>
-					<div class="menu-icon">
-						<img src="./assets/controls/menu/resign.svg" />
-					</div>
-					<span>Resign</span>
-				</div>
-			)}
-			{!recentlyOffered && !gameOver && game.player && game.committed && (
-				<div
-					onclick={offer("draw")}
-					class="menu-item"
-					role="menu-item"
-					id="menu-item-2"
-					tabindex="-1"
-				>
-					<div class="menu-icon">
-						<img src="./assets/controls/menu/draw.svg" />
-					</div>
-					<span>Offer Draw</span>
-				</div>
-			)}
-			{!recentlyOffered && gameOver && game.player && !closed && (
-				<div
-					onclick={offer("rematch")}
-					class="menu-item"
-					role="menu-item"
-					id="menu-item-0"
-					tabindex="-1"
-				>
-					<div class="menu-icon">
-						<img src="./assets/controls/menu/rematch.svg" />
-					</div>
-					<span>Rematch</span>
-				</div>
-			)}
-			<div
-				class="menu-item"
-				role="menu-item"
-				id="menu-item-2"
-				tabindex="-1"
-			>
-				<div class="menu-icon">
-					<img src="./assets/controls/menu/chat.svg" />
-				</div>
-				<span>Chat</span>
-			</div>
-			<div
-				class="menu-item"
-				role="menu-item"
-				id="menu-item-2"
-				tabindex="-1"
-			>
-				<div class="menu-icon">
-					<img src="./assets/controls/menu/review.svg" />
-				</div>
-				<span>Review Moves</span>
-			</div>
-			<div
-				onclick={openPanel("media")}
-				class="menu-item"
-				role="menu-item"
-				id="menu-item-4"
-				tabindex="-1"
-			>
-				<div class="menu-icon">
-					<img src="./assets/controls/menu/media.svg" />
-				</div>
-				<span>Play Media</span>
-			</div>
-			<div
-				onclick={openPanel("media")}
-				class="menu-item"
-				role="menu-item"
-				id="menu-item-4"
-				tabindex="-1"
-			>
-				<div class="menu-icon">
-					<img src="./assets/controls/menu/rotate-camera.svg" />
-				</div>
-				<span>Flip Camera</span>
-			</div>
-		</div>
-	);
-}
 function Player(){
 	let defaultSrc = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
 	return (
