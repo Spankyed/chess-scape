@@ -36,14 +36,14 @@ export default (initial) => ({
 			const { isLoading, gameOver, matchInfo, game, closed: roomClosed } = roomState;
 
 			const leave = () => {
-				if (roomState.room.players > 1 && !game.matchStarted) return; // player cant leave until match started
-				if (gameOver || !game.player || !game.matchStarted || game.type == 'forever') leaveRoom();
+				if (roomState.room?.players > 1 && !game.matchStarted) return; // player cant leave until match started
+				if (!room || gameOver || !game.player || !game.matchStarted || game.type == 'forever') leaveRoom();
 				else {
 					const method = !game.committed ? "abort" : "abandon";
 					alert.show(prompts[method](leaveRoom));
 				}
 			};
-
+			
 			return (
 				// pointer-events-none controls-wrapper
 				<div
