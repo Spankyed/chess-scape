@@ -71,17 +71,11 @@ export default (initial) => ({
 							</button>
 						</div>
 						<div class="btn-wrapper right">
-
 							<MenuView
 								{...{
-									actions,
-									state,
-									game,
 									alert,
-									gameOver,
+									roomState,
 									toggleSidePanel,
-									state,
-									roomClosed,
 								}}
 							/>
 

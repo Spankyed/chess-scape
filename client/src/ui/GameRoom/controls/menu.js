@@ -4,11 +4,13 @@ import Api from "../../../api/Api";
 import { delay } from "nanodelay";
 import { fromEvent, mergeMap, of } from "rxjs";
 import { filter, delay, takeUntil } from "rxjs/operators";
+import Scene from "../../../core/Scene";
 
 export default (initial) => ({
 	state: {
 		menuOpen: false,
 		recentlyOffered: false,
+		cameraViewColor: null
 	},
 	actions: {
 		toggleMenu: (val) => (state) => ({
@@ -16,17 +18,33 @@ export default (initial) => ({
 		}),
 		disableOffers: () => ({ recentlyOffered: true }),
 		enableOffers: () => ({ recentlyOffered: false }),
+		flipCamera: (playerColor) => ({cameraViewColor}) => {
+			let currColor = cameraViewColor || playerColor || 'white'
+			let oppColor = currColor == "white" ? "black" : "white";
+			Scene.manager.animateCameraIntoPosition(oppColor);
+			return {
+				cameraViewColor: oppColor,
+			};
+		}
 	},
 	view:
 		(
 			{ recentlyOffered, menuOpen },
-			{ toggleMenu, disableOffers, enableOffers }
+			{ toggleMenu, disableOffers, enableOffers, flipCamera }
 		) =>
-		({ alert, game, gameOver, toggleSidePanel, roomClosed }) => {
+		({ alert, roomState, toggleSidePanel }) => {
+			const {
+				gameOver,
+				game,
+				closed: roomClosed,
+				playerColor,
+			} = roomState;
+
 			const openPanel = (tab) => () => {
 				toggleMenu();
 				toggleSidePanel(tab);
 			};
+
 			const prompt = (method) => () => {
 				toggleMenu();
 				alert.show(prompts[method]);
@@ -56,14 +74,13 @@ export default (initial) => ({
 						)
 					)
 					.subscribe((_) => toggleMenu(false));
-				enter$ 
-					.subscribe((_) => toggleMenu(true));
+				enter$.subscribe((_) => toggleMenu(true));
 			};
 
 			const oncreate = (el) => {
-				handleHover(el)
-				handleOutsideClick(el)
-			}
+				handleHover(el);
+				handleOutsideClick(el);
+			};
 
 			return (
 				<div oncreate={oncreate} class="menu-wrapper">
@@ -160,7 +177,7 @@ export default (initial) => ({
 								<span>Play Media</span>
 							</div>
 							<div
-								onclick={()=>{}}
+								onclick={() => flipCamera(playerColor)}
 								class="menu-item"
 								role="menu-item"
 								id="menu-item-4"
