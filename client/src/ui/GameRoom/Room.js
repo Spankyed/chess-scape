@@ -131,7 +131,7 @@ export default (initial) => ({
 			);
 			const AlertView = alert.view(state.alert, actions.alert);
 
-			const onJoin = ({ room, group }) => {
+			const onJoin = ({ room, group, username }) => {
 				if (
 					group == "players" &&
 					Object.keys(room.players).length == 2 &&
@@ -141,9 +141,14 @@ export default (initial) => ({
 					actions.alert.show(alert.startAlert); // alert match is starting soon
 				}
 				actions.updateRoom(room);
+				actions.sidePanel.chat.addMessage({
+					text: `${username} has joined the room`,
+					appMsg: true,
+				});
 			};
 
 			const onDisband = ({ clientID }) => {
+				// todo post in chat that room has been closed
 				actions.alert.show(DisbandedAlert(leave));
 				actions.close();
 			};
@@ -218,6 +223,7 @@ function DisbandedAlert(leave) {
 
 function cleanupHandlers(){
 	Api.setMessageHandlers({
+		chat: () => {},
 		join: () => {},
 		leave: () => {},
 		sync: () => {},

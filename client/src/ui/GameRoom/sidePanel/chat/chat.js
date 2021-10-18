@@ -36,14 +36,13 @@ export default initial => ({
 			// console.log('showing chat')
 			// Api.getChat(function() {});
 
-			// const onLeave = ({ clientID, group }) => {
-			// 	addMessage({text:`${username} has left the room`, appMsg: true})
-			// };
+			const onLeave = ({ clientID, username }) => {
+				addMessage({text:`${username} has left the room`, appMsg: true})
+			};
 
 			Api.setMessageHandlers({
-				// chat: (msg) => console.log('some1 chatted', msg)
 				// join: onJoin,
-				// leave: onLeave,
+				leave: onLeave,
 				chat: addMessage,
 			});
 		}
@@ -114,19 +113,24 @@ function Message({message}){
 	return (
 		<li class="message flex justify-between items-center mt-3 text-lg transition">
 			<div class="flex ml-1">
-				<img
-					src={`https://avatars.dicebear.com/api/avataaars/${imgSeed}.svg`}
-					width="40"
-					height="40"
-					class="rounded-md mt-2"
-				/>
+				{!message.appMsg && (
+					<img
+						src={`https://avatars.dicebear.com/api/avataaars/${imgSeed}.svg`}
+						width="40"
+						height="40"
+						class="rounded-md mt-2"
+					/>
+				)}
+
 				<div class="flex flex-row flex-wrap ml-2">
-					<div class="w-full">
-						<span class="font-medium text-black">
-							{message.username}
-						</span>
-						{/* <span class="text-sm text-gray-300 pl-2">{message.time}</span> */}
-					</div>
+					{!message.appMsg && (
+						<div class="w-full">
+							<span class="font-medium text-black">
+								{message.username}
+							</span>
+							{/* <span class="text-sm text-gray-300 pl-2">{message.time}</span> */}
+						</div>
+					)}
 					<span
 						class="text-gray-200 text-gray-800"
 						style="word-break: break-word;"

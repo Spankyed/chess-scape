@@ -6,7 +6,7 @@ const clientsTable = process.env.clientsTableName;
 const matchesTable = process.env.matchesTableName;
 const roomsTable = process.env.roomsTableName;
 
-module.exports = async function ({ clientID, roomID }, client) {
+module.exports = async function ({ clientID, roomID }, {username}) {
 	try {
 		const [_,room] = await Promise.all([
 			Dynamo.update({
@@ -30,6 +30,7 @@ module.exports = async function ({ clientID, roomID }, client) {
 				method: "join",
 				room: Attributes,
 				group,
+				username,
 			}),
 			// only message lobby if player joined, not spectator
 			...(group == "players"
@@ -38,7 +39,7 @@ module.exports = async function ({ clientID, roomID }, client) {
 						method: "join",
 						room: Attributes,
 					}),
-				]
+				  ]
 				: []),
 		];
 		Promise.all(messageRecipients);
