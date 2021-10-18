@@ -1,7 +1,7 @@
 import { h } from 'hyperapp';
 import prompts from './prompts.js';
 import Api from "../../../api/Api"; 
-import { delay } from "nanodelay";
+import * as nano from "nanodelay";
 import { fromEvent, mergeMap, of } from "rxjs";
 import { filter, delay, takeUntil } from "rxjs/operators";
 import Scene from "../../../core/Scene";
@@ -54,7 +54,7 @@ export default (initial) => ({
 				disableOffers();
 				alert.close({ id: type, completed: true }); // close any duplicate offer
 				Api.offer(type);
-				delay(7000).then(enableOffers);
+				nano.delay(7000).then(enableOffers);
 			};
 
 			const handleOutsideClick = (el) => {
