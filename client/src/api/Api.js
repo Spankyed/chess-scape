@@ -197,7 +197,7 @@ async function getRooms() {
 	const response = await fetch(url, { method, headers });
 	if (response.ok) {
 		const rooms = await response.json();
-		console.log("%c Fetch Rooms", "color:blue;", { rooms });
+		console.log("%c Fetch Rooms", "color:blue;", rooms);
 		return rooms;
 	}
 }

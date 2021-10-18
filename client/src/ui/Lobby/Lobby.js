@@ -82,7 +82,7 @@ export default (initial) => ({
 
 			const refreshRoomList = async () => {
 				let { rooms } = await Api.getRooms();
-				actions.updateRooms({ rooms });
+				actions.updateRooms(rooms);
 			};
 
 			const join = (ID) => {
