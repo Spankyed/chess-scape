@@ -7,6 +7,7 @@ const end = require("./end");
 const offer = require("./offer");
 const draw = require("./draw");
 const rematch = require("./rematch");
+const chat = require("./chat");
 
 module.exports = {
 	join,
@@ -17,5 +18,6 @@ module.exports = {
 	end,
 	offer,
 	draw,
+	chat,
 	rematch,
 };
