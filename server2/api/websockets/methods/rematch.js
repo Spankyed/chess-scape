@@ -3,11 +3,20 @@ const Dynamo = require("../../common/Dynamo");
 const { sendMessageToRoom } = require("../../common/websocket/message");
 const initialState = require("./move/state");
 
+const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
 
 module.exports = async function ({ clientID, roomID, accepted }, connection) {
 
-	const match = await Dynamo.get(roomID, matchesTable);
+	const [room, match] = await Promise.all([
+		Dynamo.get(roomID, roomsTable),
+		Dynamo.get(roomID, matchesTable),
+	]);
+
+	if (!room) {
+		await sendMessageToRoom(roomID, { method: "disband" });
+		return Responses._400({ message: "Match not found" });
+	}
 
 	if (!match) return Responses._400({ message: "Match not found" });
 
@@ -28,6 +37,7 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 		await removeOffer(roomID);
 		return Responses._400({ message: "Opponent rejected" }); 
 	}
+
 	const now = Date.now();
 	const newMatch = {
 		ID: match.ID,
