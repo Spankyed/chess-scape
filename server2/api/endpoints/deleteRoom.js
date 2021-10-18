@@ -23,12 +23,12 @@ const handler = async (event) => {
 	// notify anyone who may be in room, room was deleted
 	// and anyone in lobby except person deleting 
 	Promise.all([
-		sendMessageToRoom(roomID, { method: "disband" }),
+		sendMessageToRoom(ID, { method: "disband" }),
 		sendMessageToRoomExcept("lobby", clientID, {
 			method: "delete",
 			roomID: ID,
-		})
-	])
+		}),
+	]);
 
 	console.log(`Client[${clientID}] deleted room[${ID}]`);
 
