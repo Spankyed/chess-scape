@@ -2,8 +2,8 @@ import { h } from 'hyperapp';
 import prompts from './prompts.js';
 import Api from "../../../api/Api"; 
 import { delay } from "nanodelay";
-// import { fromEvent, mergeMap, of } from "rxjs";
-// import { filter, delay, takeUntil } from "rxjs/operators";
+import { fromEvent, mergeMap, of } from "rxjs";
+import { filter, delay, takeUntil } from "rxjs/operators";
 
 export default (initial) => ({
 	state: {
@@ -39,34 +39,34 @@ export default (initial) => ({
 				delay(7000).then(enableOffers);
 			};
 
-			// const handleOutsideClick = (el) => {
-			// 	const documentClick$ = fromEvent(document, "click");
-			// 	documentClick$
-			// 		.pipe(filter((ev) => !el.contains(ev.target)))
-			// 		.subscribe(() => toggleMenu(false));
-			// };
+			const handleOutsideClick = (el) => {
+				const documentClick$ = fromEvent(document, "click");
+				documentClick$
+					.pipe(filter((ev) => !el.contains(ev.target)))
+					.subscribe(() => toggleMenu(false));
+			};
 
-			// const handleHover = (el) => {
-			// 	const enter$ = fromEvent(el, "mouseenter");
-			// 	const leave$ = fromEvent(el, "mouseleave");
-			// 	leave$
-			// 		.pipe(
-			// 			mergeMap((ev) =>
-			// 				of(ev).pipe(delay(400), takeUntil(enter$))
-			// 			)
-			// 		)
-			// 		.subscribe((_) => toggleMenu(false));
-			// 	enter$ 
-			// 		.subscribe((_) => toggleMenu(true));
-			// };
+			const handleHover = (el) => {
+				const enter$ = fromEvent(el, "mouseenter");
+				const leave$ = fromEvent(el, "mouseleave");
+				leave$
+					.pipe(
+						mergeMap((ev) =>
+							of(ev).pipe(delay(400), takeUntil(enter$))
+						)
+					)
+					.subscribe((_) => toggleMenu(false));
+				enter$ 
+					.subscribe((_) => toggleMenu(true));
+			};
 
-			// const oncreate = (el) => {
-			// 	handleHover(el)
-			// 	handleOutsideClick(el)
-			// }
+			const oncreate = (el) => {
+				handleHover(el)
+				handleOutsideClick(el)
+			}
 
 			return (
-				<div class="menu-wrapper">
+				<div oncreate={oncreate} class="menu-wrapper">
 					{menuOpen && (
 						<div
 							class="menu pointer-events-auto"
