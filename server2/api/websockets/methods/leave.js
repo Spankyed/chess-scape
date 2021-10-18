@@ -14,7 +14,8 @@ module.exports = async function ({ clientID, roomID }) {
 
 		if (!match) return Responses._400({ message: "Match not found" });
 
-		const [color, player] = Object.entries(match.players).filter(
+		const players = Object.entries(match.players)
+		const [color, player] = players.filter(
 			([_, player]) => player.clientID == clientID
 		)[0];
 
@@ -30,10 +31,17 @@ module.exports = async function ({ clientID, roomID }) {
 					},
 				},
 			})
-		} else if (match.finished) {
-			// if player leaves after game ends, delete room
+			sendMessageToRoom(roomID, {
+				method: "leave",
+				clientID, // todo add username to leave message
+				group: "spectators",
+			});
+		} else if (match.finished || (players.length == 2 && !match.started)) {
+			// todo user shouldn't be able to leave if !matchFinished & match is time controlled
+			
 			Promise.all([
 				Dynamo.update({
+					// ! probably shouldn't be deleting player from match record
 					TableName: matchesTable,
 					primaryKey: "ID",
 					primaryKeyValue: roomID,
@@ -41,17 +49,16 @@ module.exports = async function ({ clientID, roomID }) {
 						[`players.${color}`]: null,
 					},
 				}),
-				Dynamo.delete(roomID, roomsTable),
+				Dynamo.delete(roomID, roomsTable), // if player leaves after game ends, delete room
 				sendMessageToLobby({ method: "delete", roomID }),
+				sendMessageToRoom(roomID, { method: "disband" }),
+				sendMessageToRoom(roomID, {
+					method: "leave",
+					clientID, // todo add username to leave message
+					group: "players",
+				}),
 			]);
 		}
-
-		sendMessageToRoom(roomID, {
-			method: "leave",
-			clientID, // todo add username to leave message
-			group: player ? "players" : "spectators",
-		});
-
 
 		console.log(`Client[${clientID}] left room[${roomID}]`);
 

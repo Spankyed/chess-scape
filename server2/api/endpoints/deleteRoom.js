@@ -18,13 +18,17 @@ const handler = async (event) => {
 		return Responses._400({ message: "Failed to delete room" });
 	}
 
-	// todo notify anyone who may be in room, room was deleted
-	await sendMessageToRoomExcept("lobby", clientID, {
-		method: "delete",
-		roomID: ID,
-	});
+	// notify anyone who may be in room, room was deleted
+	// and anyone in lobby except person deleting 
+	Promise.all([
+		sendMessageToRoom(roomID, { method: "disbanded" }),
+		sendMessageToRoomExcept("lobby", clientID, {
+			method: "delete",
+			roomID: ID,
+		})
+	])
 
-	console.log(`Player[${clientID}] deleted room[${ID}]`);
+	console.log(`Client[${clientID}] deleted room[${ID}]`);
 
 	return Responses._200({
 		message: `Room successfully deleted [${ID}]`,

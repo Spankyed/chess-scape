@@ -19,6 +19,7 @@ let clientID = client.clientID || null,
 		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
 		create: () => {},
 		delete: () => {},
+		disband: () => {},
 		join: () => {},
 		start: () => {},
 		rematch: () => {},
