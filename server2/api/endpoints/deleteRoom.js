@@ -1,7 +1,9 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-const { sendMessageToRoomExcept } = require("../common/websocket/message");
+const {
+	sendMessageToRoom, sendMessageToRoomExcept,
+} = require("../common/websocket/message");
 
 const roomsTable = process.env.roomsTableName;
 
