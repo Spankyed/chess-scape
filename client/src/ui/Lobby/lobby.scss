@@ -1,8 +1,55 @@
 @import './create/create.scss'; 
 
 .lobby {
-    table {
-        button{
+    .table-wrapper {
+        padding-left: 20px;
+        background-color: #1a1a1a;
+        border: 1px solid rgba(107,114,128,1);
+
+        .header-row {
+            th {
+                // background-color: #303030;
+                background-color: #1a1a1a;
+                text-align: start;
+                // padding-right: 20px;
+            }
+        }
+        
+        .min::after {
+            content: "|";
+            // float: right;
+            padding-left: 5px;
+            padding-right: 5px;
+            // color: #fff;
+            color: #666666;
+        }
+
+        td {
+            text-align: start;
+            
+        }
+        // .selected-room{
+        //     background-color: #383838;
+        // }
+    }
+    table.room-table {
+        th {
+            // background-color: rgba(31,41,55,var(--tw-bg-opacity));
+            top: 0;
+            position: sticky;
+        }
+        th:after {
+            bottom: -1px;
+            border-bottom: 1px solid rgba(107,114,128,1);
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+        }
+        thead {
+            height:3.2rem
+        }
+        button {
             color: rgba(255,255,255,1);
             padding-top: .5rem;
             padding-bottom: .5rem;
@@ -34,6 +81,8 @@
     }
     // scroll bar styling courtesy of  https://jsfiddle.net/vsj6qb8c/6/
     ::-webkit-scrollbar {
+        padding-right: 5px;
+        padding-left: 5px;
         width: 20px;
         border-width: 5px;
     }
@@ -42,16 +91,19 @@
         background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-        --container-background-color: rgba(55,65,81,1);
-        background-color: #ebedf5;
+        --container-background-color: #1a1a1a;
+        // background-color: #ebedf5;
+        background-color: #303030;
+        // background-color: #242424;
         // border-radius: 8px;
         border-color: var(--container-background-color);
         border-style: solid;
         border-width: 1px 7px 1px 7px;
     }
     ::-webkit-scrollbar-track-piece {
-        --container-background-color: rgba(55,65,81,1);
-        background-color: #8f8f8f;
+        --container-background-color: #1a1a1a;
+        // background-color: #8f8f8f;
+        background-color: #3e4346;
         border-color: var(--container-background-color);
         border-width: 2px 9px 2px 9px;
         border-style: solid;
@@ -72,21 +124,66 @@
 }
 
 
-th{
-    // background-color: rgba(31,41,55,var(--tw-bg-opacity));
-    top: 0;
-    position: sticky;
+
+@-webkit-keyframes moving-gradient {
+    0% { background-position: -250px 0; }
+    100% { background-position: 250px 0; }
 }
-th:after {
-  bottom: -1px;
-  border-bottom: 1px solid rgba(107,114,128,1);
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 100%;
-}
-thead{
-    height:3.2rem
+
+table.loading-table {
+    width: 100%;
+    tr {
+        // border-bottom: 1px solid rgba(0,0,0,.1);
+        td {
+            height: 50px;
+            vertical-align: middle;
+            padding: 8px;
+            span {
+                display: block;
+            }
+
+            &.host {
+                width: 50px;
+                span {
+                    background-color: #303030;
+                    width: 50px;
+                    height: 50px;
+                }
+            }
+            &.attribute {
+                width: 400px;
+                // padding-right: 100px;
+                span {
+                    height: 12px;
+                    border-radius: .15rem;
+                    background: linear-gradient(to right, #363636  20%, #303030 50%, #363636 80%);
+                    background-size: 500px 100px;
+                    animation-name: moving-gradient;
+                    animation-duration: 1s;
+                    animation-iteration-count: infinite;
+                    animation-timing-function: linear;
+                    animation-fill-mode: forwards;
+                }
+            }
+
+            &.enter {
+                width: 100px;
+
+                span {
+                    border-width: 1px;
+                    border-color: #D6EBC0;
+                    border-radius: .25rem;
+                    pointer-events: auto;
+                    background-color: #5f9139;
+                    padding-top: .5rem;
+                    padding-bottom: .5rem;
+                    // background-color: rgba(0,0,0,.15);
+                    width: 100%;
+                    height: 30px
+                }
+            }
+        }
+    }
 }
 
 

@@ -14,6 +14,7 @@ export default (initial) => ({
 		showCreate: false,
 		hostedRoom: null,
 		rooms: [],
+		loading: true,
 		isFetching: false,
 		initialized: false,
 	},
@@ -63,6 +64,7 @@ export default (initial) => ({
 			actions.updateRooms(rooms);
 			return {
 				hostedRoom: hostedRoomID,
+				loading: false,
 				isFetching: false,
 				initialized: true,
 			};
@@ -79,7 +81,7 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ joinRoom }) => {
-			const { showCreate, hostedRoom } = state;
+			const { showCreate, hostedRoom, loading, isFetching, initialized } = state;
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
 
@@ -103,7 +105,7 @@ export default (initial) => ({
 			};
 
 			const cancel = async () => {
-				await Api.deleteRoom(state.hostedRoom).catch(actions.exit);
+				await Api.deleteRoom(hostedRoom).catch(actions.exit);
 				actions.alert.close({ id: "host" });
 			};
 
@@ -120,7 +122,7 @@ export default (initial) => ({
 				// todo stop loading
 			};
 
-			if (!state.initialized && !state.isFetching) {
+			if (!initialized && !isFetching) {
 				console.log(`Joined lobby [${Api.getClientID()}]`);
 				initialize();
 			}
@@ -175,12 +177,14 @@ export default (initial) => ({
 								</div>
 							</div>
 						</div>
-						<div class="p-10 bg-gray-700">
+						<div class="">
 							<div
-								class="table_wrapper overflow-auto pr-3"
+								class="table-wrapper overflow-auto"
 								style="height:55vh"
 							>
-								{!state.rooms?.length > 0 ? (
+								{loading ? (
+									<LoadingTable />
+								) : !state.rooms?.length > 0 ? (
 									<div
 										class="w-full h-64 text-center"
 										style="justify-content: center; align-items: center"
@@ -201,54 +205,36 @@ export default (initial) => ({
 										</div>
 									</div>
 								) : (
-									<table class="table border-collapse text-gray-400 text-sm">
-										<thead class="text-gray-400 text-center uppercase text-lg font-large tracking-wider">
-											<tr class="">
-												<th
-													scope="col"
-													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
-												>
-													<span class="block bg-gray-700 h-full w-full">
+									<table class="room-table table border-collapse text-gray-400 text-sm">
+										<thead class="text-gray-400  uppercase text-lg font-large tracking-wider">
+											<tr class="header-row px-5 py-3 hover:border-b border-gray-500">
+												<th scope="col" class=" ">
+													<span class="block h-full w-full">
 														Host
 													</span>
 												</th>
-												<th
-													scope="col"
-													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
-												>
-													<span class="block bg-gray-700 h-full w-full">
+												<th scope="col">
+													<span class="block h-full w-full">
 														Game Type
 													</span>
 												</th>
-												<th
-													scope="col"
-													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
-												>
-													<span class="block bg-gray-700 h-full w-full">
+												<th scope="col">
+													<span class="block h-full w-full">
 														Time
 													</span>
 												</th>
-												<th
-													scope="col"
-													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
-												>
-													<span class="block bg-gray-700 h-full w-full">
+												<th scope="col">
+													<span class="block h-full w-full">
 														Players
 													</span>
 												</th>
-												<th
-													scope="col"
-													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
-												>
-													<span class="block bg-gray-700 h-full w-full">
+												<th scope="col">
+													<span class="block h-full w-full">
 														Opp. Color
 													</span>
 												</th>
-												<th
-													scope="col"
-													class="px-5 py-3 bg-gray-700 border-b border-gray-500"
-												>
-													<span class="block bg-gray-700 h-full w-full">
+												<th scope="col">
+													<span class="block h-full w-full">
 														&#8203;
 													</span>
 												</th>
@@ -256,10 +242,10 @@ export default (initial) => ({
 										</thead>
 										{/* Room List */}
 
-										<tbody class="text-gray-300 border-b border-gray-500">
+										<tbody class="text-gray-300">
 											{/* if not game rooms, show some other ui */}
 
-											{state.rooms.map(
+											{[...new Array(6)].map(
 												(room, idx) => (
 													// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
 													<RoomItem
@@ -279,13 +265,13 @@ export default (initial) => ({
 });
 
 function RoomItem({room, join}) {
-	const players = Object.values(room.players)
-	const isHost = room.host == Api.getClientID()
-	const isPlayer = isHost || players.find((p) => p.clientID == Api.getClientID());
+	const players = Object.values(room?.players||{})
+	const isHost = room?.host == Api.getClientID()
+	const isPlayer = isHost || players?.find((p) => p.clientID == Api.getClientID());
 	const isFull = players?.length > 1
 	return (
-		<tr class="my-3 text-lg font-large">
-			<td class="py-3 px-6 text-left">
+		<tr class={`my-3 text-lg font-large ${isHost && "selected-room"}`}>
+			<td class="pr-3 py-3 text-left">
 				<div class="flex items-center font-lg">
 					<div class="mr-2">
 						<img
@@ -296,24 +282,26 @@ function RoomItem({room, join}) {
 					<span>John Does</span>
 				</div>
 			</td>
-			<td class="p-3 px-6">Blitz 1 (lightning bolt)</td>
-			<td class="p-3 px-6 font-bold">10 min | +3 sec/move</td>
-			<td class="py-3 px-6 text-center">
+			<td class="pr-3 ">Blitz 1 (lightning bolt)</td>
+			<td class="pr-3 font-bold">
+				<span class="min">10 min</span>
+				<span>+3 sec</span>
+			</td>
+			<td class="pr-3 py-3">
 				<span
 					class={`py-1 px-3 rounded-full  font-semibold 
 					${isFull ? " bg-red-200 text-red-900" : " bg-blue-200 text-blue-900"}`}
 				>
-					<span class="hidden lg:inline">
+					{/* <span class="hidden lg:inline">
 						{`${isFull ? "Max" : "Open"}`}
-					</span>
-					({players?.length}
-					/2)
+					</span> */}
+					{players?.length}/2
 				</span>
 			</td>
-			<td class="p-3 px-6 font-bold">Black</td>
-			<td class="px-6 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
+			<td class="pr-3 font-bold">Black</td>
+			<td class="pr-3 py-3 whitespace-no-wrap text-right text-lg leading-5 font-semibold">
 				<button
-					onclick={() => join(room.ID)}
+					onclick={() => join(room?.ID)}
 					class={`focus:outline-none ${
 						isHost && " bg-blue-200 text-blue-900"
 					}`}
@@ -327,6 +315,40 @@ function RoomItem({room, join}) {
 	);
 }
 
+function LoadingTable() {
+	return (
+		<table class="loading-table p-5">
+			<thead>
+				<tr class="header-row px-5 py-3 hover:border-b border-gray-500">
+					{[...new Array(5)].map((_) => (
+						<th scope="col" class=" "> &#8203; </th>
+					))}
+				</tr>
+			</thead>
+			<tbody>
+				{[...new Array(6)].map((_) => (
+					<tr>
+						<td class="host">
+							<span></span>
+						</td>
+						<td class="attribute">
+							<span></span>
+						</td>
+						<td class="attribute">
+							<span></span>
+						</td>
+						<td class="attribute">
+							<span></span>
+						</td>
+						<td class="enter">
+							<span></span>
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	);
+}
 
 function sortByCreated(arr) {
 	return (arr || []).sort((a, b) => b.created - a.created)
