@@ -17,17 +17,17 @@ html, body {
     padding: 0;
     touch-action: none;
     -ms-touch-action: none;
-    background-color: #302E2B;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     // font-family: "Calibri", "Roboto", sans-serif;
     // font-family:'Segoe UI';
     font-family: 'Quattrocento Sans', sans-serif;
-
+    
     // grid bg like - https://stately.ai/
+    background-color: #212121;
     background-image: 
-        linear-gradient(#ffffff07 0.1em, transparent 0.1em), 
-        linear-gradient( 90deg  , #ffffff07 0.1em, transparent 0.1em);
+        linear-gradient(#1a1a1a 0.1em, transparent 0.1em), 
+        linear-gradient( 90deg  , #1a1a1a 0.1em, transparent 0.1em);
     background-size: 3em 3em;
 
 }
