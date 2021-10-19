@@ -44,8 +44,8 @@ export default (initial) => ({
 			},
 		removeRoom:
 			({ roomID }) =>
-				({ rooms, hostedRoom }) => {
-					if (hostedRoom == roomID) actions.alert.close({ id: "host" });
+				({ rooms, hostedRoom }, { alert }) => {
+					if (hostedRoom == roomID) alert.close({ id: "host" });
 					return {
 						rooms: rooms.filter((r) => r.ID != roomID),
 						hostedRoom: hostedRoom == roomID ? null : hostedRoom,
