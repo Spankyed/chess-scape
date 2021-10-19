@@ -1,6 +1,5 @@
 import { h } from 'hyperapp';
 import Api from '../../../../api/Api';
-import { nanoid } from 'nanoid/non-secure'
 
 // const mockMessages = [
 // 	{
@@ -73,23 +72,28 @@ export default initial => ({
 
 		return (
 			// ! root el needs key to fix grammarly breaking textarea
-			<div oncreate={init} class="h-full" key={ nanoid() }> 
-				<div class="chat-window flex flex-col items-end" style="overflow-anchor: none;">
+			<div oncreate={init} class="h-full" key="_chat">
+				<div
+					class="chat-window flex flex-col items-end"
+					style="overflow-anchor: none;"
+				>
 					<ul class="w-full">
-					{	messages.map((message, i) => 
-							<Message message={message}/>
-						)
-					}
+						{messages.map((message, i) => (
+							<Message message={message} />
+						))}
 					</ul>
 				</div>
 				<div class="chat-footer">
 					<div class="input-wrapper">
-						<textarea class="resize-none w-full px-3 py-1 text-gray-700 border rounded-sm focus:outline-none" rows="2" autocomplete="off"
+						<textarea
+							class="resize-none w-full px-3 py-1 text-gray-700 border rounded-sm focus:outline-none"
+							rows="2"
+							autocomplete="off"
 							placeholder="Type here and press enter"
 							onkeyup={handleKeyPress}
 							onkeydown={handleKeyPress}
 							style="white-space: pre-wrap;overflow-wrap: break-word;"
-							// oninput={e => modify({ message: e.target.value })} 
+							// oninput={e => modify({ message: e.target.value })}
 							// value={state.message}
 						/>
 						{/* <input class="chat-input" id="chat" placeholder="Type here and press enter" autocomplete="off"
@@ -98,7 +102,6 @@ export default initial => ({
 					</div>
 				</div>
 			</div>
-
 		);
 	}
 })
