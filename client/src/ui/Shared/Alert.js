@@ -69,7 +69,7 @@ export default (initial) => ({
 			</div>
 		);
 	},
-	waitAlert: {
+	hostAlert: {
 		// icon: "./assets/create/host.svg",
 		id: "host",
 		role: "none",

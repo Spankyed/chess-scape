@@ -36,7 +36,7 @@ export default (initial) => ({
 			({ newRoom }) =>
 			({ rooms, hostedRoom }, actions) => {
 				const isHost = newRoom.host == Api.getClientID();
-				if (isHost) actions.alert.show(alert.waitAlert);
+				if (isHost) actions.alert.show(alert.hostAlert);
 				return {
 					rooms: sortByCreated([...rooms, newRoom]),
 					hostedRoom: isHost ? newRoom.ID : hostedRoom,
@@ -44,10 +44,13 @@ export default (initial) => ({
 			},
 		removeRoom:
 			({ roomID }) =>
-			({ rooms, hostedRoom }) => ({
-				rooms: rooms.filter((r) => r.ID != roomID),
-				hostedRoom: hostedRoom == roomID ? null : hostedRoom,
-			}),
+				({ rooms, hostedRoom }) => {
+					if (hostedRoom == roomID) actions.alert.close({ id: "host" });
+					return {
+						rooms: rooms.filter((r) => r.ID != roomID),
+						hostedRoom: hostedRoom == roomID ? null : hostedRoom,
+					}
+				},
 		fetchRooms: () => (_, actions) => {
 			Api.joinLobby().then(actions.completeFetch).catch(actions.exit);
 			return { isFetching: true };
@@ -56,7 +59,7 @@ export default (initial) => ({
 			const hostedRoomID = rooms.find(
 				(room) => room.host == Api.getClientID()
 			)?.ID;
-			if (!!hostedRoomID) actions.alert.show(alert.waitAlert);
+			if (!!hostedRoomID) actions.alert.show(alert.hostAlert);
 			actions.updateRooms(rooms);
 			return {
 				hostedRoom: hostedRoomID,
@@ -101,7 +104,7 @@ export default (initial) => ({
 
 			const cancel = async () => {
 				await Api.deleteRoom(state.hostedRoom).catch(actions.exit);
-				actions.alert.close({ id: "host"});
+				actions.alert.close({ id: "host" });
 			};
 
 			const initialize = async () => {

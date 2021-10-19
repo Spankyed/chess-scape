@@ -70,7 +70,7 @@ export default (initial) => ({
 
 				if (!match.matchStarted) {
 					if (players.length == 1 && isHost) {
-						actions.alert.show(alert.waitAlert);
+						actions.alert.show(alert.hostAlert);
 					} else {
 						actions.alert.show(alert.startAlert);
 					}
