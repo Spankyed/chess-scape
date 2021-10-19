@@ -10,7 +10,8 @@ export default (initial) => ({
 	state: {
 		menuOpen: false,
 		recentlyOffered: false,
-		cameraViewColor: null
+		cameraViewColor: null,
+		initialized: false,
 	},
 	actions: {
 		toggleMenu: (val) => (state) => ({
@@ -18,19 +19,22 @@ export default (initial) => ({
 		}),
 		disableOffers: () => ({ recentlyOffered: true }),
 		enableOffers: () => ({ recentlyOffered: false }),
-		flipCamera: (playerColor) => ({cameraViewColor}) => {
-			let currColor = cameraViewColor || playerColor || 'white'
-			let oppColor = currColor == "white" ? "black" : "white";
-			Scene.manager.animateCameraIntoPosition(oppColor);
-			return {
-				cameraViewColor: oppColor,
-			};
-		}
+		flipCamera:
+			(playerColor) =>
+			({ cameraViewColor }) => {
+				let currColor = cameraViewColor || playerColor || "white";
+				let oppColor = currColor == "white" ? "black" : "white";
+				Scene.manager.animateCameraIntoPosition(oppColor);
+				return {
+					cameraViewColor: oppColor,
+				};
+			},
+		initialize: () => ({ initialized: true }),
 	},
 	view:
 		(
-			{ recentlyOffered, menuOpen },
-			{ toggleMenu, disableOffers, enableOffers, flipCamera }
+			{ recentlyOffered, menuOpen, initialized },
+			{ toggleMenu, disableOffers, enableOffers, flipCamera, initialize }
 		) =>
 		({ alert, roomState, toggleSidePanel }) => {
 			const {
@@ -60,7 +64,9 @@ export default (initial) => ({
 			const handleOutsideClick = (el) => {
 				const documentClick$ = fromEvent(document, "click");
 				documentClick$
-					.pipe(filter((ev) => !el.contains(ev.target)))
+					.pipe(
+						filter((ev) => !el.children[0].isEqualNode(ev.target))
+					)
 					.subscribe(() => toggleMenu(false));
 			};
 
@@ -70,16 +76,19 @@ export default (initial) => ({
 				leave$
 					.pipe(
 						mergeMap((ev) =>
-							of(ev).pipe(delay(400), takeUntil(enter$))
+							of(ev).pipe(delay(300), takeUntil(enter$))
 						)
 					)
 					.subscribe((_) => toggleMenu(false));
-				enter$.subscribe((_) => toggleMenu(true));
+				// enter$.subscribe((_) => toggleMenu(true));
 			};
 
 			const oncreate = (el) => {
-				handleHover(el);
-				handleOutsideClick(el);
+				if (!initialized) {
+					initialize();
+					handleHover(el);
+					handleOutsideClick(el);
+				}
 			};
 
 			return (
@@ -191,10 +200,12 @@ export default (initial) => ({
 						</div>
 					)}
 					<button onclick={toggleMenu} class="control-btn first">
-						<img src="./assets/controls/menu.svg"></img>
+						<img
+							src="./assets/controls/menu.svg"
+							class="pointer-events-none"
+						></img>
 					</button>
 				</div>
-				// needs pointer events
 			);
 		},
 });
