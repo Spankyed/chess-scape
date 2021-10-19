@@ -226,6 +226,7 @@ function cleanupHandlers(){
 		chat: () => {},
 		join: () => {},
 		leave: () => {},
+		disband: () => {},
 		sync: () => {},
 		start: () => {},
 		rematch: () => {},
