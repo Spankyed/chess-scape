@@ -64,7 +64,7 @@ export default (initial) => ({
 						class="video-form w-4/6 max-h-screen"
 						action=""
 					>
-						<div
+						{/* <div
 							class="part flex h-44 items-center w-full rounded-small"
 							style="background-color: #32291d"
 						>
@@ -74,7 +74,7 @@ export default (initial) => ({
 									state.username || "dicebear"
 								}.svg`}
 							/>
-						</div>
+						</div> */}
 						<div class="part w-full flex items-center  border-b">
 							<label for="username" class="sr-only">
 								Username
@@ -93,7 +93,6 @@ export default (initial) => ({
 								autofocus
 							/>
 						</div>
-
 						<div class="part rating">
 							<div class="w-2/5 self-start px-2">Rating :</div>
 							<div class="rating-menu w-3/5 flex flex-wrap p-2">
@@ -110,15 +109,17 @@ export default (initial) => ({
 								))}
 							</div>
 						</div>
-
+						{/* class= {`part save w-full bg-green-400 ${ state.attemptingSubmit && "processing" }`} */}
 						<button
 							type="submit"
-							class={`part save w-full bg-green-400 ${
-								state.attemptingSubmit && "processing"
-							}`}
+							class="part save w-full bg-green-400 flex justify-center items-center"
 							disabled={!(state.username.length > 0)}
 						>
-							{state.submitText}
+							{state.attemptingSubmit ? (
+								<Loader />
+							) : (
+								state.submitText
+							)}
 						</button>
 					</form>
 				</div>
@@ -129,4 +130,49 @@ export default (initial) => ({
 function validate(username) {
 	illegalChars = /[^a-zA-Z0-9-_]/g.test(username);
 	return !illegalChars && username.length > 0 && username.length < 27;
+}
+
+function Loader() {
+	return (
+		<svg
+			version="1.1"
+			id="L5"
+			xmlns="http://www.w3.org/2000/svg"
+			x="0px"
+			y="0px"
+			viewBox="0 0 100 100"
+			enable-background="new 0 0 0 0"
+		>
+			<circle fill="#fff" stroke="none" cx="6" cy="50" r="6">
+				<animateTransform
+					attributeName="transform"
+					dur="1s"
+					type="translate"
+					values="0 15 ; 0 -15; 0 15"
+					repeatCount="indefinite"
+					begin="0.1"
+				/>
+			</circle>
+			<circle fill="#fff" stroke="none" cx="30" cy="50" r="6">
+				<animateTransform
+					attributeName="transform"
+					dur="1s"
+					type="translate"
+					values="0 10 ; 0 -10; 0 10"
+					repeatCount="indefinite"
+					begin="0.2"
+				/>
+			</circle>
+			<circle fill="#fff" stroke="none" cx="54" cy="50" r="6">
+				<animateTransform
+					attributeName="transform"
+					dur="1s"
+					type="translate"
+					values="0 5 ; 0 -5; 0 5"
+					repeatCount="indefinite"
+					begin="0.3"
+				/>
+			</circle>
+		</svg>
+	);
 }

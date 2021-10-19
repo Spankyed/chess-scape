@@ -42,7 +42,7 @@
         margin-bottom: .6rem;
     }
 
-    .save{
+    .save {
         background-color: #76a343;
         font-size: 2rem;
         &:disabled {
@@ -54,5 +54,11 @@
         &.processing{
             -webkit-text-security: disc;
         }
+        svg {
+            width: 100px;
+            height: 80px;
+            display:inline-block;
+        }
     }
+
 }
