@@ -2,19 +2,26 @@ import { h } from "hyperapp";
 
 export default (initial) => ({
 	state: {
+		optionsOpen: false,
 		time: { minutes: 15, increment: "3" },
-		opponents: ["anyone", "angel", "computer"],
+		customTimeSet: false,
 		isSelectingOpp: false,
+		opponents: ["anyone", "angel", "computer"],
 		selectedOpp: "anyone",
 		computerSkill: "easy",
 		pinEnabled: false,
 		pin: null,
 	},
 	actions: {
+		openCustomOptions: () => () => ({ optionsOpen: true }),
+		ignoreCustomTime: () => () => ({ customTimeSet: false }),
 		setTime:
 			({ prop, value }) =>
-			({ time }) => ({ time: { ...time, [prop]: value } }),
-		setComputerSkill:(computerSkill)=>()=>({computerSkill}),
+			({ time }) => ({
+				time: { ...time, [prop]: value },
+				customTimeSet: prop && value && true,
+			}),
+		setComputerSkill: (computerSkill) => () => ({ computerSkill }),
 		selectOpp: (selectedOpp) => () => ({
 			selectedOpp,
 			isSelectingOpp: false,
@@ -24,7 +31,10 @@ export default (initial) => ({
 			({ isSelectingOpp }) => ({ isSelectingOpp: !isSelectingOpp }),
 		togglePin:
 			() =>
-			({ pinEnabled, pin }) => ({ pinEnabled: !pinEnabled, pin: !pinEnabled ? pin : null}),
+			({ pinEnabled, pin }) => ({
+				pinEnabled: !pinEnabled,
+				pin: !pinEnabled ? pin : null,
+			}),
 		setPin: (pin) => () => ({ pin }),
 	},
 	view:
@@ -38,17 +48,25 @@ export default (initial) => ({
 				selectedOpp,
 				computerSkill,
 				time,
+				optionsOpen,
 			} = state;
-			const { selectOpp, toggleOppMenu, togglePin, setPin, setTime, setComputerSkill } =
-				actions;
+			const {
+				selectOpp,
+				toggleOppMenu,
+				togglePin,
+				setPin,
+				setTime,
+				setComputerSkill,
+				openCustomOptions,
+			} = actions;
 			const type = { name: "Custom" };
 
 			return (
 				<div
-					onclick={() => selectGameType("custom")}
-					class="custom cursor-pointer bg-green-200 px-2 pb-2 rounded-md mt-5"
+					onclick={openCustomOptions}
+					class={`custom ${selectedGameType == 4 && 'selected'}`}
 				>
-					{selectedGameType != "custom" ? (
+					{!optionsOpen ? (
 						<div class="flex px-3 justify-center">
 							<img
 								class="flex-shrink h-10"
@@ -65,7 +83,14 @@ export default (initial) => ({
 							</h2>
 							<div class="line-1 flex items-center justify-center w-full mb-2">
 								<div class="flex items-center justify-center w-full">
-									<TimeControl {...{ setTime, time }} />
+									<TimeControl
+										{...{
+											setTime,
+											time,
+											selectGameType,
+											selectedGameType,
+										}}
+									/>
 								</div>
 							</div>
 							{/* todo dropdown icon here to show more options */}
@@ -90,16 +115,23 @@ export default (initial) => ({
 		},
 });
 
-function TimeControl({ setTime, time }) {
-	const toPropVal = (prop, value) => ({prop, value})
-	const formatTime = (target) => {
-		return target.value = Number(
+function TimeControl({ setTime, time, selectGameType, selectedGameType }) {
+	const formatTimeMutate = (target) => {
+		return (target.value = Number(
 			target.value
 				.toString()
 				.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
 				.substring(0, 2)
-		);
+		));
 	};
+
+	const handleTimeInput = (prop) => ({target}) => {
+		if (selectedGameType != 4) selectGameType(4); // set game type to custom when custom time inputted
+		setTime({
+			prop,
+			value: formatTimeMutate(target),
+		});
+	}
 
 	return (
 		<div class="control shadow-md relative flex">
@@ -111,7 +143,7 @@ function TimeControl({ setTime, time }) {
 					time
 				</label>
 				<input
-					oninput={({ target }) => setTime(toPropVal("minutes", formatTime(target)))}
+					oninput={handleTimeInput("minutes")}
 					type="number"
 					min="0"
 					max="60"
@@ -136,7 +168,7 @@ function TimeControl({ setTime, time }) {
 						+
 					</span>
 					<select
-						onchange={({target}) => setTime(toPropVal('increment', target.value))}
+						onchange={handleTimeInput("increment")}
 						value={time.increment}
 						id="increment"
 						name="increment"
@@ -282,7 +314,7 @@ function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 				<input
 					type="checkbox"
 					class="form-checkbox h-5 w-5 mt-4"
-					onchange={(_) => togglePin()}
+					onchange={togglePin}
 					checked={pinEnabled}
 				/>
 			</div>

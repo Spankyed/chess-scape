@@ -8,38 +8,46 @@ const custom = Custom();
 
 const gameTypes = [
 	{
-		type: "forever",
+		id: 0,
+		name: "forever",
+		time: { minutes: "--", increment: "--" },
 	},
 	{
-		type: "rapid",
-		time: "10 min",
+		id: 1,
+		name: "rapid",
+		time: { minutes: 10, increment: 5 },
 	},
 	{
-		type: "blitz",
-		time: "5 min",
+		id: 2,
+		name: "blitz",
+		time: { minutes: 5, increment: 5 },
 	},
 	{
-		type: "bullet",
-		time: "3 min",
+		id: 3,
+		name: "bullet",
+		time: { minutes: 3, increment: 3 },
 	},
 ];
 
+const initialState = {
+	selectedColor: "random",
+	selectedGameType: 0,
+	gameTypes,
+	custom: custom.state,
+	submitText: "Create Room",
+}
+
 export default (initial) => ({
-	state: {
-		selectedColor: "random",
-		selectedGameType: 0,
-		gameTypes,
-		custom: custom.state,
-		submitText: "Create Room",
-	},
+	state: initialState,
 	actions: {
 		custom: custom.actions,
 		selectColor: (color) => (state) => ({
 			selectedColor: color,
 		}),
-		selectGameType: (gameType) => (state) => ({
-			selectedGameType: gameType,
-		}),
+		selectGameType: (id) => (_, {custom}) => {
+			if (_.custom.customTimeSet) custom.ignoreCustomTime();
+			return { selectedGameType: id };
+		},
 		attemptSubmit: () => ({
 			attemptingSubmit: true,
 			submitText: "Please wait...",
@@ -49,9 +57,10 @@ export default (initial) => ({
 			attemptingSubmit: false,
 			submitText: "Create Room",
 		}),
+		reset: () => initialState,
 	},
 	view: (state, actions) => ({ showCreate, toggleCreate, setHosted }) => {
-		const { gameTypes, selectedColor, selectedGameType } = state;
+		const { gameTypes, selectedColor, selectedGameType, custom: customState } = state;
 		const CustomView = custom.view(state.custom, actions.custom);
 
 		// todo close modal using esc key
@@ -60,25 +69,31 @@ export default (initial) => ({
 			toggleCreate();
 		};
 		const create = async (ev) => {
-			if (state.attemptingSubmit || !showCreate) {
-				return;
-			}
+			if (state.attemptingSubmit || !showCreate) return
 			ev.stopPropagation();
 			const random = Math.random() >= 0.5 ? 1 : 0;
-			const gameOptions = processGameOptions(state.custom, selectedGameType);
-			const room = {
-				selectedColor: selectedColor == "random"
+
+			const { selectedOpp, customTimeSet, pinEnabled, pin, computerSkill, time } = customState
+			const gameOptions = {
+				selectedColor:
+					selectedColor == "random"
 						? ["white", "black"][random]
 						: selectedColor,
-				...gameOptions,
+				name: customTimeSet
+					? "custom"
+					: gameTypes[selectedGameType].name,
+				time: customTimeSet ? time : gameTypes[selectedGameType].time,
+				selectedOpp,
+				...(selectedOpp == "computer" ? { computerSkill } : {}),
+				pinEnabled,
+				pin,
 			};
+
 			try {
 				actions.attemptSubmit();
-				const { newRoom } = await Api.createRoom(room); // dont update room list with response, websocket message should be sent to update room list in lobby
-				if (newRoom) {
-					toggleCreate();
-				}
-				delay(300).then(actions.endAttempt);
+				const { newRoom } = await Api.createRoom(gameOptions); // dont update room list with response, websocket message should be sent to update room list in lobby
+				if (newRoom) toggleCreate();
+				delay(300).then(actions.endAttempt).then(actions.reset);
 			} catch (err) {
 				console.log(err);
 				// if (!err.hidden) actions.showError(err);
@@ -150,6 +165,38 @@ export default (initial) => ({
 	},
 });
 
+function GameType({ type, selectGameType, selectedGameType }) {
+	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+	return (
+		<div
+			onclick={() => selectGameType(type.id)}
+			class={`cursor-pointer bg-green-200 py-2 rounded-md ${
+				type.id == selectedGameType && "selected"
+			}`}
+			style="min-height:85px"
+		>
+			<div class="flex">
+				<div class="w-2/3">
+					<h2 class="text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
+						{capitalize(type.name)}
+					</h2>
+					{type.time && (
+						<h3 class="text-base md:text-md lg:text-md px-8 py-2 text-gray-600">
+							{type.time.minutes} min
+						</h3>
+					)}
+				</div>
+				<div class="w-1/3 flex justify-center items-center mr-2">
+					<img
+						src={`./assets/create/types/${type.name}.svg`}
+						alt="game type"
+					/>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 function ColorSelect({ selectedColor, selectColor }) {
 	const colors = ["white", "random", "black"];
 	return (
@@ -169,38 +216,6 @@ function ColorSelect({ selectedColor, selectColor }) {
 					/>
 				</div>
 			))}
-		</div>
-	);
-}
-
-function GameType({ type, selectGameType, selectedGameType }) {
-	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
-	return (
-		<div
-			onclick={() => selectGameType(type)}
-			class={`cursor-pointer bg-green-200 py-2 rounded-md ${
-				type == selectedGameType && "selected"
-			}`}
-			style="min-height:85px"
-		>
-			<div class="flex">
-				<div class="w-2/3">
-					<h2 class="text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
-						{capitalize(type.type)}
-					</h2>
-					{type.time && (
-						<h3 class="text-base md:text-md lg:text-md px-8 py-2 text-gray-600">
-							{type.time}
-						</h3>
-					)}
-				</div>
-				<div class="w-1/3 flex justify-center items-center mr-2">
-					<img
-						src={`./assets/create/types/${type.type}.svg`}
-						alt="game type"
-					/>
-				</div>
-			</div>
 		</div>
 	);
 }
@@ -232,20 +247,3 @@ function Footer({ create, toggle }) {
 	);
 }
 
-function processGameOptions(custom, selectedGameType) {
-	const {
-		opponents,
-		isSelectingOpp, // remove custom state props
-		...customOpts
-	} = custom;
-
-	if (customOpts.selectedOpp != 'computer') {
-		delete customOpts.computerSkill
-	}
-	if (!customOpts.pinEnabled) {
-		delete customOpts.pin
-	}
-	return selectedGameType == "custom"
-			? {...customOpts, type: 'custom'}
-			: selectedGameType;
-}

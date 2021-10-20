@@ -15,10 +15,10 @@ const schema = {
 };
 
 const handler = async (event) => {
-	const {client, clientID, selectedColor, ...form} = event.body;
+	const {client, clientID, selectedColor, ...gameOptions} = event.body;
 
 	const room = {
-		...form,
+		gameOptions,
 		ID: await nanoid(),
 		host: clientID,
 		hostName: client.username,
@@ -44,6 +44,7 @@ const handler = async (event) => {
 					committed: false,
 				},
 			},
+			selectedColor,
 			lastMove: {
 				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
 			},
