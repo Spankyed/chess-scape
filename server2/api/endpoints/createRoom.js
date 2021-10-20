@@ -15,12 +15,13 @@ const schema = {
 };
 
 const handler = async (event) => {
-	const {TOKEN, clientID, selectedColor, ...form} = event.body;
+	const {client, clientID, selectedColor, ...form} = event.body;
 
 	const room = {
 		...form,
 		ID: await nanoid(),
 		host: clientID,
+		hostName: client.username,
 		players: { [selectedColor]: { clientID } },
 		spectators: {},
 		chat: [],

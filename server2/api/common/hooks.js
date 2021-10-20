@@ -10,6 +10,10 @@ const checkToken = async state => {
         const [isAuthorized, client] = await authorize( clientID, TOKEN );
         if (!isAuthorized) {
             throw Error("unauthorized");
+        } else {
+            let { TOKEN, ...safeClient } = client;
+            state.event.body.client = safeClient;
+            delete state.event.body.TOKEN
         }
     } catch (error) {
         console.log('Unauthorized user', { clientID, TOKEN });
