@@ -44,10 +44,12 @@ export default (initial) => ({
 		selectColor: (color) => (state) => ({
 			selectedColor: color,
 		}),
-		selectGameType: (id) => (_, {custom}) => {
-			if (_.custom.customTimeSet) custom.ignoreCustomTime();
-			return { selectedGameType: id };
-		},
+		selectGameType:
+			(id) =>
+			(_, { custom }) => {
+				if (_.custom.customTimeSet) custom.ignoreCustomTime();
+				return { selectedGameType: id };
+			},
 		attemptSubmit: () => ({
 			attemptingSubmit: true,
 			submitText: "Please wait...",
@@ -59,110 +61,131 @@ export default (initial) => ({
 		}),
 		reset: () => initialState,
 	},
-	view: (state, actions) => ({ showCreate, toggleCreate, setHosted }) => {
-		const { gameTypes, selectedColor, selectedGameType, custom: customState } = state;
-		const CustomView = custom.view(state.custom, actions.custom);
+	view:
+		(state, actions) =>
+		({ showCreate, toggleCreate }) => {
+			const {
+				gameTypes,
+				selectedColor,
+				selectedGameType,
+				custom: customState,
+			} = state;
+			const CustomView = custom.view(state.custom, actions.custom);
 
-		// todo close modal using esc key
-		const toggle = (ev) => {
-			ev.stopPropagation();
-			toggleCreate();
-		};
-		const create = async (ev) => {
-			if (state.attemptingSubmit || !showCreate) return
-			ev.stopPropagation();
-			const random = Math.random() >= 0.5 ? 1 : 0;
+			// todo close modal using esc key
+			const toggle = (ev) => {
+				ev.stopPropagation();
+				toggleCreate();
+				actions.reset()
+			};
+			const create = async (ev) => {
+				if (state.attemptingSubmit || !showCreate) return;
+				ev.stopPropagation();
+				const random = Math.random() >= 0.5 ? 1 : 0;
 
-			const { selectedOpp, customTimeSet, pinEnabled, pin, computerSkill, time } = customState
-			const gameOptions = {
-				selectedColor:
-					selectedColor == "random"
-						? ["white", "black"][random]
-						: selectedColor,
-				name: customTimeSet
-					? "custom"
-					: gameTypes[selectedGameType].name,
-				time: customTimeSet ? time : gameTypes[selectedGameType].time,
-				selectedOpp,
-				...(selectedOpp == "computer" ? { computerSkill } : {}),
-				pinEnabled,
-				pin,
+				const {
+					selectedOpp,
+					customTimeSet,
+					pinEnabled,
+					pin,
+					computerSkill,
+					time,
+				} = customState;
+				const gameOptions = {
+					selectedColor:
+						selectedColor == "random"
+							? ["white", "black"][random]
+							: selectedColor,
+					name: customTimeSet
+						? "custom"
+						: gameTypes[selectedGameType].name,
+					time: customTimeSet
+						? time
+						: gameTypes[selectedGameType].time,
+					selectedOpp,
+					...(selectedOpp == "computer" ? { computerSkill } : {}),
+					pinEnabled,
+					pin,
+				};
+
+				try {
+					actions.attemptSubmit();
+					const { newRoom } = await Api.createRoom(gameOptions); // dont update room list with response, websocket message should be sent to update room list in lobby
+					if (newRoom) toggleCreate();
+					delay(300).then(actions.endAttempt).then(actions.reset);
+				} catch (err) {
+					console.log(err);
+					// if (!err.hidden) actions.showError(err);
+					delay(300).then(actions.endAttempt);
+				}
 			};
 
-			try {
-				actions.attemptSubmit();
-				const { newRoom } = await Api.createRoom(gameOptions); // dont update room list with response, websocket message should be sent to update room list in lobby
-				if (newRoom) toggleCreate();
-				delay(300).then(actions.endAttempt).then(actions.reset);
-			} catch (err) {
-				console.log(err);
-				// if (!err.hidden) actions.showError(err);
-				delay(300).then(actions.endAttempt);
+			function checkConnection() {
+				if (!Api.isConnected()) Api.reconnect();
 			}
-		};
-		
-		function checkConnection() {
-			if (!Api.isConnected()) Api.reconnect()
-		}
 
-		return (
-			<div
-				class={`${
-					showCreate ? "" : "opacity-0 pointer-events-none"
-				} create-wrapper modal fixed w-full h-full top-0 left-0`}
-			>
-				{showCreate && (
-					<div
-						oncreate={checkConnection}
-						class="create flex items-center justify-center"
-					>
+			return (
+				<div
+					class={`${
+						showCreate ? "" : "opacity-0 pointer-events-none"
+					} create-wrapper modal fixed w-full h-full top-0 left-0`}
+				>
+					{showCreate && (
 						<div
-							onclick={toggle}
-							class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"
-						></div>
+							oncreate={checkConnection}
+							class="create flex items-center justify-center"
+						>
+							<div
+								onclick={toggle}
+								class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"
+							></div>
 
-						<div class="bg-white w-11/12 max-w-md mx-auto rounded shadow-lg z-50">
-							{/* <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
+							<div class="bg-white w-11/12 max-w-md mx-auto rounded shadow-lg z-50">
+								{/* <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
 							<svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
 								<path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
 							</svg>
 							<span class="text-sm">(Esc)</span>
 						</div> */}
 
-							<ColorSelect {...actions} {...{ selectedColor }} />
+								<ColorSelect
+									{...actions}
+									{...{ selectedColor }}
+								/>
 
-							{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
-							<div class="create-content py-4 text-left px-6 overflow-auto">
-								{/* <!--Title--> */}
-								<div class="justify-between items-center grid grid-cols-2 gap-5 w-full">
-									{gameTypes.map((type) => (
-										<GameType
-											{...actions}
-											{...{
-												type,
-												selectedGameType,
-											}}
-										/>
-									))}
+								{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
+								<div class="create-content py-4 text-left px-6 overflow-auto">
+									{/* <!--Title--> */}
+									<div class="justify-between items-center grid grid-cols-2 gap-5 w-full">
+										{gameTypes.map((type) => (
+											<GameType
+												{...actions}
+												{...{
+													type,
+													selectedGameType,
+												}}
+											/>
+										))}
+									</div>
+
+									<CustomView
+										{...actions}
+										{...{
+											selectGameType:
+												actions.selectGameType,
+											selectedGameType,
+										}}
+									/>
 								</div>
 
-								<CustomView
-									{...actions}
-									{...{
-										selectGameType: actions.selectGameType,
-										selectedGameType,
-									}}
-								/>
+								{/* <!--Footer--> */}
+								<Footer {...{ create, toggle }} />
 							</div>
-
-							{/* <!--Footer--> */}
-							<Footer {...{ create, toggle }} />
 						</div>
-					</div>
-				)}
-			</div>
-		);
-	},
+					)}
+				</div>
+			);
+		},
 });
 
 function GameType({ type, selectGameType, selectedGameType }) {
