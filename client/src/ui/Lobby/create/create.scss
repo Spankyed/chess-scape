@@ -1,4 +1,7 @@
 .create-wrapper {
+
+    @import './custom.scss'; 
+
     .selected{
         box-shadow:#cddc39 0px 0px 5px 3px !important;
     }
