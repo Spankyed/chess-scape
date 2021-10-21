@@ -18,7 +18,55 @@
         margin-right: auto;
 
         .lobby-header {
-            height:18vh
+            height:18vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            h1 {
+                text-shadow: 2px 2px 6px #000;
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 40px;
+                padding-left: 1.25rem/* 20px */;
+                padding-right: 1.25rem/* 20px */;
+                font-size: 1rem/* 16px */;
+                line-height: 1.5rem/* 24px */;
+                font-weight: 700; 
+                line-height: 1.5;     
+                color: #f3f4f6;  
+            }
+            button {
+                display: flex;   
+                align-items: center;
+                padding-left: 1rem/* 16px */;
+                padding-right: 1rem/* 16px */;
+                margin-right: 1rem/* 16px */;
+                padding-top: 0.5rem/* 8px */;
+                background-color: rgba(67, 56, 202);
+                padding-bottom: 0.5rem/* 8px */;
+                &:hover{
+                    background-color: rgba(79, 70, 229);
+                }
+                &:focus{
+                    outline: 2px solid transparent;
+                    outline-offset: 2px;
+                    // --tw-ring-color: rgba(49, 46, 129);
+                }
+                // box-shadow: rgb(255, 255, 255) 0px 0px 0px 4px, rgba(67, 56, 202) 0px 0px 0px 8px, rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+                &.cancel {
+                    background-color: rgba(180, 83, 9);
+                    // box-shadow: rgb(255, 255, 255) 0px 0px 0px 4px, rgba(180, 83, 9) 0px 0px 0px 8px, rgba(0, 0, 0, 0) 0px 0px 0px 0px;
+                    &:hover{
+                        background-color: rgba(217, 119, 6)
+                    }
+                }
+                p {
+                    font-size: 1.25rem/* 20px */;
+                    line-height: 1.75rem/* 28px */;
+                    font-weight: 500;
+                    line-height: 1;
+                    color: rgba(255, 255, 255)
+                }
+            }
         }
 
         .table-wrapper {
@@ -29,6 +77,30 @@
             background-color: #1a1a1a;
             border: 1px solid rgba(107,114,128,1);
 
+            .table-empty {
+                width: 100%;
+                height: 16rem; 
+                text-align: center;
+                justify-content: center; 
+                align-items: center;
+
+                svg {
+                    width: 100%;
+                    text-align: center;
+                    height: 16rem; 
+
+                }
+                .message {
+                    width: 100%;
+                    text-align: center;
+                    color: rgba(209, 213, 219);
+                    font-size: 1.25rem/* 20px */;
+                    // line-height: 1.75rem;
+                    font-weight: 500;
+                    line-height: 1;
+                }
+            }
+
             .selected-room{
                 // background-color: #383838;
                 background-color: #18a8;
@@ -38,9 +110,23 @@
                 width: 100%;
                 border-spacing: 0 15px;
                 position: relative;
-
+                border-collapse: collapse;
+                color: rgba(209, 213, 219);
+                // font-size: 0.875rem/* 14px */;
+                // line-height: 1.25rem;
                 thead {
+                    color: rgba(156, 163, 175);
+                    text-transform: uppercase;
+                    font-size: 1.125rem;
+                    line-height: 1.75rem;
                     height:3.2rem;
+                    letter-spacing: 0.05em;
+
+                    tr {
+                        border-bottom-width: 1px;
+                        border-color: rgba(107, 114, 128)
+                    }
+
                     th {
                         padding-right: .5rem;
                         padding-left: .5rem;
@@ -53,14 +139,14 @@
                         // padding-right: 20px;
                         position: sticky;
                         top: 0;
-                        &:after {
-                            bottom: -1px;
-                            border-bottom: 1px solid rgba(107,114,128,1);
-                            content: '';
-                            position: absolute;
-                            left: 0;
+
+
+                        span {
+                            display: block;
+                            height: 100%;
                             width: 100%;
                         }
+
                         // flex-grow:1;
                         &.Host {
                             width: 20%;
@@ -95,7 +181,6 @@
                                     display: block;
                                 }
                                 .data {
-                                    max-width:90%;
                                     height: 12px;
                                     border-radius: .15rem;
                                     background: linear-gradient(to right, #363636  20%, #303030 50%, #363636 80%);
@@ -110,10 +195,14 @@
                                 .img {
                                     background-color: #303030;
                                 }
+                                &.time {
+                                    .data {
+                                        max-width:90%;
+                                    }
+                                }
                                 &.host {
                                     align-items: center;
-                                    width: 8rem;
-
+                                    width: 10rem;
                                 }
                                 &.enter {
                                     span {
@@ -160,6 +249,10 @@
                             margin-right: 0.5rem;
 
                         }
+                        .cap-img {
+                            max-height: 3rem;
+                        }
+
                         &.host {
                             display: flex;
                             span {
@@ -167,6 +260,7 @@
                                 overflow: hidden;
                                 text-overflow: ellipsis;
                             }
+
                         }
                         &.time {
                             font-weight: 700;
@@ -291,11 +385,6 @@
 
 .modal {
     z-index: 999;
-}
-.title {
-    text-shadow: 2px 2px 6px #000;
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 40px;
 }
 
 
