@@ -10,7 +10,7 @@ const gameTypes = [
 	{
 		id: 0,
 		name: "forever",
-		time: { minutes: "--", increment: "--" },
+		time: { minutes: "—", increment: "—" },
 	},
 	{
 		id: 1,
