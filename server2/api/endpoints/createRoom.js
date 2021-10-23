@@ -23,6 +23,7 @@ const handler = async (event) => {
 		host: clientID,
 		hostName: client.username,
 		players: { [selectedColor]: { clientID } },
+		selectedColor,
 		spectators: {},
 		chat: [],
 		created: Date.now(),
