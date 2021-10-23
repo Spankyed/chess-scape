@@ -240,10 +240,12 @@ function SongPlayer({ state, actions }){
 		}
 	}
 	async function getSongInfo(file, song){
-		// console.time('songData')
-		let image = await Api.searchSongImage(song.title)
-		let duration = await getSongDuration(file) 
-		// console.timeEnd('songData')
+		// console.time('getSongData')
+		let [ image, duration ] = await Promise.all([
+			Api.searchSongImage(song.title),
+			getSongDuration(file) 
+		])
+		// console.timeEnd('getSongData')
 		return {image, duration, dataReady: true}
 	}
 	function getSongDuration(file){
