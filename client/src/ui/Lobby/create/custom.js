@@ -1,27 +1,37 @@
 import { h } from "hyperapp";
+import debounce from "tiny-debounce";
 
 export default (initial) => ({
 	state: {
-		optionsOpen: false,
-		time: { minutes: 15, increment: "3" },
+		controlsOpen: false,
+		time: { minutes: "", increment: "3" },
+		incDropdownOpen: false,
 		customTimeSet: false,
 		isSelectingOpp: false,
-		opponents: ["anyone", "angel", "computer"],
+		opponents: ["angel", "anyone", "computer"],
 		selectedOpp: "anyone",
 		computerSkill: "easy",
-		pinEnabled: false,
+		pinEnabled: true,
+		// pinEnabled: false,
 		pin: null,
 	},
 	actions: {
-		openCustomOptions: () => () => ({ optionsOpen: true }),
+		openCustomControls: () => () => ({ controlsOpen: true }),
 		ignoreCustomTime: () => () => ({ customTimeSet: false }),
 		setTime:
 			({ prop, value }) =>
-			({ time }) => ({
-				time: { ...time, [prop]: value },
+			({ time, customTimeSet }) => ({
+				time: {
+					...time,
+					increment: time.increment || "3",
+					[prop]: value,
+				},
 				customTimeSet: prop && value && true,
 			}),
-		setComputerSkill: (computerSkill) => () => ({ computerSkill }),
+		setComputerSkill: (computerSkill) => () => ({
+			computerSkill,
+			selectedOpp: "computer",
+		}),
 		selectOpp: (selectedOpp) => () => ({
 			selectedOpp,
 			isSelectingOpp: false,
@@ -36,6 +46,7 @@ export default (initial) => ({
 				pin: !pinEnabled ? pin : null,
 			}),
 		setPin: (pin) => () => ({ pin }),
+		setIncDropdown: (val) => () => ({ incDropdownOpen:val }),
 	},
 	view:
 		(state, actions) =>
@@ -48,7 +59,9 @@ export default (initial) => ({
 				selectedOpp,
 				computerSkill,
 				time,
-				optionsOpen,
+				controlsOpen,
+				customTimeSet,
+				incDropdownOpen
 			} = state;
 			const {
 				selectOpp,
@@ -57,43 +70,36 @@ export default (initial) => ({
 				setPin,
 				setTime,
 				setComputerSkill,
-				openCustomOptions,
+				openCustomControls,
+				setIncDropdown
 			} = actions;
 			const type = { name: "Custom" };
 
 			return (
 				<div
-					onclick={openCustomOptions}
-					class={`custom ${selectedGameType == 4 && 'selected'}`}
+					onclick={openCustomControls}
+					class={`custom ${selectedGameType == 4 && "selected"}`}
 				>
-					{!optionsOpen ? (
-						<div class="flex px-3 justify-center">
-							<img
-								class="flex-shrink h-10"
-								src="./assets/create/types/custom.svg"
-							/>
-							<h2 class="w-1/3 mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
-								{type.name}
-							</h2>
+					{!controlsOpen ? (
+						<div class="open-controls">
+							<h2 class="name">{type.name}</h2>
+							<img src="./assets/create/types/custom.svg" />
 						</div>
 					) : (
-						<div class="flex flex-col px-3">
-							<h2 class="w-full mb-3 lg:text-base md:text-md lg:text-md px-4 whitespace-no-wrap text-gray-600">
-								{type.name}
-							</h2>
-							<div class="line-1 flex items-center justify-center w-full mb-2">
-								<div class="flex items-center justify-center w-full">
-									<TimeControl
-										{...{
-											setTime,
-											time,
-											selectGameType,
-											selectedGameType,
-										}}
-									/>
-								</div>
-							</div>
-							{/* todo dropdown icon here to show more options */}
+						<div class="controls">
+							<h2 class="name">{type.name}</h2>
+							<TimeControl
+								{...{
+									setTime,
+									time,
+									selectGameType,
+									selectedGameType,
+									customTimeSet,
+									setIncDropdown,
+									incDropdownOpen,
+								}}
+							/>
+							{/* todo add dropdown icon to indicate opp select */}
 							<OpponentSelect
 								{...{
 									isSelectingOpp,
@@ -115,76 +121,135 @@ export default (initial) => ({
 		},
 });
 
-function TimeControl({ setTime, time, selectGameType, selectedGameType }) {
-	const formatTimeMutate = (target) => {
-		return (target.value = Number(
-			target.value
-				.toString()
-				.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
-				.substring(0, 2)
-		));
+function TimeControl({
+	setTime,
+	time,
+	selectGameType,
+	selectedGameType,
+	customTimeSet,
+	setIncDropdown,
+	incDropdownOpen,
+}) {
+	const formatTime = ({ value }) => {
+		if (value > 60) return value.toString().substring(0, 1);
+		if (value < 1) return "";
+		return value
+			.toString()
+			.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")
+			.substring(0, 2);
 	};
 
-	const handleTimeInput = (prop) => ({target}) => {
-		if (selectedGameType != 4) selectGameType(4); // set game type to custom when custom time inputted
-		setTime({
-			prop,
-			value: formatTimeMutate(target),
-		});
-	}
+	const isSelected = selectedGameType == 4;
+
+	const handleTimeInput =
+		(prop) =>
+		({ target }) => {
+			let { customTimeSet: timeSet } = setTime({
+				prop,
+				value: formatTime(target),
+			});
+			if (isSelected && !timeSet) selectGameType(0);
+			// reset to init game type when no time set
+			else if (!isSelected && timeSet) selectGameType(4); // set game type to custom when custom time inputted
+		};
 
 	return (
-		<div class="control shadow-md relative flex">
-			<span class="ml-2 pl-3 flex items-center pointer-events-none w-12">
-				<img class="" src="./assets/controls/clock.svg" />
-			</span>
-			<div class="minutes-input">
-				<label for="time" class="sr-only">
-					time
-				</label>
-				<input
-					oninput={handleTimeInput("minutes")}
-					type="number"
-					min="0"
-					max="60"
-					step="1"
-					name="time"
-					id="time"
-					value={time.minutes}
-					class="focus:ring-indigo-500 focus:border-indigo-500 pl-7 bg-transparent"
-					placeholder="15"
-				/>
-				<div class="minutes-suffix pointer-events-none">min</div>
-			</div>
-			<div class="ctrl-secondary w-1/4 pl-2">
-				<label for="increment" class="sr-only">
-					increment
-				</label>
-				<div class="relative w-full h-full">
-					<span
-						class="absolute h-full text-center flex justify-center items-center"
-						style="left: -3px;"
-					>
-						+
-					</span>
-					<select
-						onchange={handleTimeInput("increment")}
-						value={time.increment}
-						id="increment"
-						name="increment"
-						class="increment focus:ring-indigo-500 focus:border-indigo-500 h-full py-0 px-3 bg-transparent"
-						style="margin-left: -10px;"
-					>
-						<option value="1">1 sec</option>
-						<option value="3">3 sec</option>
-						<option value="10">10 sec</option>
-						<option value="30">30 sec</option>
-					</select>
+		<div class="time-wrapper">
+			<div class="control time">
+				<span class="clock identity">
+					<img src="./assets/create/custom/clock.svg" />
+				</span>
+				<div class="minutes-input">
+					<label for="time" class="sr-only">
+						time
+					</label>
+					<input
+						oninput={debounce(handleTimeInput("minutes"), 50)}
+						type="number"
+						min="1"
+						max="60"
+						step="1"
+						name="time"
+						id="time"
+						class="value"
+						value={time.minutes}
+						placeholder="—"
+					/>
+					<div class="minutes-suffix pointer-events-none">min</div>
+					{/* todo on click focus input ; show input cursor on hover*/}
+				</div>
+				<div class="ctrl-secondary">
+					<label for="increment" class="sr-only">
+						increment
+					</label>
+					<IncrementDropdown
+						{...{
+							time,
+							incDropdownOpen,
+							setIncDropdown,
+							disabled: !isSelected,
+							onchange: handleTimeInput("increment"),
+						}}
+					/>
 				</div>
 			</div>
 		</div>
 	);
 }
+
+function IncrementDropdown({
+	incDropdownOpen,
+	setIncDropdown,
+	time,
+	disabled,
+	onchange,
+}) {
+	let increments = [1, 3, 10, 30];
+	const onClick = (value) => () => {
+		onchange({ target: { value }});
+		setIncDropdown(false);
+	}
+	return (
+		<div
+			class={`increment-wrapper ${disabled && "disabled"}`}
+			// class="relative inline-block text-left w-full h-full"
+		>
+			<button
+				type="button"
+				class="inc-select"
+				name="increment"
+				aria-haspopup="true"
+				onclick={() => !disabled && setIncDropdown(!incDropdownOpen)}
+			>
+				{disabled ? (
+					"— inc"
+				) : (
+					<div>
+						+ <span class="value">{time.increment}</span> sec
+					</div>
+				)}
+			</button>
+			{/* {true && ( */}
+			{incDropdownOpen && !disabled && (
+				<div class="inc-menu" role="menu" tabindex="-1">
+					{increments.map((inc) => (
+						<span
+							class="increment"
+							role="menuitem"
+							tabindex="-1"
+							id={`${inc}`}
+							onclick={onClick(inc)}
+							// class={`option ${isSelected(1) && 'opp-selected'}`}
+						>
+							+ <span class="value">{inc}</span> sec
+						</span>
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
 
 function OpponentSelect({
 	isSelectingOpp,
@@ -196,9 +261,11 @@ function OpponentSelect({
 	setComputerSkill,
 }) {
 	return (
-		<div class="">
+		<div class={`opponent-select ${isSelectingOpp && 'opp-selecting'}`}>
 			{/* {true ? ( */}
-			{isSelectingOpp ? (
+			{!isSelectingOpp ? (
+				<SelectedOpponent {...{ selectedOpp, toggleOppMenu }} />
+			) : (
 				<OpponentMenu
 					{...{
 						opponents,
@@ -208,8 +275,6 @@ function OpponentSelect({
 						setComputerSkill,
 					}}
 				/>
-			) : (
-				<SelectedOpponent {...{ selectedOpp, toggleOppMenu }} />
 			)}
 		</div>
 	);
@@ -217,20 +282,15 @@ function OpponentSelect({
 
 function SelectedOpponent({ selectedOpp, toggleOppMenu }) {
 	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
 	return (
-		<div
-			onclick={toggleOppMenu}
-			class="cursor-pointer opp-option-wrapper control mb-3 justify-center"
-		>
-			<div class="w-3/4 flex justify-between mx-auto">
-				<span class="text-left pl-2">VS</span>
-				<img
-					class="w-8 "
-					src={`./assets/create/custom/${selectedOpp}.svg`}
-				/>
-				<span class="text-left pl-2">{capitalize(selectedOpp)}</span>
-				{/* todo add dropdown arrow here */}
+		<div onclick={toggleOppMenu} class="control opp-menu-toggle">
+			<span class="vs identity">VS</span>
+			<div class="opp-img">
+				<img src={`./assets/create/custom/${selectedOpp}.svg`} />
 			</div>
+			<span class="opp-name">{capitalize(selectedOpp)}</span>
+			{/* todo add dropdown arrow */}
 		</div>
 	);
 }
@@ -243,19 +303,14 @@ function OpponentMenu({
 	setComputerSkill,
 }) {
 	return (
-		<div class="w-full">
+		<div class="opp-menu">
 			{opponents.map((option) => (
 				<div
-					class={`opp-option-wrapper opp-option control mb-3 ${
+					class={`control opp-option-wrapper ${
 						option == selectedOpp && "selected"
 					}`}
 				>
-					<div
-						onclick={() => selectOpp(option)}
-						class="w-3/4 pl-4 flex items-center justify-center"
-					>
-						<OpponentOption opponent={option} />
-					</div>
+					<OpponentOption {...{option, selectOpp}} />
 					{option === "computer" && (
 						<ComputerSkillMenu
 							{...{ computerSkill, setComputerSkill }}
@@ -266,21 +321,21 @@ function OpponentMenu({
 		</div>
 	);
 }
-function OpponentOption({ opponent }) {
+function OpponentOption({ option, selectOpp }) {
 	const capitalize = (string) =>
 		string.charAt(0).toUpperCase() + string.slice(1);
 	return (
-		<div class="w-full flex pl-1 cursor-pointer">
-			<img class="w-8" src={`./assets/create/custom/${opponent}.svg`} />
-			<span class="w-1/8 mx-2 text-lg text-center">vs</span>
-			<span class="text-left pl-2">{capitalize(opponent)}</span>
+		<div onclick={() => selectOpp(option)} class={`opp-option ${option}`}>
+			{/* <span class="vs">vs</span> */}
+			<div class="img"><img src={`./assets/create/custom/${option}.svg`} /></div>
+			<span class="opp-name">{capitalize(option)}</span>
 		</div>
 	);
 }
 
 function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 	return (
-		<div class="computer-skill-menu ctrl-secondary absolute inset-y-0 right-0 flex items-center w-1/4">
+		<div class="computer-skill-menu ctrl-secondary">
 			<label for="difficulty" class="sr-only">
 				computer difficulty
 			</label>
@@ -291,12 +346,11 @@ function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 				value={computerSkill}
 				id="difficulty"
 				name="difficulty"
-				class="mr-3 focus:ring-indigo-500 
-				focus:border-indigo-500 h-full py-0 px-2 pr-3"
+				class="difficulty"
 				// focus:border-indigo-500 h-full py-0 pl-2 pr-1 bg-transparent"
 			>
-				<option value="random">Rando</option>
-				<option value="easy"> Easy </option>
+				<option value="random">Random</option>
+				<option value="easy">Easy</option>
 				<option value="hard">Hard</option>
 				<option value="doom">D00M</option>
 			</select>
@@ -304,37 +358,39 @@ function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 	);
 }
 
+
+
 function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 	return (
-		<div class="pin-protect control line-3 flex mt-2 w-full text-center relative">
-			<div class="pl-6">
-				<label class="flex text-center mx-auto justify-center sr-only">
-					Require pin
-				</label>
+		<div class="pin-protect control">
+			<span class="identity">
+				<img src="./assets/create/custom/lock.svg" />
+			</span>
+			<label for="pin" class="sr-only">
+				Private
+			</label>
+			{/* <div class="pl-6">
 				<input
 					type="checkbox"
 					class="form-checkbox h-5 w-5 mt-4"
 					onchange={togglePin}
 					checked={pinEnabled}
 				/>
-			</div>
-			<div class="ml-4">Require Pin</div>
-			<div class="ctrl-secondary pin-wrapper w-1/4 absolute inset-y-0 right-0 flex items-center">
-				<span class="w-4 ml-2 leading-snug font-normal absolute text-center text-blueGray-300 bg-transparent justify-center">
-					<img
-						class="lock w-full h-full"
-						src="./assets/create/custom/lock.svg"
-					/>
-					<i class="fas fa-lock"></i>
-				</span>
+			</div> */}
+
+			<div class="private">Private</div>
+			{/* todo on click focus input */}
+
+			<div class="ctrl-secondary pin-wrapper">
 				<input
+					name="pin"
 					oninput={(e) => setPin(e.target.value)}
 					value={pin}
 					type="text"
 					pattern="\d*"
 					maxlength="4"
-					class="ml-6 pl-1 pin form-input w-full h-full"
 					placeholder="Pin"
+					class="value"
 					disabled={!pinEnabled}
 				></input>
 			</div>

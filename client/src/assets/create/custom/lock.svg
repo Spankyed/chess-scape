@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <filter id="filter_1">
       <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.7921569 0 0 0 0 0.92941177 0 0 0 0 0.90588236 0 0 0 1 0" />
     </filter>
-    <path d="M0 0L16 0L16 16L0 16L0 0Z" id="path_1" />
+    <filter id="filter_2">
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.9764706 0 0 0 0 0.9764706 0 0 0 0 0.9764706 0 0 0 1 0" />
+    </filter>
+    <path d="M0 0L19 0L19 19L0 19L0 0L0 0Z" id="path_1" />
     <clipPath id="mask_1">
       <use xlink:href="#path_1" />
     </clipPath>
   </defs>
-  <g id="lock" filter="url(#filter_1)">
-    <path d="M0 0L16 0L16 16L0 16L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
-    <g clip-path="url(#mask_1)">
-      <path d="M2 4L2 6L1.75 6C0.783502 6 0 6.7835 0 7.75L0 13.25C0 14.216 0.784 15 1.75 15L10.25 15C11.2165 15 12 14.2165 12 13.25L12 7.75C12 6.7835 11.2165 6 10.25 6L10 6L10 4C10 1.79087 8.20915 5.72206e-06 6.00001 1.37121e-11C3.79088 -5.72203e-06 2.00001 1.79084 2 3.99998L2 4ZM8.5 6L8.5 4C8.5 2.61929 7.38072 1.5 6.00001 1.5C4.6193 1.5 3.50001 2.61928 3.5 3.99999L3.5 6L8.5 6L8.5 6ZM10 7.5L10.25 7.5C10.3881 7.5 10.5 7.61193 10.5 7.75L10.5 13.25C10.5 13.3881 10.3881 13.5 10.25 13.5L1.75 13.5C1.61193 13.5 1.5 13.3881 1.5 13.25L1.5 7.75C1.5 7.61193 1.61193 7.5 1.75 7.5L10 7.5L10 7.5Z" transform="translate(2 0)" id="Shape" fill="#000000" fill-rule="evenodd" stroke="none" />
+  <g id="lock">
+    <g id="lock" filter="url(#filter_2)">
+      <path d="M0 0L17 0L17 17L0 17L0 0L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+      <g id="Mask-group">
+        <path d="M0 0L19 0L19 19L0 19L0 0L0 0Z" id="path_1" fill="none" fill-rule="evenodd" stroke="none" />
+        <g clip-path="url(#mask_1)">
+          <g id="Group" transform="translate(2.25 0)" filter="url(#filter_1)">
+            <path d="M2.45833 4.91667L2.45833 7.375L2.15104 7.375C0.963056 7.375 1.02445e-06 8.33805 1.02445e-06 9.52604L0 18.4375L14.75 18.4375L14.75 9.52604C14.75 8.33805 13.787 7.375 12.599 7.375L12.2917 7.375L12.2917 4.91667C12.2917 2.20128 10.0904 7.03337e-06 7.37501 1.68545e-11C4.65962 -7.03333e-06 2.45835 2.20124 2.45833 4.91664L2.45833 4.91667L2.45833 4.91667ZM10.4479 7.375L10.4479 4.91667C10.4479 3.21954 9.07214 1.84375 7.37501 1.84375C5.67789 1.84375 4.3021 3.21953 4.30208 4.91665L4.30208 7.375L10.4479 7.375L10.4479 7.375L10.4479 7.375ZM12.2917 9.21875L12.599 9.21875C12.7687 9.21875 12.9063 9.35633 12.9063 9.52604L12.9063 16.2865C12.9063 16.4562 12.7687 16.5938 12.599 16.5938L2.15104 16.5938C1.98133 16.5938 1.84375 16.4562 1.84375 16.2865L1.84375 9.52604C1.84375 9.35633 1.98133 9.21875 2.15104 9.21875L12.2917 9.21875L12.2917 9.21875L12.2917 9.21875Z" id="Shape" fill="#000000" fill-rule="evenodd" stroke="none" />
+          </g>
+        </g>
+      </g>
     </g>
   </g>
 </svg>
