@@ -204,17 +204,14 @@ function GameType({ type, selectGameType, selectedGameType }) {
 	return (
 		<div
 			onclick={() => selectGameType(type.id)}
-			class={`type ${type.id == selectedGameType && "selected"}`}
+			class={`type 
+			${type.id == selectedGameType && "selected"} 
+			${type.name != "forever" && "temp-disabled"}`}
+			title={type.name != "forever" ? type.name : "Disabled"}
 		>
 			<div class="time">
-				<h2 class="name">
-					{capitalize(type.name)}
-				</h2>
-				{type.time && (
-					<h3 class="value">
-						{type.time.minutes} min
-					</h3>
-				)}
+				<h2 class="name">{capitalize(type.name)}</h2>
+				{type.time && <h3 class="value">{type.time.minutes} min</h3>}
 			</div>
 			<img
 				src={`./assets/create/types/${type.name}.svg`}

@@ -157,7 +157,7 @@ function TimeControl({
 
 	return (
 		<div class="time-wrapper">
-			<div class="control time" onclick={focusInput}>
+			<div class="control time temp-disabled" onclick={focusInput}>
 				<span class="clock identity">
 					<img src="./assets/create/custom/clock.svg" />
 				</span>
@@ -181,7 +181,7 @@ function TimeControl({
 					{/* todo on click focus input ; show input cursor on hover*/}
 				</div>
 				<div
-					class="ctrl-secondary"
+					class="ctrl-secondary temp-disabled"
 					onclick={(e) => e.stopPropagation()}
 				>
 					<label for="increment" class="sr-only">
@@ -311,11 +311,12 @@ function OpponentMenu({
 		<div class="opp-menu">
 			{opponents.map((option) => (
 				<div
-					class={`control opp-option-wrapper ${
-						option == selectedOpp && "selected"
-					}`}
+					class={`control opp-option-wrapper
+					${option == selectedOpp && " selected" }
+					${option == "computer" && " temp-disabled"}
+						`}
 				>
-					<OpponentOption {...{option, selectOpp}} />
+					<OpponentOption {...{ option, selectOpp }} />
 					{option === "computer" && (
 						<ComputerSkillMenu
 							{...{ computerSkill, setComputerSkill }}
@@ -340,7 +341,7 @@ function OpponentOption({ option, selectOpp }) {
 
 function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 	return (
-		<div class="computer-skill-menu ctrl-secondary">
+		<div class="computer-skill-menu ctrl-secondary temp-disabled">
 			<label for="difficulty" class="sr-only">
 				computer difficulty
 			</label>

@@ -1,4 +1,18 @@
 .create-wrapper {
+    .temp-disabled{
+        // background: linear-gradient(#cf8572,#cf8572) !important;
+        //   background-image:linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.5) );
+          filter: grayscale(100%);
+        //  background: white;
+        // mix-blend-mode: luminosity;
+        // background-color: rgba(200,100,0,.5);
+        //   background-blend-mode: multiply;
+        pointer-events: none;
+        color:#fff !important;
+        ::placeholder{
+            color: #fff;
+        }
+    }
     @import './custom.scss'; 
 
     position: fixed;
@@ -133,9 +147,12 @@
                         padding-bottom: 0.5rem/* 8px */;
                         border-radius: 0.375rem/* 6px */;
                         height: 5.1rem;
+
+                        time:not(.temp-disabled .time){
+                            color: rgba(75, 85, 99);
+                        }
                         .time {
                             width: 66.666667%;
-                            color: rgba(75, 85, 99);
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;

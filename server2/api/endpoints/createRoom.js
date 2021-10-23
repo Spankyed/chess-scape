@@ -14,11 +14,22 @@ const schema = {
 	// body: { name: "string" },
 };
 
+
+function allowEnabledOptions(gameOptions) {
+	const { pin, selecetedOpp } = gameOptions;
+	return {
+		name: "forever",
+		time: { minutes: "—", increment: "—" },
+		selecetedOpp: selecetedOpp == "computer" ? "anyone" : selecetedOpp,
+		pin,
+	};
+}
+
 const handler = async (event) => {
-	const {client, clientID, selectedColor, ...gameOptions} = event.body;
+	const {client, clientID, selectedColor, gameOptions: opts} = event.body;
 
 	const room = {
-		gameOptions,
+		gameOptions: allowEnabledOptions(opts),
 		ID: await nanoid(),
 		host: clientID,
 		hostName: client.username,

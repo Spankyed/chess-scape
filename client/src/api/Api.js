@@ -218,10 +218,10 @@ async function joinLobby() {
 	}
 }
 
-async function createRoom(options) {
+async function createRoom(gameOptions) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ ...options, clientID, TOKEN });
+	const body = JSON.stringify({ gameOptions, clientID, TOKEN });
 	const url = `${baseHttpUrl}/create-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
