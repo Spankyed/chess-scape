@@ -241,7 +241,7 @@
                     justify-content: flex-start;
 
                     &:hover {
-                        box-shadow:#cddc39 0px 0px 5px 3px !important;
+                        // box-shadow:#cddc39 0px 0px 5px 3px !important;
                     }
                     .opp-option {
                         display: flex;
@@ -284,6 +284,7 @@
                             background:none;
                         }
                         .difficulty{
+                            cursor:pointer;
                             flex-grow: 1;
                             height: 100%;
                             padding-left: 0.5rem/* 8px */;
