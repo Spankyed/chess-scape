@@ -6,7 +6,6 @@
     border-radius: 0.125rem;
     margin-top: 1.25rem;
     .name {
-        width: 33.333333%;
         padding-left: 1rem/* 16px */;
         padding-right: 1rem/* 16px */;
         padding-top: .5rem/* 16px */;
@@ -15,14 +14,12 @@
     }
     .open-controls {
         cursor: pointer;
-
         display:flex;
         padding-left: 0.75rem/* 12px */;
         padding-right: 0.75rem/* 12px */;
         justify-content: center;
         align-items: center;
         img {
-            padding-left: 0.75rem/* 12px */;
             height: 2.5rem;
             flex-shrink: 1;
         }
@@ -62,10 +59,11 @@
             border-radius: .125rem !important;
 
             .identity {
+                font-size: 1.6rem !important;
+                width: 25%;
                 color:#f9f9f9;
                 background-color: #1c3e2f;
                 // background-color: #0b603b;
-                width: 20%;
                 min-height: 100%;
                 // border-right-width: .2rem;
                 // border-color: rgba(21, 122, 55, 0.4);
@@ -73,7 +71,8 @@
                 justify-content: center;
                 pointer-events: none;   
                 img {
-                    width: 2.3rem;
+                    width: 2rem;
+                    // width: 2.3rem;
                 }
             }
             .value {
@@ -148,6 +147,7 @@
                         }
                     }
                     .minutes-suffix {
+                        display: none;
                         padding-left: 1rem;
                         text-align: start;
                         pointer-events: none;
@@ -161,6 +161,10 @@
                     // padding-left: 1rem;
                     // padding-right: 1rem;
                     background-color: transparent;
+
+                    .inc-p {
+                        display:none;
+                    }
 
                     &.disabled {
                         width:100%;
@@ -206,7 +210,12 @@
             }
         }
 
-
+        .opp-name{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
         .opponent-select {
             &.opp-selecting {
                 padding-bottom: .2rem;
@@ -222,7 +231,7 @@
 
                 .vs {
                     text-align: center;
-                    padding-left: 0.5rem;
+                    // padding-left: 0.5rem;
                     padding-top: .2rem;
                 }
                 .opp-img {
@@ -230,7 +239,7 @@
                     justify-content: end;
                     width: 23.5%;;
                     img{
-                        width: 2.3rem;
+                        width: 2rem;
                     }
                 }
                 .opp-name {
@@ -266,10 +275,11 @@
                     }
                     .opp-option {
                         display: flex;
-                        flex-grow:1;
+                        // flex-grow:1;
                         justify-content: start;
                         cursor: pointer;
                         align-items: baseline;
+
                         // padding-left: 1rem;
 
                         // .vs {
@@ -283,7 +293,7 @@
                         // }
                         justify-content: start;
                         flex-grow: 0;
-                        width: 75%;
+                        width: 100%;
                         .img {
                             display: flex;
                             justify-content: end;
@@ -301,6 +311,7 @@
 
                     }
                     .computer-skill-menu{
+                        display: none;
                         align-items: center;
                         select{
                             background:none;
@@ -341,7 +352,13 @@
                 width:50%;
                 // flex-grow:1;
                 cursor: text;
+                display: none;
+                &.mobile {
+                    width: 75%;
+                    display: inline-block;
+                }
             }
+
             .pin-wrapper {
                 align-items: center;
                 // width: 27.5%;
@@ -359,6 +376,9 @@
                         appearance: none;
                     }
                 }
+                &.ctrl-secondary{
+                    display:none;
+                }
             }
 
         }
@@ -366,4 +386,42 @@
 
 
     select:focus { outline: none; }
+}
+
+//   'sm': '640px',
+@media (min-width: 640px) {
+    .minutes-suffix {
+        display: inline-block !important;
+    }
+    .inc-p {
+        display: inline-block !important;
+    }
+    .computer-skill-menu {
+        display: flex !important;
+    }
+    .private{
+        display:inline-block !important;
+        &.mobile {
+            display:none !important;
+        }
+    }
+    .opp-menu-toggle {
+        .opp-img {
+            img {
+                width: 2.3rem !important;
+            }
+        }
+    }
+    .opp-option {
+        width: 75% !important;
+    }
+    .identity {
+        width: 20% !important;
+    }
+    .pin-wrapper {
+        &.ctrl-secondary {
+            display:flex !important;
+        }
+    }
+
 }

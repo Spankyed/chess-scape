@@ -91,14 +91,20 @@
                 .piece-color{
                     border-radius: 0.125rem;
                     z-index:20;
-                    padding: 1rem;
-                    max-height: 16vh;
+                    padding: .6rem;
+                    max-height: 17vh;
                     margin: 10px;
+                    .pieces {
+                        display:none;
+                        &.mobile {
+                            display: block;
+                        }
+                    }
                     &.selected{
                         background-color: #4caf50;
                     }
                     img{ 
-                        max-height: 140px;
+                        max-height: 4rem;
                     }
                 }
             }
@@ -144,6 +150,8 @@
                     gap: 1.25rem/* 20px */;
                     width: 100%;
                     .type {
+                        justify-content: center;
+                        flex-direction: column-reverse;
                         display: flex;
                         cursor: pointer;
                         // background-color: rgba(167, 243, 208);
@@ -157,11 +165,13 @@
                             color: rgba(75, 85, 99);
                         }
                         .time {
-                            width: 66.666667%;
+                            width: 100%;
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
+                            text-align: center;
                             .name{
+                                display: none;
                                 padding-left: 1rem/* 16px */;
                                 padding-right: 1rem/* 16px */;
                                 white-space: nowrap;
@@ -179,7 +189,8 @@
                             }
                         }
                         img {
-                            width: 33.333333%;
+                            width: 100%;
+                            max-height: 2.5rem;             
                             display: flex;
                             justify-content: center;
                             align-items: center;
@@ -247,3 +258,33 @@
     }
 }
 
+//   'sm': '640px',
+@media (min-width: 640px) {
+    .type {
+        flex-direction: row !important;
+        .time {
+            width: 66.666667% !important;
+            .name {
+                display:block !important;
+            }
+        }
+        
+        img {
+            width: 33.333333% !important;
+            max-height: 3rem !important;
+        }
+    }
+    .piece-color {
+        padding: .9rem !important;
+        .pieces {
+            padding: .2rem !important;
+            display: block !important;
+            &.mobile {
+                display: none !important;
+            }
+        }
+        img {
+            max-height: 5rem !important;
+        }
+    }
+}

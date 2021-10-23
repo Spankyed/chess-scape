@@ -177,7 +177,9 @@ function TimeControl({
 						value={time.minutes}
 						placeholder="—"
 					/>
-					<div class="minutes-suffix pointer-events-none">min</div>
+					<div class="minutes-suffix">min</div>
+					{/* <div class="minutes-suffix sm:hidden">m</div> */}
+
 					{/* todo on click focus input ; show input cursor on hover*/}
 				</div>
 				<div
@@ -227,7 +229,7 @@ function IncrementDropdown({
 				onclick={() => !disabled && setIncDropdown(!incDropdownOpen)}
 			>
 				{disabled ? (
-					"— inc"
+					<div> — <span class="inc-p"> inc</span> </div>
 				) : (
 					<div>
 						+ <span class="value">{time.increment}</span> sec
@@ -341,7 +343,7 @@ function OpponentOption({ option, selectOpp }) {
 
 function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 	return (
-		<div class="computer-skill-menu ctrl-secondary temp-disabled">
+		<div class="ctrl-secondary computer-skill-menu temp-disabled">
 			<label for="difficulty" class="sr-only">
 				computer difficulty
 			</label>
@@ -385,23 +387,32 @@ function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 				/>
 			</div> */}
 
+			{/* <div class="private mobile">Lock</div> */}
 			<div class="private">Private</div>
-			{/* todo on click focus input */}
 
+			<div class="private mobile pin-wrapper">
+				<Pin {...{ pin, setPin, pinEnabled }} />
+			</div>
 			<div class="ctrl-secondary pin-wrapper">
-				<input
-					name="pin"
-					oninput={(e) => setPin(e.target.value)}
-					value={pin}
-					type="text"
-					pattern="\d*"
-					maxlength="4"
-					placeholder="Pin"
-					class="value"
-					disabled={!pinEnabled}
-				></input>
+				<Pin {...{ pin, setPin, pinEnabled }} />
 			</div>
 		</div>
+	);
+}
+
+function Pin({ pin, setPin, pinEnabled }) {
+	return (
+		<input
+			name="pin"
+			oninput={(e) => setPin(e.target.value)}
+			value={pin}
+			type="text"
+			pattern="\d*"
+			maxlength="4"
+			placeholder="Pin"
+			class="value"
+			disabled={!pinEnabled}
+		></input>
 	);
 }
 

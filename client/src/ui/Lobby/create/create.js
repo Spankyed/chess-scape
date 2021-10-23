@@ -86,7 +86,7 @@ export default (initial) => ({
 				const {
 					selectedOpp,
 					customTimeSet,
-					pinEnabled,
+					// pinEnabled,
 					pin,
 					computerSkill,
 					time,
@@ -104,7 +104,7 @@ export default (initial) => ({
 						: gameTypes[selectedGameType].time,
 					selectedOpp,
 					...(selectedOpp == "computer" ? { computerSkill } : {}),
-					pinEnabled,
+					// pinEnabled,
 					pin,
 				};
 
@@ -189,7 +189,15 @@ function ColorSelect({ selectedColor, selectColor }) {
 						color == selectedColor && "selected"
 					}`}
 				>
+					{/* mobile pieces */}
 					<img
+						class="pieces mobile"
+						id={`color-select-${color}`}
+						onclick={(_) => selectColor(color)}
+						src={`./assets/mobile/create/piece-${color}.svg`}
+					/>
+					<img
+						class="pieces"
 						id={`color-select-${color}`}
 						onclick={(_) => selectColor(color)}
 						src={`./assets/create/piece-${color}.svg`}
@@ -205,8 +213,8 @@ function GameType({ type, selectGameType, selectedGameType }) {
 		<div
 			onclick={() => selectGameType(type.id)}
 			class={`type 
-			${type.id == selectedGameType && "selected"} 
-			${type.name != "forever" && "temp-disabled"}`}
+			${type.id == selectedGameType && " selected"} 
+			${type.name != "forever" && " temp-disabled"}`}
 			title={type.name != "forever" ? type.name : "Disabled"}
 		>
 			<div class="time">
@@ -228,7 +236,7 @@ function Footer({ create, toggle }) {
 				type="button"
 				class="create"
 			>
-				Create Room
+				Create
 			</button>
 			<button onclick={toggle} type="button" class="cancel">
 				Cancel
