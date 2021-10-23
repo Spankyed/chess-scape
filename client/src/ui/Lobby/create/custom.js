@@ -151,11 +151,13 @@ function TimeControl({
 			if (isSelected && !timeSet) selectGameType(0);
 			// reset to init game type when no time set
 			else if (!isSelected && timeSet) selectGameType(4); // set game type to custom when custom time inputted
-		};
+			};
+	
+	const focusInput = (ev) => ev.currentTarget.querySelector('input').focus();
 
 	return (
 		<div class="time-wrapper">
-			<div class="control time">
+			<div class="control time" onclick={focusInput}>
 				<span class="clock identity">
 					<img src="./assets/create/custom/clock.svg" />
 				</span>
@@ -178,7 +180,10 @@ function TimeControl({
 					<div class="minutes-suffix pointer-events-none">min</div>
 					{/* todo on click focus input ; show input cursor on hover*/}
 				</div>
-				<div class="ctrl-secondary">
+				<div
+					class="ctrl-secondary"
+					onclick={(e) => e.stopPropagation()}
+				>
 					<label for="increment" class="sr-only">
 						increment
 					</label>
@@ -361,8 +366,9 @@ function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 
 
 function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
+	const focusInput = (ev) => ev.currentTarget.querySelector("input").focus();
 	return (
-		<div class="pin-protect control">
+		<div class="pin-protect control" onclick={focusInput}>
 			<span class="identity">
 				<img src="./assets/create/custom/lock.svg" />
 			</span>
