@@ -16,18 +16,20 @@ const schema = {
 
 
 function allowEnabledOptions(gameOptions) {
-	const { pin, selecetedOpp } = gameOptions;
+	const { pin, selectedOpp, selectedColor } = gameOptions;
 	return {
 		name: "forever",
 		time: { minutes: "—", increment: "—" },
-		selecetedOpp: selecetedOpp == "computer" ? "anyone" : selecetedOpp,
+		selectedOpp: selectedOpp == "computer" ? "anyone" : selectedOpp,
 		pin,
+		selectedColor,
 	};
 }
 
 const handler = async (event) => {
-	const {client, clientID, selectedColor, gameOptions: opts} = event.body;
-
+	// todo do not allow to create room if already hosting room 
+	const { client, clientID, gameOptions: opts } = event.body;
+	const { selectedColor } = opts
 	const room = {
 		gameOptions: allowEnabledOptions(opts),
 		ID: await nanoid(),

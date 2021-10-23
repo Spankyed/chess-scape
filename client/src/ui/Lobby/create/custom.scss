@@ -1,5 +1,5 @@
 .custom  {
-    background-color: rgba(167, 243, 208);
+    background-color: #1F7A50;
     padding-left: 0.5rem/* 8px */;
     padding-right: 0.5rem/* 8px */;
     padding-bottom: 0.5rem/* 8px */;
@@ -44,7 +44,7 @@
             --borderHeight: .1rem;
             --borderColor: hsla(0,0%,100%,0.05);
             --secondaryBorderColor: transparent;
-            --basicBgColor: #202329;
+            --basicBgColor: #232323;
             height: 3rem;
             min-height: 3rem;
             width: 100%;
@@ -63,7 +63,8 @@
 
             .identity {
                 color:#f9f9f9;
-                background-color: #4caf50;
+                background-color: #1c3e2f;
+                // background-color: #0b603b;
                 width: 20%;
                 min-height: 100%;
                 // border-right-width: .2rem;
@@ -81,7 +82,7 @@
         }
         .ctrl-secondary {
             font-size: 1.4rem !important;
-            background-color: #4d310a;
+            background-color: #34281f;
             width: 30%;
             min-height: 100%;
             display: flex;
@@ -109,8 +110,15 @@
             .time {
 
                 &.temp-disabled{
+                    background-color: #1F7A50;
                     .clock {
-                        background-color: rgba(167, 243, 208);
+                        background-color: #1F7A50;
+                    }
+                    .minutes-input {
+                        background-color: #1F7A50;
+                    }
+                    .ctrl-secondary {
+                        background-color: #1F7A50;
                     }
                 }
 
@@ -244,6 +252,19 @@
                     margin-bottom: 0.75rem;
                     justify-content: flex-start;
 
+                    &.temp-disabled{
+                        background-color: #1F7A50;
+                        .img {
+                            background-color: #1F7A50;
+                        }
+                        .opp-name {
+                            background-color: #1F7A50;
+                        }
+                        .ctrl-secondary {
+                            background-color: #1F7A50;
+                        }
+                    }
+
                     &:hover {
                         // box-shadow:#cddc39 0px 0px 5px 3px !important;
                     }
@@ -276,6 +297,7 @@
                             }
                         }
                         .opp-name {
+                            flex-grow: 1;
                             align-self: flex-start;
                             padding-left: 0.5rem;
                             text-align: left;
