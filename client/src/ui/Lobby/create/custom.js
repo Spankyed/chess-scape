@@ -369,9 +369,10 @@ function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 
 
 function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
-	const focusInput = (ev) => ev.currentTarget.querySelector("input").focus();
+	const focusInput = (ev) =>
+		ev.currentTarget.querySelector("input:not(.mobile)").focus();
 	return (
-		<div class="pin-protect control" onclick={focusInput}>
+		<div class="pin-protect control">
 			<span class="identity">
 				<img src="./assets/create/custom/lock.svg" />
 			</span>
@@ -388,19 +389,20 @@ function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 			</div> */}
 
 			{/* <div class="private mobile">Lock</div> */}
-			<div class="private">Private</div>
-
+			<div class="private" onclick={focusInput}>
+				Private
+			</div>
 			<div class="private mobile pin-wrapper">
-				<Pin {...{ pin, setPin, pinEnabled }} />
+				<Pin {...{ pin, setPin, pinEnabled, mobile: true }} />
 			</div>
 			<div class="ctrl-secondary pin-wrapper">
-				<Pin {...{ pin, setPin, pinEnabled }} />
+				<Pin {...{ pin, setPin, pinEnabled, mobile: false }} />
 			</div>
 		</div>
 	);
 }
 
-function Pin({ pin, setPin, pinEnabled }) {
+function Pin({ pin, setPin, pinEnabled, mobile }) {
 	return (
 		<input
 			name="pin"
@@ -410,7 +412,7 @@ function Pin({ pin, setPin, pinEnabled }) {
 			pattern="\d*"
 			maxlength="4"
 			placeholder="Pin"
-			class="value"
+			class={`value ${mobile && "mobile"}`}
 			disabled={!pinEnabled}
 		></input>
 	);
