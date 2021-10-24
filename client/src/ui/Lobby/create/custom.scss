@@ -107,6 +107,9 @@
                 &.temp-disabled{
                     background-color: #1F7A50;
                     .clock {
+                        img {
+                            opacity: .7;
+                        }
                         background-color: #1F7A50;
                     }
                     .minutes-input {
