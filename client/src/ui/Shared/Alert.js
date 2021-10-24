@@ -114,7 +114,7 @@ function Alert({id, alert, actions}){
 					</div>
 				)}
 				<div class="alert-text m-2 mx-2 md:mx-4 flex-grow relative">
-					<div class="alert-title font-semibold text-gray-800">
+					<div class="alert-title text-gray-200">
 						{alert.heading}
 					</div>
 					<div class="alert-message ">{alert.message}</div>
