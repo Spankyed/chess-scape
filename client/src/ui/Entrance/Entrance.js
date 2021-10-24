@@ -7,7 +7,7 @@ export default (initial) => ({
 		username: "",
 		rating: "Beginner",
 		attemptingSubmit: false,
-		submitText: "SAVE",
+		submitText: "PLAY",
 		error: { status: "", message: "", show: false },
 	},
 	actions: {
@@ -22,7 +22,7 @@ export default (initial) => ({
 		}),
 		endAttempt: () => ({
 			attemptingSubmit: false,
-			submitText: "SAVE",
+			submitText: "PLAY",
 			username: "",
 		}),
 		showError:
@@ -51,31 +51,22 @@ export default (initial) => ({
 					}
 				}
 			};
-
 			return (
-				<div class="entrance flex flex-wrap justify-center min-h-screen font-sans text-gray-100">
-					<img
-						class="w-full"
-						src="./assets/banner.svg"
-						style="max-height: 150px;"
-					/>
-					<form
-						onsubmit={attemptSubmit}
-						class="video-form w-4/6 max-h-screen"
-						action=""
-					>
-						{/* <div
-							class="part flex h-44 items-center w-full rounded-small"
-							style="background-color: #32291d"
-						>
-							<img
-								class="w-full h-full"
-								src={`https://avatars.dicebear.com/api/avataaars/${
-									state.username || "dicebear"
-								}.svg`}
-							/>
-						</div> */}
-						<div class="part w-full flex items-center  border-b">
+				<div class="entrance">
+					<div class="banner">
+						<img class="mobile" src="./assets/mobile/banner.svg" />
+						<img src="./assets/banner.svg" />
+					</div>
+					<div class="user-pic">
+						<div class="user-bg"></div>
+						<img
+							src={`https://avatars.dicebear.com/api/avataaars/${
+								state.username || "dicebear"
+							}.svg`}
+						/>
+					</div>
+					<form onsubmit={attemptSubmit} class="user-form" action="">
+						<div class="username">
 							<label for="username" class="sr-only">
 								Username
 							</label>
@@ -83,7 +74,6 @@ export default (initial) => ({
 								oninput={actions.setUsername}
 								value={state.username}
 								type="text"
-								class="appearance-none bg-transparent border-none w-full py-1 px-2 leading-tight focus:outline-none"
 								id="username"
 								name="username"
 								aria-label="Username"
@@ -93,12 +83,11 @@ export default (initial) => ({
 								autofocus
 							/>
 						</div>
-						<div class="part rating">
-							<div class="w-2/5 self-start px-2">Rating :</div>
-							<div class="rating-menu w-3/5 flex flex-wrap p-2">
+						<div class="rating">
+							<div class="rating-menu">
 								{state.ratings.map((option) => (
 									<div
-										class={`px-2 rating-option 
+										class={`rating-option 
 										${option == state.rating && "selected"}`}
 										onclick={() =>
 											actions.setRating(option)
@@ -112,7 +101,9 @@ export default (initial) => ({
 						{/* class= {`part save w-full bg-green-400 ${ state.attemptingSubmit && "processing" }`} */}
 						<button
 							type="submit"
-							class="part save w-full bg-green-400 flex justify-center items-center"
+							class={`save  ${
+								state.attemptingSubmit && "processing"
+							}`}
 							disabled={!(state.username.length > 0)}
 						>
 							{state.attemptingSubmit ? (
