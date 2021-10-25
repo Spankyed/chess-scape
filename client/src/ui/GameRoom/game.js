@@ -14,36 +14,43 @@ export default (initial) => ({
 		// initialized: false,
 		matchStarted: false,
 		committed: false,
-		type: 'forever' //! hardcoded for now, replace when clocks implemented
+		type: "forever", //! hardcoded for now, replace when clocks implemented
+		isWaiting: false,
 	},
 	actions: {
 		setPlayer:
-			({ player, playerColor, committed, matchStarted }) =>
-			(_, { startMatch }) => {
-				Scene.manager.animateCameraIntoPosition(playerColor || "white");
-				Scene.game().playerColor = playerColor;
-				if (matchStarted) startMatch({ player, playerColor });
-				return { player, playerColor, committed, matchStarted: !!matchStarted };
+			({ info, isSceneSetup }) =>
+			(_, { prepareGame, setWaiting }) => {
+				if (isSceneSetup) prepareGame(info);
+				else setWaiting(true);
+				return {
+					...info,
+					matchStarted: !!info.matchStarted,
+				};
 			},
-		ready:
-			() =>
-			({ playerColor }) => {
-				Api.ready(playerColor);
-				return { ready: true };
-			},
-		startMatch:
-			({ player, playerColor }) =>
-			(state) => {
-				if (player || state.player)
-					Scene.board().moveService.send({
-						type: "SET_PLAYER",
-						value: {
-							isPlayer: true,
-							playerColor: playerColor || state.playerColor,
-						},
-					});
-				return { matchStarted: true };
-			},
+		setWaiting: (val) => ({ isWaiting: val }),
+		prepareGame: (info) => ({ player, playerColor, matchStarted }) => {
+			const cameraColor = info ? info.playerColor : playerColor || "white";
+			Scene.game().playerColor = info.playerColor || playerColor;
+			Scene.manager.animateCameraIntoPosition(cameraColor);
+			if (matchStarted) startMatch(info || { player, playerColor });
+			return { isWaiting: false };
+		},
+		ready: () => ({ playerColor }) => {
+			Api.ready(playerColor);
+			return { ready: true };
+		},
+		startMatch: ({ player, playerColor }) =>  (state) => {
+			if (player || state.player)
+				Scene.board().moveService.send({
+					type: "SET_PLAYER",
+					value: {
+						isPlayer: true,
+						playerColor: playerColor || state.playerColor,
+					},
+				});
+			return { matchStarted: true };
+		},
 		finish: () => () => ({ finished: true }),
 		commit: () => () => ({ committed: true }),
 		uncommit: () => () => ({ committed: false }),
@@ -105,7 +112,14 @@ export default (initial) => ({
 				// }
 			};
 
-			if (state.player && !state.ready && Api.isConnected()) {
+			if (state.player && state.isWaiting && !roomState.loader.isLoading) {
+				actions.prepareGame();
+			} else if (
+				state.player &&
+				!state.ready &&
+				!state.isWaiting &&
+				Api.isConnected()
+			) {
 				console.log(`Player ready [${state.playerColor}]`);
 				actions.ready();
 			}

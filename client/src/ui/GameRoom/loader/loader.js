@@ -1,23 +1,43 @@
 import { h } from 'hyperapp';
 import { getRandomFact } from "./randomFacts";
+import { delay } from "nanodelay";
 
 // designs based off following code pens
 // https://codepen.io/_fbrz/pen/KvwIF
 // https://codepen.io/crayon-code/pen/eYdVLJo
 
-export default ({ isLoading, loaderText, setLoaderText }) => {
-	if (!loaderText) {
-		setLoaderText(getRandomFact());
-	}
-	return (
-		<div class={`loader ${!true && "hide"}`}>
-				<Mosaic />
-			<div class="loader-wrapper">
-				<h2>{loaderText || "Did you know?"}</h2>
-			</div>
-		</div>
-	);
-};
+
+export default (initial) => ({
+	state: {
+		loaderText: "",
+		isLoading: true,
+		removed: false,
+	},
+	actions: {
+		setLoaderText: (text) => ({ loaderText: text }),
+		showLoader: () => () => ({ isLoading: true }),
+		hideLoader: () => () => ({ isLoading: false }),
+		remove: () => () => ({ removed: true }),
+	},
+	view:
+		({ isLoading, loaderText, removed }, { setLoaderText, remove }) =>
+		() => {
+			if (!loaderText) {
+				setLoaderText(getRandomFact());
+			} else if (!isLoading && !removed) {
+				delay(1).then(remove);
+			}
+			return (
+				<div class={`loader ${!isLoading && "hide"}`}>
+					<Mosaic />
+					<div class="loader-wrapper">
+						<h2>{loaderText || "Did you know?"}</h2>
+					</div>
+				</div>
+			);
+			
+		},
+});
 
 function Mosaic() {
 	return (

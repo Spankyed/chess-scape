@@ -68,6 +68,7 @@ $colors: (
 
 	&.hide {
 		opacity: 0;
+		pointer-events: none;
 	}
 
 	.loader-wrapper {
@@ -78,15 +79,18 @@ $colors: (
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		background: linear-gradient(135deg, #32291d, #64533B 50%);
+		background-color: rgb(49, 40, 28,.6);
+		padding: 2rem;
+		// background: linear-gradient(135deg, #32291d, #64533B);
 		max-width: 65vw;
 		position: absolute;
-		bottom: 0;
-		left: 0;
-		// left: 50%;
-		// top: 25%;
-		// transform: translate(-50%, -25%);
+		// bottom: 0;
+		// left: 0;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
 		z-index:10;
+		box-shadow: 0 30px 50px -20px #221607;
 
 		h2 {
 			flex-grow:1;
@@ -117,7 +121,7 @@ $colors: (
 		height: var(--total-size);
 		min-height: var(--total-size);
 		max-height: var(--total-size);
-		box-shadow: 0 30px 50px -20px #221607;
+		// box-shadow: 0 30px 50px -20px #221607;
 
 		> .cell {
 			--cell-color: white;

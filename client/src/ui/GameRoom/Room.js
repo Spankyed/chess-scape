@@ -10,6 +10,7 @@ const game = Game();
 const controls = Controls()
 const sidePanel = SidePanel()
 const alert = Alert()
+const loader = Loader();
 
 // todo: alert users & handle reconnect if player disconnects in game,  
 // todo: when user leaves game remove clientID from game.clients 
@@ -18,6 +19,7 @@ const initialState = {
 	room: null,
 	game: game.state,
 	alert: alert.state,
+	loader: loader.state,
 	controls: controls.state,
 	sidePanel: sidePanel.state,
 	sidePanelOpen: false,
@@ -39,6 +41,8 @@ export default (initial) => ({
 		controls: controls.actions,
 		sidePanel: sidePanel.actions,
 		alert: alert.actions,
+		loader: loader.actions,
+		setLoaderText: (text) => ({ loaderText: text }),
 		toggleSidePanel:
 			(tab, isOpen) =>
 			({ sidePanel }) => {
@@ -51,8 +55,7 @@ export default (initial) => ({
 				if (tab) newState.sidePanel.currTab = tab;
 				return newState;
 			},
-		showLoader: () => () => ({ isLoading: true }),
-		hideLoader: () => () => ({ isLoading: false }),
+
 		updateRoom: (room) => () => ({ room }),
 		fetchRoom: (roomID) => (_, actions) => {
 			Api.getRoom(roomID).then(actions.completeFetch);
@@ -61,7 +64,8 @@ export default (initial) => ({
 		completeFetch:
 			({ room, match }) =>
 			(_, actions) => {
-				if (!room || !match) return { isFetching: false, initialized: true };
+				if (!room || !match)
+					return { isFetching: false, initialized: true };
 				const isHost = room.host == Api.getClientID();
 				const players = Object.entries(room.players);
 				const [color, player] =
@@ -81,7 +85,7 @@ export default (initial) => ({
 				if (match.finished) {
 					actions.endGame(match);
 				}
-				
+
 				const setup = player && {
 					player,
 					playerColor: color,
@@ -89,7 +93,10 @@ export default (initial) => ({
 					matchStarted: match.matchStarted,
 				};
 
-				actions.game.setPlayer(setup || {});
+				actions.game.setPlayer({
+					info: setup || {},
+					isSceneSetup: !_.loader.isLoading,
+				});
 
 				return {
 					room,
@@ -105,7 +112,7 @@ export default (initial) => ({
 			() => ({
 				gameOver: true,
 				matchInfo: { winningColor, endMethod, mated },
-				}),
+			}),
 		close: () => () => ({ closed: true }),
 		exit:
 			() =>
@@ -130,6 +137,7 @@ export default (initial) => ({
 				actions.sidePanel
 			);
 			const AlertView = alert.view(state.alert, actions.alert);
+			const LoaderView = loader.view(state.loader, actions.loader);
 
 			const onJoin = ({ room, group, username }) => {
 				if (
@@ -137,7 +145,7 @@ export default (initial) => ({
 					Object.keys(room.players).length == 2 &&
 					!room.matchStarted
 				) {
-					actions.alert.close({ id: "host"});
+					actions.alert.close({ id: "host" });
 					actions.alert.show(alert.startAlert); // alert match is starting soon
 				}
 				actions.updateRoom(room);
@@ -164,7 +172,7 @@ export default (initial) => ({
 				// todo stop loading
 			};
 
-			if (!state.isLoading && !state.initialized && !state.isFetching) {
+			if (!state.loader.isLoading && !state.initialized && !state.isFetching) {
 				console.log(`Joined room [${Api.getClientID()}]`);
 				initialize();
 			}
@@ -177,7 +185,10 @@ export default (initial) => ({
 
 			return (
 				<div class="h-full flex">
-					<Loader isLoading={state.isLoading} alert={actions.alert} />
+
+					{ !state.loader.removed &&
+						<LoaderView alert={actions.alert} />
+					}
 
 					<div class="relative flex-grow">
 						<ControlsView

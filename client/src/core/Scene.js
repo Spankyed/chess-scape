@@ -3,6 +3,7 @@ import utils from './utils/utils';
 import Board from './board/Board';
 import Game from './Game';
 import loadPieces  from './Pieces'; 
+import { delay } from "nanodelay";
 // import Api from '../api/Api'; 
 // import { Scene, Engine } from 'babylonjs';
 
@@ -24,7 +25,10 @@ const Scene = new class {
         // this.uiActions = actions;
         let engine = new BABYLON.Engine(canvas, true);
         let scene = SceneManager.CreateScene(engine, canvas, true)
-        engine.loadingScreen = { displayLoadingUI: actions.showLoader, hideLoadingUI: actions.hideLoader }
+        engine.loadingScreen = {
+			displayLoadingUI: actions.loader.showLoader,
+			hideLoadingUI: actions.loader.hideLoader,
+		};
         engine.displayLoadingUI()
         // this.canvas = canvas
         scene.manager.setEnv(canvas)
@@ -34,13 +38,10 @@ const Scene = new class {
         let [pieces, piecesMap] = await loadPieces(scene)
         board.mapPiecesToSquares(pieces)
         // this.modelsLoaded = true;
-        // todo: fetch or set initial game state
-        engine.hideLoadingUI()
-        // todo: begin camera animation
-        // todo: signal to server player is ready. Used for syncing start timing
 
-        engine.runRenderLoop(_ => scene.render()) // todo: manually render scene updates with xstate activities?
-
+        engine.runRenderLoop(_ => scene.render()) // todo: manually render loop scene updates with xstate activities?
+        // delay(200).then(_=> engine.hideLoadingUI());
+        engine.hideLoadingUI();
         window.interact = { engine: engine, scene: this, game, board }
 
         Object.assign(this, {

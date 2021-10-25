@@ -33,7 +33,13 @@ export default (initial) => ({
 
 			const MenuView = menu.view(state.menu, actions.menu)
 			
-			const { isLoading, gameOver, matchInfo, game, closed: roomClosed } = roomState;
+			const {
+				loader,
+				gameOver,
+				matchInfo,
+				game,
+				closed: roomClosed,
+			} = roomState;
 
 			const leave = () => {
 				if (roomState.room?.players > 1 && !game.matchStarted) return; // player cant leave until match started
@@ -50,7 +56,7 @@ export default (initial) => ({
 				// pointer-events-none controls-wrapper
 				<div
 					class={`controls-wrapper pointer-events-none ${
-						isLoading && "hidden"
+						loader.isLoading && "hidden"
 					}`}
 				>
 					<div class="controls">
