@@ -95,7 +95,7 @@ export default (initial) => ({
 
 				actions.game.setPlayer({
 					info: setup || {},
-					isSceneSetup: !_.loader.isLoading,
+					isSceneSetup: !_.loader.removed,
 				});
 
 				return {
@@ -186,9 +186,9 @@ export default (initial) => ({
 			return (
 				<div class="h-full flex">
 
-					{ !state.loader.removed &&
+					{/* { !state.loader.removed && */}
 						<LoaderView alert={actions.alert} />
-					}
+					{/* } */}
 
 					<div class="relative flex-grow">
 						<ControlsView
