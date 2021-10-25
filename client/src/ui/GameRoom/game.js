@@ -29,11 +29,11 @@ export default (initial) => ({
 				};
 			},
 		setWaiting: (val) => ({ isWaiting: val }),
-		prepareGame: (info) => ({ player, playerColor, matchStarted }) => {
+		prepareGame: (info) => ({ player, playerColor, matchStarted }, actions) => {
 			const cameraColor = info ? info.playerColor : playerColor || "white";
-			Scene.game().playerColor = info.playerColor || playerColor;
+			Scene.game().playerColor = info?.playerColor || playerColor;
 			Scene.manager.animateCameraIntoPosition(cameraColor);
-			if (matchStarted) startMatch(info || { player, playerColor });
+			if (matchStarted) actions.startMatch(info || { player, playerColor });
 			return { isWaiting: false };
 		},
 		ready: () => ({ playerColor }) => {
@@ -133,11 +133,10 @@ export default (initial) => ({
 				end: onEnd,
 				disconnect: Api.reconnect, //! if hosting game, reconnect immediately
 			});
-
 			const createScene = (canvas) => {
 				// window.location.hash = `#${roomID}`; // todo use hash in lobby to redirect to room
 				// Scene.onReady = () => {};
-				delay(300).then((_) =>
+				delay(200).then((_) =>
 					Scene.setupGame(canvas, roomActions, roomID)
 				);
 				canvas.focus();
