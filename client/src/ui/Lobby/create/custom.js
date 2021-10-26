@@ -153,15 +153,16 @@ function TimeControl({
 			else if (!isSelected && timeSet) selectGameType(4); // set game type to custom when custom time inputted
 			};
 	
-	const focusInput = (ev) => ev.currentTarget.querySelector('input').focus();
-
+	const focusInput = (ev) => ev.currentTarget.querySelector('input')?.focus();
+	
+	const tempDisabled = true;
 	return (
 		<div class="time-wrapper">
-			<div class="control time temp-disabled" onclick={focusInput}>
+			<div class="control time" onclick={!tempDisabled && focusInput}>
 				<span class="clock identity">
 					<img src="./assets/create/custom/clock.svg" />
 				</span>
-				<div class="minutes-input">
+				<div class={`minutes-input ${tempDisabled && "temp-disabled"}`}>
 					<label for="time" class="sr-only">
 						time
 					</label>
@@ -176,6 +177,7 @@ function TimeControl({
 						class="value"
 						value={time.minutes}
 						placeholder="—"
+						disabled={tempDisabled}
 					/>
 					<div class="minutes-suffix">min</div>
 					{/* <div class="minutes-suffix sm:hidden">m</div> */}
@@ -194,7 +196,7 @@ function TimeControl({
 							time,
 							incDropdownOpen,
 							setIncDropdown,
-							disabled: !isSelected,
+							disabled: !isSelected || tempDisabled,
 							onchange: handleTimeInput("increment"),
 						}}
 					/>

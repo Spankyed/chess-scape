@@ -1,5 +1,13 @@
 .custom  {
-    background-color: #1F7A50;
+    $control-bg-color: #232323;
+    // $type-bg-color: #1F7A50;
+    // $type-bg-color: #1c3e2f;
+    $type-bg-color: #47682c;
+    $identity-bg-color: #527634;
+    $secondary-ctrl-bg-color: #32291d;
+    // $type-bg-color: #b4b187;
+
+    background-color: $type-bg-color;
     padding-left: 0.5rem/* 8px */;
     padding-right: 0.5rem/* 8px */;
     padding-bottom: 0.5rem/* 8px */;
@@ -20,7 +28,7 @@
         justify-content: center;
         align-items: center;
         img {
-            height: 2.5rem;
+            height: 3.5rem;
             flex-shrink: 1;
         }
     }
@@ -38,21 +46,16 @@
             // text-align: center;
             overflow: hidden;
             word-break: break-word;
-            --borderHeight: .1rem;
-            --borderColor: hsla(0,0%,100%,0.05);
-            --secondaryBorderColor: transparent;
-            --basicBgColor: #232323;
+
             height: 3rem;
             min-height: 3rem;
             width: 100%;
             max-width: 100%;
-            font-size: 1.7rem !important;
             margin-bottom: 0.6rem;
-            padding-left: var(--buttonPaddings,.5rem 2rem);
-            padding-right: var(--buttonPaddings,.5rem 2rem);
+            // padding-left: var(--buttonPaddings,.5rem 2rem);
+            // padding-right: var(--buttonPaddings,.5rem 2rem);
             // box-shadow: rgba(0, 0, 0, 0.45) 0px 3px 8px; // shadow-md
-            box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
-            background-color: var(--basicBgColor);
+            background-color: $control-bg-color;
             // color: var(--basicColor,#666463);
             color: #adb1b7;
             border: 0;
@@ -62,14 +65,22 @@
                 font-size: 1.6rem !important;
                 width: 25%;
                 color:#f9f9f9;
-                background-color: #1c3e2f;
+                background-color: $identity-bg-color;
                 // background-color: #0b603b;
                 min-height: 100%;
                 // border-right-width: .2rem;
                 // border-color: rgba(21, 122, 55, 0.4);
                 display: flex;
                 justify-content: center;
-                pointer-events: none;   
+                pointer-events: none;  
+                // light grey border
+                --borderHeight: .1rem;
+                --borderColor: hsla(0,0%,100%,0.05);
+                --secondaryBorderColor: transparent; 
+                box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
+                border: 1px solid var(--borderColor);
+                border-right: 0;   
+                
                 img {
                     width: 2rem;
                     // width: 2.3rem;
@@ -80,8 +91,8 @@
             }
         }
         .ctrl-secondary {
-            font-size: 1.4rem !important;
-            background-color: #34281f;
+            // font-size: 1.4rem !important;
+            background-color: $secondary-ctrl-bg-color;
             width: 30%;
             min-height: 100%;
             display: flex;
@@ -104,24 +115,26 @@
             margin-bottom: 0.6rem;
             .time {
 
-                &.temp-disabled{
-                    background-color: #1F7A50;
-                    .clock {
-                        img {
-                            opacity: .7;
-                        }
-                        background-color: #1F7A50;
-                    }
-                    .minutes-input {
-                        background-color: #1F7A50;
-                    }
-                    .ctrl-secondary {
-                        background-color: #1F7A50;
-                    }
-                }
+                // &.temp-disabled{
+                    // $type-bg-color: #1c3e2f;
+                    // background-color: #333333;
+                    // .clock {
+                    //     img {
+                    //         opacity: .7;
+                    //     }
+                    //     background-color: $type-bg-color;
+                    // }
+                    // .minutes-input {
+                    //     background-color: $type-bg-color;
+                    // }
+                    // .ctrl-secondary {
+                    //     background-color: $type-bg-color;
+                    // }
+                // }
 
 
                 .minutes-input {
+                    min-height: 100%;
                     width:50%;
                     // flex-grow: 1;
                     justify-content: center;
@@ -130,6 +143,9 @@
                     text-align: right;
                     display: flex;
                     cursor: text;
+                    &.temp-disabled{
+                        background-color: #333333;
+                    }
 
                     input{
                         width:2.4rem;
@@ -197,15 +213,15 @@
                         transform-origin: top right;
                         position: absolute;
                         right: 0;
-                        background-color: #4d310a;
+                        // background-color: #4d310a;
                         z-index:50;
                         .increment {
-                            background-color: #4d310a;
+                            // background-color: #4d310a;
                             display: block;
                             // padding-top: 0.25rem/* 4px */;
                             padding-bottom: 0.25rem/* 4px */;
                             &:hover{
-                                background-color: #3a2200;
+                                // background-color: #3a2200;
                             }
                         }
                     }
@@ -261,15 +277,16 @@
                     justify-content: flex-start;
 
                     &.temp-disabled{
-                        background-color: #1F7A50;
+                        $disabled-bg-color: #333333;
+                        background-color: $disabled-bg-color;
                         .img {
-                            background-color: #1F7A50;
+                            background-color: $disabled-bg-color;
                         }
                         .opp-name {
-                            background-color: #1F7A50;
+                            background-color: $disabled-bg-color;
                         }
                         .ctrl-secondary {
-                            background-color: #1F7A50;
+                            // background-color: #1F7A50;
                         }
                     }
 
@@ -336,9 +353,8 @@
             }
             .selected-opponent {
                 min-height: 50px;
-                background-color: var(--basicBgColor,#dbd9d7);
+                background-color: var($control-bg-color,#dbd9d7);
                 display: inline-flex;
-                font-size: 1.7rem !important;
                 // color: var(--basicColor,#666463);
             }
         }

@@ -34,7 +34,7 @@ const initialState = {
 	selectedGameType: 0,
 	gameTypes,
 	custom: custom.state,
-	submitText: "Create Room",
+	submitText: "Create",
 }
 
 export default (initial) => ({
@@ -52,12 +52,12 @@ export default (initial) => ({
 			},
 		attemptSubmit: () => ({
 			attemptingSubmit: true,
-			submitText: "Please wait...",
+			submitText: "...",
 			error: { show: false },
 		}),
 		endAttempt: () => ({
 			attemptingSubmit: false,
-			submitText: "Create Room",
+			submitText: "Create",
 		}),
 		reset: () => initialState,
 	},
@@ -125,13 +125,14 @@ export default (initial) => ({
 			}
 
 			return (
-				<div class={`create-wrapper modal ${ !showCreate && "hide-create"}`} >
+				<div
+					class={`create-wrapper modal ${
+						!showCreate && "hide-create"
+					}`}
+				>
 					{showCreate && (
 						<div oncreate={checkConnection} class="create">
-							<div
-								onclick={toggle}
-								class="modal-overlay"
-							></div>
+							<div onclick={toggle} class="modal-overlay"></div>
 
 							<div class="create-body">
 								{/* <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
@@ -171,7 +172,14 @@ export default (initial) => ({
 								</div>
 
 								{/* <!--Footer--> */}
-								<Footer {...{ create, toggle }} />
+								<Footer
+									{...{
+										create,
+										toggle,
+										submitText: state.submitText,
+										attemptingSubmit: state.attemptingSubmit,
+									}}
+								/>
 							</div>
 						</div>
 					)}
@@ -189,13 +197,6 @@ function ColorSelect({ selectedColor, selectColor }) {
 						color == selectedColor && "selected"
 					}`}
 				>
-					{/* mobile pieces */}
-					<img
-						class="pieces mobile"
-						id={`color-select-${color}`}
-						onclick={(_) => selectColor(color)}
-						src={`./assets/mobile/create/piece-${color}.svg`}
-					/>
 					<img
 						class="pieces"
 						id={`color-select-${color}`}
@@ -228,15 +229,16 @@ function GameType({ type, selectGameType, selectedGameType }) {
 		</div>
 	);
 }
-function Footer({ create, toggle }) {
+function Footer({ create, toggle, submitText, attemptingSubmit }) {
 	return (
 		<div class="modal-footer">
 			<button
 				onclick={debounce(create, 400)}
 				type="button"
-				class="create"
+				class={`create  ${attemptingSubmit && "processing"}`}
+				disabled={attemptingSubmit}
 			>
-				Create
+				{submitText}
 			</button>
 			<button onclick={toggle} type="button" class="cancel">
 				Cancel
