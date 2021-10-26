@@ -28,7 +28,7 @@ export default (initial) => ({
 				delay(1).then(remove);
 			}
 			return (
-				<div class={`loader ${!true && "hide"}`}>
+				<div class={`loader ${!isLoading && "hide"}`}>
 					<Mosaic />
 					<div class="loader-wrapper">
 						<h2>{loaderText || "Did you know?"}</h2>
