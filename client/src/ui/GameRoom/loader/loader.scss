@@ -83,7 +83,7 @@ $colors: (
 		background-color: rgb(49, 40, 28,.6);
 		padding: 2rem;
 		// background: linear-gradient(135deg, #32291d, #64533B);
-		max-width: 65vw;
+		width: 100%;
 		position: absolute;
 		// bottom: 0;
 		// left: 0;
@@ -184,4 +184,11 @@ $colors: (
 	}
 }
 
+@media (min-width: 640px) {
+	.loader{
+		.loader-wrapper{
+			max-width: 65vw;
+		}
+	}
+}
 
