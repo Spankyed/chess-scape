@@ -1,5 +1,6 @@
 .custom  {
-    $control-bg-color: #232323;
+    // $control-bg-color: #232323;
+    $control-bg-color: #1d1711;
     // $type-bg-color: #1F7A50;
     // $type-bg-color: #1c3e2f;
     $type-bg-color: #47682c;
@@ -92,7 +93,8 @@
         }
         .ctrl-secondary {
             // font-size: 1.4rem !important;
-            background-color: $secondary-ctrl-bg-color;
+            // background-color: $secondary-ctrl-bg-color;
+            // background-color: $control-bg-color;
             width: 30%;
             min-height: 100%;
             display: flex;
@@ -113,6 +115,10 @@
             height: 3rem;
             min-height: 3rem;
             margin-bottom: 0.6rem;
+
+            .temp-disabled{
+                background-color: #333333;
+            }
             .time {
 
                 // &.temp-disabled{
@@ -131,8 +137,6 @@
                     //     background-color: $type-bg-color;
                     // }
                 // }
-
-
                 .minutes-input {
                     min-height: 100%;
                     width:50%;
