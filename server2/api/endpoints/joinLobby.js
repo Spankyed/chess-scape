@@ -22,10 +22,19 @@ const handler = async (event) => {
 		}),
 		Dynamo.getAll(roomsTable)
 	]);
-	
-	return Responses._200({ rooms });
+
+	return Responses._200({ rooms: rooms.map(sanitizeRoom) });
 };
 
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
 exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
 
+function sanitizeRoom(room) {
+	return {
+		...room,
+		gameOptions: {
+			...room.gameOptions,
+			pin: undefined
+		}
+	}
+}
