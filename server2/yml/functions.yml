@@ -5,6 +5,13 @@ createClient:
         path: create-client
         method: POST
         cors: true
+joinPrivate:
+  handler: api/endpoints/joinPrivate.handler
+  events:
+    - http:
+        path: join-private
+        method: POST
+        cors: true
 createRoom:
   handler: api/endpoints/createRoom.handler
   events:

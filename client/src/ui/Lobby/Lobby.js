@@ -2,15 +2,17 @@ import { h } from 'hyperapp';
 import Api from '../../api/Api';
 import Create from "./create/create";
 import Alert from '../Shared/Alert';
-// import './lobby.scss';
+import Pin from './pin/pin';
 
 const create = Create()
 const alert = Alert()
+const pin = Pin()
 
 export default (initial) => ({
 	state: {
 		create: create.state,
 		alert: alert.state,
+		pin: pin.state,
 		showCreate: false,
 		hostedRoom: null,
 		rooms: [],
@@ -22,6 +24,7 @@ export default (initial) => ({
 	actions: {
 		create: create.actions,
 		alert: alert.actions,
+		pin: pin.actions,
 		setLoad: (loading) => ({ loading }),
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
 		updateRooms: (rooms) => (state, actions) => ({
@@ -99,11 +102,17 @@ export default (initial) => ({
 			} = state;
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
+			const PinView = pin.view(state.pin, actions.pin);
+
 			window.isLoad = actions.setLoad;
 
-			const join = (ID) => {
+			const moveToRoom = (ID) => {
 				joinRoom(ID);
 				actions.exit();
+			};
+
+			const join = (ID) => {
+				moveToRoom(ID);
 				Api.joinRoom(ID);
 			};
 
@@ -150,6 +159,7 @@ export default (initial) => ({
 						toggleCreate={actions.toggleCreate}
 					/>
 					<AlertView />
+					<PinView joinRoom={moveToRoom} />
 
 					<div
 						class={`lobby-main ${
@@ -195,7 +205,7 @@ export default (initial) => ({
 								{loading ? (
 									<LoadingTable />
 								) : (
-									<RoomsTable {...{ rooms, join }} />
+									<RoomsTable {...{ rooms, join, openPinInput: actions.pin.openPinInput }} />
 								)}
 							</table>
 						</div>
@@ -257,13 +267,13 @@ function LoadingTable() {
 		</tbody>
 	);
 }
-function RoomsTable({rooms, join}) {
+function RoomsTable({rooms, join, openPinInput}) {
 	return (
 		<tbody class="room-table">
 			{/* {[...new Array(6)].map((room, idx) => ( */}
 			{rooms.map((room, idx) => (
 				// <tr class={`${idx % 2 ? '': 'bg-gray-800'} my-3 text-lg font-large`}>
-				<RoomItem {...{ room, join, idx }} />
+				<RoomItem {...{ room, join, idx, openPinInput }} />
 			))}
 		</tbody>
 	);
@@ -283,15 +293,17 @@ function RoomsTable({rooms, join}) {
 // 	players: { white: { clientID: "94" } },
 // 	matchStarted: false,
 // };
-function RoomItem({room, join}) {
+function RoomItem({room, join, openPinInput}) {
 	// room = roomModel;
 	const players = Object.values(room?.players||{})
 	const isHost = room?.host == Api.getClientID()
+	const isAngel = 'angel' == Api.getClientID();
 	const isPlayer = isHost || players?.find((p) => p.clientID == Api.getClientID());
 	const isFull = players?.length > 1
+	const hasPin = room?.gameOptions.pin;
 	const userImg = `https://avatars.dicebear.com/api/avataaars/${room.hostName}.svg`
 	return (
-		<tr class={` ${isHost && "selected-room"}`}>
+		<tr class={`${isHost && "selected-room"}`}>
 			<td class="host">
 				<img class="img" src={userImg} />
 				<span class="hide-small">{room.hostName}</span>
@@ -337,7 +349,7 @@ function RoomItem({room, join}) {
 			</td>
 			<td class="action">
 				<button
-					onclick={() => join(room?.ID)}
+					onclick={() => !hasPin || isAngel || isHost ? join(room?.ID) : openPinInput(room?.ID) }
 					class={`${isHost && "host"}`}
 				>
 					{isHost

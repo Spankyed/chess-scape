@@ -1,0 +1,180 @@
+.pin-form-wrapper {
+
+    $modal-overlay-color: #2f2f2f;
+    // $input-bg-color: #32291d;
+    $input-bg-color: #2e261e;
+    $color-cancel-bg: rgb(151, 87, 38);
+    $color-cancel-hover-bg: rgb(180, 117, 45);
+
+    font-size: 1.8rem;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    transition: all 0.35s;
+    color: #fff;
+
+    .modal-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: $modal-overlay-color;
+        opacity: 0.7;
+    }
+
+
+    &.hide-pin {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    form {
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        width:100%;
+        height:100%;
+
+        .pin-form {
+            z-index: 11;
+            display:flex;
+            flex-direction: column;
+            justify-content: start;
+            width: fit-content;
+            flex-basis: 13rem;
+            border-radius: 0.125rem;
+            box-shadow: rgba(0, 0, 0, 0.45) 0px 5px 10px; // shadow-lg
+
+            .pin-input-wrapper {   
+                display: flex;
+                // margin-top: 0.5rem;
+                width: 100%;
+                text-align: center;
+                position: relative;
+                justify-content: center;
+                // transition: all 0.35s;
+                // $input-bg-color: #2c2824;
+                background-color: $input-bg-color;
+                .identity {
+                    // $identity-bg-color: #2c3a1f;
+                    $identity-bg-color: #147a40;
+                    width: 25%;
+                    min-width: 3.5rem;
+                    background-color: $identity-bg-color;
+                    display: flex;
+                    justify-content: center;
+                    pointer-events: none;  
+                    // light grey border
+                    --borderHeight: .1rem;
+                    --borderColor: hsla(0,0%,100%,0.15);
+                    --secondaryBorderColor: transparent; 
+                    box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
+                    border-right: 1px solid var(--borderColor);
+                    img {
+                        // min-height:100%;
+                        width: 2rem;
+                    }
+                }
+
+                // .private {
+                //     width:50%;
+                //     // flex-grow:1;
+                //     cursor: text;
+                //     display: none;
+                // }
+
+                .pin-input {
+                    align-items: center;
+                    // width: 27.5%;
+                    padding-bottom: 0.4rem;
+
+                    &.incorrect{
+                        // red error input border
+                        border: .1rem solid rgba(155, 9, 4, 0.5);
+                    }
+
+                    input {
+                        text-align:center;
+                        width: 100%;
+                        height: 100%;
+                        appearance: none;
+                        outline: none; 
+                        background: none;
+                        background-color: transparent;
+                        &:focus{
+                            outline: none; 
+                            
+                            appearance: none;
+                        }
+                    }
+                }
+            }
+            .pin-form-footer {
+                // background-color: $color-footer-bg;
+                // padding-top: 0.25rem;
+                // padding-bottom: 0.75rem;
+                // padding-left: 1.5rem/* 24px */;
+                // padding-right: 1.5rem/* 24px */;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: row-reverse;
+                font-size: 1.4rem;
+                flex-shrink: 0;
+                // flex basis the width of button
+
+
+
+
+                button{
+                    // box-shadow: rgba(0, 0, 0, 0.45) 0px 2px 6px; // shadow-sm
+                    padding-left: 1rem/* 16px */;
+                    padding-right: 1rem/* 16px */;
+                    padding-top: 0.5rem/* 8px */;
+                    padding-bottom: 0.5rem/* 8px */;
+                    width: 100%;
+                    display: inline-flex;
+                    justify-content: center;
+                    // border-radius: 0.15rem;
+
+                    &:focus {
+                        outline: 2px solid transparent;
+                        outline-offset: 2px;
+                    }
+                }
+
+                .join{
+                    margin-left: 0rem/* 16px */;
+                    // border-color: #2C2EAF;
+                    // border-left:0;
+                    color: #fff;
+                    background-color: #2C2EAF;
+                    letter-spacing: 5px;
+                    &.processing{
+                        -webkit-text-security: disc;
+                    }
+                    &:hover{
+                        background-color: #4446e6;
+                    }
+                }
+                .cancel {
+                    margin-right: 0rem/* 16px */;
+                    background: none;
+                    letter-spacing: 5px;
+                    background-color: $color-cancel-bg;
+                    &:hover{
+                        background-color: $color-cancel-hover-bg;
+                        // background-color: rgb(114, 114, 114);
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+//   'sm': '640px',
+@media (min-width: 640px) {
+}

@@ -218,6 +218,22 @@ async function joinLobby() {
 	}
 }
 
+async function joinPrivate({roomID: roomdId, pin}) {
+	const method = "POST";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const body = JSON.stringify({ roomID: roomdId, pin, clientID, TOKEN });
+	const url = `${baseHttpUrl}/join-private`;
+	const response = await fetch(url, { method, headers, body });
+	if (response.ok) {
+		const res = await response.json();
+		if (res.valid) roomID ??= roomdId;
+		console.log("%c Attempted join private", "color:blue;", { res });
+		return res;
+	} else if (response.status === 401) {
+		handlers.unauthorize();
+		throw Error("Unauthorized");
+	}
+}
 async function createRoom(gameOptions) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
@@ -292,6 +308,7 @@ export default {
 	createRoom,
 	deleteRoom,
 	joinRoom,
+	joinPrivate,
 	sync,
 	ready,
 	leaveRoom,
