@@ -1,36 +1,17 @@
 .create-wrapper {
-    // $color-create-bg: #1C1C21;
-    // $color-select-bg: #7D6343;
-    // $color-footer-bg: #7D6343;
     $color-create-bg: #32291d;
-    // $color-create-bg: #1d1711;
-    // $color-select-bg: #33501b;
-    // $color-select-bg: linear-gradient(to bottom, #32291d 0%, #32291d 100%);
-    // $color-select-bg: #664B00;
     $color-select-bg: #47682c;
     $color-piece-selected-bg: #569124;
-
-
-    // $color-select-bg: linear-gradient(to right, #a57433, #a57433);
-    // $color-piece-selected-bg: #664B00;
     $color-ctrl-selected-bg: #569124;
     $type-bg-color: #1c3e2f;
-
     $color-cancel-bg: rgb(151, 87, 38);
     $color-cancel-hover-bg: rgb(180, 117, 45);
     font-size: 1.8rem;
 
-
     .temp-disabled{
-        // background: linear-gradient(#cf8572,#cf8572) !important;
-        //   background-image:linear-gradient( rgba(0,0,0,.5), rgba(0,0,0,.5) );
           filter: grayscale(100%);
-        //  background: white;
-        // mix-blend-mode: luminosity;
         // background-color: rgba(200,100,0,.5);
-        //   background-blend-mode: multiply;
         pointer-events: none;
-        // color: #c9c9c9 !important;
         color: #b8bdc6 !important;
         ::placeholder{
             color: #c9c9c9
@@ -137,9 +118,8 @@
                 padding-left: 1.5rem/* 24px */;
                 padding-right: 1.5rem/* 24px */;
                 overflow: auto;
-
                 max-height: 70vh;
-                // scroll bar styling courtesy of  https://jsfiddle.net/vsj6qb8c/6/
+
                 &::-webkit-scrollbar {
                     width: 20px;
                     border-width: 5px;
@@ -222,11 +202,6 @@
             }
 
             .modal-footer {
-                // background-color: $color-footer-bg;
-                // padding-top: 0.25rem;
-                // padding-bottom: 0.75rem;
-                // padding-left: 1.5rem/* 24px */;
-                // padding-right: 1.5rem/* 24px */;
                 display: flex;
                 justify-content: center;
                 align-items: center;

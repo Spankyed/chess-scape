@@ -104,7 +104,6 @@ export default (initial) => ({
 						: gameTypes[selectedGameType].time,
 					selectedOpp,
 					...(selectedOpp == "computer" ? { computerSkill } : {}),
-					// pinEnabled,
 					pin,
 				};
 

@@ -99,7 +99,7 @@ export default (initial) => ({
 									incDropdownOpen,
 								}}
 							/>
-							{/* todo add dropdown icon to indicate opp select */}
+							{/* todo add dropdown icon to indicate opp select? */}
 							<OpponentSelect
 								{...{
 									isSelectingOpp,
@@ -180,9 +180,6 @@ function TimeControl({
 						disabled={tempDisabled}
 					/>
 					<div class="minutes-suffix">min</div>
-					{/* <div class="minutes-suffix sm:hidden">m</div> */}
-
-					{/* todo on click focus input ; show input cursor on hover*/}
 				</div>
 				<div
 					class="ctrl-secondary temp-disabled"
@@ -231,7 +228,9 @@ function IncrementDropdown({
 				onclick={() => !disabled && setIncDropdown(!incDropdownOpen)}
 			>
 				{disabled ? (
-					<div> — <span class="inc-p"> inc</span> </div>
+					<div>
+						— <span class="inc-p"> inc</span>
+					</div>
 				) : (
 					<div>
 						+ <span class="value">{time.increment}</span> sec
@@ -248,7 +247,6 @@ function IncrementDropdown({
 							tabindex="-1"
 							id={`${inc}`}
 							onclick={onClick(inc)}
-							// class={`option ${isSelected(1) && 'opp-selected'}`}
 						>
 							+ <span class="value">{inc}</span> sec
 						</span>
@@ -299,7 +297,7 @@ function SelectedOpponent({ selectedOpp, toggleOppMenu }) {
 				<img src={`./assets/create/custom/${selectedOpp}.svg`} />
 			</div>
 			<span class="opp-name">{capitalize(selectedOpp)}</span>
-			{/* todo add dropdown arrow */}
+			{/* todo add dropdown arrow? */}
 		</div>
 	);
 }
@@ -357,7 +355,6 @@ function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 				id="difficulty"
 				name="difficulty"
 				class="difficulty"
-				// focus:border-indigo-500 h-full py-0 pl-2 pr-1 bg-transparent"
 			>
 				<option value="random">Random</option>
 				<option value="easy">Easy</option>
@@ -383,15 +380,6 @@ function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 			<label for="pin" class="sr-only">
 				Private
 			</label>
-			{/* <div class="pl-6">
-				<input
-					type="checkbox"
-					class="form-checkbox h-5 w-5 mt-4"
-					onchange={togglePin}
-					checked={pinEnabled}
-				/>
-			</div> */}
-
 			{/* <div class="private mobile">Lock</div> */}
 			<div class="private" onclick={focusInput}>
 				Private

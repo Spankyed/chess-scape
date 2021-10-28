@@ -100,13 +100,8 @@ export default (initial) => ({
 			const CreateView = create.view(state.create, actions.create);
 			const AlertView = alert.view(state.alert, actions.alert);
 			window.isLoad = actions.setLoad;
-			const refreshRoomList = async () => {
-				let { rooms } = await Api.getRooms();
-				actions.updateRooms(rooms);
-			};
 
 			const join = (ID) => {
-				// console.log('joining  ', ID)
 				joinRoom(ID);
 				actions.exit();
 				Api.joinRoom(ID);
@@ -114,7 +109,7 @@ export default (initial) => ({
 
 			const onJoin = ({ room }) => {
 				if (room.host == Api.getClientID()) {
-					// if someone joins room hosted by user, move user into room
+					// move user into room if room hosted by user
 					join(room.ID);
 				}
 				actions.updateRoom(room);
@@ -123,6 +118,11 @@ export default (initial) => ({
 			const cancel = async () => {
 				await Api.deleteRoom(hostedRoom).catch(actions.exit);
 				actions.alert.close({ id: "host" });
+			};
+
+			const refreshRoomList = async () => {
+				let { rooms } = await Api.getRooms();
+				actions.updateRooms(rooms);
 			};
 
 			const initialize = async () => {
