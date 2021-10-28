@@ -112,7 +112,7 @@ export default (initial) => ({
 					actions.attemptSubmit();
 					const { newRoom } = await Api.createRoom(gameOptions); // dont update room list with response, websocket message will be sent to update lobby roomlist
 					if (newRoom) toggleCreate();
-					delay(300).then(actions.endAttempt).then(actions.reset);
+					delay(1).then(actions.endAttempt).then(actions.reset);
 				} catch (err) {
 					console.log(err);
 					// if (!err.hidden) actions.showError(err);
