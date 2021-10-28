@@ -167,7 +167,7 @@ export default (initial) => ({
 										disabled={!initialized || isFetching || loading}
 									>
 										<img src="./assets/create/add.svg"></img>
-										<p class="hide-small">New Game</p>
+										<p class="hide-small">Create</p>
 									</button>
 								) : (
 									<button onclick={cancel} class="cancel">
