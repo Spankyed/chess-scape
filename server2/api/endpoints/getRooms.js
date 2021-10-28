@@ -20,7 +20,7 @@ function sanitizeRoom(room) {
 		chat: undefined,
 		gameOptions: {
 			...room.gameOptions,
-			pin: undefined,
+			pin: !!room.gameOptions.pin,
 		},
 	};
 }
