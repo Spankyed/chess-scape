@@ -1,7 +1,9 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-const nanoid = require("nanoid/async");
+// const nanoid = require("nanoid/async");
+const { customAlphabet } = require('nanoid')
+const nanoid = customAlphabet("1234567890abcdef", 10);
 
 const clientsTable = process.env.clientsTableName;
 
@@ -11,7 +13,7 @@ const schema = {
 
 const handler = async (event) => {
 	const form = event.body;
-	const uuids = await Promise.all([nanoid(), nanoid()]);
+	const uuids = [nanoid(), nanoid()];
 	client = {
 		...form,
 		ID: uuids[0],

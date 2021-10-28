@@ -1,7 +1,10 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-const nanoid = require("nanoid/async");
+// const nanoid = require("nanoid/async");
+const { customAlphabet } = require('nanoid')
+const nanoid = customAlphabet("1234567890abcdef", 10);
+
 const { sendMessageToLobby } = require("../common/websocket/message");
 const initialState = require("../websockets/methods/move/state");
 
@@ -32,7 +35,7 @@ const handler = async (event) => {
 	const { selectedColor } = opts
 	const room = {
 		gameOptions: allowEnabledOptions(opts),
-		ID: await nanoid(),
+		ID: nanoid(),
 		host: clientID,
 		hostName: client.username,
 		players: { [selectedColor]: { clientID } },
