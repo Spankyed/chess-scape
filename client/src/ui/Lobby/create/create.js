@@ -74,6 +74,7 @@ export default (initial) => ({
 
 			// todo close modal using esc key
 			const toggle = (ev) => {
+				if (state.attemptingSubmit) return;
 				ev.stopPropagation();
 				toggleCreate();
 				actions.reset()
