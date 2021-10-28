@@ -1,9 +1,8 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-// const nanoid = require("nanoid/async");
-const { customAlphabet } = require('nanoid')
-const nanoid = customAlphabet("1234567890abcdef", 10);
+const { customAlphabet } = require("nanoid");
+const nanoid = customAlphabet("1234567890abcdef", 20);
 
 const clientsTable = process.env.clientsTableName;
 

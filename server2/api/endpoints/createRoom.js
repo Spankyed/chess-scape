@@ -1,11 +1,9 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-// const nanoid = require("nanoid/async");
-const { customAlphabet } = require('nanoid')
-const nanoid = customAlphabet("1234567890abcdef", 10);
-
 const { sendMessageToLobby } = require("../common/websocket/message");
+const { customAlphabet } = require("nanoid");
+const nanoid = customAlphabet("1234567890abcdef", 20);
 const initialState = require("../websockets/methods/move/state");
 
 const roomsTable = process.env.roomsTableName;
