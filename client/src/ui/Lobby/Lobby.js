@@ -8,19 +8,20 @@ const create = Create()
 const alert = Alert()
 const pin = Pin()
 
-export default (initial) => ({
-	state: {
-		create: create.state,
-		alert: alert.state,
-		pin: pin.state,
-		showCreate: false,
-		hostedRoom: null,
-		rooms: [],
-		loading: true,
-		isFetching: false,
-		initialized: false,
-	},
+const initialState = {
+	create: create.state,
+	alert: alert.state,
+	pin: pin.state,
+	showCreate: false,
+	hostedRoom: null,
+	rooms: [],
+	loading: true,
+	isFetching: false,
+	initialized: false,
+}
 
+export default (initial) => ({
+	state: initialState,
 	actions: {
 		create: create.actions,
 		alert: alert.actions,
@@ -85,7 +86,7 @@ export default (initial) => ({
 			(_, { alert }) => {
 				cleanupHandlers();
 				alert.closeAll();
-				return { initialized: false, isFetching: false };
+				return initialState;
 			},
 	},
 
