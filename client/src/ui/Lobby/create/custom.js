@@ -372,7 +372,9 @@ function ComputerSkillMenu({ computerSkill,  setComputerSkill }) {
 
 function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 	const focusInput = (ev) =>
-		ev.currentTarget.querySelector("input:not(.mobile)").focus();
+		ev.currentTarget.parentElement
+			.querySelector("input:not(.mobile)")
+			.focus();
 	return (
 		<div class="pin-protect control">
 			<span class="identity">
