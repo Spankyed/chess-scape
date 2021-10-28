@@ -17,6 +17,7 @@ exports.handler = withHooks(["parse"])(handler);
 function sanitizeRoom(room) {
 	return {
 		...room,
+		chat: undefined,
 		gameOptions: {
 			...room.gameOptions,
 			pin: undefined,

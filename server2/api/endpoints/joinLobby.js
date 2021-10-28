@@ -32,9 +32,10 @@ exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
 function sanitizeRoom(room) {
 	return {
 		...room,
+		chat: undefined,
 		gameOptions: {
 			...room.gameOptions,
-			pin: undefined
-		}
-	}
+			pin: undefined,
+		},
+	};
 }
