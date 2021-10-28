@@ -406,6 +406,7 @@ function Pin({ pin, setPin, pinEnabled, mobile }) {
 			placeholder="Pin"
 			class={`value ${mobile && "mobile"}`}
 			disabled={!pinEnabled}
+			autocomplete="off"
 		></input>
 	);
 }
