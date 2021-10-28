@@ -15,7 +15,6 @@ const schema = {
 	// body: { name: "string" },
 };
 
-
 function allowEnabledOptions(gameOptions) {
 	const { pin, selectedOpp, selectedColor } = gameOptions;
 	return {
@@ -43,41 +42,46 @@ const handler = async (event) => {
 		created: Date.now(),
 		matchStarted: false,
 	};
-	
-	const newRoom = await Dynamo.write(room, roomsTable);
-	if (!newRoom) {
-		console.log("Failed to create room");
-		return Responses._400({ message: "Failed to create room" });
-	} else {
-		const match = {
-			ID: room.ID,
-			host: room.host,
-			players: {
-				[selectedColor]: {
-					clientID: room.host,
-					ready: false,
-					committed: false,
+
+	try {
+		const newRoom = await Dynamo.write(room, roomsTable);
+		if (!newRoom) {
+			console.log("Failed to create room");
+			return Responses._400({ message: "Failed to create room" });
+		} else {
+			const match = {
+				ID: room.ID,
+				host: room.host,
+				players: {
+					[selectedColor]: {
+						clientID: room.host,
+						ready: false,
+						committed: false,
+					},
 				},
-			},
-			selectedColor,
-			lastMove: {
-				fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-			},
-			colorToMove: "white",
-			created: room.created,
-			started: false,
-			state: initialState,
-			moves: [],
-		};
-		await Promise.all([
-			sendMessageToLobby({ method: "create", newRoom }),
-			Dynamo.write(match, matchesTable)
-		])
+				selectedColor,
+				lastMove: {
+					fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+				},
+				colorToMove: "white",
+				created: room.created,
+				started: false,
+				state: initialState,
+				moves: [],
+			};
+			await Promise.all([
+				sendMessageToLobby({ method: "create", newRoom }),
+				Dynamo.write(match, matchesTable),
+			]);
+		}
+
+		console.log(`Player[${clientID}] created room[${newRoom.ID}]`);
+		return Responses._200({ newRoom });
+
+	} catch (err) {
+		console.error(err);
+		return Responses._400({ error: err.message });
 	}
-
-	console.log(`Player[${clientID}] created room[${newRoom.ID}]`);
-
-	return Responses._200({ newRoom });
 };
 
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
