@@ -2,7 +2,8 @@
 
     $modal-overlay-color: #2f2f2f;
     // $input-bg-color: #32291d;
-    $input-bg-color: #2e261e;
+    // $input-bg-color: #2e261e;
+    $input-bg-color: #584736;
     $color-cancel-bg: rgb(151, 87, 38);
     $color-cancel-hover-bg: rgb(180, 117, 45);
 
@@ -58,11 +59,13 @@
                 background-color: $input-bg-color;
                 .identity {
                     // $identity-bg-color: #2c3a1f;
-                    $identity-bg-color: #147a40;
+                    // $identity-bg-color: #147a40;
+                    $identity-bg-color: #709B50;
                     width: 25%;
                     min-width: 3.5rem;
                     background-color: $identity-bg-color;
                     display: flex;
+                    align-items: center;
                     justify-content: center;
                     pointer-events: none;  
                     // light grey border
@@ -71,10 +74,18 @@
                     --secondaryBorderColor: transparent; 
                     box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
                     border-right: 1px solid var(--borderColor);
-                    img {
-                        // min-height:100%;
+
+                    .lock {
+                        background-color: #fff;
+                        -webkit-mask: url('../assets/create/custom/lock.svg') no-repeat center;
+                        -webkit-mask-size: 100%;
+                        mask-size: 100%;
                         width: 2rem;
+                        height: 2rem;
+                        // opacity:.8;
+                        transition:all .3s ease-in-out;
                     }
+                    
                 }
 
                 // .private {

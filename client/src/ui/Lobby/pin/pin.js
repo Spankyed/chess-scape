@@ -99,7 +99,7 @@ function PinProtect({ pin, setPin, incorrect }) {
 	return (
 		<div class="pin-input-wrapper">
 			<span class="identity">
-				<img src="./assets/create/custom/lock.svg" />
+				<span class='lock'/>
 			</span>
 			<label for="pin" class="sr-only">
 				Private
