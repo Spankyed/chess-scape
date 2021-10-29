@@ -242,8 +242,8 @@ function TableHead() {
 function LoadingTable() {
 	return (
 		<tbody class="loading-table">
-			{[...new Array(3)].map((_) => (
-				<tr>
+			{[...new Array(3)].map((_, idx) => (
+				<tr class={`${idx == 0 && "selected-room"}`}>
 					<td class="host">
 						<span class="img"></span>
 						<span class="data hide-small"></span>
@@ -260,7 +260,7 @@ function LoadingTable() {
 					<td class="color hide-small">
 						<span class="img"></span>
 					</td>
-					<td class="enter">
+					<td class={`enter ${idx == 0 && "host"}`}>
 						<span></span>
 					</td>
 				</tr>
@@ -350,12 +350,22 @@ function RoomItem({room, join, openPinInput}) {
 			</td>
 			<td class="action">
 				<button
-					onclick={() => !hasPin || isAngel || isHost ? join(room?.ID) : openPinInput(room?.ID) }
+					onclick={() =>
+						!hasPin || isAngel || isHost
+							? join(room?.ID)
+							: openPinInput(room?.ID)
+					}
 					class={`${isHost && "host"}`}
 				>
-					{isHost
-						? "Enter"
-						: `${isPlayer || !isFull ? "Play" : "Watch"} `}
+					<span class="text">
+						{isHost
+							? "Enter"
+							: `${isPlayer || !isFull ? "Play" : "Watch"} `}
+					</span>
+					{hasPin && (
+						<span class="locked">
+						</span>
+					)}
 				</button>
 			</td>
 		</tr>

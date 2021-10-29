@@ -168,18 +168,23 @@
                         // flex-grow:1;
                         &.Host {
                             width: 20%;
+                            min-width: 20%;
                         }
                         &.Game {
                             width: 15%;
+                            min-width: 15%;
                         }
                         &.Time {
                             width: 20%;
+                            min-width: 20%;
                         }
                         &.Players {
                             width: 15%;
+                            min-width: 15%;
                         }
                         &.Color {
                             width: 15%;
+                            min-width: 15%;
                         }
                         &.Action {
                             // text-align: right;
@@ -189,19 +194,21 @@
                 }
 
                 tbody {
+                    transition:all .3s ease-in-out;
                     &.loading-table {
                         width: 100%;
+                        opacity: 100%;
                         tr {
+                            padding-left: 0.75rem/* 12px */;
                             // border-bottom: 1px solid rgba(0,0,0,.1);
                             td {
-
                                 span {
                                     display: block;
                                 }
                                 .data {
                                     height: 12px;
                                     border-radius: .15rem;
-                                    background: linear-gradient(to right, #363636  20%, #303030 50%, #363636 80%);
+                                    background: linear-gradient(to right, #666666  10%, #5c5858 30%, #666666 80%);
                                     background-size: 500px 100px;
                                     animation-name: moving-gradient;
                                     animation-duration: 1s;
@@ -211,7 +218,19 @@
                                     flex-grow: 1;
                                 }
                                 .img {
-                                    background-color: #303030;
+                                    // background-color: #303030;
+                                    height: 3.2rem/* 24px */;
+                                    width: 3.2rem/* 24px */;
+                                    
+                                    background-color: #444444;
+						            border-radius: 9999px;
+                                }
+                                &.players {
+                                    span {
+                                        min-height: 2.5rem;
+                                        min-width: 3.2rem;
+                                        
+                                    }
                                 }
                                 &.time {
                                     .data {
@@ -224,8 +243,8 @@
                                 }
                                 &.enter {
                                     span {
-                                        width: 5rem;
-                                        height: 2.5rem;
+                                        width: 5.2rem;
+                                        height: 2.8rem;
                                         // border-width: 1px;
                                         // border-color: #D6EBC0;
                                         border-radius: .25rem;
@@ -234,6 +253,11 @@
                                         padding-top: .5rem;
                                         padding-bottom: .5rem;
                                         // background-color: rgba(0,0,0,.15);
+                                    }
+                                    &.host {
+                                        span {
+                                            background-color: rgb(23, 55, 94);
+                                        }
                                     }
                                 }
 
@@ -318,18 +342,25 @@
                                 // font-size: 1.125rem/* 18px */;
                                 // line-height: 1.25rem/* 28px */;
                                 // font-weight: 600;
+                                display:flex;
+                                align-items: center;
                                 background-color: #a3d57d;
                                 color: #214c00;
                                 padding-top: .5rem;
                                 padding-bottom: .5rem;
-                                padding-left: 1.25rem;
-                                padding-right: 1.25rem;
-                                transition:all .3s ease-in-out;
+                                padding-left: 1rem;
+                                padding-right: 1rem;
+                                transition: all .3s ease-in-out;
                                 // transition:all .3s cubic-bezier(0.4,0,0.2,1);
                                 // border-width: 1px;
                                 // border-color: #D6EBC0;
                                 border-radius: .25rem;
                                 pointer-events: auto;
+                                font-size: 1.1em/* 20px */;
+                                .text{
+                                    padding-right: .25rem;
+                                }
+
                                 &:focus {
                                     outline: 2px solid transparent;
                                     outline-offset: 2px;
@@ -347,10 +378,27 @@
                                         transform: rotateX(30deg) translateY(1px);
                                     }
                                 }
+                                .locked {
+                                    // background-blend-mode: overlay;
+                                    // border-left: 1px solid #457322;
+                                    background-color: #214c00;
+                                    -webkit-mask: url('../assets/create/custom/lock.svg') no-repeat center;
+                                    width: 1.5rem;
+                                    height: 1.5rem;
+                                    opacity:.8;
+                                    transition:all .3s ease-in-out;
+                                }
                                 &.host{
-                                    background-color: rgb(23, 55, 94);
                                     color: rgb(153, 173, 230);
+                                    background-color: rgb(23, 55, 94);
+                                    .locked {
+                                        background-color: rgb(153, 173, 230);
+                                    }
                                     &:hover {
+                                        .locked {
+                                            opacity:.6;
+                                            background-color: rgb(23, 55, 94);
+                                        }
                                         color: rgb(23, 55, 94);
                                         box-shadow: rgb(40, 72, 159) 0px 5px 0px;
                                         background-color: rgb(81, 114, 205);
