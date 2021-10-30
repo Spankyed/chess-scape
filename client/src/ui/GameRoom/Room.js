@@ -184,13 +184,11 @@ export default (initial) => ({
 			};
 
 			return (
-				<div class="h-full flex">
-
+				<div class="game-room">
 					{/* { !state.loader.removed && */}
 						<LoaderView alert={actions.alert} />
 					{/* } */}
-
-					<div class="relative flex-grow">
+					<div class="game-area">
 						<ControlsView
 							roomID={roomID}
 							leaveRoom={leave}
