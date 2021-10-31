@@ -55,7 +55,7 @@ export default (initial) => ({
 			return (
 				// pointer-events-none controls-wrapper
 				<div
-					class={`controls-wrapper pointer-events-none ${
+					class={`controls-wrapper ${
 						loader.isLoading && "hidden"
 					}`}
 				>

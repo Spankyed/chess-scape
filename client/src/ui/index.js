@@ -16,21 +16,21 @@ const initialState = {
 	entrance: entrance.state,
 	gameRoom: gameRoom.state,
 	lobby: lobby.state,
-	authorized: false,
+	isAuthorized: false,
 	inGame: false,
 	roomID: "",
 };
 
 const state = {
 	...initialState,
-	authorized: checkForClient(),
+	isAuthorized: checkForClient(),
 };
 
 const actions = {
 	entrance: entrance.actions,
 	gameRoom: gameRoom.actions,
 	lobby: lobby.actions,
-	authorize: () => ({ authorized: true }),
+	authorize: () => ({ isAuthorized: true }),
 	unauthorize: () => ({ ...initialState }),
 	joinRoom: (roomID) => ({ inGame: true, roomID }),
 	joinLobby: () => ({ inGame: false }), // back to lobby
@@ -53,8 +53,10 @@ const view = (state, actions) => {
 	return (
 		<div oncreate={init} class="h-full">
 			{/* {false ? ( */}
-			{!state.authorized ? (
-				<EntranceView authorize={actions.authorize} />
+			{!state.isAuthorized ? (
+				<EntranceView
+					authorize={actions.authorize}
+				/>
 			) : state.inGame ? (
 				<GameRoomView
 					roomID={state.roomID}
