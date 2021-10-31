@@ -175,9 +175,18 @@ export default (initial) => ({
 								{!hostedRoom ? (
 									<button
 										onclick={actions.toggleCreate}
-										disabled={!initialized || isFetching || loading}
+										disabled={
+											!initialized ||
+											isFetching ||
+											loading
+										}
 									>
-										<div class='ripple'></div>
+										{	initialized &&
+											!showCreate &&
+											!loading &&
+											!(state.rooms?.length > 0)  && 
+											<div class="ripple"></div>
+										}
 										<img src="./assets/create/add.svg"></img>
 										<p class="hide-sm">Create</p>
 									</button>
@@ -207,7 +216,14 @@ export default (initial) => ({
 								{loading ? (
 									<LoadingTable />
 								) : (
-									<RoomsTable {...{ rooms, join, openPinInput: actions.pin.openPinInput }} />
+									<RoomsTable
+										{...{
+											rooms,
+											join,
+											openPinInput:
+												actions.pin.openPinInput,
+										}}
+									/>
 								)}
 							</table>
 						</div>
