@@ -89,7 +89,7 @@ export default class SceneManager {
         light.specular = new BABYLON.Color3(1, 1, 1);
         light.groundColor = new BABYLON.Color3(.5, 1, 1);
         var light2 = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(-1,10,-5), this._scene);
-        light2.intensity = 0.35;
+        light2.intensity = 0.15;
 
         // return new BABYLON.ShadowGenerator(1024, spotLight);
     }
