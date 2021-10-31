@@ -1,0 +1,54 @@
+@mixin position($position, $top: null, $right: null, $bottom: null, $left: null) {
+  position: $position;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+// keyframes mixin
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
+
+// Mixin 
+@mixin transform($transforms...) {
+  // combine the passed transforms into a space separated list
+  $transform-list: join($transforms, null, space);
+
+  // print out the transforms 
+  -webkit-transform: $transform-list;
+     -moz-transform: $transform-list;
+      -ms-transform: $transform-list;
+       -o-transform: $transform-list;
+          transform: $transform-list;
+}
+
+@mixin transform-origin($origin-x: $default-origin-x, $origin-y: $default-origin-y) {
+  $origin: unquote("");
+    @if $origin-x {
+      $origin: $origin-x;
+    }
+    @else {
+      $origin: 50%;
+    }
+    @if $origin-y {
+      $origin: $origin $origin-y;
+    }
+    transform-origin: $origin
+    // @include apply-origin($origin, $only3d);
+}
+
+
+
+
