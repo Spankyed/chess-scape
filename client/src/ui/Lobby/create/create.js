@@ -220,7 +220,12 @@ function GameType({ type, selectGameType, selectedGameType }) {
 		>
 			<div class="time">
 				<h2 class="name">{capitalize(type.name)}</h2>
-				{type.time && <h3 class="value">{type.time.minutes} min</h3>}
+				{type.time && (
+					<h3>
+						<span class="value">{type.time.minutes} </span>
+						min
+					</h3>
+				)}
 			</div>
 			<img
 				src={`./assets/create/types/${type.name}.svg`}
