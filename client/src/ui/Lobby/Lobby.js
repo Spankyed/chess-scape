@@ -149,7 +149,7 @@ export default (initial) => ({
 			};
 
 			if (!initialized && !isFetching) {
-				console.log(`Joined lobby [${Api.getClientID()}]`);
+				
 				initialize();
 			}
 
@@ -177,13 +177,14 @@ export default (initial) => ({
 										onclick={actions.toggleCreate}
 										disabled={!initialized || isFetching || loading}
 									>
+										<div class='ripple'></div>
 										<img src="./assets/create/add.svg"></img>
-										<p class="hide-small">Create</p>
+										<p class="hide-sm">Create</p>
 									</button>
 								) : (
 									<button onclick={cancel} class="cancel">
 										<img src="./assets/create/cancel.svg"></img>
-										<p class="hide-small"> Cancel </p>
+										<p class="hide-sm"> Cancel </p>
 									</button>
 								)}
 							</div>
@@ -219,18 +220,19 @@ export default (initial) => ({
 
 function TableHead() {
 	const headings = ["Host", "Game", "Time", "Players", "Color", "Action"];
-	const hideable = ["Time", "Players", "Color"];
+	const hideSm = ["Color"];
+	const hideMd = ["Time", "Players"];
 	const includes = (arr, item) => arr.indexOf(item) > -1;
-
 	return (
 		<thead>
 			<tr>
 				{headings.map((heading) => (
 					<th
 						scope="col"
-						class={`${heading} ${
-							includes(hideable, heading) && "hide-small"
-						}`}
+						class={`${heading} 
+						${includes(hideSm, heading) && " hide-sm"}
+						${includes(hideMd, heading) && " hide-md"}
+						`}
 					>
 						<span>{heading != "Action" && heading}</span>
 					</th>
@@ -246,18 +248,18 @@ function LoadingTable() {
 				<tr class={`${idx == 0 && "selected-room"}`}>
 					<td class="host">
 						<span class="img"></span>
-						<span class="data hide-small"></span>
+						<span class="data"></span>
 					</td>
 					<td class="game">
 						<span class="img"></span>
 					</td>
-					<td class="time hide-small">
+					<td class="time hide-md">
 						<span class="data"></span>
 					</td>
-					<td class="players hide-small">
+					<td class="players hide-md">
 						<span></span>
 					</td>
-					<td class="color hide-small">
+					<td class="color hide-sm">
 						<span class="img"></span>
 					</td>
 					<td class={`enter ${idx == 0 && "host"}`}>
@@ -294,7 +296,7 @@ function RoomsTable({rooms, join, openPinInput}) {
 // 	players: { white: { clientID: "94" } },
 // 	matchStarted: false,
 // };
-function RoomItem({room, join, openPinInput}) {
+function RoomItem({room, join, openPinInput, idx}) {
 	// room = roomModel;
 	const players = Object.values(room?.players||{})
 	const isHost = room?.host == Api.getClientID()
@@ -303,11 +305,12 @@ function RoomItem({room, join, openPinInput}) {
 	const isFull = players?.length > 1
 	const hasPin = room?.gameOptions.pin;
 	const userImg = `https://avatars.dicebear.com/api/avataaars/${room.hostName}.svg`
+
 	return (
-		<tr class={`${isHost && "selected-room"}`}>
+		<tr class={`${isHost && "selected-room"} odd`}>
 			<td class="host">
 				<img class="img" src={userImg} />
-				<span class="hide-small">{room.hostName}</span>
+				<span>{room.hostName}</span>
 			</td>
 			<td class="game">
 				<img
@@ -316,7 +319,7 @@ function RoomItem({room, join, openPinInput}) {
 					alt="game type"
 				/>
 			</td>
-			<td class="time hide-small">
+			<td class="time hide-md">
 				{room.gameOptions.name == "forever" ? (
 					<div>
 						<span class="min">
@@ -334,7 +337,7 @@ function RoomItem({room, join, openPinInput}) {
 					</div>
 				)}
 			</td>
-			<td class="players hide-small">
+			<td class="players hide-md">
 				<span class={`${isFull && "full"}`}>
 					{/* <span class="hidden lg:inline">
 						{`${isFull ? "Max" : "Open"}`}
@@ -342,7 +345,7 @@ function RoomItem({room, join, openPinInput}) {
 					{players?.length}/2
 				</span>
 			</td>
-			<td class="color hide-small">
+			<td class="color hide-sm">
 				<img
 					class="opt-img"
 					src={`./assets/create/piece-${room.selectedColor}.svg`}
@@ -362,9 +365,8 @@ function RoomItem({room, join, openPinInput}) {
 							? "Enter"
 							: `${isPlayer || !isFull ? "Play" : "Watch"} `}
 					</span>
-					{hasPin && (
-						<span class="locked">
-						</span>
+					{hasPin && !(isHost || isAngel) && (
+						<span class="locked"></span>
 					)}
 				</button>
 			</td>

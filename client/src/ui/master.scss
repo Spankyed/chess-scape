@@ -9,7 +9,8 @@ $dark-brown: #32291d;
 $green: #76a343;  
 $dark-green: #47682c;  
 $light-green: #527634;  
-$blue: #2C2EAF;  
+// $blue: #2C2EAF;  
+$blue: #281fcb;  
 $light-blue: rgba(79, 70, 229);
 $orange: rgba(79, 70, 229);
 $light-orange: rgba(79, 70, 229);
@@ -44,6 +45,7 @@ $line-height--heading: 1.2;
 $border-radius: 0.1875rem;
 $spacing: 1.5rem;
 $spacing--small: 0.75rem;
+$spacing--xs: 0.25rem;
 // Borders
 $border-width: 0.0625rem;
 $border: var(--border-width) solid currentColor;
@@ -54,6 +56,10 @@ $focus-outline: var(--focus-outline-width) solid #{$white};
 // Animations
 $duration: 150ms;
 $timing: ease;
+// Shadows
+$shadow-sm: 2px 2px 6px #000;
+
+
 
 //================================================================================
 // Entrance
@@ -62,8 +68,17 @@ $timing: ease;
 //================================================================================
 // Lobby
 //================================================================================
-
-
+$lobby-bg-clr: #1f1f1f;
+$table-bg-clr: #1A1A1A;
+$table-row-bg-clr: #40382c;
+$create-bg-clr: #2C2EAF;
+$create-bg-hover-clr: rgba(79, 70, 229);
+// background-color: rgb(151, 87, 38);
+$cancel-bg-clr: #d75923;
+// background-color: rgb(180, 117, 45);
+$cancel-bg-hover-clr: #FF4B0A;
+$scroll-thumb-clr: #3e4346;
+$scroll-track-clr: rgba(107,114,128,1);
 //================================================================================
 // Create
 //================================================================================
