@@ -17,7 +17,7 @@ export default (initial) => ({
 		setRating: (rating) => () => ({ rating }),
 		attemptSubmit: () => ({
 			attemptingSubmit: true,
-			// submitText: "Please wait...",
+			submitText: "...",
 			error: { show: false },
 		}),
 		endAttempt: () => ({
@@ -33,15 +33,18 @@ export default (initial) => ({
 	},
 	view:
 		(state, actions) =>
-		({ authorize }) => {
+		({ authorize, isAuthorized }) => {
 			const attemptSubmit = async (e) => {
 				e.preventDefault();
-				let { username, rating } = state
+				let { username, rating } = state;
 				let valid = validate(username);
 				if (valid) {
 					try {
 						actions.attemptSubmit();
-						let client = await Api.createClient({username, rating});
+						let client = await Api.createClient({
+							username,
+							rating,
+						});
 						if (client) authorize();
 						actions.endAttempt();
 					} catch (err) {
@@ -52,7 +55,7 @@ export default (initial) => ({
 				}
 			};
 			return (
-				<div class="entrance">
+				<div class='entrance'>
 					<div class="banner">
 						<img class="mobile" src="./assets/mobile/banner.svg" />
 						<img src="./assets/banner.svg" />
@@ -65,54 +68,56 @@ export default (initial) => ({
 							}.svg`}
 						/>
 					</div>
-					<form onsubmit={attemptSubmit} class="user-form" action="">
-						<div class="username">
-							<label for="username" class="sr-only">
-								Username
-							</label>
-							<input
-								oninput={actions.setUsername}
-								value={state.username}
-								type="text"
-								id="username"
-								name="username"
-								aria-label="Username"
-								placeholder="Player 1"
-								minlength="1"
-								maxlength="27"
-								autofocus
-							/>
-						</div>
-						<div class="rating">
-							<div class="rating-menu">
-								{state.ratings.map((option) => (
-									<div
-										class={`rating-option 
-										${option == state.rating && "selected"}`}
-										onclick={() =>
-											actions.setRating(option)
-										}
-									>
-										{option}
-									</div>
-								))}
+					<div class="user-form">
+						<form onsubmit={attemptSubmit} action="">
+							<div class="username">
+								<label for="username" class="sr-only">
+									Username
+								</label>
+								<input
+									oninput={actions.setUsername}
+									value={state.username}
+									type="text"
+									id="username"
+									name="username"
+									aria-label="Username"
+									placeholder="Player 1"
+									minlength="1"
+									maxlength="27"
+									autofocus
+								/>
 							</div>
-						</div>
-						{/* class= {`part save w-full bg-green-400 ${ state.attemptingSubmit && "processing" }`} */}
-						<button
-							type="submit"
-							class={`save  ${
-								state.attemptingSubmit && "processing"
-							}`}
-							disabled={!(state.username.length > 0)}
-						>
-							{state.attemptingSubmit ? (
-								<Loader />
-							) : (
-								state.submitText
-							)}
-						</button>
-					</form>
+							<div class="rating">
+								<div class="rating-menu">
+									{state.ratings.map((option) => (
+										<div
+											class={`rating-option 
+										${option == state.rating && "selected"}`}
+											onclick={() =>
+												actions.setRating(option)
+											}
+										>
+											{option}
+										</div>
+									))}
+								</div>
+							</div>
+							{/* class= {`part save w-full bg-green-400 ${ state.attemptingSubmit && "processing" }`} */}
+							<button
+								type="submit"
+								class={`save  ${
+									state.attemptingSubmit && "processing"
+								}`}
+								disabled={!(state.username.length > 0)}
+							>
+								{state.attemptingSubmit ? (
+									<Loader />
+								) : (
+									state.submitText
+								)}
+							</button>
+						</form>
+					</div>
 				</div>
 			);
 		},
@@ -125,45 +130,6 @@ function validate(username) {
 
 function Loader() {
 	return (
-		<svg
-			version="1.1"
-			id="L5"
-			xmlns="http://www.w3.org/2000/svg"
-			x="0px"
-			y="0px"
-			viewBox="0 0 100 100"
-			enable-background="new 0 0 0 0"
-		>
-			<circle fill="#fff" stroke="none" cx="6" cy="50" r="6">
-				<animateTransform
-					attributeName="transform"
-					dur="1s"
-					type="translate"
-					values="0 15 ; 0 -15; 0 15"
-					repeatCount="indefinite"
-					begin="0.1"
-				/>
-			</circle>
-			<circle fill="#fff" stroke="none" cx="30" cy="50" r="6">
-				<animateTransform
-					attributeName="transform"
-					dur="1s"
-					type="translate"
-					values="0 10 ; 0 -10; 0 10"
-					repeatCount="indefinite"
-					begin="0.2"
-				/>
-			</circle>
-			<circle fill="#fff" stroke="none" cx="54" cy="50" r="6">
-				<animateTransform
-					attributeName="transform"
-					dur="1s"
-					type="translate"
-					values="0 5 ; 0 -5; 0 5"
-					repeatCount="indefinite"
-					begin="0.3"
-				/>
-			</circle>
-		</svg>
+		<img src="./assets/entrance/load-dots.svg" alt="Please Wait"/>
 	);
 }

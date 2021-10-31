@@ -1,3 +1,4 @@
+@use './master' as m; 
 // @import "tailwindcss/base";
 // @import "tailwindcss/components";
 // @import "tailwindcss/utilities";
@@ -5,20 +6,19 @@
 @import './Entrance/entrance.scss'; 
 @import './GameRoom/room.scss'; 
 @import './Lobby/lobby.scss'; 
-@import './mixins.scss'; 
 
-@font-face {
-    font-family: 'Crete-Round';
-    src: url('../assets/fonts/CreteRound-Regular.ttf')  format('truetype');    
-    font-weight: 400;
-    font-style: normal;
-}
 // @font-face {
 //     font-family: 'Crete-Round';
 //     src: url('../assets/fonts/CreteRound-Italic.ttf')  format('truetype');    
 //     font-weight: 400;
 //     font-style: italic;
 // }
+@font-face {
+    font-family: 'Crete-Round';
+    src: url('../assets/fonts/CreteRound-Regular.ttf')  format('truetype');    
+    font-weight: 400;
+    font-style: normal;
+}
 
 
 html, body {
@@ -33,13 +33,11 @@ html, body {
     -ms-touch-action: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    // font-family: "Calibri", "Roboto", sans-serif;
-    // font-family:'Segoe UI';
-    font-family: 'Quattrocento Sans', sans-serif;
-    font-family: Crete-Round;
-    background-color: #32291d;
-    
-    // grid bg like - https://stately.ai/
+    font-family: m.$font-family;
+    font-weight: m.$font-weight--normal;
+    color: m.$light-font;
+    background-color: m.$bg-primary;
+    // grid bg
     // background-color: #212121;
     // background-image: 
     //     linear-gradient(#1a1a1a 0.1em, transparent 0.1em), 
@@ -56,201 +54,50 @@ html, body {
     transition: all .3s ease;
     
     @keyframes blink-bg {
-        0% { background-color: #32291d; }
-        50% { background-color: #64533B; }
-        100% { background-color: #32291d; }
+        0% { background-color: m.$bg-contrast; }
+        50% { background-color: m.$bg-primary; }
+        100% { background-color: m.$bg-contrast; }
     }
 }
 
-// h2 {
-//     margin-top:5px;
-//     display: block;
-//     color: white;
-//     font-weight: 100;
-//     //margin-right: 2rem;
-//     text-align: center;
-//     letter-spacing: 5px;
-//     color: #fff;
-// }
 
 
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  appearance: none;
+  // background-color: m.$action-color;
+  border: 0;
+  border-radius: var(m.$border-radius);
+//   color: m.$action-color--contrast;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+//   font-weight: 600;
+  line-height: 1;
+  padding: var(m.$spacing--small) var(m.$spacing);
+  text-align: center;
+  text-decoration: none;
+  transition: background-color var(m.$duration) var(m.$timing);
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
 
-#renderCanvas {
-    width: 100%;
-    height: 100%;
-	// outline: none;
-    // border: 1px solid grey;	
-}
-
-// keyframes mixin
-@mixin keyframes($name) {
-    @-webkit-keyframes #{$name} {
-        @content; 
-    }
-    @-moz-keyframes #{$name} {
-        @content;
-    }
-    @-ms-keyframes #{$name} {
-        @content;
-    }
-    @keyframes #{$name} {
-        @content;
-    } 
-}
-
-@include keyframes(ripple){
-    to {
-        @include transform(scale(1.2));
-        opacity: 0;
-    }
-}
-// .ripple {
-//     @include position(absolute, x 10px 10px x);
-    
-//     transform-origin: center center;
-//     transform: scale(.9);
-//     animation: 1.5s ripple ease infinite;
-//     width: 60px;
-//     height: 60px;
-//     border-radius: 50%;
-//     border: 1px solid #4285F4;
-//     box-sizing: border-box;
-
-//     &.off {
-//         opacity: 0;
-//     }
-// }
-// .ripple:before{
-// 	position: absolute;
-// 	content: '';
-// 	right: 0px;
-// 	top: 0px;
-
-// 	width: 100%;
-// 	height: 100%;
-// 	background: #646464;
-// 	// background-image: radial-gradient(top, #616161 0%, #616161 20%, #535353 60%);
-// /* 	border-radius: 50%; */
-// 	// box-shadow: 0 0 4px #1C1C17;
-// 	// transition: all .3s ease;
-// }
-.ripple:before {
-	position: absolute;
-	content: '';
-	right: 0px;
-	top: 0px;
-	width: 100%;
-	height: 100%;
-    -webkit-transform-origin: center center;
-    -moz-transform-origin: center center;
-    -ms-transform-origin: center center;
-    -o-transform-origin: center center;
-    transform-origin: center center;
-    -webkit-transform: scale(0.99);
-    -moz-transform: scale(0.99);
-    -ms-transform: scale(0.99);
-    -o-transform: scale(0.99);
-    transform: scale(0.99);
-    -webkit-animation: 1.5s ripple ease infinite;
-    -moz-animation: 1.5s ripple ease infinite;
-    animation: 1.5s ripple ease infinite;
-    // width: 60px;
-    // height: 60px;
-    // border-radius: 50%;
-    border: 2px solid #4285F4;
-    box-sizing: border-box;
+  &:hover {
+    // background-color: m.$action-color--alt;
   }
 
-// // Colors
-// $blue: #1565c0;
-// $blue-light: #3b83d5;
-// $gray: #333;
-// $white: #fff;
+  &:focus {
+    outline: var(m.$focus-outline);
+    outline-offset: var(m.$focus-outline-offset);
+  }
 
-// // Font Colors
-// $font-color--base: $gray;
-// $action-color: $blue;
-// $action-color--alt: $blue-light;
-// $action-color--contrast: $white;
-
-// // Background Colors
-// $viewport-background-color: $white;
-
-// :root {
-//   // Typography
-//   --font-family: system-ui, sans-serif;
-//   --font-family--heading: var(--font-family);
-
-//   --font-weight--thin: 100;
-//   --font-weight--extra-light: 200;
-//   --font-weight--light: 300;
-//   --font-weight--normal: 400;
-//   --font-weight--medium: 500;
-//   --font-weight--semi-bold: 600;
-//   --font-weight--bold: 700;
-//   --font-weight--extra-bold: 800;
-//   --font-weight--black: 900;
-
-//   // Line heights
-//   --line-height: 1.5;
-//   --line-height--heading: 1.2;
-
-//   // Other Sizes
-//   --border-radius: 0.1875rem;
-//   --spacing: 1.5rem;
-//   --spacing--small: 0.75rem;
-
-//   // Borders
-//   --border-width: 0.0625rem;
-//   --border: var(--border-width) solid currentColor;
-
-//   // Focus
-//   --focus-outline-width: 0.1875rem;
-//   --focus-outline-offset: 0.125rem;
-//   --focus-outline: var(--focus-outline-width) solid #{$action-color};
-
-//   // Animations
-//   --duration: 150ms;
-//   --timing: ease;
-// }
-
-// button,
-// [type="button"],
-// [type="reset"],
-// [type="submit"] {
-//   appearance: none;
-//   background-color: $action-color;
-//   border: 0;
-//   border-radius: var(--border-radius);
-//   color: $action-color--contrast;
-//   cursor: pointer;
-//   display: inline-block;
-//   font-family: var(--font-family-base);
-//   font-size: 1rem;
-//   -webkit-font-smoothing: antialiased;
-//   font-weight: 600;
-//   line-height: 1;
-//   padding: var(--spacing--small) var(--spacing);
-//   text-align: center;
-//   text-decoration: none;
-//   transition: background-color var(--duration) var(--timing);
-//   user-select: none;
-//   vertical-align: middle;
-//   white-space: nowrap;
-
-//   &:hover {
-//     background-color: $action-color--alt;
-//   }
-
-//   &:focus {
-//     outline: var(--focus-outline);
-//     outline-offset: var(--focus-outline-offset);
-//   }
-
-//   &:disabled {
-//     cursor: not-allowed;
-//     opacity: 0.5;
-//   }
-// }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
 
 

@@ -1,0 +1,84 @@
+
+// Colors
+$white: #dcdcdc;
+$gray: #333;
+$beige: #64533B;
+$dark: #1f1f1f;
+$light-brown: #32291d;
+$dark-brown: #32291d;
+$green: #76a343;  
+$dark-green: #47682c;  
+$light-green: #527634;  
+$blue: #2C2EAF;  
+$light-blue: rgba(79, 70, 229);
+$orange: rgba(79, 70, 229);
+$light-orange: rgba(79, 70, 229);
+
+// Color Sceme
+$primary-color: $beige;
+$primary-color--contrast: $dark;
+$secondary-color: $dark-brown;
+// Backgrounds
+$bg-primary: $primary-color;
+$bg-contrast: $primary-color--contrast;
+$bg-secondary: $secondary-color;
+// Button Colors
+$btn-primary: $blue;
+$btn-primary-hover: $light-blue;
+$btn-secondary: $beige;
+$btn-secondary-hover: $beige;
+// Font Colors
+$light-font: rgb(219, 219, 219);
+$dark-font: $dark-brown;
+// Typography
+$font-family: 'Crete-Round', "Calibri", sans-serif;
+// $font-family--heading: var('Quattrocento Sans');
+$font-weight--thin: 100;
+$font-weight--normal: 400;
+$font-weight--semi-bold: 600;
+$font-weight--extra-bold: 900;
+// Line heights
+$line-height: 1.5;
+$line-height--heading: 1.2;
+// Other Sizes
+$border-radius: 0.1875rem;
+$spacing: 1.5rem;
+$spacing--small: 0.75rem;
+// Borders
+$border-width: 0.0625rem;
+$border: var(--border-width) solid currentColor;
+// Focus
+$focus-outline-width: 0.1875rem;
+$focus-outline-offset: 0.125rem;
+$focus-outline: var(--focus-outline-width) solid #{$white};
+// Animations
+$duration: 150ms;
+$timing: ease;
+
+//================================================================================
+// Entrance
+//================================================================================
+
+//================================================================================
+// Lobby
+//================================================================================
+
+
+//================================================================================
+// Create
+//================================================================================
+
+
+//================================================================================
+// Room
+//================================================================================
+
+
+//================================================================================
+// Controls
+//================================================================================
+
+
+//================================================================================
+// Sidepanel
+//================================================================================
