@@ -193,7 +193,7 @@ function ColorSelect({ selectedColor, selectColor }) {
 		<div class="choose-color">
 			{colors.map((color) => (
 				<div
-					class={`piece-color ${
+					class={`piece-color type ${
 						color == selectedColor && "selected"
 					}`}
 				>

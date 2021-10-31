@@ -66,15 +66,11 @@ button,
   appearance: none;
   // background-color: m.$action-color;
   border: 0;
-  border-radius: var(m.$border-radius);
 //   color: m.$action-color--contrast;
   cursor: pointer;
   display: inline-block;
-  font-size: 1rem;
   -webkit-font-smoothing: antialiased;
 //   font-weight: 600;
-  line-height: 1;
-  padding: var(m.$spacing--small) var(m.$spacing);
   text-align: center;
   text-decoration: none;
   transition: background-color var(m.$duration) var(m.$timing);

@@ -1,20 +1,16 @@
+@use '../../master' as m; 
 .custom  {
-    // $control-bg-color: #232323;
-    $control-bg-color: #1d1711;
-    // $type-bg-color: #1F7A50;
-    // $type-bg-color: #1c3e2f;
-    $type-bg-color: #47682c;
-    $identity-bg-color: #527634;
-    $secondary-ctrl-bg-color: #32291d;
-    // $type-bg-color: #b4b187;
+    // m.$type-bg-clr: #1F7A50;
+    // m.$type-bg-clr: #1c3e2f;
 
-    background-color: $type-bg-color;
+    background-color: m.$type-bg-clr;
     padding-left: 0.5rem/* 8px */;
     padding-right: 0.5rem/* 8px */;
     padding-bottom: 0.5rem/* 8px */;
     border-radius: 0.125rem;
     margin-top: 1.25rem;
     .name {
+        font-size: m.$font-size-lg;
         padding-left: 1rem/* 16px */;
         padding-right: 1rem/* 16px */;
         padding-top: .5rem/* 16px */;
@@ -29,7 +25,8 @@
         justify-content: center;
         align-items: center;
         img {
-            height: 3.5rem;
+            
+            height: 2.8rem;
             flex-shrink: 1;
         }
     }
@@ -56,17 +53,17 @@
             // padding-left: var(--buttonPaddings,.5rem 2rem);
             // padding-right: var(--buttonPaddings,.5rem 2rem);
             // box-shadow: rgba(0, 0, 0, 0.45) 0px 3px 8px; // shadow-md
-            background-color: $control-bg-color;
+            background-color: m.$control-bg-clr;
             // color: var(--basicColor,#666463);
             color: #adb1b7;
             border: 0;
             border-radius: .125rem !important;
 
             .identity {
-                font-size: 1.6rem !important;
+                font-size: m.$font-size-lg !important;
                 width: 25%;
                 color:#f9f9f9;
-                background-color: $identity-bg-color;
+                background-color: m.$identity-bg-clr;
                 // background-color: #0b603b;
                 min-height: 100%;
                 // border-right-width: .2rem;
@@ -94,7 +91,7 @@
         .ctrl-secondary {
             // font-size: 1.4rem !important;
             // background-color: $secondary-ctrl-bg-color;
-            // background-color: $control-bg-color;
+            // background-color: m.$control-bg-clr;
             width: 30%;
             min-height: 100%;
             display: flex;
@@ -122,31 +119,32 @@
             .time {
 
                 // &.temp-disabled{
-                    // $type-bg-color: #1c3e2f;
+                    // m.$type-bg-clr: #1c3e2f;
                     // background-color: #333333;
                     // .clock {
                     //     img {
                     //         opacity: .7;
                     //     }
-                    //     background-color: $type-bg-color;
+                    //     background-color: m.$type-bg-clr;
                     // }
                     // .minutes-input {
-                    //     background-color: $type-bg-color;
+                    //     background-color: m.$type-bg-clr;
                     // }
                     // .ctrl-secondary {
-                    //     background-color: $type-bg-color;
+                    //     background-color: m.$type-bg-clr;
                     // }
                 // }
                 .minutes-input {
                     min-height: 100%;
                     width:50%;
                     // flex-grow: 1;
+                    display: flex;
                     justify-content: center;
                     text-align: center;
-                    display: inline-block;
+                    align-items: center;
                     text-align: right;
-                    display: flex;
                     cursor: text;
+
                     &.temp-disabled{
                         background-color: #333333;
                     }
@@ -357,7 +355,7 @@
             }
             .selected-opponent {
                 min-height: 50px;
-                background-color: var($control-bg-color,#dbd9d7);
+                background-color: var(m.$control-bg-clr,#dbd9d7);
                 display: inline-flex;
                 // color: var(--basicColor,#666463);
             }
