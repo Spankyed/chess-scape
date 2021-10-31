@@ -1,13 +1,9 @@
+@use '../../master' as m; 
 .pin-form-wrapper {
-
     $modal-overlay-color: #2f2f2f;
-    // $input-bg-color: #32291d;
-    // $input-bg-color: #2e261e;
-    $input-bg-color: #584736;
-    $color-cancel-bg: rgb(151, 87, 38);
-    $color-cancel-hover-bg: rgb(180, 117, 45);
 
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+    letter-spacing: m.$spacing--small;
     position: fixed;
     width: 100%;
     height: 100%;
@@ -38,14 +34,15 @@
         height:100%;
 
         .pin-form {
+            overflow: hidden;
             z-index: 11;
             display:flex;
             flex-direction: column;
             justify-content: start;
             width: fit-content;
             flex-basis: 13rem;
-            border-radius: 0.125rem;
-            box-shadow: rgba(0, 0, 0, 0.45) 0px 5px 10px; // shadow-lg
+            border-radius: m.$border-radius;
+            box-shadow: m.$shadow-lg;
 
             .pin-input-wrapper {   
                 display: flex;
@@ -55,12 +52,10 @@
                 position: relative;
                 justify-content: center;
                 // transition: all 0.35s;
-                // $input-bg-color: #2c2824;
-                background-color: $input-bg-color;
+                background-color: m.$darker;
                 .identity {
-                    // $identity-bg-color: #2c3a1f;
-                    // $identity-bg-color: #147a40;
-                    $identity-bg-color: #709B50;
+                    opacity: .8;
+                    $identity-bg-color: m.$dark;
                     width: 25%;
                     min-width: 3.5rem;
                     background-color: $identity-bg-color;
@@ -98,7 +93,8 @@
                 .pin-input {
                     align-items: center;
                     // width: 27.5%;
-                    padding-bottom: 0.4rem;
+                    padding-bottom: m.$spacing--small;
+                    padding-top: m.$spacing--small;
 
                     &.incorrect{
                         // red error input border
@@ -160,22 +156,21 @@
                     // border-color: #2C2EAF;
                     // border-left:0;
                     color: #fff;
-                    background-color: #2C2EAF;
-                    letter-spacing: 5px;
+                    background-color: m.$create-bg-clr;
                     &.processing{
                         -webkit-text-security: disc;
                     }
                     &:hover{
-                        background-color: #4446e6;
+                        background-color: m.$create-hover-bg-clr;
                     }
                 }
                 .cancel {
                     margin-right: 0rem/* 16px */;
                     background: none;
                     letter-spacing: 5px;
-                    background-color: $color-cancel-bg;
+                    background-color: m.$cancel-bg-clr;
                     &:hover{
-                        background-color: $color-cancel-hover-bg;
+                        background-color: m.$cancel-hover-bg-clr;
                         // background-color: rgb(114, 114, 114);
                     }
                 }
