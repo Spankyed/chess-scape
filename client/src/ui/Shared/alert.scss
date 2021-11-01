@@ -68,10 +68,22 @@ $border-color: #bdbdbd;
     }
 }
 
-
 //  BREAKPOINTS 
-@media (min-width: 768px) {
+@media (min-width: 600px) {
     .alert {
         // width: auto;
+    }
+    .lobby {
+        .alert {
+            margin-left: .5rem !important;
+        }
+    }
+}
+//   'lg': '1024px',
+@media (min-width: 1024px) {
+    .lobby {
+        .alert {
+            margin-left:auto !important;
+        }
     }
 }
