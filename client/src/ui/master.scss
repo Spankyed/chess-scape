@@ -1,7 +1,10 @@
 
 // Colors
 $white: #dcdcdc;
+$light-gray: #a7a7a7;
+$light-gray-blue: #b8bdc6;
 $gray: #333;
+$blue-gray: rgba(107,114,128,.2);
 $beige: #64533B;
 $brown: #40382c;;
 $dark-brown: #32291d;
@@ -38,6 +41,7 @@ $dark-font: $dark-brown;
 $font-family: 'Crete-Round', "Calibri", sans-serif;
 // $font-family--heading: var('Quattrocento Sans');
 $font-size: 1.4rem;
+$font-size-sm: 1.1rem;
 $font-size-lg: 1.6rem;
 $font-weight--thin: 100;
 $font-weight--normal: 400;
@@ -52,8 +56,10 @@ $spacing: 1.5rem;
 $spacing--small: 0.75rem;
 $spacing--xs: 0.25rem;
 // Borders
-$border-width: 0.0625rem;
-$border: var(--border-width) solid currentColor;
+$border-width: 0.0425rem;
+// $border: var(--border-width) solid currentColor;
+$border: $border-width solid $blue-gray;
+
 // Focus
 $focus-outline-width: 0.1875rem;
 $focus-outline-offset: 0.125rem;

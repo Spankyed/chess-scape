@@ -113,7 +113,7 @@ $text-color: #D4D3D3;
 				transform: translate(-100%, 0%);
 				// left: -100%;
 				top: 10%;
-				border: 1px solid rgba(107,114,128,.2);
+				border: m.$border;
 				pointer-events: auto;
 				background-color: $controls-bg-color;
 				color: rgba(255, 255, 255, 1);

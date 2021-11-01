@@ -6,7 +6,7 @@
           filter: grayscale(100%);
         // background-color: rgba(200,100,0,.5);
         pointer-events: none;
-        color: #b8bdc6 !important;
+        color: m.$light-gray-blue !important;
         ::placeholder{
             color: #c9c9c9
         }

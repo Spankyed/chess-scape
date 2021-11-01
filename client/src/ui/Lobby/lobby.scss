@@ -88,7 +88,7 @@
             padding-left: 1rem;
             padding-right: 1rem;
             background-color: m.$table-bg-clr;
-            border: 1px solid rgba(107,114,128,.2);
+            border: m.$border;
             border-radius: m.$border-radius;
             .table-empty {
                 position:absolute;
