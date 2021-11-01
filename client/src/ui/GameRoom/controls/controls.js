@@ -86,17 +86,6 @@ export default (initial) => ({
 									toggleSidePanel,
 								}}
 							/>
-
-							{
-								// todo: hide btn on mobile
-								/* sidePanel button */
-							}
-							<button
-								onclick={(_) => toggleSidePanel()}
-								class="control-btn"
-							>
-								<img src="./assets/controls/sidePanel.svg"></img>
-							</button>
 						</div>
 					</div>
 				</div>

@@ -46,7 +46,7 @@ export default (initial) => ({
 
 			const openPanel = (tab) => () => {
 				toggleMenu();
-				toggleSidePanel(tab);
+				toggleSidePanel({ tab, isOpen: true });
 			};
 
 			const prompt = (method) => () => {

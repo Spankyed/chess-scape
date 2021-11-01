@@ -1,3 +1,4 @@
+@use '../../master' as m; 
 @import './chat/chat.scss'; 
 @import './moves/moves.scss'; 
 @import './media/media.scss'; 
@@ -10,134 +11,160 @@ $text-color: #D4D3D3;
 
 
 .side-panel { 
-    color: $text-color;
-    --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    // background-color: #989695;
-    z-index: 100;
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    transition: all .25s ease-in-out;
-    transform: translateX(0);
-    // width: 25%;
-    // transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
-    &.panel-hidden{
-      transform: translateX(100%) !important;
-      // display:none;
-        .bg-overlay  {
-          transform: translateX(100%) !important;
-          opacity: 0; 
-        }
-        // transform: translateX(25vw);
-    }
-    .bg-overlay  {
-      background-color: rgba(17, 24, 39, 1);
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      top: 0px;
-      opacity: 0.5; // remove and  set bg color opacity
-      display: block;
-      transform: translateX(0);
-      transition: all .1s ease-in-out, opacity 2s ease;
-    }
-    .panel-wrapper {
-        // background-color: #989695;
-        pointer-events: none;
-        position: absolute;
-        float:right;
-        width: 70%;
-        height: 100%;
-        right: 0%;
-        top: 0%;
-        display: flex;
-        flex-direction: column;
-        .tabs{
-          pointer-events: none;
-          justify-content: flex-start;
-          display: flex;
-          .tab{
-            // @apply  mt-1 bg-white inline-block py-2 px-4 font-semibold text-blue-600 hover:text-blue-800 uppercase;
-            cursor: pointer;
-            pointer-events: auto;
-            // background-color:#989695;
-            background-color: $tabs-color;
-            margin-right: 0.25rem/* 4px */;
-            margin-top: 0.25rem/* 4px */;
-            padding-top: 0.5rem/* 8px */;
-            padding-bottom: 0.5rem/* 8px */;
-            padding-left: 1rem/* 16px */;
-            padding-right: 1rem/* 16px */;
-            // font-weight: 600;
-            color: $text-color;
-            // ------
-            // background-color: rgba(255, 255, 255, 1;
-            display: inline-block;
-            text-transform: uppercase;
-            &:hover {
-              background-color: $panel-color;
-            }
-            &.active {
-              background-color: $panel-color;
-              color: #fff;
-              // color: rgba(30, 64, 175, 1);
-            }
-          }
-        }
-        .content-wrapper {
-          pointer-events: auto;
-          // background-color: #989695;
-          background-color: $panel-color;
-          height: 100%;
-          width: 100%;
-          min-height: 0;
-          flex: 1 0 0;
-          .panel-section{
-              overflow: hidden;
-              display: none;
-            &.visible {
-              display:initial;
-            }
-          }
-      }
-    }
+	color: $text-color;
+	--tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+	box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+	// background-color: #989695;
+	z-index: 100;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	transition: all .25s ease-in-out;
+	transform: translateX(0);
+	// width: 25%;
+	// transition: transform 1s, width 1s; // width only needs to transition 1/4 (25%) as long as translationX does
+	&.panel-hidden{
+		transform: translateX(100%) !important;
+		// display:none;
+		.bg-overlay  {
+			transform: translateX(100%) !important;
+			opacity: 0; 
+		}
+		// transform: translateX(25vw);
+	}
+	.bg-overlay  {
+		background-color: rgba(17, 24, 39, 1);
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0px;
+		opacity: 0.5; // remove and  set bg color opacity
+		display: block;
+		transform: translateX(0);
+		transition: all .1s ease-in-out, opacity 2s ease;
+	}
+	.panel-wrapper {
+		// background-color: #989695;
+		pointer-events: none;
+		position: absolute;
+		float:right;
+		width: 70%;
+		height: 100%;
+		right: 0%;
+		top: 0%;
+		display: flex;
+		flex-direction: column;
+		.tabs{
+			pointer-events: none;
+			justify-content: flex-start;
+			display: flex;
+			.tab{
+			// @apply  mt-1 bg-white inline-block py-2 px-4 font-semibold text-blue-600 hover:text-blue-800 uppercase;
+			cursor: pointer;
+			pointer-events: auto;
+			// background-color:#989695;
+			background-color: $tabs-color;
+			margin-right: 0.25rem/* 4px */;
+			margin-top: 0.25rem/* 4px */;
+			padding-top: 0.5rem/* 8px */;
+			padding-bottom: 0.5rem/* 8px */;
+			padding-left: 1rem/* 16px */;
+			padding-right: 1rem/* 16px */;
+			// font-weight: 600;
+			color: $text-color;
+			// ------
+			// background-color: rgba(255, 255, 255, 1;
+			display: inline-block;
+			text-transform: uppercase;
+			&:hover {
+				background-color: $panel-color;
+			}
+			&.active {
+				background-color: $panel-color;
+				color: #fff;
+				// color: rgba(30, 64, 175, 1);
+			}
+			}
+		}
+		.content-wrapper {
+			position: relative;
+			pointer-events: auto;
+			// background-color: #989695;
+			background-color: $panel-color;
+			height: 100%;
+			width: 100%;
+			min-height: 0;
+			flex: 1 0 0;
+			.panel-section{
+				overflow: hidden;
+				display: none;
+				&.visible {
+					display:initial;
+				}
+			}
+			.panel-toggle {
+				position: absolute;
+				transform: translate(-100%, 0%);
+				// left: -100%;
+				top: 10%;
+				border: 1px solid rgba(107,114,128,.2);
+				pointer-events: auto;
+				background-color: $controls-bg-color;
+				color: rgba(255, 255, 255, 1);
+				padding: 0.5rem/* 8px */;
+				padding-right: 0rem;
+				border-radius: $border-radius;
+				// box-shadow: m.$shadow-lg;
+				outline: 2px solid transparent;
+				outline-offset: 2px;
+				// margin-right: 0.25rem/* 4px */;
+				// margin-bottom: 0.25rem/* 4px */;
+				transition: all .25s ease-in-out;
+				img {
+					max-width: 3.5rem;
+					height: 3.5rem;
+				}
+				&.close {
+					// padding-right: 0rem;
+					padding-left: 0.25rem/* 16px */;
+					-webkit-transform: scaleX(-1) translate(100%, 0%);
+  					transform: scaleX(-1) translate(100%, 0%);
+				}
+			}
 
+		}
+	}
 }
-
-
-
-
 
 
 //   'sm': '640px',
-  // => @media (min-width: 640px) { ... }
+// => @media (min-width: 640px) { ... }
 
 //   'md': '768px',
-  // => @media (min-width: 768px) { ... }
+// => @media (min-width: 768px) { ... }
 
 //   'lg': '1024px',
 @media (min-width: 1024px) {
-  .panel-wrapper { 
-    position: static !important;
-    width: 100% !important;
+.panel-wrapper { 
+position: static !important;
+width: 100% !important;
 
-  }
-  .side-panel { 
-      width: 25%;
-      position: relative;
-      background-color: transparent;
-      &.panel-hidden{
-        width: 0%;
-      }
-  }
-  .bg-overlay {
-      display: none !important;
-  }
+}
+.side-panel { 
+	width: 25%;
+	position: relative;
+	background-color: transparent;
+	&.panel-hidden{
+	width: 0%;
+	}
+}
+.bg-overlay {
+	display: none !important;
+}
 }
 
 //   'xl': '1280px',
-  // @media (min-width: 1280px) {}
+// @media (min-width: 1280px) {}
 //   '2xl': '1536px',
-  // => @media (min-width: 1536px) { ... }
+// => @media (min-width: 1536px) { ... }

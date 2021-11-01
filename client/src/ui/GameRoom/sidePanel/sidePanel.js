@@ -8,52 +8,91 @@ const chat = Chat()
 const moves = Moves()
 const media = Media()
 
-export default initial => ({
-	state: { 
+export default (initial) => ({
+	state: {
 		chat: chat.state,
 		moves: moves.state,
 		media: media.state,
 		isVisible: false,
-		currTab: "moves"
+		currTab: "moves",
 	},
 
 	actions: {
 		chat: chat.actions,
 		moves: moves.actions,
 		media: media.actions,
-		hideSidePanel: () =>({isVisible: false}), 
-		changeTab: tab => state => ({ currTab: tab })
+		changeTab: (tab) => (state) => ({ currTab: tab }),
+		hideSidePanel: () => ({ isVisible: false }),
+		toggleSidePanel:
+			({ tab, isOpen } = {}) =>
+			(state) => ({
+				isVisible: isOpen || !state.isVisible,
+				...(tab ? { currTab: tab } : {}),
+			}),
 	},
 
-	view: (state, actions) => ({roomID, alert}) => {
-		const {currTab} = state
-		const ChatView = chat.view(state.chat, actions.chat)
-		const MovesView = moves.view(state.moves, actions.moves)
-		const MediaView = media.view(state.media, actions.media)
-		const isCurrTab = tab => currTab === tab
-		return (
-			<div class={`side-panel ${ !state.isVisible && 'panel-hidden' }`}>
-				<div onclick={actions.hideSidePanel} class="bg-overlay"></div>
-				<div class="panel-wrapper">
-					{/* Tabs */}
-					<Tabs currTab={currTab} changeTab={actions.changeTab} />
+	view:
+		(state, actions) =>
+		({ roomID, alert, isLoading }) => {
+			const { currTab } = state;
+			const { toggleSidePanel } = actions;
+			const ChatView = chat.view(state.chat, actions.chat);
+			const MovesView = moves.view(state.moves, actions.moves);
+			const MediaView = media.view(state.media, actions.media);
+			const isCurrTab = (tab) => currTab === tab;
+			return (
+				!isLoading ?
+				<div
+					class={`side-panel ${
+						!state.isVisible  && "panel-hidden"
+					}`}
+				>
+					<div
+						onclick={actions.hideSidePanel}
+						class="bg-overlay"
+					></div>
+					<div class="panel-wrapper">
+						{/* Tabs */}
+						<Tabs currTab={currTab} changeTab={actions.changeTab} />
 
-					<div class='content-wrapper'>
-						<div class={`panel-section ${isCurrTab('chat') && 'visible'}`}>
-							<ChatView/>
-						</div>
-						<div class={`panel-section ${isCurrTab('moves') && 'visible'}`}>
-							<MovesView alert={alert}/>
-						</div>
-						<div class={`panel-section ${isCurrTab('media') && 'visible'}`}>
-							<MediaView alert={alert}/>
+						<div class="content-wrapper">
+							<div
+								class={`panel-section ${
+									isCurrTab("chat") && "visible"
+								}`}
+							>
+								<ChatView />
+							</div>
+							<div
+								class={`panel-section ${
+									isCurrTab("moves") && "visible"
+								}`}
+							>
+								<MovesView alert={alert} />
+							</div>
+							<div
+								class={`panel-section ${
+									isCurrTab("media") && "visible"
+								}`}
+							>
+								<MediaView alert={alert} />
+							</div>
+
+							<button
+								onclick={(_) => toggleSidePanel()}
+								class={`panel-toggle ${
+									state.isVisible && "close"
+								}`}
+							>
+								<img src="./assets/controls/panel-open.svg"></img>
+							</button>
 						</div>
 					</div>
 				</div>
-			</div>	
-		);
-	}
-})
+				: ''
+			);
+		},
+});
 
 function Tabs({currTab, changeTab}){
 	const tabs = ['chat','moves','media']

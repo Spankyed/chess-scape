@@ -24,7 +24,6 @@ const initialState = {
 	sidePanel: sidePanel.state,
 	sidePanelOpen: false,
 	isHost: false,
-	isLoading: true,
 	isFetching: false,
 	initialized: false,
 	// matchStarted: false,
@@ -43,18 +42,7 @@ export default (initial) => ({
 		alert: alert.actions,
 		loader: loader.actions,
 		setLoaderText: (text) => ({ loaderText: text }),
-		toggleSidePanel:
-			(tab, isOpen) =>
-			({ sidePanel }) => {
-				let newState = {
-					sidePanel: {
-						...sidePanel,
-						isVisible: isOpen || !sidePanel.isVisible,
-					},
-				};
-				if (tab) newState.sidePanel.currTab = tab;
-				return newState;
-			},
+
 
 		updateRoom: (room) => () => ({ room }),
 		fetchRoom: (roomID) => (_, actions) => {
@@ -186,14 +174,14 @@ export default (initial) => ({
 			return (
 				<div class="game-room">
 					{/* { !state.loader.removed && */}
-						<LoaderView alert={actions.alert} />
+					<LoaderView alert={actions.alert} />
 					{/* } */}
 					<div class="game-area">
 						<ControlsView
 							roomID={roomID}
 							leaveRoom={leave}
 							roomState={state}
-							toggleSidePanel={actions.toggleSidePanel}
+							toggleSidePanel={actions.sidePanel.toggleSidePanel}
 							alert={actions.alert}
 						/>
 						<GameView
@@ -206,7 +194,11 @@ export default (initial) => ({
 						<AlertView />
 					</div>
 
-					<SidePanelView roomID={roomID} alert={actions.alert} />
+					<SidePanelView
+						roomID={roomID}
+						isLoading={state.loader.isLoading}
+						alert={actions.alert}
+					/>
 				</div>
 			);
 		},
