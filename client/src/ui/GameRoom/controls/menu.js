@@ -41,7 +41,6 @@ export default (initial) => ({
 				gameOver,
 				game,
 				closed: roomClosed,
-				playerColor,
 			} = roomState;
 
 			const openPanel = (tab) => () => {
@@ -186,7 +185,7 @@ export default (initial) => ({
 								<span>Play Media</span>
 							</div>
 							<div
-								onclick={() => flipCamera(playerColor)}
+								onclick={() => flipCamera(game.playerColor)}
 								class="menu-item"
 								role="menu-item"
 								id="menu-item-4"

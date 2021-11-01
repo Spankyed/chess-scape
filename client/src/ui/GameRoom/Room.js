@@ -30,7 +30,6 @@ const initialState = {
 	gameOver: false,
 	matchInfo: null,
 	closed: false,
-	// playerColor: null,
 };
 
 export default (initial) => ({
