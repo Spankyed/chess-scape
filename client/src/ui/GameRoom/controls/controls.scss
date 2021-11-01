@@ -57,10 +57,9 @@ $border-radius: 0.125rem;
         --text-color: #dadce1;
         --nav-size: 60px;
         --border: 1px solid #474a4d;
-
-
         --speed: 500ms; 
         position: relative;
+        z-index: 99;
         .menu {
           align-items: center;
           justify-content: center;

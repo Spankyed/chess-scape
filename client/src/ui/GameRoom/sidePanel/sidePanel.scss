@@ -37,6 +37,7 @@ $text-color: #D4D3D3;
 		// transform: translateX(25vw);
 	}
 	.bg-overlay  {
+		z-index: 97;
 		background-color: rgba(17, 24, 39, 1);
 		position: absolute;
 		height: 100%;
@@ -107,6 +108,7 @@ $text-color: #D4D3D3;
 				}
 			}
 			.panel-toggle {
+				z-index:98;
 				position: absolute;
 				transform: translate(-100%, 0%);
 				// left: -100%;
