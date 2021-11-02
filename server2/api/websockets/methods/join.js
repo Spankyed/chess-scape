@@ -6,7 +6,12 @@ const clientsTable = process.env.clientsTableName;
 const matchesTable = process.env.matchesTableName;
 const roomsTable = process.env.roomsTableName;
 
-module.exports = async function ({ clientID, roomID}, {username}) {
+module.exports = async function (
+	{ clientID, roomID },
+	{ username },
+	connection,
+	pinValidated
+) {
 	try {
 		const room = await Dynamo.get(roomID, roomsTable);
 
@@ -16,9 +21,9 @@ module.exports = async function ({ clientID, roomID}, {username}) {
 		}
 
 		const isAngel = clientID == "angel";
-		const isHost = room.host == clientID
+		const isHost = room.host == clientID;
 
-		if (room.gameOptions.pin && !isHost && !isAngel) {
+		if (room.gameOptions.pin && !pinValidated && !isHost && !isAngel) {
 			return Responses._400({ error: "Room is private" });
 		}
 
@@ -29,29 +34,31 @@ module.exports = async function ({ clientID, roomID}, {username}) {
 			updates: { room: roomID },
 		});
 
-		const [group, updatedRoom] = (await updateRoom(room, clientID)) || [];
+		const [group, updatedRoom] =
+			(await updateRoom(room, clientID)) || [];
 
 		const messageRecipients = [
 			sendMessageToRoom(roomID, {
 				method: "join",
 				room: sanitizeRoom(updatedRoom),
+				// match: { ...match, lastMove: undefined, moves: [] },
 				group,
 				username,
 			}),
 			// only message lobby if player joined, not spectator
 			...(group == "players"
 				? [
-						sendMessageToLobby({
-							method: "join",
-							room: sanitizeRoom(updatedRoom),
-						}),
+					sendMessageToLobby({
+						method: "join",
+						room: sanitizeRoom(updatedRoom),
+					}),
 				  ]
 				: []),
 		];
-		
+
 		Promise.all(messageRecipients);
 	} catch (err) {
-		console.error(err)
+		console.error(err);
 		return Responses._400({ error: err.message });
 	}
 
@@ -60,50 +67,48 @@ module.exports = async function ({ clientID, roomID}, {username}) {
 	return Responses._200({});
 };
 
-function playerJoinedPrior(room, clientID) {
-	return Object.values(room.players).some(
-		(p) => p.clientID == clientID
-	);
-}
 
 async function updateRoom(room, clientID){
 	const isHost = room.host == clientID;
 	const isAngel = clientID == "angel";
 	const isVsAngel = room.gameOptions.selectedOpp == "angel";
-	const eligiblePlayer = isHost || !isVsAngel || isAngel;
+	const eligiblePlayer = !isVsAngel || isAngel;
 	const playerColors = Object.keys(room.players);
 	const group = playerColors.length < 2 ? "players" : "spectators";
-	const alreadyPlayer = playerJoinedPrior(room, clientID);
-
-	if (alreadyPlayer) {
-		return ["players", room]
+	const alreadyPlayer = Object.values(room.players).some(
+		(p) => p.clientID == clientID
+	);
+	
+	if (isHost || alreadyPlayer) {
+		return ["players", room];
 	} else if (group === "players" && eligiblePlayer) {
 		const joinedColor = playerColors[0] == "white" ? "black" : "white";
-		const [{ Attributes }] = await Promise.all([
-			Dynamo.update({
-				TableName: roomsTable,
-				primaryKey: "ID",
-				primaryKeyValue: room.ID,
-				updates: {
-					[`players.${joinedColor}`]: { clientID },
-				},
-			}),
-			Dynamo.update({
-				TableName: matchesTable,
-				primaryKey: "ID",
-				primaryKeyValue: room.ID,
-				updates: {
-					[`players.${joinedColor}`]: {
-						clientID,
-						ready: false,
-						committed: false,
+		const [{ Attributes: updatedRoom }] =
+			await Promise.all([
+				Dynamo.update({
+					TableName: roomsTable,
+					primaryKey: "ID",
+					primaryKeyValue: room.ID,
+					updates: {
+						[`players.${joinedColor}`]: { clientID },
 					},
-				},
-			}),
-		]);
-		return [group, Attributes];
+				}),
+				Dynamo.update({
+					TableName: matchesTable,
+					primaryKey: "ID",
+					primaryKeyValue: room.ID,
+					updates: {
+						[`players.${joinedColor}`]: {
+							clientID,
+							ready: false,
+							committed: false,
+						},
+					},
+				}),
+			]);
+		return [group, updatedRoom];
 	} else {
-		const { Attributes } = await Dynamo.update({
+		const { Attributes: updatedRoom } = await Dynamo.update({
 			TableName: roomsTable,
 			primaryKey: "ID",
 			primaryKeyValue: room.ID,
@@ -111,12 +116,12 @@ async function updateRoom(room, clientID){
 				[`spectators.${clientID}`]: { clientID, watching: true },
 			},
 		});
-		return [group, Attributes];
+		return [group, updatedRoom];
 	}
 }
 
 function sanitizeRoom(room) {
-	if (!room) return
+	if (!room) return null;
 	return {
 		...room,
 		chat: undefined,
