@@ -41,18 +41,19 @@ function setMessageHandlers(newHandlers) {
 async function createConnection() {
 	const notConnected = !connected &&
 		connection?.ws?.readyState != 0 && connection?.ws?.readyState != 1;
-
-	connection = notConnected ? new Sockette(baseWSUrl, {
-		timeout: 5e3,
-		// maxAttempts: 4,
-		onopen,
-		onclose,
-		onmessage,
-		onreconnect: (e) => console.log("Reconnecting..."), // todo refresh room list here instead on idleReconnect
-		onmaximum: (e) => console.log("Stop Attempting!", e),
-		onerror: (e) => console.log("WS Error:", e),
-		protocols: TOKEN,
-	}) : connection;
+	const connectionURL = baseWSUrl + "/?TOKEN=" + TOKEN;
+	connection = notConnected
+		? new Sockette(connectionURL, {
+				timeout: 5e3,
+				// maxAttempts: 4,
+				onopen,
+				onclose,
+				onmessage,
+				onreconnect: (e) => console.log("Reconnecting..."), // todo refresh room list here instead on idleReconnect
+				onmaximum: (e) => console.log("Stop Attempting!", e),
+				onerror: (e) => console.log("WS Error:", e),
+		  })
+		: connection;
 
 	function onopen(e) {
 		connected = true;

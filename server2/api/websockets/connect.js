@@ -23,8 +23,7 @@ const handler = async (event) => {
 
 	const CLIENT = event.client; // ! input when called from ./message.js, srs problem if user can smuggle this param into event
 
-	// todo use route.request.querystring.TOKEN instead of sec-webSocket-protocol header
-	const TOKEN = event.headers && event.headers["Sec-WebSocket-Protocol"]; // ! token req to update a client's connection
+	const { TOKEN } = event.queryStringParameters;
 	const [client] = CLIENT ? [CLIENT] : await findClient(TOKEN);
 	if (!client || !client.ID) {
 		await sendMessage(
