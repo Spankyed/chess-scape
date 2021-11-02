@@ -41,24 +41,21 @@ export default (initial) => ({
 		alert: alert.actions,
 		loader: loader.actions,
 		setLoaderText: (text) => ({ loaderText: text }),
-
-
 		updateRoom: (room) => () => ({ room }),
 		fetchRoom: (roomID) => (_, actions) => {
 			Api.getRoom(roomID).then(actions.completeFetch);
 			return { isFetching: true };
 		},
 		completeFetch:
-			({ room, match }) =>
+			({ room, match } = {}) =>
 			(_, actions) => {
-				if (!room || !match)
+				if (!room || !match) // todo go back to lobby
 					return { isFetching: false, initialized: true };
 				const isHost = room.host == Api.getClientID();
 				const players = Object.entries(room.players);
 				const [color, player] =
 					players.find((p) => p[1].clientID == Api.getClientID()) ||
 					[];
-
 				if (!match.matchStarted) {
 					if (players.length == 1) {
 						isHost && actions.alert.show(alert.hostAlert);
@@ -67,6 +64,7 @@ export default (initial) => ({
 					}
 				} else {
 					Api.sync();
+					// instead server should automatically send message to sync client when fetching room if matchStarted
 				}
 
 				if (match.finished) {
@@ -82,7 +80,7 @@ export default (initial) => ({
 
 				actions.game.setPlayer({
 					info: setup || {},
-					isSceneSetup: !_.loader.removed,
+					isSceneSetup: _.loader.removed,
 				});
 
 				return {
@@ -108,6 +106,7 @@ export default (initial) => ({
 				cleanupHandlers();
 				alert.closeAll();
 				// ! todo update DB client.room to 'lobby' otherwise wont receive join msgs
+				// ^ should happen when user enters lobby
 				return initialState;
 			},
 	},

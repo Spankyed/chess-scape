@@ -4,7 +4,7 @@ import { delay } from "nanodelay";
 // abort|abandon|resign|draw
 export default {
 	abort: (callback) => ({
-		id:'abort',
+		id: "abort",
 		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
@@ -25,7 +25,7 @@ export default {
 		},
 	}),
 	abandon: (callback) => ({
-		id:'abandon',
+		id: "abandon",
 		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
@@ -62,38 +62,58 @@ export default {
 			},
 		},
 	},
-	offerDraw: {
-		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
-		role: "game",
-		// icon: "./assets/sidePanel/controls/yt_play.svg",
-		heading: "Draw",
-		message: "Please confirm draw offer.",
-		actions: {
-			confirm: {
-				text: "Draw",
-				handler: Api.offerDraw,
+	// offerDraw: {
+	// 	// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
+	// 	role: "game",
+	// 	// icon: "./assets/sidePanel/controls/yt_play.svg",
+	// 	heading: "Draw",
+	// 	message: "Please confirm draw offer.",
+	// 	actions: {
+	// 		confirm: {
+	// 			text: "Draw",
+	// 			handler: Api.offerDraw,
+	// 		},
+	// 		default: {
+	// 			text: "Deny",
+	// 			handler: () => {},
+	// 		},
+	// 	},
+	// },
+	offered(type) {
+		const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+		const message =
+			type == "draw"
+				? "Opponent would like to draw the match."
+				: "Opponent would like a rematch";
+		return {
+			// icon: "./assets/create/host.svg",
+			id: type,
+			role: "none",
+			heading: `${capitalize(type)} Offered`,
+			message,
+			actions: {
+				confirm: {
+					text: "Accept",
+					handler: (bool, persist) => {
+						// setShare({ bool, persist });
+						Api[type](true);
+					},
+				},
+				default: {
+					text: "Deny",
+					handler: (bool, persist) => {
+						Api[type](false);
+					},
+				},
 			},
-			default: {
-				text: "Deny",
-				handler: () => {},
-			},
-		},
+		};
 	},
-	draw: {
-		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
-		role: "game",
-		// icon: "./assets/sidePanel/controls/yt_play.svg",
-		heading: "Draw",
-		message: "Your opponent offered a draw.",
-		actions: {
-			confirm: {
-				text: "Accept",
-				handler: Api.end.bind(null, ["draw"]),
-			},
-			default: {
-				text: "Deny",
-				handler: () => {},
-			},
-		},
-	},
+	onRematch: {
+		// icon: "./assets/create/host.svg",
+		id: "onRematch",
+		role: "none",
+		heading: "Rematch Agreed",
+		message: "A new match will begin shortly.",
+		time: 300
+	}
 };

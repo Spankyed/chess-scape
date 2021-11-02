@@ -19,43 +19,50 @@ const Scene = new class {
         // this.onReady = _ => {};
         this.assetsManager;
     }
-    async setupGame(canvas, actions, roomID){
-		// todo: add playerColor arg
-		if (!canvas) console.warn("No canvas found");
-		// this.uiActions = actions;
-		let engine = new BABYLON.Engine(canvas, true);
-		let scene = SceneManager.CreateScene(engine, canvas, true);
-		engine.loadingScreen = {
-			displayLoadingUI: actions.loader.showLoader,
-			hideLoadingUI: actions.loader.hideLoader,
-		};
-		engine.displayLoadingUI();
-		// this.canvas = canvas
-		scene.manager.setEnv(canvas);
-		// let board = new Board(this, scene, canvas); // dont use new
-		let board = Board(this, scene, canvas); // dont use new
-		let game = new Game(this, roomID);
-		let [pieces, piecesMap] = await loadPieces(scene);
-		board.mapPiecesToSquares(pieces);
-		// this.modelsLoaded = true;
-		engine.hideLoadingUI();
-		// delay(200).then(_=> engine.hideLoadingUI());
+	async setupGame({canvas, actions, roomID}) {
+		try {
+			// todo: add playerColor arg
+			if (!canvas) console.warn("No canvas found");
+			// this.uiActions = actions;
+			let engine = new BABYLON.Engine(canvas, true);
+			let scene = SceneManager.CreateScene(engine, canvas, true);
+			engine.loadingScreen = {
+				displayLoadingUI: actions.loader.showLoader,
+				hideLoadingUI: actions.loader.hideLoader,
+			};
+			engine.displayLoadingUI();
+			// this.canvas = canvas
+			scene.manager.setEnv(canvas);
+			// let board = new Board(this, scene, canvas); // dont use new
+			let board = Board(this, scene, canvas); // dont use new
+			let game = new Game(this, roomID);
+			let [pieces, piecesMap] = await loadPieces(scene);
+			board.mapPiecesToSquares(pieces);
+			// this.modelsLoaded = true;
+			engine.hideLoadingUI();
+			// delay(200).then(_=> engine.hideLoadingUI());
 
-		Object.assign(this, {
-			canvas,
-			engine,
-			scene,
-			manager: scene.manager,
-			_game: game,
-			_board: board,
-			_pieces: piecesMap,
-			uiActions: actions,
-		});
+			Object.assign(this, {
+				canvas,
+				engine,
+				scene,
+				manager: scene.manager,
+				_game: game,
+				_board: board,
+				_pieces: piecesMap,
+				uiActions: actions,
+			});
 
-		window.interact = { engine: engine, scene: this, game, board };
+			window.interact = { engine: engine, scene: this, game, board };
 
-		engine.runRenderLoop((_) => scene.render()); // todo: manually render loop scene updates with xstate activities?
-		// this.onReady()
+			engine.runRenderLoop((_) => scene.render()); // todo: manually render loop scene updates with xstate activities?
+			// this.onReady()
+
+			return scene
+		} catch (err) {
+			console.warn("Issue setting up scene");
+			console.error(err);
+		}
 	}
 }
 
