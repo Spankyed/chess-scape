@@ -4,6 +4,7 @@ const { sendMessage } = require("../common/websocket/message");
 const { withHooks } = require("../common/hooks");
 const { authorize } = require("../common/authorize");
 const methods = require("./methods");
+const connect = require("./connect");
 
 const clientsTable = process.env.clientsTableName;
 
@@ -11,32 +12,40 @@ const handler = async (event) => {
 	const {
 		connectionId: connectionID,
 		domainName,
-		stage
+		stage,
 	} = event.requestContext;
 	const connection = {
 		connectionID,
 		domainName,
-		stage
-	}
+		stage,
+	};
 	const message = event.body;
 	const { clientID, TOKEN, method } = message;
-	const [isAuthorized, client] = await authorize(clientID, TOKEN, connectionID);
+
+	const [isAuthorized, client] = await authorize(
+		clientID,
+		TOKEN,
+		connectionID
+	);
+
+	const sameConnection = client.connectionID === connectionID;
+	const shouldUpdate = !sameConnection || !client.connection.connected;
+	if (shouldUpdate) connect.handler({ ...event, client });
 
 	console.log(`Message [${method}] from [${clientID}]`, {
 		message,
 		isAuthorized,
 		client,
 	});
-	
+
 	if (!isAuthorized) {
-		console.warn(`Unauthorized message[${method}] from [${clientID}] token[${TOKEN}]`)
-		await sendMessage(
-			connection,
-			{ method: "unauthorize" }
+		console.warn(
+			`Unauthorized message[${method}] from [${clientID}] token[${TOKEN}]`
 		);
+		await sendMessage(connection, { method: "unauthorize" });
 		return Responses._401({ message: "Unauthorized connection" });
 	}
-	
+
 	await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",

@@ -21,8 +21,11 @@ const handler = async (event) => {
 		stage,
 	} = event.requestContext;
 
-	const TOKEN = event.headers["Sec-WebSocket-Protocol"]; // ! token req to update a client's connection
-	const [client] = await findClient(TOKEN);
+	const CLIENT = event.client; // ! input when called from ./message.js, srs problem if user can smuggle this param into event
+
+	// todo use route.request.querystring.TOKEN instead of sec-webSocket-protocol header
+	const TOKEN = event.headers && event.headers["Sec-WebSocket-Protocol"]; // ! token req to update a client's connection
+	const [client] = CLIENT ? [CLIENT] : await findClient(TOKEN);
 	if (!client || !client.ID) {
 		await sendMessage(
 			{ connectionID, domainName, stage },
