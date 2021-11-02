@@ -13,7 +13,10 @@ module.exports = async function (
 	pinValidated
 ) {
 	try {
-		const room = await Dynamo.get(roomID, roomsTable);
+		const [room, match] = await Promise.all([
+			Dynamo.get(roomID, roomsTable),
+			Dynamo.get(roomID, matchesTable)
+		]);
 
 		if (!room) {
 			// todo force client back to lobby
@@ -41,7 +44,7 @@ module.exports = async function (
 			sendMessageToRoom(roomID, {
 				method: "join",
 				room: sanitizeRoom(updatedRoom),
-				// match: { ...match, lastMove: undefined, moves: [] },
+				match: { ...match, lastMove: undefined, moves: [] },
 				group,
 				username,
 			}),

@@ -125,11 +125,11 @@ export default (initial) => ({
 			const AlertView = alert.view(state.alert, actions.alert);
 			const LoaderView = loader.view(state.loader, actions.loader);
 
-			const onJoin = ({ room, group, username }) => {
+			const onJoin = ({ room, match, group, username }) => {
 				if (
 					group == "players" &&
 					Object.keys(room.players).length == 2 &&
-					!room.matchStarted
+					!match?.matchStarted
 				) {
 					actions.alert.close({ id: "host" });
 					actions.alert.show(alert.startAlert); // alert match is starting soon
