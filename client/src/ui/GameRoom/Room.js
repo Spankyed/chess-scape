@@ -76,6 +76,7 @@ export default (initial) => ({
 					playerColor: color,
 					committed: match.players[color]?.committed,
 					matchStarted: match.matchStarted,
+					colorToMove: match.colorToMove,
 				};
 				
 				actions.controls.setPlayers(room.players);

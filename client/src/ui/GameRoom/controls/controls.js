@@ -67,7 +67,12 @@ export default (initial) => ({
 						)}
 
 						{/* Player cards */}
-						<Players players={state.players} />
+						<Players
+							players={state.players}
+							gameOver={roomState.gameOver}
+							// winner={roomState.matchInfo?.winningColor}
+							game={game}
+						/>
 
 						{/* Back button */}
 						<div class="btn-wrapper left">
@@ -91,7 +96,7 @@ export default (initial) => ({
 		},
 });
 
-function Players({players, winner}) {
+function Players({ players, winner, gameOver, game }) {
 	let defaultSrc =
 		"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 	let userImg = (username) =>
@@ -99,11 +104,18 @@ function Players({players, winner}) {
 			? `https://avatars.dicebear.com/api/avataaars/${username}.svg`
 			: defaultSrc;
 	let { white, black } = players;
+	let { colorToMove, matchStarted } = game;
+	let isTurn = (color) => color === colorToMove && matchStarted && !gameOver;
+	let isWinner = (color) => color === winner;
 	// Jane⚔️Doe
 	return (
 		<div class="player-section">
-			{/* <div class={`player left ${winner === "white" && "winner"}`}> */}
-			<div class={`player left ${true && "winner"}`}>
+			{/* <div class={`player left ${isWinner("white") && "winner"}`}> */}
+			<div
+				class={`player left ${true && "winner"} ${
+					isTurn("white") && "selected"
+				}`}
+			>
 				<img class="picture" src={userImg(white?.username)} />
 				<div class="tagline left">
 					{white?.username ? (
@@ -116,7 +128,11 @@ function Players({players, winner}) {
 					{/* <div class="text-sm text-gray-300 hover:text-gray-400 cursor-pointer md:absolute pt-3 md:pt-0 bottom-0 right-0">Last Seen: <b>2 days ago</b></div> */}
 				</div>
 			</div>
-			<div class="player right">
+			<div
+				class={`player right ${isWinner("black") && "winner"} ${
+					isTurn("black") && "selected"
+				}`}
+			>
 				<div class="tagline right">
 					{black?.username ? (
 						<span class="name">{black.username}</span>

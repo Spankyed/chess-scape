@@ -35,7 +35,7 @@ module.exports = async function (
 	const validMove = appendIfChecked(engine.move(move));
 
 	if (!validMove || !isPlayersTurn || !started) {
-		await syncPlayer(connection, {moves, lastMove});
+		await syncPlayer(connection, { moves, lastMove, colorToMove });
 		return Responses._400({ message: "Out of sync" });
 	} else {
 		// todo when game over store match in completeMatchesTable
@@ -91,6 +91,7 @@ module.exports = async function (
 				clientID,
 				gameOver,
 				info,
+				colorToMove: nextColor(colorToMove),
 			}),
 		]);
 

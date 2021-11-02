@@ -20,6 +20,7 @@ const handler = async (event) => {
 			method: "sync",
 			moves: match.moves,
 			lastMove: match.lastMove,
+			colorToMove: match.colorToMove,
 		});
 	}
 

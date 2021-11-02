@@ -13,7 +13,12 @@ module.exports = async function ({ clientID, roomID }, client, connection) {
 		return Responses._400({ message: 'No moves found for sync '});
 	};
 
-	sendMessage(connection, { method: "sync", moves: match.moves , lastMove: match.lastMove });
+	sendMessage(connection, {
+		method: "sync",
+		moves: match.moves,
+		lastMove: match.lastMove,
+		colorToMove: match.colorToMove,
+	});
 
 	console.log(`Client[${clientID}] synced`);
 

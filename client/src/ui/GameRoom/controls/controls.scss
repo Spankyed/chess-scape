@@ -163,6 +163,9 @@ $border-radius: 0.125rem;
 .player-section{
   width:100%;
   .player {
+    &.selected {
+        box-shadow:#d6d6d667 0px 0px 5px 3px !important;
+    }
     background-color: $controls-bg-color;
     position: relative;
     display: flex;

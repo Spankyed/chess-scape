@@ -12,19 +12,22 @@ export default (initial) => ({
 		ready: false,
 		committed: false,
 		playerColor: null,
+		colorToMove: "white",
 		matchStarted: false,
 		type: "forever", //! hardcoded for now, replace when clocks implemented
 		infoRecieved: false,
 		creatingScene: false,
+		// finished: false, // todo remove if isnt used, or use instead of room.gameOver
 	},
 	actions: {
+		changeTurn: (colorToMove) => ({ colorToMove }),
 		createScene: ({ canvas, roomActions, roomID }) => {
 			canvas.focus();
 			Scene.setupGame({ canvas, actions: roomActions, roomID });
 			return { creatingScene: true };
 		},
-		setPlayer:
-			({ info, isSceneSetup }) =>
+		setInfo:
+			({ info = {}, isSceneSetup }) =>
 			(_, { prepareGame }) => {
 				if (isSceneSetup) prepareGame(info);
 				return {
@@ -73,7 +76,7 @@ export default (initial) => ({
 					});
 				return { matchStarted: true };
 			},
-		finish: () => () => ({ finished: true }),
+		// finish: () => () => ({ finished: true }),
 		commit: () => () => ({ committed: true }),
 		uncommit: () => () => ({ committed: false }),
 	},
@@ -90,8 +93,15 @@ export default (initial) => ({
 						id: idx,
 					})
 				);
+				actions.changeTurn(board.colorToMove);
 			};
-			const onMove = ({ move, clientID, gameOver, info }) => {
+			const onMove = ({
+				move,
+				clientID,
+				gameOver,
+				info,
+				colorToMove,
+			}) => {
 				// todo include & retrieve time left on each players clock
 				// todo calc msg-trip-time (time now - message sent)
 				// todo adjust time left by subtracting msg-trip-time
@@ -106,6 +116,8 @@ export default (initial) => ({
 					// this.game_over = true
 					// checkmate|abort|abandon|resign|draw|stalemate|time|3foldrep
 					roomActions.endGame(info);
+				} else {
+					actions.changeTurn(colorToMove);
 				}
 			};
 			const onStart = () => {
@@ -143,7 +155,8 @@ export default (initial) => ({
 			});
 
 			if (
-				state.infoRecieved && state.creatingScene &&
+				state.infoRecieved &&
+				state.creatingScene &&
 				!roomState.loader.isLoading
 			) {
 				actions.prepareGame();
