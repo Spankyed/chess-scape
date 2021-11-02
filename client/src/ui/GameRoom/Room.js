@@ -49,7 +49,8 @@ export default (initial) => ({
 		completeFetch:
 			({ room, match } = {}) =>
 			(_, actions) => {
-				if (!room || !match) // todo go back to lobby
+				if (!room || !match)
+					// todo go back to lobby
 					return { isFetching: false, initialized: true };
 				const isHost = room.host == Api.getClientID();
 				const players = Object.entries(room.players);
@@ -62,10 +63,8 @@ export default (initial) => ({
 					} else {
 						actions.alert.show(alert.startAlert);
 					}
-				} else {
-					Api.sync();
-					// instead server should automatically send message to sync client when fetching room if matchStarted
 				}
+				// if matchStarted server will auto send message to sync client when fetching room
 
 				if (match.finished) {
 					actions.endGame(match);

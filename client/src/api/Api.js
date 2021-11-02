@@ -181,11 +181,12 @@ function sendMessage(message) {
 // **  Http Request Wrappers
 // ** --------------------------------------------------------------------------
 // todo: wrap api calls in try-catch blocks?
-async function getRoom(ID) {
-	const method = "GET";
+async function getRoom(roomID) {
+	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const url = `${baseHttpUrl}/get-room/${ID}`;
-	const response = await fetch(url, { method, headers });
+	const body = JSON.stringify({ clientID, TOKEN, roomID });
+	const url = `${baseHttpUrl}/get-room`;
+	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
 		const {room, match} = await response.json();
 		console.log("%c Room ", "color:blue;", { room, match });
