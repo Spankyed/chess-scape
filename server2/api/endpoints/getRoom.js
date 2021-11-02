@@ -20,6 +20,7 @@ const handler = async (event) => {
 	const room = await Dynamo.get(ID, roomsTable);
 	const match = await Dynamo.get(ID, matchesTable);
 
+	// todo if private, verify user is in room, b/c chat is included in the response
 	return Responses._200({ room: sanitizeRoom(room), match });
 };
 
@@ -27,6 +28,7 @@ exports.handler = hooksWithSchema(schema, [])(handler);
 // exports.handler = hooksWithSchema(schema, ["log"])(handler);
 
 function sanitizeRoom(room) {
+	if (!room) return null;
 	return {
 		...room,
 		gameOptions: {
