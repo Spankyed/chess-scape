@@ -133,7 +133,6 @@ $border-radius: 0.125rem;
     }
     .control-btn {
       border: m.$border;
-
       pointer-events: auto;
       background-color: $controls-bg-color;
       color: rgba(255, 255, 255, 1);
@@ -164,7 +163,6 @@ $border-radius: 0.125rem;
 .player-section{
   width:100%;
   .player {
-    // @apply  relative rounded-md  w-full flex flex-row flex-wrap p-2 ;
     background-color: $controls-bg-color;
     position: relative;
     display: flex;
@@ -174,23 +172,24 @@ $border-radius: 0.125rem;
     // margin-top: 0.5rem/* 8px */;
     margin-left: 0.5rem/* 12px */;
     margin-right: 0.5rem/* 12px */;
+    border: m.$border;
     border-radius: $border-radius;
     --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    width: 30%;
+    max-width: 30%;
     &.left { float:left; }
     &.right { float:right; }
     .picture{
-      height: 64px;
+      height: 3.5rem;
       border-radius: $border-radius;
       --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
       box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
       width: 33.333333%;
       display: none;
+      // background-color: m.$bg-color;
+      background-color: #7FA650;
     }
-  
     .tagline{
-      // @apply w-full flex flex-row flex-wrap pr-1 text-right text-gray-700 font-semibold relative;
       width: 100%;
       position: relative;
       display: flex;
@@ -198,16 +197,17 @@ $border-radius: 0.125rem;
       flex-wrap: wrap;
       color: rgba(55, 65, 81, 1);
       font-weight: 600;
-      &.left{
-        text-align: left;
-      }
-      &.right{
-        text-align: right;
-      }
+      align-items: center;
+      text-align: center;
+      // &.left{
+      //   text-align: left;
+      // }
+      // &.right{
+      //   text-align: right;
+      // }
       .name{
-        // @apply text-2xl text-white leading-tight overflow-ellipsis whitespace-nowrap overflow-hidden;
         width: 100%;
-        font-size: 1.5rem/* 24px */;
+        font-size: 1.7rem/* 24px */;
         line-height: 2rem/* 32px */;
         color: rgba(255, 255, 255, 1);
         line-height: 1.25;
@@ -215,63 +215,68 @@ $border-radius: 0.125rem;
         white-space: nowrap;
         overflow: hidden;
       }
-      .clock {
-        width: 100%;
-        display: flex;
-        background-color: #989695;
-        border-radius: $border-radius;
-        .time {
-          max-width: 14rem;
-          font-size: 1.25rem/* 20px */;
-          line-height: 1.75rem/* 28px */;
-          width: 100%;
-          text-align: center;
-          justify-content: center;
-          align-items: center;
-        }
-        .icon {
-          padding: 0.25rem/* 4px */;
-          display: inline;
-          height: 2rem/* 32px */;
-        }
-      }
+      // .clock {
+      //   width: 100%;
+      //   display: flex;
+      //   background-color: #989695;
+      //   border-radius: $border-radius;
+      //   .time {
+      //     max-width: 14rem;
+      //     font-size: 1.25rem/* 20px */;
+      //     line-height: 1.75rem/* 28px */;
+      //     width: 100%;
+      //     text-align: center;
+      //     justify-content: center;
+      //     align-items: center;
+      //   }
+      //   .icon {
+      //     padding: 0.25rem/* 4px */;
+      //     display: inline;
+      //     height: 2rem/* 32px */;
+      //   }
+      // }
     }
     &.winner {
       overflow: hidden;
       &:after {
-        animation: shine 2s ease-in-out  infinite;
+        animation: shine 2.2s ease-out infinite;
         animation-fill-mode: forwards;  
         content: "";
         position: absolute;
         top: -110%;
-        left: -210%;
-        width: 100px;
-        height: 200%;
+        left: -90%;
+        width: 8rem;
+        height: 300%;
         opacity: 0;
         transform: rotate(30deg);
         background: rgba(255, 255, 255, 0.13);
         background: linear-gradient(
           to right, 
-          rgba(255, 255, 255, 0.13) 0%,
+          rgba(255, 255, 255, 0.13) 55%,
           rgba(255, 255, 255, 0.13) 77%,
           rgba(255, 255, 255, 0.5) 92%,
           rgba(255, 255, 255, 0.0) 100%
         );
+        transition-property: left, top, opacity;
+        transition-duration: 0.1s, 0.7s, 0.15s;
+        transition-timing-function: ease;
       }
       @keyframes shine {
-        10% {
-          opacity: .6;
+        20% {
+          opacity: .5;
           top: -90%;
           left: -90%;
-          transition-property: left, top, opacity;
-          transition-duration: 0.1s, 0.7s, 0.15s;
-          transition-timing-function: ease;
+
+        }
+        70% {
+          opacity: 0;
+          top: -110%;
+          left: 50%;
         }
         100% {
           opacity: 0;
-          top: -90%;
+          top: -110%;
           left: 50%;
-          transition-property: left, top, opacity;
         }
       }
     }

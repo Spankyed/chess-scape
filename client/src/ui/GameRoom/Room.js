@@ -71,14 +71,17 @@ export default (initial) => ({
 				}
 
 				const setup = player && {
+					players: room.players,
 					player,
 					playerColor: color,
 					committed: match.players[color]?.committed,
 					matchStarted: match.matchStarted,
 				};
+				
+				actions.controls.setPlayers(room.players);
 
-				actions.game.setPlayer({
-					info: setup || {},
+				actions.game.setInfo({
+					info: setup,
 					isSceneSetup: _.loader.removed,
 				});
 
@@ -125,14 +128,19 @@ export default (initial) => ({
 			const LoaderView = loader.view(state.loader, actions.loader);
 
 			const onJoin = ({ room, match, group, username }) => {
-				if (
-					group == "players" &&
-					Object.keys(room.players).length == 2 &&
-					!match?.matchStarted
-				) {
-					actions.alert.close({ id: "host" });
-					actions.alert.show(alert.startAlert); // alert match is starting soon
+				const getLength = (obj) => Object.keys(obj).length;
+				if (group == "players") {
+					if (getLength(room.players) == 2 &&
+						!match?.matchStarted
+					) {
+						actions.alert.close({ id: "host" });
+						actions.alert.show(alert.startAlert); // alert match is starting soon
+					}
+					if (getLength(state.controls.players) != 2) {
+						actions.controls.setPlayers(room.players);
+					}
 				}
+
 				actions.updateRoom(room);
 				actions.sidePanel.chat.addMessage({
 					text: `${username} has joined the room`,

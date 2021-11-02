@@ -8,7 +8,7 @@ const roomsTable = process.env.roomsTableName;
 
 module.exports = async function (
 	{ clientID, roomID },
-	{ username },
+	client,
 	connection,
 	pinValidated
 ) {
@@ -37,8 +37,7 @@ module.exports = async function (
 			updates: { room: roomID },
 		});
 
-		const [group, updatedRoom] =
-			(await updateRoom(room, clientID)) || [];
+		const [group, updatedRoom] = await updateRoom(room, client);
 
 		const messageRecipients = [
 			sendMessageToRoom(roomID, {
@@ -46,7 +45,7 @@ module.exports = async function (
 				room: sanitizeRoom(updatedRoom),
 				match: { ...match, lastMove: undefined, moves: [] },
 				group,
-				username,
+				username: client.username,
 			}),
 			// only message lobby if player joined, not spectator
 			...(group == "players"
@@ -71,7 +70,8 @@ module.exports = async function (
 };
 
 
-async function updateRoom(room, clientID){
+async function updateRoom(room, client){
+	const { ID: clientID, username } = client;
 	const isHost = room.host == clientID;
 	const isAngel = clientID == "angel";
 	const isVsAngel = room.gameOptions.selectedOpp == "angel";
@@ -86,29 +86,31 @@ async function updateRoom(room, clientID){
 		return ["players", room];
 	} else if (group === "players" && eligiblePlayer) {
 		const joinedColor = playerColors[0] == "white" ? "black" : "white";
-		const [{ Attributes: updatedRoom }] =
-			await Promise.all([
-				Dynamo.update({
-					TableName: roomsTable,
-					primaryKey: "ID",
-					primaryKeyValue: room.ID,
-					updates: {
-						[`players.${joinedColor}`]: { clientID },
+		const [{ Attributes: updatedRoom }] = await Promise.all([
+			Dynamo.update({
+				TableName: roomsTable,
+				primaryKey: "ID",
+				primaryKeyValue: room.ID,
+				updates: {
+					[`players.${joinedColor}`]: {
+						clientID,
+						username,
 					},
-				}),
-				Dynamo.update({
-					TableName: matchesTable,
-					primaryKey: "ID",
-					primaryKeyValue: room.ID,
-					updates: {
-						[`players.${joinedColor}`]: {
-							clientID,
-							ready: false,
-							committed: false,
-						},
+				},
+			}),
+			Dynamo.update({
+				TableName: matchesTable,
+				primaryKey: "ID",
+				primaryKeyValue: room.ID,
+				updates: {
+					[`players.${joinedColor}`]: {
+						clientID,
+						ready: false,
+						committed: false,
 					},
-				}),
-			]);
+				},
+			}),
+		]);
 		return [group, updatedRoom];
 	} else {
 		const { Attributes: updatedRoom } = await Dynamo.update({

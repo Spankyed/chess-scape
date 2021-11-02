@@ -35,7 +35,7 @@ const handler = async (event) => {
 		ID: nanoid(),
 		host: clientID,
 		hostName: client.username,
-		players: { [selectedColor]: { clientID } },
+		players: { [selectedColor]: { clientID, username: client.username } },
 		selectedColor,
 		spectators: {},
 		chat: [],

@@ -10,9 +10,11 @@ export default (initial) => ({
 		isPromoting: false,
 		resolve: null,
 		reject: null,
+		players: {}
 	},
 	actions: {
 		menu: menu.actions,
+		setPlayers: (players) => state => ({players}),
 		openPieceSelect:
 			({ resolve, reject }) =>
 			(_) => ({
@@ -30,7 +32,6 @@ export default (initial) => ({
 	view:
 		(state, actions) =>
 		({ leaveRoom, toggleSidePanel, roomState, alert }) => {
-
 			const MenuView = menu.view(state.menu, actions.menu)
 			
 			const {
@@ -54,11 +55,7 @@ export default (initial) => ({
 			
 			return (
 				// pointer-events-none controls-wrapper
-				<div
-					class={`controls-wrapper ${
-						loader.isLoading && "hidden"
-					}`}
-				>
+				<div class={`controls-wrapper ${loader.isLoading && "hidden"}`}>
 					<div class="controls">
 						{gameOver && <MatchMessage matchInfo={matchInfo} />}
 						{state.isPromoting && (
@@ -68,16 +65,17 @@ export default (initial) => ({
 								closePieceSelect={actions.closePieceSelect}
 							/>
 						)}
-						<div class="player-section">
-							<Player />
-							<Opponent />
-						</div>
-						{/* back button */}
+
+						{/* Player cards */}
+						<Players players={state.players} />
+
+						{/* Back button */}
 						<div class="btn-wrapper left">
 							<button onclick={leave} class="control-btn">
 								<img src="./assets/controls/back.svg"></img>
 							</button>
 						</div>
+						{/* Menu button */}
 						<div class="btn-wrapper right">
 							<MenuView
 								{...{
@@ -93,38 +91,46 @@ export default (initial) => ({
 		},
 });
 
-function Player(){
-	let defaultSrc = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+function Players({players, winner}) {
+	let defaultSrc =
+		"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+	let userImg = (username) =>
+		username
+			? `https://avatars.dicebear.com/api/avataaars/${username}.svg`
+			: defaultSrc;
+	let { white, black } = players;
+	// Jane⚔️Doe
 	return (
-		<div class="player left winner">
-			<img class="picture" src={defaultSrc}/>  
-			<div class="tagline left">
-				<div class="name">John Dossssssssssssssssssssse</div>
-				<div class="clock">
-					<img class="icon" src="./assets/controls/clock.svg"></img>
-					<span class="time">10:00</span>
-				</div>
-				{/* <div class="text-normal text-gray-300 hover:text-gray-400 cursor-pointer"><span class="border-b border-dashed border-gray-500 pb-1">Administrator</span></div> */}
-				{/* <div class="text-sm text-gray-300 hover:text-gray-400 cursor-pointer md:absolute pt-3 md:pt-0 bottom-0 right-0">Last Seen: <b>2 days ago</b></div> */}
-			</div>
-		</div>
-	)
-}
-function Opponent(){
-	let defaultSrc = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-	return (
-		<div class="player right">
-			<div class="tagline right">
-				<div class="name">Jane⚔️Doe</div>
-				<div class="clock">
-					<span class="time">10:00</span>
-					<img class="icon" src="./assets/controls/clock.svg"></img>
+		<div class="player-section">
+			{/* <div class={`player left ${winner === "white" && "winner"}`}> */}
+			<div class={`player left ${true && "winner"}`}>
+				<img class="picture" src={userImg(white?.username)} />
+				<div class="tagline left">
+					{white?.username ? (
+						<span class="name">{white.username}</span>
+					) : (
+						<span class="name">Waiting...</span>
+					)}
+					{/* <div class="clock"></div> */}
+					{/* <div class="text-normal text-gray-300 hover:text-gray-400 cursor-pointer"><span class="border-b border-dashed border-gray-500 pb-1">Administrator</span></div> */}
+					{/* <div class="text-sm text-gray-300 hover:text-gray-400 cursor-pointer md:absolute pt-3 md:pt-0 bottom-0 right-0">Last Seen: <b>2 days ago</b></div> */}
 				</div>
 			</div>
-			<img class="picture" src={defaultSrc}/>  
+			<div class="player right">
+				<div class="tagline right">
+					{black?.username ? (
+						<span class="name">{black.username}</span>
+					) : (
+						<span class="name">Waiting...</span>
+					)}
+					{/* <div class="clock"></div> */}
+				</div>
+				<img class="picture" src={userImg(black?.username)} />
+			</div>
 		</div>
-	)
+	);
 }
+
 function MatchMessage({ matchInfo }) {
 	const {endMethod, winningColor, mated} = matchInfo
 	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
