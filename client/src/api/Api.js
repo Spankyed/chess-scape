@@ -235,7 +235,7 @@ async function joinPrivate({roomID: roomdId, pin}) {
 	if (response.ok) {
 		const res = await response.json();
 		if (res.valid) roomID ??= roomdId;
-		console.log("%c Attempted join private", "color:blue;", { res });
+		console.log("%c Attempted join private", "color:blue;", { valid: res?.valid });
 		return res;
 	} else if (response.status === 401) {
 		handlers.unauthorize();
@@ -266,7 +266,7 @@ async function deleteRoom(ID) {
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
 		const res = await response.json();
-		console.log(`%c ${res.message}`, "color:orange;");
+		console.log(`%c ${res?.message}`, "color:orange;");
 		handlers.delete(res);
 	} else if (res.status === 401) {
 		handlers.unauthorize();
@@ -293,13 +293,13 @@ async function createClient(userInfo) {
 async function searchSongImage(title) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const body = JSON.stringify({ title });
-	const url = `${baseHttpUrl}/search`;
+	const body = JSON.stringify({ title, clientID });
+	const url = `${baseHttpUrl}/search-song-image`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
-		const imageSrc = await response.json();
-		console.log("%c Song image", "color:blue;", { imageSrc });
-		return imageSrc;
+		const res = await response.json();
+		console.log("%c Song image", "color:blue;", { image: res?.image });
+		return res?.image;
 	}
 }
 
