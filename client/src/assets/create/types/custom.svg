@@ -27,21 +27,21 @@
           <g id="toggle-3" transform="translate(0.01720047 270.24426)">
             <path d="M0 0L0 52.0062L832.028 52.0062L832.028 0L0 0L0 0Z" transform="translate(0 36.65576)" id="track" fill="#262626" fill-rule="evenodd" stroke="none" />
             <g id="slid">
-              <use stroke="none" fill="#559B06" xlink:href="#path_2" fill-rule="evenodd" filter="url(#filter_1)" />
+              <use stroke="none" fill="#4446E6" xlink:href="#path_2" fill-rule="evenodd" filter="url(#filter_1)" />
             </g>
             <path d="M0 55.3779C0 24.7935 24.7935 0 55.3779 0C85.9623 0 110.756 24.7935 110.756 55.3779C110.756 85.9623 85.9623 110.756 55.3779 110.756C24.7935 110.756 0 85.9623 0 55.3779L0 55.3779Z" transform="translate(250.9481 0)" id="switch" fill="#EEEEEE" fill-rule="evenodd" stroke="none" />
           </g>
           <g id="toggle-2" transform="translate(0 144.768)">
             <path d="M0 0L0 52.0062L832.028 52.0062L832.028 0L0 0L0 0Z" transform="translate(0 22.472107)" id="track" fill="#262626" fill-rule="evenodd" stroke="none" />
             <g id="slid">
-              <use stroke="none" fill="#559B06" xlink:href="#path_3" fill-rule="evenodd" filter="url(#filter_1)" />
+              <use stroke="none" fill="#4446E6" xlink:href="#path_3" fill-rule="evenodd" filter="url(#filter_1)" />
             </g>
             <path d="M0 55.3779C0 24.7935 24.7935 0 55.3779 0C85.9623 0 110.756 24.7935 110.756 55.3779C110.756 85.9623 85.9623 110.756 55.3779 110.756C24.7935 110.756 0 85.9623 0 55.3779L0 55.3779Z" transform="translate(79.035675 0)" id="switch" fill="#EEEEEE" fill-rule="evenodd" stroke="none" />
           </g>
           <g id="toggle-1" transform="translate(0.01720047 0)">
             <path d="M0 0L0 52.0062L832.028 52.0062L832.028 0L0 0L0 0Z" transform="translate(0 32.240112)" id="track" fill="#262626" fill-rule="evenodd" stroke="none" />
             <g id="slid">
-              <use stroke="none" fill="#559B06" xlink:href="#path_4" fill-rule="evenodd" filter="url(#filter_1)" />
+              <use stroke="none" fill="#4446E6" xlink:href="#path_4" fill-rule="evenodd" filter="url(#filter_1)" />
             </g>
             <path d="M0 55.3779C0 24.7935 24.7935 0 55.3779 0C85.9623 0 110.756 24.7935 110.756 55.3779C110.756 85.9623 85.9623 110.756 55.3779 110.756C24.7935 110.756 0 85.9623 0 55.3779L0 55.3779Z" transform="translate(299.8283 0)" id="switch" fill="#EEEEEE" fill-rule="evenodd" stroke="none" />
           </g>
