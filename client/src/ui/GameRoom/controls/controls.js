@@ -97,8 +97,7 @@ export default (initial) => ({
 });
 
 function Players({ players, winner, gameOver, game }) {
-	let defaultSrc =
-		"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+	let defaultSrc = "./assets/controls/avatar-placeholder.svg";
 	let userImg = (username) =>
 		username
 			? `https://avatars.dicebear.com/api/avataaars/${username}.svg`
