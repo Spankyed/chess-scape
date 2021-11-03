@@ -190,7 +190,7 @@ $border-radius: 0.125rem;
       width: 33.333333%;
       display: none;
       // background-color: m.$bg-color;
-      background-color: #7FA650;
+      background-color: m.$green;
     }
     .tagline{
       width: 100%;
@@ -332,6 +332,8 @@ $border-radius: 0.125rem;
   transform: translate(-50%, -50%);
   //  win banner courtesy of https://codepen.io/1bruddah/pen/ERjWxg
   .match-message {
+    border: m.$border;
+    border-radius: m.$border-radius;
     margin-left: auto;
     margin-right: auto;
     // margin-top: .5rem;
@@ -361,7 +363,7 @@ $border-radius: 0.125rem;
     /*animation: move .5s ease-in-out 0.5s 4 alternate;*/
     overflow:hidden;
     border: 1px solid transparent;
-    font-family: Century Gothic, sans-serif;
+    // font-family: Century Gothic, sans-serif;
   }
   .message-topic {
     font-weight: bold;
@@ -390,7 +392,7 @@ $border-radius: 0.125rem;
   @keyframes showup-1 {
     0% { opacity:0; border-right-color: transparent;}
     20% { opacity:1; border-right-color: transparent;}
-    35% { border-right-color: #AAA;}
+    35% { border-right-color: #aaa;}
     80% { opacity:1; }
     100% { opacity:0; }
   }

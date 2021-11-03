@@ -69,9 +69,7 @@ export default (initial) => ({
 						{/* Player cards */}
 						<Players
 							players={state.players}
-							gameOver={roomState.gameOver}
-							// winner={roomState.matchInfo?.winningColor}
-							game={game}
+							{...{ game, gameOver, matchInfo }}
 						/>
 
 						{/* Back button */}
@@ -96,7 +94,7 @@ export default (initial) => ({
 		},
 });
 
-function Players({ players, winner, gameOver, game }) {
+function Players({ players, game, gameOver, matchInfo }) {
 	let defaultSrc = "./assets/controls/avatar-placeholder.svg";
 	let userImg = (username) =>
 		username
@@ -105,13 +103,12 @@ function Players({ players, winner, gameOver, game }) {
 	let { white, black } = players;
 	let { colorToMove, matchStarted } = game;
 	let isTurn = (color) => color === colorToMove && matchStarted && !gameOver;
-	let isWinner = (color) => color === winner;
+	let isWinner = (color) => color === matchInfo?.winningColor && gameOver;
 	// Jane⚔️Doe
 	return (
 		<div class="player-section">
-			{/* <div class={`player left ${isWinner("white") && "winner"}`}> */}
 			<div
-				class={`player left ${true && "winner"} ${
+				class={`player left ${isWinner("white") && "winner"} ${
 					isTurn("white") && "selected"
 				}`}
 			>
