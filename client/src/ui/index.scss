@@ -57,6 +57,11 @@ html, body {
         50% { background-color: m.$bg-primary; }
         100% { background-color: m.$bg-contrast; }
     }
+
+    .app {
+      width: 100%;
+      height: 100%;
+    }
 }
 
 button,

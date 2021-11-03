@@ -51,7 +51,7 @@ const view = (state, actions) => {
 		});
 	}
 	return (
-		<div oncreate={init} class="h-full">
+		<div oncreate={init} class="app">
 			{/* {false ? ( */}
 			{!state.isAuthorized ? (
 				<EntranceView
