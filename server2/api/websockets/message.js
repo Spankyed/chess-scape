@@ -71,20 +71,5 @@ const handler = async (event) => {
 	});
 };
 
-exports.handler = withHooks(["parse"])(handler);
-
-// const { deserialize } = require('bson');
-
-// const parseMessage = (state) => {
-//     const { body } = state.event
-//     let isBinary = Buffer.isBuffer(body)
-//     let message = isBinary ? deserialize(body, {  promoteBuffers: true }) : JSON.parse(body)
-//     if (!message) {
-//         state.response = Responses._400({ error: 'No message found' })
-//     }
-//     if (isBinary && !isValidFileType(message.rawData)) {
-//         state.response = Responses._400({ error: 'Invalid file type' })
-//     }
-//     state.event.message = message
-//     return state
-// }
+exports.handler = withHooks([])(handler);
+// exports.handler = withHooks(["parse"])(handler);

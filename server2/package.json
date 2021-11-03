@@ -5,9 +5,12 @@
 	"main": "webpack.config.js",
 	"dependencies": {
 		"aws-sdk": "^2.991.0",
+		"bson": "^4.5.3",
 		"chess.js": "^0.12.0",
+		"file-type": "^16.5.3",
 		"lambda-hooks": "^0.2.1",
 		"nanoid": "^3.1.30",
+		"node-html-parser": "^5.1.0",
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {

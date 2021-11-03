@@ -1,11 +1,9 @@
-// const BSON = require("bson");
-// const fileType = require("file-type");
+const BSON = require("bson");
+const fileType = require("file-type");
 
 module.exports = {
 	music({ song, rawData }) {
 		// todo check if song has image, otherwise scrape google?
-		// todo sometype of validation
-		// if (typeof videoId != "string") throw new Error("Invalid viedoId");
 		return BSON.serialize({
 			method: "share",
 			type: "music",
@@ -14,17 +12,14 @@ module.exports = {
 		});
 	},
 	parseMessage(request) {
-		return request;
+		let isBinary = Buffer.isBuffer(request);
+		let message = isBinary
+			? BSON.deserialize(request, { promoteBuffers: true })
+			: JSON.parse(request);
+		if (!message) return null; // todo: response_400
+		if (isBinary && !isValidFileType(message.rawData)) return null;
+		return message;
 	}
-	// parseMessage(request) {
-	// 	let isBinary = Buffer.isBuffer(request);
-	// 	let message = isBinary
-	// 		? BSON.deserialize(request, { promoteBuffers: true })
-	// 		: JSON.parse(request);
-	// 	if (!message) return null; // todo: response_400
-	// 	if (isBinary && !isValidFileType(message.rawData)) return null;
-	// 	return message;
-	// }
 };
 
 async function isValidFileType(buffer) {
