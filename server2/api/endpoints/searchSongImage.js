@@ -1,7 +1,7 @@
 const Responses = require("../common/HTTP_Responses");
 const { hooksWithSchema } = require("../common/hooks");
-import fetch from "node-fetch";
-import HTMLParser from "node-html-parser";
+const fetch = require("node-fetch");
+const HTMLParser = require("node-html-parser");
 
 const schema = {
 	body: { clientID: "string", title: "string" },

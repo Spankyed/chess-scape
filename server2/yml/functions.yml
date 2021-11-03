@@ -34,6 +34,13 @@ deleteRoom:
 #         path: get-client/{ID}
 #         method: GET
 #         cors: true
+searchSongImage:
+  handler: api/endpoints/searchSongImage.handler
+  events:
+    - http:
+        path: search-song-image
+        method: POST
+        cors: true
 getRoom:
   handler: api/endpoints/getRoom.handler
   events:
