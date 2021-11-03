@@ -285,3 +285,30 @@
         }
     }
 }
+
+ @media screen and (orientation:landscape) {
+
+
+ }
+
+ // when in landscape view
+@media (max-height: 568px) {
+    .create {
+        .create-body{
+            height: 100vh;
+            .choose-color{
+                min-height: 3.5rem !important;
+                max-height: 4rem !important;
+                .piece-color{
+                    max-height: 5rem !important;
+                }
+            }
+            .modal-footer button{
+                min-height:3.5rem;
+            }
+            .piece-color img {
+                max-height: 3.5rem !important;
+            }
+        }
+    }
+}
