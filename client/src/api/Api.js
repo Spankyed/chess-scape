@@ -150,28 +150,25 @@ function end(endMethod) {
 // function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
 function shareMusic(songData, rawData) {
 	let { src, ...song } = songData;
-	let BSON = serialize({
+	let BSON = {
 		method: "share",
 		type: "music",
-		roomID,
-		song, // clientID, // add clientID to msg after testing/development
+		// src,
+		// roomID,
+		// clientID, // add clientID to msg after testing/development
+		song,
 		rawData: Buffer.from(rawData),
-		action: 'message'
-	});
+		// action: 'message'
+	}
 	// let bson = serialize({ method: "share", type: "music", blob: rawData }) // test when rawData is type blob fails, file converted to obj and binary data loss
-	connection.send(BSON);
-	console.log(
-		`%c Song data sent`,
-		"color:orange;",
-		deserialize(BSON, { promoteBuffers: true })
-	);
+	sendMessage(BSON, true);
 }
 
 function shareVideo(videoId) {
 	sendMessage({ method: "share", type: "video", videoId });
 }
 
-function sendMessage(message) {
+function sendMessage(message, isBson) {
 	const body = {
 		...message,
 		...(roomID && { roomID }),
@@ -179,8 +176,9 @@ function sendMessage(message) {
 		clientID, 
 		TOKEN // ! MUST SEND TOKEN FOR AUTH
 	};
-	connection.send(JSON.stringify(body));
-	console.log(`%c Message sent [${message.method}]`, "color:orange;", body);
+	if (isBson) connection.send(serialize(message));
+	else connection.send(JSON.stringify(body));
+	console.log(`%c Message sent [${message.method}]`, "color:orange;", { body });
 }
 
 // ** --------------------------------------------------------------------------

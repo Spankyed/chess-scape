@@ -5,6 +5,7 @@ const { withHooks } = require("../common/hooks");
 const { authorize } = require("../common/authorize");
 const methods = require("./methods");
 const connect = require("./connect");
+const { parseMessage } = require("./methods/share/music");
 
 const clientsTable = process.env.clientsTableName;
 
@@ -19,7 +20,10 @@ const handler = async (event) => {
 		domainName,
 		stage,
 	};
-	const message = event.body;
+
+	const message = parseMessage(event.body);
+	if (!message) return Responses._400({ message: "Message couldn't be parsed" });
+
 	const { clientID, TOKEN, method } = message;
 
 	const [isAuthorized, client] = await authorize(
