@@ -1,7 +1,7 @@
 const Responses = require("../common/HTTP_Responses");
 const { hooksWithSchema } = require("../common/hooks");
 const fetch = require("node-fetch");
-const HTMLParser = require("node-html-parser");
+// const HTMLParser = require("node-html-parser");
 
 const schema = {
 	body: { clientID: "string", title: "string" },
@@ -10,8 +10,9 @@ const schema = {
 const handler = async (event) => {
 	const { title } = event.body;
 	try {
-		const image = await getGoogleImage(title);
-		return Responses._200({ image: JSON.stringify(image) });
+		// const image = await getGoogleImage(title);
+		return Responses._200({ image: title });
+		// return Responses._200({ image: JSON.stringify(image) });
 	} catch (err) {
 		console.error(err);
 		return Responses._400({ error: err.message });
