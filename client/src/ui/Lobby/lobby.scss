@@ -485,6 +485,9 @@
         .lobby-main {
             width: 65vw !important;
             max-width: 65vw !important;
+            .lobby-header button {
+                margin-right: 1rem !important;
+            }
         }
     }
 }
@@ -530,5 +533,11 @@
 @media (max-height: 568px) {
     .lobby .lobby-main .table-wrapper .table-empty img {
         height: 9rem !important;
+    }
+}
+
+@media (min-width: 600px) {
+    .lobby .lobby-main .lobby-header button {
+        margin-right: 0rem;
     }
 }
