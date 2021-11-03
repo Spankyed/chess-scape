@@ -159,11 +159,12 @@ export default (initial) => ({
 				// todo: on total disconnect, breakdown websocket and game
 				Api.setMessageHandlers({
 					disband: onDisband,
-					join: onJoin, // todo if players == 2 alert match starting soon
-					idleReconnect: () => {},
+					join: onJoin,
+					disconnect: state.game.player && Api.reconnect, // if a player reconnect immediately
+					idleReconnect: Api.sync,
+					reconnect: Api.sync,
 				});
 				actions.fetchRoom(roomID);
-				// todo stop loading
 			};
 
 			if (!state.loader.isLoading && !state.initialized && !state.isFetching) {
@@ -240,7 +241,8 @@ function cleanupHandlers(){
 		offer: () => {},
 		move: () => {},
 		end: () => {},
-		idleReconnect: () => {},
 		disconnect: () => {},
+		idleReconnect: () => {},
+		reconnect: () => {},
 	});	
 }

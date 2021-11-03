@@ -148,7 +148,6 @@ export default (initial) => ({
 				offer: onOffer,
 				move: onMove,
 				end: onEnd,
-				disconnect: Api.reconnect, //! if in game, reconnect immediately
 				// todo only reconnect immediately for players
 				// todo on reconnect sync board
 				// todo for spectators sync board on idleReconnect
