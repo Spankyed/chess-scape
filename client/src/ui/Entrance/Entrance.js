@@ -3,7 +3,7 @@ import Api from '../../api/Api';
 
 export default (initial) => ({
 	state: {
-		ratings: ["Newbie", "Beginner", "Skilled", "Professional"],
+		ratings: ["Uncultured", "Beginner", "Skilled", "Professional"],
 		username: "",
 		rating: "Beginner",
 		attemptingSubmit: false,
