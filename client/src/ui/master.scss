@@ -15,11 +15,12 @@ $darker: #1A1A1A;
 $green: #79a547;  
 $dark-green: #47682c;  
 $light-green: #527634;  
+$bright-green: #559b06;  
 // $blue: #2C2EAF;  
 $blue: #281fcb;  
 $light-blue: rgba(79, 70, 229);
 $spec-blue: #18a8;
- $spec-blue-alt: #18a;
+$spec-blue-alt: #18a;
 $orange: #d75923;
 $light-orange: #FF4B0A;
 
@@ -101,9 +102,8 @@ $create-modal-bg-clr: $darker;
 // $create-bg-clr: $secondary-color;
 // $type-bg-clr: $dark-green;
 // $type-bg-clr: $brown;
-$type-bg-clr: $spec-blue;
-$sel-pec-blue: $spec-blue-alt;
-$type-selected: $beige;
+$type-bg-clr: $green;
+$type-selected: $bright-green;
 
 //================================================================================
 // Custom
@@ -111,7 +111,7 @@ $type-selected: $beige;
 $control-bg-clr: $dark;
 // $type-bg-clr: $dark-green;
 // $identity-bg-clr: #527634;
-$identity-bg-clr: $spec-blue-alt;
+$identity-bg-clr: $dark;
 $sec-ctrl-bg-clr: #32291d;
 
 //================================================================================

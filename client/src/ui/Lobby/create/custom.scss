@@ -76,8 +76,8 @@
                 --borderColor: hsla(0,0%,100%,0.05);
                 --secondaryBorderColor: transparent; 
                 box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
-                border: 1px solid var(--borderColor);
-                border-right: 0;   
+                border: .1rem solid var(--borderColor);
+                // border-right: 0;   
                 
                 img {
                     width: 2rem;

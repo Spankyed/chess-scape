@@ -76,7 +76,7 @@
             z-index: 50;
             .selected {
                 &.type {
-                    background-color: m.$sel-pec-blue !important;
+                    background-color: m.$type-selected !important;
                 }
             }
             .choose-color {
