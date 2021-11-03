@@ -32,7 +32,7 @@
         margin-right: auto;
 
         .lobby-header {
-            height:18vh;
+            height:14vh;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -485,8 +485,11 @@
         .lobby-main {
             width: 65vw !important;
             max-width: 65vw !important;
-            .lobby-header button {
-                margin-right: 1rem !important;
+            .lobby-header {
+                height:18vh;
+                button {
+                    margin-right: 1rem !important;
+                }
             }
         }
     }
