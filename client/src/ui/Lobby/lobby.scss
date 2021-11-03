@@ -165,7 +165,7 @@
                 }
 
                 tbody {
-                    transition:all .3s ease-in-out;
+                    transition: all .3s ease-in-out;
                     &.loading-table {
                         width: 100%;
                         opacity: 100%;
@@ -193,7 +193,7 @@
                                     height: 3.2rem/* 24px */;
                                     width: 3.2rem/* 24px */;
                                     
-                                    background-color: #444444;
+                                    background-color: #646464;
 						            border-radius: 9999px;
                                 }
                                 &.players {
@@ -210,10 +210,17 @@
                                 }
                                 &.host {
                                     align-items: center;
-                                    width: 10rem;
+                                    .data{
+                                        min-width: 3rem;
+                                    }
                                 }
                                 &.enter {
+                                    display:flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    // width: 10rem;
                                     span {
+
                                         width: 5.2rem;
                                         height: 2.8rem;
                                         // border-width: 1px;
@@ -318,7 +325,7 @@
                                 // font-weight: 600;
                                 display:flex;
                                 align-items: center;
-                                background-color: #709B50;
+                                background-color: m.$dark-green;
                                 color: #bee5a1;
                                 padding-top: .5rem;
                                 padding-bottom: .5rem;
@@ -337,7 +344,7 @@
                                 //     outline-offset: 2px;
                                 // }
                                 &:hover {
-                                    box-shadow: 0px 5px 0px #457322;
+                                    box-shadow: 0px 5px 0px #335c15;
                                     color: #214c00;
                                     transform: rotateX(30deg) translateY(0);
                                     background-color: #a3d57d;
@@ -372,7 +379,7 @@
                                             background-color: rgb(23, 55, 94);
                                         }
                                         color: rgb(22, 53, 92);
-                                        box-shadow: rgb(40, 72, 159) 0px 5px 0px;
+                                        box-shadow: #182f6e 0px 5px 0px;
                                         background-color: rgb(81, 114, 205);
                                         &:active{
                                             // background: radial-gradient(ellipse at center, 
