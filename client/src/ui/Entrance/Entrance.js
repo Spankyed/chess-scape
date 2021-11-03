@@ -55,7 +55,7 @@ export default (initial) => ({
 				}
 			};
 			return (
-				<div class='entrance'>
+				<div class="entrance">
 					<div class="banner">
 						<img class="mobile" src="./assets/mobile/banner.svg" />
 						<img src="./assets/banner.svg" />
@@ -113,7 +113,10 @@ export default (initial) => ({
 								{state.attemptingSubmit ? (
 									<Loader />
 								) : (
-									state.submitText
+									<div class="submit-text">
+										<span class="text">{state.submitText}</span>
+										<span class="line"></span>
+									</div>
 								)}
 							</button>
 						</form>
