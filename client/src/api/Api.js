@@ -32,6 +32,7 @@ let clientID = client.clientID || null,
 		music: () => {},
 		unauthorize: () => {},
 		idleReconnect: () => {},
+		reconnect: () => {},
 	};
 
 function setMessageHandlers(newHandlers) {
@@ -49,7 +50,7 @@ async function createConnection() {
 				onopen,
 				onclose,
 				onmessage,
-				onreconnect: (e) => console.log("Reconnecting..."), // todo refresh room list here instead on idleReconnect
+				onreconnect, // todo refresh room list here instead on idleReconnect
 				onmaximum: (e) => console.log("Stop Attempting!", e),
 				onerror: (e) => console.log("WS Error:", e),
 		  })
@@ -59,7 +60,12 @@ async function createConnection() {
 		connected = true;
 		e.target.binaryType = "arraybuffer";
 		connection.ws = e.target;
+		// handlers.connect();
 		console.log(`%c Connected [${clientID}]`, "color:white;")
+	}
+	function onreconnect() {
+		console.log("Reconnecting...")
+		handlers.reconnect();
 	}
 	function onclose(e) {
 		connected = false;
