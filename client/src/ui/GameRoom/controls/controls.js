@@ -1,6 +1,7 @@
 import { h } from 'hyperapp';
 import prompts from './prompts.js';
 import Menu from './menu.js';
+import Scene from "../../../core/Scene";
 
 const menu = Menu()
 
@@ -10,11 +11,12 @@ export default (initial) => ({
 		isPromoting: false,
 		resolve: null,
 		reject: null,
-		players: {}
+		players: {},
+		cameraViewColor: null,
 	},
 	actions: {
 		menu: menu.actions,
-		setPlayers: (players) => state => ({players}),
+		setPlayers: (players) => (state) => ({ players }),
 		openPieceSelect:
 			({ resolve, reject }) =>
 			(_) => ({
@@ -28,12 +30,22 @@ export default (initial) => ({
 				reject && reject();
 				return { isPromoting: false };
 			},
+		flipCamera:
+			(playerColor) =>
+			({ cameraViewColor }) => {
+				let currColor = cameraViewColor || playerColor || "white";
+				let oppColor = currColor == "white" ? "black" : "white";
+				Scene.manager.animateCameraIntoPosition(oppColor);
+				return {
+					cameraViewColor: oppColor,
+				};
+			},
 	},
 	view:
 		(state, actions) =>
 		({ leaveRoom, toggleSidePanel, roomState, alert }) => {
-			const MenuView = menu.view(state.menu, actions.menu)
-			
+			const MenuView = menu.view(state.menu, actions.menu);
+
 			const {
 				loader,
 				gameOver,
@@ -44,15 +56,21 @@ export default (initial) => ({
 
 			const leave = () => {
 				if (roomState.room?.players > 1 && !game.matchStarted) return; // player cant leave until match started
-				if (!roomState.room || gameOver || !game.player || !game.matchStarted || game.type == 'forever'){
+				if (
+					!roomState.room ||
+					gameOver ||
+					!game.player ||
+					!game.matchStarted ||
+					game.type == "forever"
+				) {
 					leaveRoom();
-				}
-				else {
+				} else {
 					const method = !game.committed ? "abort" : "abandon";
 					alert.show(prompts[method](leaveRoom));
 				}
 			};
-			
+
+			const isSpectator = game.infoRecieved && !game.player;
 			return (
 				// pointer-events-none controls-wrapper
 				<div class={`controls-wrapper ${loader.isLoading && "hidden"}`}>
@@ -72,6 +90,17 @@ export default (initial) => ({
 							{...{ game, gameOver, matchInfo }}
 						/>
 
+						{/* Flip Camera button */}
+						{isSpectator && (
+							<div class="btn-wrapper top center">
+								<button
+									onclick={()=>actions.flipCamera()}
+									class="control-btn"
+								>
+									<img src="./assets/controls/flip-camera.svg"></img>
+								</button>
+							</div>
+						)}
 						{/* Back button */}
 						<div class="btn-wrapper left">
 							<button onclick={leave} class="control-btn">
@@ -85,7 +114,9 @@ export default (initial) => ({
 									alert,
 									roomState,
 									toggleSidePanel,
+									isSpectator,
 								}}
+								flipCamera={actions.flipCamera}
 							/>
 						</div>
 					</div>

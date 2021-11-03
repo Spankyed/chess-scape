@@ -10,7 +10,6 @@ export default (initial) => ({
 	state: {
 		menuOpen: false,
 		recentlyOffered: false,
-		cameraViewColor: null,
 		initialized: false,
 	},
 	actions: {
@@ -19,29 +18,15 @@ export default (initial) => ({
 		}),
 		disableOffers: () => ({ recentlyOffered: true }),
 		enableOffers: () => ({ recentlyOffered: false }),
-		flipCamera:
-			(playerColor) =>
-			({ cameraViewColor }) => {
-				let currColor = cameraViewColor || playerColor || "white";
-				let oppColor = currColor == "white" ? "black" : "white";
-				Scene.manager.animateCameraIntoPosition(oppColor);
-				return {
-					cameraViewColor: oppColor,
-				};
-			},
 		initialize: () => ({ initialized: true }),
 	},
 	view:
 		(
 			{ recentlyOffered, menuOpen, initialized },
-			{ toggleMenu, disableOffers, enableOffers, flipCamera, initialize }
+			{ toggleMenu, disableOffers, enableOffers, initialize }
 		) =>
-		({ alert, roomState, toggleSidePanel }) => {
-			const {
-				gameOver,
-				game,
-				closed: roomClosed,
-			} = roomState;
+		({ alert, roomState, toggleSidePanel, flipCamera, isSpectator }) => {
+			const { gameOver, game, closed: roomClosed } = roomState;
 
 			const openPanel = (tab) => () => {
 				toggleMenu();
@@ -184,21 +169,26 @@ export default (initial) => ({
 								</div>
 								<span>Play Media</span>
 							</div>
-							<div
-								onclick={() => flipCamera(game.playerColor)}
-								class="menu-item"
-								role="menu-item"
-								id="menu-item-4"
-								tabindex="-1"
-							>
-								<div class="menu-icon">
-									<img src="./assets/controls/menu/rotate-camera.svg" />
+							{!isSpectator && (
+								<div
+									onclick={() => flipCamera(game.playerColor)}
+									class="menu-item"
+									role="menu-item"
+									id="menu-item-4"
+									tabindex="-1"
+								>
+									<div class="menu-icon">
+										<img src="./assets/controls/menu/rotate-camera.svg" />
+									</div>
+									<span>Flip Camera</span>
 								</div>
-								<span>Flip Camera</span>
-							</div>
+							)}
 						</div>
 					)}
-					<button onclick={toggleMenu} class="control-btn first">
+					<button
+						onclick={toggleMenu}
+						class={`control-btn first ${menuOpen && "active"}`}
+					>
 						<img
 							src="./assets/controls/menu.svg"
 							class="pointer-events-none"

@@ -38,6 +38,26 @@ $border-radius: 0.125rem;
       position: absolute;
       bottom: 0px;
       margin: .25rem;
+      .active {
+        background-color: #2e2d2d;
+      }
+      // z-index: 3;
+      &.top {
+          top: 0px;
+      }
+      &.center {
+          left: 50%;
+          transform: translate(-50%);
+          img{
+            width:3.5rem;
+            height:3.5rem;
+          }
+          .control-btn{
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+          }
+          opacity:.95
+      }
       &.left{
         left: 0px ;
       }
@@ -325,7 +345,7 @@ $border-radius: 0.125rem;
   z-index: 1;
   position: absolute;
   // top: 0px;
-  top: 25%;
+  top: 50%;
   left: 50%;
   padding-top: 0.25rem/* 4px */;
   // transform: translate(-50%);
