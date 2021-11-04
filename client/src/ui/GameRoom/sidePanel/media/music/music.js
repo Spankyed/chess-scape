@@ -257,7 +257,7 @@ function SongPlayer({ state, actions }){
 				let ctx = new (window.AudioContext || window.webkitAudioContext)();
 				ctx.decodeAudioData(event.target.result, function(buffer) {
 					let time = toTimeString(buffer.duration)
-					time += time.length === 3 ? 0 : ''
+					time += time.length === 3 ? 0 : '' // truncate time to 3 digits
 					resolve(time);
 				})
 			}

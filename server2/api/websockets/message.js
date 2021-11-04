@@ -26,6 +26,12 @@ const handler = async (event) => {
 
 	const { clientID, TOKEN, method } = message;
 
+	if ((!clientID || !TOKEN || !method)) {
+		console.warn(`Missing auth info or method not recongnized`);
+		await sendMessage(connection, { method: "unauthorize" });
+		return Responses._401({ message: "Unauthorized connection" });
+	}
+
 	const [isAuthorized, client] = await authorize(
 		clientID,
 		TOKEN,
@@ -50,12 +56,13 @@ const handler = async (event) => {
 		return Responses._401({ message: "Unauthorized connection" });
 	}
 
+	const { rawData , ...saveableMessage } = message;
 	await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: clientID,
 		updates: {
-			lastMessage: message,
+			lastMessage: saveableMessage,
 		},
 	});
 

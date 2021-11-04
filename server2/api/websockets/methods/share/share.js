@@ -18,7 +18,7 @@ module.exports = async function (
 	const { clientID, roomID, type } = message
 	// const match = await Dynamo.get(roomID, matchesTable);
 
-	if (!client.roomID != roomID) return Responses._400({ message: "Not in room" });
+	if (client.room != roomID) return Responses._400({ message: "Not in room" });
 
 	const mediaHandlers = { video, music };
 	

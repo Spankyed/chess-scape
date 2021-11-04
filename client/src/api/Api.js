@@ -176,7 +176,7 @@ function sendMessage(message, isBson) {
 		clientID, 
 		TOKEN // ! MUST SEND TOKEN FOR AUTH
 	};
-	if (isBson) connection.send(serialize(message));
+	if (isBson) connection.send(serialize(body));
 	else connection.send(JSON.stringify(body));
 	console.log(`%c Message sent [${message.method}]`, "color:orange;", { body });
 }
