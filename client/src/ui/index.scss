@@ -53,9 +53,9 @@ html, body {
     transition: all .3s ease;
     
     @keyframes blink-bg {
-        0% { background-color: m.$bg-contrast; }
-        50% { background-color: m.$bg-primary; }
-        100% { background-color: m.$bg-contrast; }
+        0% { background-color: m.$dark-brown; }
+        50% { background-color: m.$dark; }
+        100% { background-color: m.$dark-brown; }
     }
 
     .app {
