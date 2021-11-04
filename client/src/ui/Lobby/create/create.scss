@@ -295,7 +295,7 @@
 @media (max-height: 568px) {
     .create {
         .create-body{
-            height: 100vh;
+            max-height: 100vh;
             .choose-color{
                 min-height: 3.5rem !important;
                 max-height: 4rem !important;
