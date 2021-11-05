@@ -14,7 +14,7 @@ export default (initial) => ({
 		moves: moves.state,
 		media: media.state,
 		isVisible: false,
-		currTab: "moves",
+		currTab: "chat",
 	},
 
 	actions: {
