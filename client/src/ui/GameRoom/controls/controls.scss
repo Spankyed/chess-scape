@@ -16,7 +16,7 @@ $btn-secondary-color: #383734;
 
 // $controls-bg-color: #1c1c21;
 // $controls-bg-color: #708B75;
-$controls-bg-color: #1A1A1A;
+$controls-bg-color: m.$darker;
 $border-radius: 0.125rem;
 
 // CONTROLS
@@ -192,7 +192,7 @@ $border-radius: 0.125rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 0.5rem/* 8px */;
+    padding: 0.75rem/* 8px */;
     // margin-top: 0.5rem/* 8px */;
     margin-left: 0.5rem/* 12px */;
     margin-right: 0.5rem/* 12px */;
