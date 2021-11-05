@@ -14,37 +14,41 @@ export default initial => ({
 		isLoading: false,
 		isPreviewing: false,
 		songPreview: { 
+			ID: '',
 			src: null,
 			title: '',
 			fileName: '',
 			image: '',
 			duration: '',
-			dataReady: false
+			dataReady: false,
+			fromServer: false,
 		}
 	},
 	actions: { 
 		startLoading: _=> _=> ({isLoading: true}),
 		stopLoading: _=> _=> ({isLoading: false}),
 		setSelectedFile: file => _ => ({selectedFile: file}),
+		setProcessing: val => _ => ({isProcessing: val}),
 		addSong: song => state => {
-			let songId = song.songId
-			if (songId && state.songList[songId]) return {} // not reachable ids always diff; compare names instead
+			debuggger
+			let ID = song.ID
+			if (ID && state.songList[ID]) return {} // not reachable ids always diff; compare names instead
 			// let {songList, currSongId, autoPlay, isPreviewing} = state
 			let play = state.autoPlay || !state.currSongId 
 			return {
 				// isLoading: autoPlay,
 				songPreview: {}, // clear preview
-				songList: { [songId]: { songId, ...song },  ...state.songList }, 
-				currSongId: play ? songId : state.currSongId, // if autoplay, play new song
+				songList: { [ID]: { ID, ...song },  ...state.songList }, 
+				currSongId: play ? ID : state.currSongId, // if autoplay, play new song
 				isPreviewing: false
 			}
 		}, 
-		setSongData: ({songId, data, preview}) => ({songList, songPreview}) => (
+		setSongData: ({ID, data, preview}) => ({songList, songPreview}) => (
 			preview ? 
 			{ songPreview: {...songPreview, ...data }, isLoading: false} : 
-			{ songList: {...songList, [songId]: {...songList[songId], ...data}}}
+			{ songList: {...songList, [ID]: {...songList[ID], ...data}}}
 		),
-		setCurrSong: songId => _=> ({ currSongId: songId, isPreviewing: false}),
+		setCurrSong: ID => _=> ({ currSongId: ID, isPreviewing: false}),
 		setSongPreview: (song) => state => ({ songPreview: song, isPreviewing: true }),
 		cancelPreview: _ => _=> ({isPreviewing: false, isLoading: false}),
 		setShare: ({bool, persist}) => state => ({ allowShare: bool, persistShareSetting: persist}),
@@ -58,18 +62,25 @@ export default initial => ({
 			music: message => {
 				if (!state.allowShare) return
 				if (!state.persistShareSetting) promptShare(message, alert, actions)
-				else addFromBinary(message)
+				else playSharedSong(message);
 			}
 		})
-		function addFromBinary({song, rawData}){
-			let blob = new Blob([rawData], {type : 'audio/ogg'});
-			let blobUrl = URL.createObjectURL(blob);
-			// console.log('adding shared', {...song, src: blobUrl}) //addSong(songId)
-			actions.addSong({...song, src: blobUrl})
+		// function addFromBinary({song, rawData}){
+		// 	let blob = new Blob([rawData], {type : 'audio/ogg'});
+		// 	let blobUrl = URL.createObjectURL(blob);
+		// 	// console.log('adding shared', {...song, src: blobUrl}) //addSong(ID)
+		// 	actions.addSong({...song, src: blobUrl})
+		// }
+		async function playSharedSong({ song } = {}){
+			// let { song, rawData } = await Api.getSong(songUrl);
+			// let blob = new Blob([rawData], {type : 'audio/ogg'});
+			// let blobUrl = URL.createObjectURL(blob);
+			// console.log('adding shared', {...song, src: blobUrl}) //addSong(ID)
+			actions.addSong({ ...song, fromServer: true});
 		}
 		function promptShare(message, alert, actions){
 			let {setShare, addVideo} = actions
-			// songId = '3vBwRfQbXkg'
+			// ID = '3vBwRfQbXkg'
 			alert.show({
 				role: 'info',
 				icon: "./assets/sidePanel/controls/music_icon.svg",
@@ -78,7 +89,7 @@ export default initial => ({
 				actions: {
 					confirm: { text: 'Allow', handler: (bool, persist) => {
 						setShare({bool, persist})
-						addFromBinary(message)
+						playSharedSong(message);
 					}},
 					default: { text: 'Deny', handler: (bool, persist) => {
 						if (persist) setShare({bool, persist})
@@ -105,8 +116,8 @@ export default initial => ({
 })
 
 function SongPlayer({ state, actions }){
-	let {currSongId, isLoading, isPreviewing, songPreview, allowShare, selectedFile} = state // should be consts
-	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview, setSelectedFile} = actions
+	let {currSongId, isLoading, isPreviewing, songPreview, allowShare, selectedFile, isProcessing} = state // should be consts
+	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview, setSelectedFile, setProcessing} = actions
 	let isPlaying = !!currSongId
 	const noop = _=>{}
 
@@ -119,53 +130,95 @@ function SongPlayer({ state, actions }){
 		// todo: on error reset form
 	}
 	async function submit(){
-		// todo: https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
+		// todo: https://stackover3flow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
 		let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
-		let song = songPreview
+		let song = songPreview;
 		let file = selectedFile;
 		if (isPreviewing) addSong(song)
-		else {
+		else { // a song has already been played, new songs no longer previewable
 			file = setSelectedFile(form.song.files[0]).selectedFile
-			song = await processSong(file)
+			song = await processSong(file) // sets songPreview
 		}
 		if (allowShare) {
-			let rawData = await getRawSongData(file)
-			Api.shareMusic(song, rawData)
+			let songForm = new FormData();
+			songForm.append("file", file);
+
+			const { dataReady, src, ID, ...formData } = song
+
+			Object.keys(formData).forEach((key) =>
+				formData[key] && songForm.append(key, formData[key])
+			);
+			
+			console.log("songForm: ", songForm);
+			Api.shareSong(songForm);
 		}
 		form.reset()
 		delay(500).then(_ =>  form.song.value = [])
 	}
-	return(
-		<form name='song-form'>
-			<div class='song-player-wrapper'>
-				{ isLoading && <Loader/>}
-				{ isPlaying ?
-					<Song {...actions} {...state}/> :
+	return (
+		<form name="song-form">
+			<div class="song-player-wrapper">
+				{isLoading && <Loader />}
+				{isPlaying ? (
+					<Song {...actions} {...state} />
+				) : (
 					<div class="song-preview-wrapper h-full w-full">
-						<input onchange={preview} class={`file-input ${isPreviewing && 'no-pointers'}`} id="song" name="song" type='file' accept="audio/*" disabled={isPreviewing}/>
+						<input
+							onchange={preview}
+							class={`file-input ${
+								isPreviewing && "no-pointers"
+							}`}
+							id="song"
+							name="song"
+							type="file"
+							accept="audio/*"
+							disabled={isPreviewing}
+						/>
 						{/* <p class='invalid-message'>Song exceeds 10 mb file limit</p>  */}
-						{ isPreviewing ? 
-						<Preview song={songPreview} cancelPreview={cancelPreview}/> : 
-						<Input/>
-						}
-					</div> 
-				}
+						{isPreviewing ? (
+							<Preview
+								song={songPreview}
+								cancelPreview={cancelPreview}
+							/>
+						) : (
+							<Input />
+						)}
+					</div>
+				)}
 			</div>
 
-			{ (isPreviewing || isPlaying) &&
-			<div onclick={!isPlaying ? submit : noop} 
-					class={`add-btn ${ ((!isLoading && isPreviewing) || (!isPlaying && isPreviewing)) && 'preview'}`}>
-				{ isPlaying && 
-				<input onchange={submit} class='file-input' id="song" name="song" type='file' accept="audio/*"/>
-				}
-				<img class="add-icon" src="./assets/sidePanel/controls/plus_music.svg"/>
-				<span class='add-text'>
-					{isPreviewing ? "Play" : 'Add Song'}
-				</span>
-			</div>
-			}
+			{(isPreviewing || isPlaying) && (
+				<button
+					onclick={!isPlaying ? submit : noop}
+					class={`add-btn ${
+						((!isLoading && isPreviewing) ||
+							(!isPlaying && isPreviewing)) &&
+						"preview"
+					}`}
+					disabled={isProcessing}
+					type="button"
+				>
+					{isPlaying && (
+						<input
+							onchange={submit}
+							class="file-input"
+							id="song"
+							name="song"
+							type="file"
+							accept="audio/*"
+						/>
+					)}
+					<img
+						class="add-icon"
+						src="./assets/sidePanel/controls/plus_music.svg"
+					/>
+					<span class="add-text">
+						{isPreviewing ? "Play" : "Add Song"}
+					</span>
+				</button>
+			)}
 		</form>
-	)	
+	);	
 	function Song({currSongId, songList, autoPlay, setCurrSong, getState}){
 		const song = songList[currSongId]
 		let imageStyle = `background-image: url(${song.image})` // todo: add default img?
@@ -175,7 +228,7 @@ function SongPlayer({ state, actions }){
 				if(autoPlay){
 					let {songList, currSongId} = getState()
 					let nextSong = next(songList, currSongId)
-					if (nextSong) setCurrSong(nextSong.songId)
+					if (nextSong) setCurrSong(nextSong.ID)
 				}
 			}, false);
 		}
@@ -221,18 +274,20 @@ function SongPlayer({ state, actions }){
 			</div>
 		)
 	}
-
+	// SongPlayer Component Utilities
 	async function processSong(file, preview){
 		let song = parseMusicFile(file)
 		if (preview) setSongPreview(song)
 		else addSong(song)
-		let data = await getSongInfo(file, song)
-		setSongData({songId: song.songId, data, preview})
-		return song
+		setProcessing(true)
+		let data = await getSongInfo(file, song) // todo share song img along with song
+		setProcessing(false)
+		setSongData({ ID: song.ID, data, preview })
+		return {...song, ...data}
 	}
 	function parseMusicFile(file){
 		return {
-			songId: nanoid(),
+			ID: nanoid(),
 			dataReady: false,
 			src: URL.createObjectURL(file), 
 			fileName: file.name, 
@@ -267,10 +322,10 @@ function SongPlayer({ state, actions }){
 }
 
 function MusicItem({song, currSongId, setCurrSong}){
-	const isPlaying = song.songId == currSongId
+	const isPlaying = song.ID == currSongId
 	function select(){
 		// console.log('song ', song)
-		setCurrSong(song.songId)
+		setCurrSong(song.ID)
 	}
 	return(
 		<li onclick={select} class={`music-row ${isPlaying && 'selected'}`} title={song.title}>
@@ -281,7 +336,7 @@ function MusicItem({song, currSongId, setCurrSong}){
 				<div class="song-title">{song.title}</div>
 				<div class="song-time">
 					{/* { true ?  */}
-				{!song.dataReady ? 
+				{!song.dataReady && !song.fromServer ? 
 					<Loader/>:
 					// 'loading...':
 					song.duration
@@ -354,16 +409,16 @@ function next(obj, key) {
 	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
 };
 
-function getRawSongData(file) {
-	return new Promise((resolve, reject)=>{
-		var reader = new FileReader();
-		var rawData = new ArrayBuffer();            
-		reader.loadend = function() {}
-		reader.onload = function(e) {
-			rawData = e.target.result;
-			// console.log('rawData ', {rawData})
-			resolve(rawData)
-		}
-		reader.readAsArrayBuffer(file);
-	})
-}
+// function getRawSongData(file) {
+// 	return new Promise((resolve, reject)=>{
+// 		var reader = new FileReader();
+// 		var rawData = new ArrayBuffer();            
+// 		reader.loadend = function() {}
+// 		reader.onload = function(e) {
+// 			rawData = e.target.result;
+// 			// console.log('rawData ', {rawData})
+// 			resolve(rawData)
+// 		}
+// 		reader.readAsArrayBuffer(file);
+// 	})
+// }

@@ -1,7 +1,7 @@
 const Responses = require("../../../common/HTTP_Responses");
 // const Dynamo = require("../../../common/Dynamo");
 const video = require("./video");
-const { music } = require("./music");
+// const { music } = require("./music");
 const {
 	sendMessageToRoom,
 	sendMessageToRoomExcept,
@@ -9,6 +9,16 @@ const {
 
 // const matchesTable = process.env.matchesTableName;
 // const roomsTable = process.env.roomsTableName;
+
+/** 
+ * Share Song moved to http endpoints due to 
+ * 1mb payload limit on AWS API Gateway Websockets frames
+ * Previously songs were sent directly to room
+ * Now songs are uploaded to S3 bucket and 
+ * room clients can access the audio with a
+ * file location URL returned from S3 bucket upload.
+ * ! Files must be removed from bucket when room deleted
+ */
 
 module.exports = async function (
 	message,

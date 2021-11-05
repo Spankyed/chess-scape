@@ -1,5 +1,5 @@
 Resources:
-  DemoBucketUpload:
+  RoomsBucketUpload:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: ${self:custom.bucketName}

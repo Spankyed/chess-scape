@@ -1,6 +1,19 @@
 clientsTableName: Clients
 roomsTableName: Rooms
 matchesTableName: Matches
+mediaTableName: Media
+bucketName: room-music-bucket
+s3Sync:
+    - bucketName: ${self:custom.bucketName}
+      localDir: mockMusicData
+# Offline config below
+serverless-offline:
+  # hideStackTraces: true
+  allowCache: false
+  httpPort: 9001
+  # websocketPort: 3001
+  # webSocketHardTimeout: 7200
+  # webSocketIdleTimeout: 600
 dynamodb: 
   stages:
     - local
@@ -9,14 +22,10 @@ dynamodb:
     inMemory: true
     dbPath: offline/persist
     migrate: true
-    # delayTransientStatuses: true # simulate real service latency
+    # delayTransientStatuses: true # simulates real service latency
   migration:
     dir: offline/migrations
-
-serverless-offline:
-  # hideStackTraces: true
-  allowCache: false
-  httpPort: 9001
-  # websocketPort: 3001
-  # webSocketHardTimeout: 7200
-  # webSocketIdleTimeout: 600
+# for S3 offline
+s3:
+  host: localhost
+  directory: /tmp

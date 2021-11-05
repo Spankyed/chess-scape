@@ -288,6 +288,36 @@ async function createClient(userInfo) {
 		return newClient;
 	}
 }
+
+async function shareSong(songForm) {
+	const method = "POST";
+	const url = `${baseHttpUrl}/share-song`;
+	// todo: wrap below in try catch?
+	songForm.append("clientID", clientID);
+	songForm.append('TOKEN', TOKEN)
+	songForm.append('roomID', roomID)
+	// const body = JSON.stringify({ songForm, roomID, clientID, TOKEN });
+	const response = await fetch(url, { method, body: songForm });
+	if (response.ok) {
+		const res = await response.json();
+		console.log("%c Song created", "color:blue;", { res });
+		return res;
+	}
+}
+async function getSong(songForm) {
+	const method = "POST";
+	const headers = { "Content-Type": "multipart/form-data" };
+	const body = JSON.stringify({ songForm, clientID, TOKEN });
+	const url = `${baseHttpUrl}/share-song`;
+	// todo: wrap below in try catch?
+	const response = await fetch(url, { method, headers, body: songForm });
+	if (response.ok) {
+		const res = await response.json();
+		console.log("%c Song created", "color:blue;", { res });
+		return res;
+	}
+}
+
 async function searchSongImage(title) {
 	const method = "POST";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
@@ -325,7 +355,8 @@ export default {
 	sendMove,
 	sendChat,
 	shareVideo,
-	shareMusic,
+	// shareMusic,
+	shareSong,
 	isConnected: () => connected,
 	getClientID: () => clientID,
 };

@@ -9,16 +9,22 @@ provider:
   profile: serverlessUser
   region: us-east-1
   environment: ${file(yml/environment.yml)}
+  # apiGateway:
+  #   binaryMediaTypes:
+  #     - '*/*'
   iamRoleStatements:
     - Effect: Allow
       Action:
         - dynamodb:*
+        - s3:*
       Resource: '*'
 
 plugins:
   # - serverless-webpack
+  - serverless-s3-sync
   - serverless-offline
   - serverless-dynamodb-local
+  - serverless-s3-local
 
 custom: ${file(yml/variables.yml)}
 
@@ -26,3 +32,4 @@ functions: ${file(yml/functions.yml)}
 
 resources:
   - ${file(yml/dynamo.yml)}
+  - ${file(yml/s3.yml)}

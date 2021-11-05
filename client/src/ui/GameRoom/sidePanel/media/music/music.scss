@@ -152,6 +152,8 @@
         margin-bottom: 2px;;
         // width: 13%;
         width: auto;
+        min-width: min-content;
+        min-width: -webkit-fill-available;
         // border: 1px solid #4b5563;
         height: 1.75rem/* 28px */;
         // height: 2.5rem;

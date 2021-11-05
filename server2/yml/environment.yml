@@ -1,3 +1,5 @@
 clientsTableName: ${self:custom.clientsTableName}
 roomsTableName: ${self:custom.roomsTableName}
 matchesTableName: ${self:custom.matchesTableName}
+mediaTableName: ${self:custom.mediaTableName}
+bucketName: ${self:custom.bucketName}
