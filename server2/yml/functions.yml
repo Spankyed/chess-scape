@@ -19,6 +19,34 @@ createRoom:
         path: create-room
         method: POST
         cors: true
+shareSong:
+  handler: api/endpoints/shareSong.handler
+  events:
+    - http:
+        path: share-song
+        method: POST
+        cors: true
+# getSong:
+#   handler: api/endpoints/getSong.handler
+#   events:
+#       - http:
+#             path: get-song/{fileName}
+#             method: GET
+#             cors: true
+createFile:
+  handler: api/endpoints/createFile.handler
+  events:
+    - http:
+        path: create-file/{fileName}
+        method: POST
+        cors: true
+getFile:
+  handler: api/endpoints/getFile.handler
+  events:
+      - http:
+            path: get-file/{fileName}
+            method: GET
+            cors: true
 deleteRoom:
   handler: api/endpoints/deleteRoom.handler
   events:
