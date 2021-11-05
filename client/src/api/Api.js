@@ -1,7 +1,5 @@
 // The Api module is designed to handle all interactions with the server
 import { nanoid } from 'nanoid/non-secure'
-import { serialize, deserialize } from 'bson';
-import { Buffer } from 'buffer';
 import Sockette from "sockette";
 import { fromEvent, merge } from "rxjs";
 import { take } from "rxjs/operators";
@@ -76,11 +74,7 @@ async function createConnection() {
 	}
 	function onmessage({ data }) {
 		// handle incoming messages from connected client
-		let isBinary = data instanceof ArrayBuffer;
-		// let isBinary = Buffer.isBuffer(data)
-		let message = isBinary
-			? deserialize(Buffer.from(data), { promoteBuffers: true })
-			: JSON.parse(data);
+		let message = JSON.parse(data);
 		if (!message) return;
 		console.log(`%c Message received [${message.method}]`, "color:green;", {
 			message,
@@ -146,23 +140,6 @@ function end(endMethod) {
 	sendMessage({ method: "end", endMethod });
 }
 
-// function shareMusic(rawData){ connection.send(rawData) }
-// function shareMusic(rawData){ sendMessage(encode({ method: "share", type: "music", rawData })) }
-function shareMusic(songData, rawData) {
-	let { src, ...song } = songData;
-	let BSON = {
-		method: "share",
-		type: "music",
-		// src,
-		// roomID,
-		// clientID, // add clientID to msg after testing/development
-		song,
-		rawData: Buffer.from(rawData),
-		// action: 'message'
-	}
-	// let bson = serialize({ method: "share", type: "music", blob: rawData }) // test when rawData is type blob fails, file converted to obj and binary data loss
-	sendMessage(BSON, true);
-}
 
 function shareVideo(videoId) {
 	sendMessage({ method: "share", type: "video", videoId });
@@ -298,19 +275,6 @@ async function shareSong(songForm) {
 	songForm.append('roomID', roomID)
 	// const body = JSON.stringify({ songForm, roomID, clientID, TOKEN });
 	const response = await fetch(url, { method, body: songForm });
-	if (response.ok) {
-		const res = await response.json();
-		console.log("%c Song created", "color:blue;", { res });
-		return res;
-	}
-}
-async function getSong(songForm) {
-	const method = "POST";
-	const headers = { "Content-Type": "multipart/form-data" };
-	const body = JSON.stringify({ songForm, clientID, TOKEN });
-	const url = `${baseHttpUrl}/share-song`;
-	// todo: wrap below in try catch?
-	const response = await fetch(url, { method, headers, body: songForm });
 	if (response.ok) {
 		const res = await response.json();
 		console.log("%c Song created", "color:blue;", { res });

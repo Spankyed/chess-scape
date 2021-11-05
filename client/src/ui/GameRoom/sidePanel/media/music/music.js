@@ -65,17 +65,7 @@ export default initial => ({
 				else playSharedSong(message);
 			}
 		})
-		// function addFromBinary({song, rawData}){
-		// 	let blob = new Blob([rawData], {type : 'audio/ogg'});
-		// 	let blobUrl = URL.createObjectURL(blob);
-		// 	// console.log('adding shared', {...song, src: blobUrl}) //addSong(ID)
-		// 	actions.addSong({...song, src: blobUrl})
-		// }
 		async function playSharedSong({ song } = {}){
-			// let { song, rawData } = await Api.getSong(songUrl);
-			// let blob = new Blob([rawData], {type : 'audio/ogg'});
-			// let blobUrl = URL.createObjectURL(blob);
-			// console.log('adding shared', {...song, src: blobUrl}) //addSong(ID)
 			actions.addSong({ ...song, fromServer: true});
 		}
 		function promptShare(message, alert, actions){
@@ -142,14 +132,10 @@ function SongPlayer({ state, actions }){
 		if (allowShare) {
 			let songForm = new FormData();
 			songForm.append("file", file);
-
 			const { dataReady, src, ID, ...formData } = song
-
 			Object.keys(formData).forEach((key) =>
 				formData[key] && songForm.append(key, formData[key])
 			);
-			
-			console.log("songForm: ", songForm);
 			Api.shareSong(songForm);
 		}
 		form.reset()
@@ -408,17 +394,3 @@ function next(obj, key) {
 	i = keys.indexOf(key);
 	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
 };
-
-// function getRawSongData(file) {
-// 	return new Promise((resolve, reject)=>{
-// 		var reader = new FileReader();
-// 		var rawData = new ArrayBuffer();            
-// 		reader.loadend = function() {}
-// 		reader.onload = function(e) {
-// 			rawData = e.target.result;
-// 			// console.log('rawData ', {rawData})
-// 			resolve(rawData)
-// 		}
-// 		reader.readAsArrayBuffer(file);
-// 	})
-// }

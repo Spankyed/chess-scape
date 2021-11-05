@@ -5,7 +5,6 @@ const { withHooks } = require("../common/hooks");
 const { authorize } = require("../common/authorize");
 const methods = require("./methods");
 const connect = require("./connect");
-const { parseMessage } = require("./methods/share/music");
 
 const clientsTable = process.env.clientsTableName;
 
@@ -21,8 +20,8 @@ const handler = async (event) => {
 		stage,
 	};
 
-	const message = parseMessage(event.body);
-	if (!message) return Responses._400({ message: "Message couldn't be parsed" });
+	const message = event.body;
+	if (!message) return Responses._400({ message: "No message found" });
 
 	const { clientID, TOKEN, method } = message;
 
@@ -56,13 +55,12 @@ const handler = async (event) => {
 		return Responses._401({ message: "Unauthorized connection" });
 	}
 
-	const { rawData , ...saveableMessage } = message;
 	await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",
 		primaryKeyValue: clientID,
 		updates: {
-			lastMessage: saveableMessage,
+			lastMessage: message,
 		},
 	});
 
