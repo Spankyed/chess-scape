@@ -170,7 +170,7 @@
                         width: 100%;
                         opacity: 100%;
                         tr {
-                            padding-left: m.$spacing--small;
+                            padding-left: m.$spacing-sm;
                             // border-bottom: 1px solid rgba(0,0,0,.1);
                             td {
                                 span {
@@ -253,12 +253,12 @@
                     }
 
                     td {
-                        padding-right: m.$spacing--small;
+                        padding-right: m.$spacing-sm;
                         padding-left: .65rem;
-                        padding-top: m.$spacing--small/* 12px */;
-                        padding-bottom: m.$spacing--small/* 12px */;
-                        margin-bottom: m.$spacing--small/* 12px */;
-                        margin-top: m.$spacing--small/* 12px */;
+                        padding-top: m.$spacing-sm/* 12px */;
+                        padding-bottom: m.$spacing-sm/* 12px */;
+                        margin-bottom: m.$spacing-sm/* 12px */;
+                        margin-top: m.$spacing-sm/* 12px */;
                         height:4rem;
                         align-items: center;
                         text-align: start;
@@ -306,10 +306,10 @@
                                 max-width: fit-content;
                                 background-color: rgb(23, 55, 94);
                                 color: rgb(153, 173, 230);
-                                padding-top: m.$spacing--xs;
-                                padding-bottom: m.$spacing--xs;
-                                padding-left: m.$spacing--small;
-                                padding-right: m.$spacing--small;
+                                padding-top: m.$spacing-xs;
+                                padding-bottom: m.$spacing-xs;
+                                padding-left: m.$spacing-sm;
+                                padding-right: m.$spacing-sm;
                                 border-radius: 9999px;
                                 // font-weight: 600;
                                 &.full {
