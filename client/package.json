@@ -20,8 +20,6 @@
 	},
 	"dependencies": {
 		"babylonjs": "^3.3.0",
-		"bson": "^4.4.1",
-		"buffer": "^6.0.3",
 		"chess.js": "^0.12.0",
 		"file-saver": "^2.0.5",
 		"hyperapp": "1.2.9",
