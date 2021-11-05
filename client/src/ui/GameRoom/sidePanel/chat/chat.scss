@@ -72,7 +72,6 @@ $chat-footer-color: m.$dark;
     }
     .chat-footer { 
         border-top: m.$border;
-        background-color: $chat-footer-color;
         bottom: 0;
         position: relative;
         width: 100%;
@@ -100,9 +99,11 @@ $chat-footer-color: m.$dark;
                 box-sizing: border-box;
                 outline-width: 0;
                 // background-color: #f8f8f8;
-                background-color: transparent;
+                // background-color: transparent;
+                background-color: $chat-footer-color;
                 // background-color: m.$darker;
                 /*background: rgba(0, 0, 0, 0.3);*/
+                margin: m.$spacing-sm;
                 padding: m.$spacing-sm;
                 white-space: pre-wrap;
                 overflow-wrap: break-word;

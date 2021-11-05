@@ -8,6 +8,7 @@ const {
 const roomsTable = process.env.roomsTableName;
 
 module.exports = async function ({ clientID, roomID, text }, { username }) {
+	// todo verify roomID == client.roomID (same for share method)
 	try {
 		const room = await Dynamo.get(roomID, roomsTable);
 
