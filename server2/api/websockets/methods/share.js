@@ -1,14 +1,13 @@
-const Responses = require("../../../common/HTTP_Responses");
+const Responses = require("../../common/HTTP_Responses");
 // const Dynamo = require("../../../common/Dynamo");
-const video = require("./video");
+// const video = require("./video");
 // const { music } = require("./music");
 const {
 	sendMessageToRoom,
 	sendMessageToRoomExcept,
-} = require("../../../common/websocket/message");
+} = require("../../common/websocket/message");
 
-// const matchesTable = process.env.matchesTableName;
-// const roomsTable = process.env.roomsTableName;
+// const mediaTable = process.env.mediaTableName;
 
 /** 
  * Share Song moved to http endpoints due to 
@@ -29,7 +28,7 @@ module.exports = async function (
 
 	if (client.room != roomID) return Responses._400({ message: "Not in room" });
 
-	const mediaHandlers = { video };
+	const mediaHandlers = { video: handleVideo };
 	
 	try {
 		const response = mediaHandlers[type](message);
@@ -43,4 +42,9 @@ module.exports = async function (
 		console.error(err);
 		return Responses._400({ error: err.message });
 	}
+};
+
+function handleVideo({ videoId }) {
+	if (typeof videoId != "string") throw new Error("Invalid viedoId");
+	return { method: "share", type: "video", videoId };
 };

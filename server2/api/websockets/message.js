@@ -26,7 +26,7 @@ const handler = async (event) => {
 	const { clientID, TOKEN, method } = message;
 
 	if ((!clientID || !TOKEN || !method)) {
-		console.warn(`Missing auth info or method not recongnized`);
+		console.warn(`Missing auth info or method not recognized`);
 		await sendMessage(connection, { method: "unauthorize" });
 		return Responses._401({ message: "Unauthorized connection" });
 	}

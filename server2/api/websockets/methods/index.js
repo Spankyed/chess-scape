@@ -8,7 +8,7 @@ const offer = require("./offer");
 const draw = require("./draw");
 const rematch = require("./rematch");
 const chat = require("./chat");
-const share = require("./share/share");
+const share = require("./share");
 
 module.exports = {
 	join,
