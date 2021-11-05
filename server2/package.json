@@ -11,6 +11,7 @@
 		"lambda-hooks": "^0.2.1",
 		"lambda-multipart-parser": "^1.0.1",
 		"nanoid": "^3.1.30",
+		"node-abort-controller": "^3.0.1",
 		"node-html-parser": "^5.1.0",
 		"serverless-s3-local": "^0.6.20",
 		"serverless-s3-sync": "^1.17.3",
