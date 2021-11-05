@@ -3,9 +3,9 @@ roomsTableName: Rooms
 matchesTableName: Matches
 mediaTableName: Media
 bucketName: room-music-bucket
-s3Sync:
-    - bucketName: ${self:custom.bucketName}
-      localDir: mockMusicData
+# s3Sync:
+#     - bucketName: ${self:custom.bucketName}
+#       localDir: mockMusicData
 # Offline config below
 serverless-offline:
   # hideStackTraces: true
