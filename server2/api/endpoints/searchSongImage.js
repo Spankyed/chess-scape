@@ -31,6 +31,7 @@ async function getGoogleImage(search) {
 		encodeURIComponent(search + " song");
 	let page = await fetchWithTimeout(url);
 	// console.timeEnd('fetch')
+	if (!page) return
 	let html = await page.text();
 	let parsedPage = HTMLParser.parse(html);
 	let img = parsedPage.querySelectorAll("img")[1].attributes.src;
@@ -38,7 +39,7 @@ async function getGoogleImage(search) {
 }
 
 async function fetchWithTimeout(resource, options = {}) {
-	const { timeout = 1500 } = options;
+	const { timeout = 2300 } = options;
 	const controller = new AbortController();
 	const id = setTimeout(() => controller.abort(), timeout);
 	const response = await fetch(resource, {
