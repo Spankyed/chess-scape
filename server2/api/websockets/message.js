@@ -76,5 +76,4 @@ const handler = async (event) => {
 	});
 };
 
-exports.handler = withHooks([])(handler);
-// exports.handler = withHooks(["parse"])(handler);
+exports.handler = withHooks(["parse"])(handler);
