@@ -51,17 +51,17 @@ export default class SceneManager {
         this._scene.clearColor = new BABYLON.Color4(0,0,0,0);
         const narrowDevice = (window.innerWidth/window.innerHeight) < 1.1
         let cameraDistance = narrowDevice ? 33 : 25
-        var camera = new BABYLON.ArcRotateCamera("Camera", 0, 3, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
+        var camera = new BABYLON.ArcRotateCamera("Camera", 0, 2, cameraDistance, new BABYLON.Vector3(0, 0, 0), this._scene);
         camera.attachControl(canvas, true);
         camera.inputs.attached.pointers.detachControl();
         // camera.inputs.attached.keyboard.detachControl();
         camera.inputs.attached.mousewheel.detachControl();
         // console.log('inputs',camera.inputs)
         // camera.inputs.add(new FreeCameraKeyboardRotateInput());
-        camera.lowerBetaLimit = 0.4;
-        camera.upperBetaLimit = (Math.PI / 2) * .80;
+        camera.lowerBetaLimit = 0.25;
+        camera.upperBetaLimit = (Math.PI / 2) * .65;
         camera.inertia = 0.65;
-        camera.fov=.7
+        camera.fov = .7
 
         // camera.keysUp = [87]; // w
         // camera.keysDown = [83]; // S
@@ -131,7 +131,7 @@ export default class SceneManager {
 			camera.beta,
 			0.6,
 			0,
-			ease
+            ease
 		);
     }
 }
