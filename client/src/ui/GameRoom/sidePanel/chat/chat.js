@@ -72,12 +72,9 @@ export default initial => ({
 
 		return (
 			// ! root el needs key to fix grammarly breaking textarea
-			<div oncreate={init} class="h-full" key="_chat">
-				<div
-					class="chat-window flex flex-col items-end"
-					style="overflow-anchor: none;"
-				>
-					<ul class="w-full">
+			<div oncreate={init} class="chat" key="_chat">
+				<div class="chat-window" >
+					<ul>
 						{messages.map((message, i) => (
 							<Message message={message} />
 						))}
@@ -86,13 +83,12 @@ export default initial => ({
 				<div class="chat-footer">
 					<div class="input-wrapper">
 						<textarea
-							class="resize-none w-full px-3 py-1 text-gray-700 border rounded-sm focus:outline-none"
+							class="chat-input"
 							rows="2"
 							autocomplete="off"
 							placeholder="Type here and press enter"
 							onkeyup={handleKeyPress}
 							onkeydown={handleKeyPress}
-							style="white-space: pre-wrap;overflow-wrap: break-word;"
 							// oninput={e => modify({ message: e.target.value })}
 							// value={state.message}
 						/>
@@ -114,33 +110,23 @@ export default initial => ({
 function Message({message}){
 	const imgSeed = message.username || 'dicebear';
 	return (
-		<li class="message flex justify-between items-center mt-3 text-lg transition">
-			<div class="flex ml-1">
-				{!message.appMsg && (
-					<img
-						src={`https://avatars.dicebear.com/api/avataaars/${imgSeed}.svg`}
-						width="40"
-						height="40"
-						class="rounded-md mt-2"
-					/>
-				)}
+		<li class="message">
+			{!message.appMsg && (
+				<img
+					src={`https://avatars.dicebear.com/api/avataaars/${imgSeed}.svg`}
+				/>
+			)}
 
-				<div class="flex flex-row flex-wrap ml-2">
-					{!message.appMsg && (
-						<div class="w-full">
-							<span class="font-medium text-black">
-								{message.username}
-							</span>
-							{/* <span class="text-sm text-gray-300 pl-2">{message.time}</span> */}
-						</div>
-					)}
-					<span
-						class="text-gray-200 text-gray-800"
-						style="word-break: break-word;"
-					>
-						{message.text}
-					</span>
-				</div>
+			<div class="text">
+				{!message.appMsg && (
+					<div class="user-name">
+							{message.username}
+						{/* <span class="text-sm text-gray-300 pl-2">{message.time}</span> */}
+					</div>
+				)}
+				<span class="message-text">
+					{message.text}
+				</span>
 			</div>
 		</li>
 		// <div class="container dark">
