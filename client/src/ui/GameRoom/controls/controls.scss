@@ -220,7 +220,6 @@ $border-radius: 0.125rem;
       flex-direction: row;
       flex-wrap: wrap;
       color: rgba(55, 65, 81, 1);
-      font-weight: 600;
       align-items: center;
       text-align: center;
       // &.left{
@@ -231,8 +230,10 @@ $border-radius: 0.125rem;
       // }
       .name{
         width: 100%;
-        font-size: 1.7rem/* 24px */;
+        font-size: m.$font-size-lg/* 24px */;
+        font-weight: 600;
         line-height: 2rem/* 32px */;
+        letter-spacing: .1rem;
         color: rgba(255, 255, 255, 1);
         line-height: 1.25;
         text-overflow: ellipsis;
