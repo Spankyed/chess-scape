@@ -71,6 +71,7 @@ $chat-footer-color: m.$dark;
         }
     }
     .chat-footer { 
+        border-top: m.$border;
         background-color: $chat-footer-color;
         bottom: 0;
         position: relative;
