@@ -44,17 +44,17 @@ html, body {
     // background-size: 3em 3em;
 
     // slow blink animation 
-    -webkit-animation: blink-bg 4s infinite;  /* Safari 4+ */
-    -moz-animation: blink-bg 4s infinite;  /* Fx 5+ */
-    -o-animation: blink-bg 4s infinite;  /* Opera 12+ */
-    animation: blink-bg 4s infinite;  /* IE 10+, Fx 29+ */
-    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-	animation-iteration-count: 6;
+    -webkit-animation: blink-bg 1.4s infinite;  /* Safari 4+ */
+    -moz-animation: blink-bg 1.4s infinite;  /* Fx 5+ */
+    -o-animation: blink-bg 1.4s infinite;  /* Opera 12+ */
+    animation: blink-bg 1.4s infinite;  /* IE 10+, Fx 29+ */
+    animation-timing-function: cubic-bezier(0.25, 0.1, 0.85, 1);
+	// animation-iteration-count: 6;
     transition: all .3s ease;
     
     @keyframes blink-bg {
-        0% { background-color: m.$dark-brown; }
-        50% { background-color: m.$dark; }
+        0% { background-color: m.$dark; }
+        40% { background-color: m.$dark-brown; }
         100% { background-color: m.$dark-brown; }
     }
 
