@@ -291,7 +291,7 @@ async function searchSongImage(title) {
 	if (response.ok) {
 		const res = await response.json();
 		console.log("%c Song image", "color:blue;", { image: res?.image });
-		return res?.image;
+		return res &&  JSON.parse(res?.image);
 	}
 }
 
