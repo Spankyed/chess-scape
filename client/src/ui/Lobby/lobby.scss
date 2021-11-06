@@ -211,7 +211,7 @@
                                 &.host {
                                     align-items: center;
                                     .data{
-                                        min-width: 3rem;
+                                        min-width: 2.9rem;
                                     }
                                 }
                                 &.enter {
@@ -278,6 +278,7 @@
                         &.host {
                             display: flex;
                             span {
+                                max-width: 2.9rem;
                                 white-space: nowrap;
                                 overflow: hidden;
                                 text-overflow: ellipsis;
@@ -498,6 +499,7 @@
                     margin-right: 1rem !important;
                 }
             }
+
         }
     }
 }
@@ -528,6 +530,14 @@
                 button {
                     img {
                         padding-right: 0.5rem;
+                    }
+                }
+            }
+            tbody{
+                .host{
+                    span{
+                        max-width: 6rem !important;
+                        min-width: 3rem !important;
                     }
                 }
             }
