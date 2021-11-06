@@ -20,8 +20,8 @@ export default initial => ({
 		endReview: _=> _=> ({inReview: false, currMove: null}),
 		clear: _=> _=> ({moves: { w:[], b:[] }}),
 	},
-	view: (state, actions) => ({alert}) => {
-		function download(type){
+	view: (state, actions) => ({ alert }) => {
+		const download = (type) => () => {
 			let date = new Date().toLocaleDateString('en-GB', {
 				month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
 			}).replace(/\//g, '-').replace(/,/, '').replace(/:/, '');
@@ -32,41 +32,48 @@ export default initial => ({
 			});
 			saveAs(blob, filename);
 		}
-		return (
-			<div class="h-full w-full">
-				<div>
-				<div class='header w-full flex justify-end'>
-					<h2 class="dl-header pr-2">Download</h2>
-					<button onclick={_=> download('pgn')} class="download-button" type="button">PGN</button>
-					<button onclick={_=> download('fen')} class="download-button" type="button">FEN</button>
-				</div>
-				</div>
 
-				<div class="moves move-list flex flex-row h-full w-full">
-					<index class="h-full w-1/5 text-lg bg-gray-200 flex flex-col">
-						{
-							[...new Array(state.moves.w.length)].map((_,idx) => (
-								<span>{idx+1}</span>
-							))
-						}
+		return (
+			<div class="moves">
+				<div class="header">
+					<h2 class="header-text">Download</h2>
+					<button onclick={download("pgn")} type="button">
+						PGN
+					</button>
+					<button onclick={download("fen")} type="button">
+						FEN
+					</button>
+				</div>
+				<div class="move-list">
+					<index>
+						{[...new Array(state.moves.w.length)].map((_, idx) => (
+							<span class="number">{++idx}</span>
+						))}
 					</index>
-					<div class="white colors-moves h-full flex flex-col w-2/5">
-					{
-						state.moves.w.map((move,i)=>
-							<Move move={move} alert={alert} {...actions} {...state}/>
-						)
-					}
-					</div>
-					<div class="black colors-moves h-full flex flex-col w-2/5">
-					{
-						state.moves.b.map((move,i)=>
-							<Move move={move} alert={alert} {...actions} {...state}/>
-						)
-					}
+					<div class="move-area">
+						<div class="moves-for white">
+							{state.moves.w.map((move, i) => (
+								<Move
+									move={move}
+									alert={alert}
+									{...actions}
+									{...state}
+								/>
+							))}
+						</div>
+						<div class="moves-for black">
+							{state.moves.b.map((move, i) => (
+								<Move
+									move={move}
+									alert={alert}
+									{...actions}
+									{...state}
+								/>
+							))}
+						</div>
 					</div>
 				</div>
 			</div>
-
 		);
 	},
 })
@@ -79,15 +86,21 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 		interact.board.moveService.send({type: 'REVIEW', value: move})
 	}
 	return (
-		<move onclick={review} class={`${ currMove == move && ' active'}`}>
-			<sans> {pieceSymbols[move.piece]} </sans>
-			- {move.san}
-		</move>
-	)
+		<div class="move-wrapper">
+			<move
+				onclick={review}
+				class={`${currMove == move && " active"}`}
+				title={move.san}
+			>
+				<sans>{pieceSymbols[move.piece]} </sans>
+				{move.san}
+			</move>
+		</div>
+	);
 }
 function promptReview(alert, endReview){
 	alert.show({
-		role: "info",
+		role: "warn",
 		id: "review",
 		icon: "./assets/sidePanel/controls/review_icon.svg",
 		heading: "Reviewing Moves",
