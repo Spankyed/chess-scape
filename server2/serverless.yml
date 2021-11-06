@@ -8,6 +8,9 @@ provider:
   lambdaHashingVersion: 20201221
   profile: serverlessUser
   region: us-east-1
+  # apiName: ${self:service}
+  # memorySize: : 128 # mb
+  # timeout: 0: : 10 # seconds
   environment: ${file(yml/environment.yml)}
   # apiGateway:
   #   binaryMediaTypes:
