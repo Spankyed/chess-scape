@@ -50,26 +50,28 @@ export default initial => ({
 							<span class="number">{++idx}</span>
 						))}
 					</index>
-					<div class="move-area">
-						<div class="moves-for white">
-							{state.moves.w.map((move, i) => (
-								<Move
-									move={move}
-									alert={alert}
-									{...actions}
-									{...state}
-								/>
-							))}
-						</div>
-						<div class="moves-for black">
-							{state.moves.b.map((move, i) => (
-								<Move
-									move={move}
-									alert={alert}
-									{...actions}
-									{...state}
-								/>
-							))}
+					<div class="move-area-wrapper">
+						<div class="move-area">
+							<div class="moves-for white">
+								{state.moves.w.map((move, i) => (
+									<Move
+										move={move}
+										alert={alert}
+										{...actions}
+										{...state}
+									/>
+								))}
+							</div>
+							<div class="moves-for black">
+								{state.moves.b.map((move, i) => (
+									<Move
+										move={move}
+										alert={alert}
+										{...actions}
+										{...state}
+									/>
+								))}
+							</div>
 						</div>
 					</div>
 				</div>
