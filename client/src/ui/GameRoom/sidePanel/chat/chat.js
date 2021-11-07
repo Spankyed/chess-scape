@@ -86,7 +86,7 @@ export default initial => ({
 							class="chat-input"
 							rows="2"
 							autocomplete="off"
-							placeholder="Type here and press enter"
+							placeholder="Type and press enter"
 							onkeyup={handleKeyPress}
 							onkeydown={handleKeyPress}
 							// oninput={e => modify({ message: e.target.value })}
