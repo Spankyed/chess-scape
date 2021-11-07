@@ -184,15 +184,15 @@ export default (initial) => ({
 					<LoaderView alert={actions.alert} />
 					{/* } */}
 					<div class="game-area">
-							<ControlsView
-								roomID={roomID}
-								leaveRoom={leave}
-								roomState={state}
-								toggleSidePanel={
-									actions.sidePanel.toggleSidePanel
-								}
-								alert={actions.alert}
-							/>
+						<ControlsView
+							roomID={roomID}
+							leaveRoom={leave}
+							roomState={state}
+							toggleSidePanel={
+								actions.sidePanel.toggleSidePanel
+							}
+							alert={actions.alert}
+						/>
 						<GameView
 							{...{
 								roomID,
