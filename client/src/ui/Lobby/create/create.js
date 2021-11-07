@@ -216,7 +216,7 @@ function GameType({ type, selectGameType, selectedGameType }) {
 			class={`type 
 			${type.id == selectedGameType && " selected"} 
 			${type.name != "forever" && " temp-disabled"}`}
-			title={type.name != "forever" ? type.name : "Disabled"}
+			title={type.name == "forever" ? type.name : "Type Disabled"}
 		>
 			<div class="time">
 				<h2 class="name">{capitalize(type.name)}</h2>
