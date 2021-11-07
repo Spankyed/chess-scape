@@ -153,7 +153,6 @@ $border-radius: 0.125rem;
       }
     }
     .control-btn {
-      border: m.$border;
       pointer-events: auto;
       background-color: $controls-bg-color;
       color: rgba(255, 255, 255, 1);
@@ -161,6 +160,7 @@ $border-radius: 0.125rem;
       padding-right: 1rem/* 16px */;
       padding-top: 0.5rem/* 8px */;
       padding-bottom: 0.5rem/* 8px */;
+      border: m.$border;
       border-radius: $border-radius;
       box-shadow: m.$shadow;
       outline: 2px solid transparent;
@@ -172,6 +172,7 @@ $border-radius: 0.125rem;
       // transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       // transition-duration: 150ms;
       img {
+        pointer-events: none;
         height: 3rem/* 48px */;
       }
 
@@ -184,8 +185,9 @@ $border-radius: 0.125rem;
   width:100%;
   .player {
     &.selected {
-        box-shadow:#d6d6d667 0px 0px 5px 3px !important;
+      box-shadow:#d6d6d667 0px 0px 5px 3px !important;
     }
+    flex-wrap: no-wrap;
     background-color: $controls-bg-color;
     position: relative;
     display: flex;
@@ -199,15 +201,17 @@ $border-radius: 0.125rem;
     border-radius: $border-radius;
     --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    max-width: 30%;
+    width: 20%;
+    max-width: 20%;
     &.left { float:left; }
     &.right { float:right; }
     .picture{
-      height: 3.5rem;
+      height: 3.2rem;
+      width: 3.2rem;
       border-radius: $border-radius;
       --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
       box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-      width: 33.333333%;
+      // width: 30%;
       display: none;
       // background-color: m.$bg-color;
       background-color: m.$green;
