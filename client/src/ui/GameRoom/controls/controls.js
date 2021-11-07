@@ -128,11 +128,9 @@ export default (initial) => ({
 });
 
 function Players({ players, game, gameOver, matchInfo }) {
-	let defaultSrc = "./assets/controls/avatar-placeholder.svg";
-	let userImg = (username) =>
-		username
+	let userImg = (username) => username
 			? `https://avatars.dicebear.com/api/avataaars/${username}.svg`
-			: defaultSrc;
+			: "./assets/controls/avatar-placeholder.svg";
 	let { white, black } = players;
 	let { colorToMove, matchStarted } = game;
 	let isTurn = (color) => color === colorToMove && matchStarted && !gameOver;
@@ -145,7 +143,10 @@ function Players({ players, game, gameOver, matchInfo }) {
 					isTurn("white") && "selected"
 				}`}
 			>
-				<img class="picture" src={userImg(white?.username)} />
+				<img
+					class={`picture ${!white?.username && "default"}`}
+					src={userImg(white?.username)}
+				/>
 				<div class="tagline left">
 					{white?.username ? (
 						<span class="name">{white.username}</span>
@@ -170,7 +171,10 @@ function Players({ players, game, gameOver, matchInfo }) {
 					)}
 					{/* <div class="clock"></div> */}
 				</div>
-				<img class="picture" src={userImg(black?.username)} />
+				<img
+					class={`picture ${!black?.username && "default"}`}
+					src={userImg(black?.username)}
+				/>
 			</div>
 		</div>
 	);

@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="981px" height="822px" viewBox="0 0 981 822" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+<svg width="835px" height="822px" viewBox="0 0 835 822" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <path d="M0 0L980.645 0L980.645 821.645L0 821.645L0 0Z" id="path_1" />
+    <path d="M0 0L835 0L835 822L0 822L0 0Z" id="path_1" />
     <clipPath id="mask_1">
       <use xlink:href="#path_1" />
     </clipPath>
   </defs>
-  <path d="M0 0L980.645 0L980.645 821.645L0 821.645L0 0Z" id="Background" fill="#E4E6E7" fill-rule="evenodd" stroke="none" />
-  <g clip-path="url(#mask_1)">
-    <g id="Group" transform="translate(182.69504 82.20003)">
-      <path d="M0 220.591C0 98.7618 88.6476 0 198 0C307.352 0 396 98.7618 396 220.591C396 342.419 307.352 441.181 198 441.181C88.6476 441.181 0 342.419 0 220.591Z" transform="translate(108.94993 0)" id="Ellipse" fill="#AEB4B7" fill-rule="evenodd" stroke="none" />
-      <path d="M0.383505 251.473C0.383505 86.6019 138.496 0 308.867 0C479.237 0 617.35 86.6019 617.35 251.473C617.35 260.973 617.35 275 617.35 275L0.383506 275C0.383506 275 -0.479382 267.048 0.383505 251.473Z" transform="translate(0 465.00006)" id="Ellipse-2" fill="#AEB4B7" fill-rule="evenodd" stroke="none" />
+  <g id="avatar-placeholder">
+    <path d="M0 0L835 0L835 822L0 822L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+    <g clip-path="url(#mask_1)">
+      <g id="Group" transform="translate(109.69504 81.99988)">
+        <g id="Group">
+          <path d="M0 220.591C0 98.7618 88.6476 4.57764e-05 198 4.57764e-05C307.352 4.57764e-05 396 98.7618 396 220.591C396 342.419 307.352 441.181 198 441.181C88.6476 441.181 0 342.419 0 220.591L0 220.591Z" transform="translate(108.94992 0)" id="Ellipse" fill="#AEB4B7" fill-rule="evenodd" stroke="none" />
+          <path d="M0.383499 251.473C0.383499 86.6019 138.496 0 308.867 0C479.237 0 617.35 86.6019 617.35 251.473C617.35 260.973 617.35 275 617.35 275L0.383499 275C0.383499 275 -0.479385 267.048 0.383499 251.473L0.383499 251.473Z" transform="translate(0 465.0001)" id="Ellipse-2" fill="#AEB4B7" fill-rule="evenodd" stroke="none" />
+        </g>
+      </g>
     </g>
   </g>
 </svg>

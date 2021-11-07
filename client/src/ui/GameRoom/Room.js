@@ -188,9 +188,7 @@ export default (initial) => ({
 							roomID={roomID}
 							leaveRoom={leave}
 							roomState={state}
-							toggleSidePanel={
-								actions.sidePanel.toggleSidePanel
-							}
+							toggleSidePanel={actions.sidePanel.toggleSidePanel}
 							alert={actions.alert}
 						/>
 						<GameView
@@ -205,7 +203,7 @@ export default (initial) => ({
 
 					<SidePanelView
 						roomID={roomID}
-						isLoading={state.loader.isLoading}
+						loaderRemoved={state.loader.removed}
 						alert={actions.alert}
 					/>
 				</div>
