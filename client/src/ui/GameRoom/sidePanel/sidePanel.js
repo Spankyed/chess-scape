@@ -40,10 +40,9 @@ export default (initial) => ({
 			const MovesView = moves.view(state.moves, actions.moves);
 			const MediaView = media.view(state.media, actions.media);
 			const isCurrTab = (tab) => currTab === tab;
-			return (
+			return ( !loaderRemoved ? '' :
 				<div class={`side-panel
 					${!state.isVisible && " panel-hidden"}
-					${!loaderRemoved && " hidden"}
 				`}>
 					<div
 						onclick={actions.hideSidePanel}
