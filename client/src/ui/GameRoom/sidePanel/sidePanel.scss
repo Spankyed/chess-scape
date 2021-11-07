@@ -38,12 +38,13 @@ $text-color: #D4D3D3;
 	}
 	.bg-overlay  {
 		z-index: 97;
-		background-color: rgba(17, 24, 39, 1);
+		background-color: rgba(0,0,0,.5);
+		// background-color: rgba(17, 24, 39, 1);
 		position: absolute;
 		height: 100%;
 		width: 100%;
 		top: 0px;
-		opacity: 0.5; // remove and  set bg color opacity
+		// opacity: 0.5; // remove and  set bg color opacity
 		display: block;
 		transform: translateX(0);
 		transition: all .1s ease-in-out, opacity 2s ease;
@@ -75,8 +76,8 @@ $text-color: #D4D3D3;
 				margin-top: 0.25rem/* 4px */;
 				padding-top: 0.5rem/* 8px */;
 				padding-bottom: 0.5rem/* 8px */;
-				padding-left: 1rem/* 16px */;
-				padding-right: 1rem/* 16px */;
+				padding-left: .5rem;
+				padding-right: .5rem;
 				// font-weight: 600;
 				color: $text-color;
 				// ------
@@ -84,6 +85,7 @@ $text-color: #D4D3D3;
 				display: inline-block;
 				text-transform: uppercase;
 				border: m.$border;
+      			border-radius: $border-radius;
 				&:hover {
 					background-color: #4c4c4c33;
 				}
@@ -102,6 +104,7 @@ $text-color: #D4D3D3;
 			// background-color: $panel-color;
 			background-color: m.$darker;
       		border: m.$border;
+     		border-radius: $border-radius;
 			border-top: 0px;
 			height: 100%;
 			width: 100%;
@@ -115,7 +118,7 @@ $text-color: #D4D3D3;
 				}
 			}
 			.panel-toggle {
-				z-index:98;
+				z-index: 98;
 				position: absolute;
 				transform: translate(-100%, 0%);
 				// left: -100%;
@@ -179,7 +182,12 @@ $text-color: #D4D3D3;
 
 
 //   'sm': '640px',
-// => @media (min-width: 640px) { ... }
+@media (min-width: 640px) { 
+	.side-panel .panel-wrapper .tabs .tab {
+		padding-left: .75rem;
+		padding-right: .75rem;
+	}
+}
 
 //   'md': '768px',
 // => @media (min-width: 768px) { ... }
