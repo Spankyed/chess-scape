@@ -129,21 +129,17 @@ $submit-button-color: m.$green;
                     padding-top: 0px;
                     height: 5vh;
                     min-height: 3rem;
+                    &:first-child{
+                        margin-top: .25rem;
+                    }
                     move {
-                        &:first-child{
-                            margin-top: .25rem;
-                        }
                         background-color: #4c4c4c33; 
                         // background-color: $chat-footer-color;
                         height: 2rem;
                         padding-left: .4rem;
-                        flex-shrink: 0;
                         border: m.$border;
                         // font-weight: 600;
-                        display: flex;
-                        justify-content: start;
-                        align-items: center;
-                        text-align: start;
+                        display: block;
                         cursor: pointer;
                         transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
                         text-overflow: ellipsis;
@@ -154,11 +150,14 @@ $submit-button-color: m.$green;
                             background: m.$green !important;
                             cursor: default;
                         }
+                        span {
+                            padding-bottom: .3em;
+                        }
                         sans {
                             font-weight: 300;
                             padding-right: .3em;
                             // padding-top: .1em;
-                            font-size: 1.6rem/* 20px */;
+                            font-size: 1.4rem/* 20px */;
                             // line-height: 1.75rem/* 28px */;
                             // font-family: 'noto-chess';
                             display:none;
@@ -222,9 +221,11 @@ $submit-button-color: m.$green;
     }
 }
 
+// sm breakpoint
 @media (min-width: 640px) {
     .move-wrapper {
         move {
+            padding-left: 0rem;
             sans {
                 display: inline !important;
             }

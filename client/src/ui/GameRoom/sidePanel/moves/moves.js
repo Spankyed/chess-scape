@@ -95,7 +95,7 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 				title={move.san}
 			>
 				<sans>{pieceSymbols[move.piece]} </sans>
-				{move.san}
+				<span>{move.san} </span>
 			</move>
 		</div>
 	);
