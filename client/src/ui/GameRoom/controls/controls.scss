@@ -22,7 +22,6 @@ $border-radius: 0.125rem;
 // CONTROLS
 .controls-wrapper {
 	pointer-events: none;
-	z-index: 0;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -41,7 +40,6 @@ $border-radius: 0.125rem;
 			.active {
 			background-color: #2e2d2d;
 			}
-			// z-index: 3;
 			&.top {
 				top: 0px;
 			}
@@ -81,8 +79,8 @@ $border-radius: 0.125rem;
 				--border: 1px solid #474a4d;
 				--speed: 500ms; 
 				position: relative;
-				z-index: 99;
 				.menu {
+					z-index: 3;
 					align-items: center;
 					justify-content: center;
 					// @apply right-0 mt-2 w-56 rounded-md shadow-lg bg-white divide-y divide-gray-100 focus:outline-none;
@@ -191,8 +189,7 @@ $border-radius: 0.125rem;
 		background-color: $controls-bg-color;
 		position: relative;
 		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
+		flex-direction: column;
 		padding: 0.75rem/* 8px */;
 		// margin-top: 0.5rem/* 8px */;
 		margin-left: 0.5rem/* 12px */;
@@ -203,8 +200,13 @@ $border-radius: 0.125rem;
 		box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 		width: 20%;
 		max-width: 20%;
-		&.left { float:left; }
-		&.right { float:right; }
+		&.left { 
+			float:left; 
+		}
+		&.right { 
+			float:right; 
+			flex-direction: column-reverse;
+		}
 		.picture {
 			height: 3.2rem;
 			width: 3.2rem;
@@ -480,7 +482,7 @@ $border-radius: 0.125rem;
 			.control-btn {
 				&.first {
 					// margin-bottom: 0.25rem; 
-					margin-bottom: .5rem !important; 
+					// margin-bottom: .5rem !important; 
 					margin-right: 0 !important;
 				}
 			}
@@ -505,5 +507,11 @@ $border-radius: 0.125rem;
 	}
 }
 
-// @media (min-width: 768px) {}
+@media (min-width: 768px) {
+	.player-section .player{
+		flex-direction: row !important;
+		flex-wrap: nowrap;
+		
+	}
+}
 
