@@ -40,10 +40,14 @@ export default (initial) => ({
 			const MovesView = moves.view(state.moves, actions.moves);
 			const MediaView = media.view(state.media, actions.media);
 			const isCurrTab = (tab) => currTab === tab;
-			return ( !loaderRemoved ? '' :
-				<div class={`side-panel
+			return !loaderRemoved ? (
+				""
+			) : (
+				<div
+					class={`side-panel
 					${!state.isVisible && " panel-hidden"}
-				`}>
+				`}
+				>
 					<div
 						onclick={actions.hideSidePanel}
 						class="bg-overlay"
@@ -58,7 +62,7 @@ export default (initial) => ({
 									isCurrTab("chat") && "visible"
 								}`}
 							>
-								<ChatView />
+								<ChatView isVisible={state.isVisible} />
 							</div>
 							<div
 								class={`panel-section ${
