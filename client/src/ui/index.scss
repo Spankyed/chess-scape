@@ -1,4 +1,5 @@
 @use './master' as m; 
+@import './preflight'; 
 // @import "tailwindcss/base";
 // @import "tailwindcss/components";
 // @import "tailwindcss/utilities";
@@ -33,6 +34,7 @@ html, body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: m.$font-family;
+    font-size: m.$font-size-sm;
     font-weight: m.$font-weight--normal;
     color: m.$light-font;
     background-color: m.$bg-primary;
@@ -59,8 +61,8 @@ html, body {
     }
 
     .app {
-      width: 100%;
-      height: 100%;
+		width: 100%;
+		height: 100%;
     }
 }
 
@@ -68,34 +70,44 @@ button,
 [type="button"],
 [type="reset"],
 [type="submit"] {
-  appearance: none;
-  // background-color: m.$action-color;
-  border: 0;
-//   color: m.$action-color--contrast;
-  cursor: pointer;
-  display: inline-block;
-  -webkit-font-smoothing: antialiased;
-//   font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color var(m.$duration) var(m.$timing);
-  user-select: none;
-  vertical-align: middle;
-  white-space: nowrap;
+	appearance: none;
+	// background-color: m.$action-color;
+	border: 0;
+	//   color: m.$action-color--contrast;
+	cursor: pointer;
+	display: inline-block;
+	-webkit-font-smoothing: antialiased;
+	//   font-weight: 600;
+	text-align: center;
+	text-decoration: none;
+	transition: background-color var(m.$duration) var(m.$timing);
+	user-select: none;
+	vertical-align: middle;
+	white-space: nowrap;
 
-  &:hover {
-    // background-color: m.$action-color--alt;
-  }
+	&:hover {
+		// background-color: m.$action-color--alt;
+	}
 
-  &:focus {
-    outline: var(m.$focus-outline);
-    outline-offset: var(m.$focus-outline-offset);
-  }
+	&:focus {
+		outline: var(m.$focus-outline);
+		outline-offset: var(m.$focus-outline-offset);
+	}
 
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
 }
 
-
+.sr-only	{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
