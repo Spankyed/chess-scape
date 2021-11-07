@@ -33,7 +33,7 @@ export default (initial) => ({
 
 	view:
 		(state, actions) =>
-		({ roomID, alert, isLoading }) => {
+		({ roomID, alert, loaderRemoved }) => {
 			const { currTab } = state;
 			const { toggleSidePanel } = actions;
 			const ChatView = chat.view(state.chat, actions.chat);
@@ -41,12 +41,10 @@ export default (initial) => ({
 			const MediaView = media.view(state.media, actions.media);
 			const isCurrTab = (tab) => currTab === tab;
 			return (
-				!isLoading ?
-				<div
-					class={`side-panel ${
-						!state.isVisible  && "panel-hidden"
-					}`}
-				>
+				<div class={`side-panel
+					${!state.isVisible && " panel-hidden"}
+					${!loaderRemoved && " hidden"}
+				`}>
 					<div
 						onclick={actions.hideSidePanel}
 						class="bg-overlay"
@@ -89,7 +87,6 @@ export default (initial) => ({
 						</div>
 					</div>
 				</div>
-				: ''
 			);
 		},
 });

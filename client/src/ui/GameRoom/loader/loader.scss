@@ -1,3 +1,4 @@
+@use '../../master' as m; 
 // green 709B50
 // white DAEFC4
 $--p-1: #DAEFC4;
@@ -64,7 +65,7 @@ $colors: (
 	// font-weight: 300;
 	font-size: 24px;
     opacity: 1;
-    transition: opacity 1s ease-out;
+    transition: opacity 2.5s ease-in;
 	z-index:8;
 
 	&.hide {
@@ -80,18 +81,22 @@ $colors: (
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		background-color: rgb(49, 40, 28,.6);
+		// background-color: rgb(49, 40, 28,.6);
+		background-color: #40382cf5;
+		border-radius: m.$border-radius;
 		padding: 2rem;
 		// background: linear-gradient(135deg, #32291d, #64533B);
 		width: 100%;
-		position: absolute;
+		// position: absolute;
 		// bottom: 0;
 		// left: 0;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
+		// left: 50%;
+		// top: 50%;
+		// transform: translate(-50%, -50%);
+		// bottom: 0%;
+		// transform: translate(-50%);
 		z-index:10;
-		box-shadow: 0 30px 50px -20px #221607;
+		box-shadow: 0 30px 50px -20px #120b03;
 
 		h2 {
 			flex-grow:1;
@@ -113,6 +118,7 @@ $colors: (
 		--border-width: 1px;
 		--cells: 4;
 		--total-size: calc(var(--cells) * (var(--cell-size) + 2 * var(--cell-spacing)));
+		opacity:.8;
 		z-index:9;
 		display: flex;
 		flex-wrap: wrap;

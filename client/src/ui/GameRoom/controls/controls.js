@@ -73,7 +73,9 @@ export default (initial) => ({
 			const isSpectator = game.infoRecieved && !game.player;
 			return (
 				// pointer-events-none controls-wrapper
-				<div class={`controls-wrapper ${loader.isLoading && "hidden"}`}>
+				<div
+					class={`controls-wrapper ${!loader.removed && "hidden"}`}
+				>
 					<div class="controls">
 						{gameOver && <MatchMessage matchInfo={matchInfo} />}
 						{state.isPromoting && (
@@ -94,7 +96,7 @@ export default (initial) => ({
 						{isSpectator && (
 							<div class="btn-wrapper top center">
 								<button
-									onclick={()=>actions.flipCamera()}
+									onclick={() => actions.flipCamera()}
 									class="control-btn"
 								>
 									<img src="./assets/controls/flip-camera.svg"></img>

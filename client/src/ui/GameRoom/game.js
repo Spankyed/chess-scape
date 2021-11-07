@@ -169,6 +169,7 @@ export default (initial) => ({
 			// }
 			return (
 				<canvas
+					class={`${!roomState.loader.removed && "hidden"}`}
 					oncreate={(canvas) =>
 						actions.createScene({ canvas, roomActions, roomID })
 					}
