@@ -4,7 +4,9 @@ $chat-footer-color: m.$dark;
 
 .chat {
     height: 100%;
-// 
+    display: flex;
+    flex-direction: column;
+
     .chat-window { 
         display: flex;
         flex-direction: column;
@@ -13,7 +15,8 @@ $chat-footer-color: m.$dark;
         overflow-x: hidden;
         overflow: auto;
         padding: m.$spacing-sm m.$spacing-sm;
-        height: 85%;
+        // height: 85%;
+        flex-grow: 1;
         transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
         ul {
             width: 100%;
@@ -76,6 +79,7 @@ $chat-footer-color: m.$dark;
         bottom: 0;
         position: relative;
         width: 100%;
+        min-height: 4rem;
         height:15%;
         padding: 3px 3px;
         .input-wrapper { 
@@ -108,6 +112,9 @@ $chat-footer-color: m.$dark;
                 padding: m.$spacing-sm;
                 white-space: pre-wrap;
                 overflow-wrap: break-word;
+                &.not-visible {
+                    overflow: hidden;
+                }
             }
         }
     }
