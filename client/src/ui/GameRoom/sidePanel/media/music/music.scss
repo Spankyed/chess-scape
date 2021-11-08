@@ -2,8 +2,8 @@
 
 $highlight-color: #b8a776;
 
-// $add-btn-color: m.$green;
-$add-btn-color: m.$action-blue;
+$add-btn-color: m.$green;
+// $add-btn-color: m.$action-blue;
 
 .media-section.music {
 	// root styles in media.scss
@@ -106,7 +106,7 @@ $add-btn-color: m.$action-blue;
                 text-align: center;
                 border-color: m.$blue-gray;
                 border-style:dashed; 
-                border-width:m.$border-width;
+                border-width: .2rem;
         
                 .input-icon{
                     height: 55%;
@@ -204,7 +204,7 @@ $add-btn-color: m.$action-blue;
 			border-top-left-radius:  0px;
 			border-radius:  m.$border-radius;
             z-index: 99;
-            margin-top: 0.5rem;
+            margin-top: 0.75rem;
             margin-bottom: 2px;;
             // width: 13%;
             width: auto;
@@ -236,6 +236,7 @@ $add-btn-color: m.$action-blue;
                 }
             }
             .add-icon{ 
+                border-top-left-radius: 0.185rem;
                 border-top-right-radius: 0.1875rem;
                 border-bottom-right-radius: 0px;
     			// border-radius:  m.$border-radius;
@@ -358,7 +359,7 @@ $add-btn-color: m.$action-blue;
                 // background-color: m.$spec-blue-alt  !important;
                 cursor: default !important;
                 // color: #3e424a !important;
-                color: #bebebe !important;
+                color: m.$light-font !important;
             }
             &:hover{
                 color: m.$darker;
