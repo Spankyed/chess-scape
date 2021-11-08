@@ -2,12 +2,16 @@
 
 
 .alert-wrapper {
-	pointer-events: none;
+	z-index: 0;
 	pointer-events: none;
 	height: 100%;
 	width: 100%;
 	position: absolute;
 	top: 0px;
+    // align-items: flex-end;
+    align-items: flex-start;
+    justify-content: center;
+    display: flex;
 }
 
 .alert {
@@ -17,6 +21,7 @@
 	align-items: stretch;
 	justify-content: space-between;
 	// width: 94%;
+	height: fit-content;
 	width: auto;
 	max-width: fit-content;
 	margin-left: auto;
@@ -36,7 +41,7 @@
 	// box-shadow: m.$shadow-sm;
 	border: m.$border;
 	border-left-width: 3px;
-	position:relative;
+	position: relative;
 
 	&.none {
 		border-left-width: m.$border-width;
@@ -79,6 +84,7 @@
 		}
 		.alert-title {
 			font-size: 1.5rem;
+			color: #fff;
 		}
 		.alert-message{
 			color: m.$light-gray-blue;
@@ -153,26 +159,26 @@
 }
 
 //  BREAKPOINTS 
-@media (min-width: 600px) {
-	.alert {
-		// width: auto;
-	}
-	.lobby {
-		.alert {
-			margin-left: .5rem !important;
-		}
-	}
-}
-//   'lg': '1024px',
-@media (min-width: 1024px) {
-	.lobby {
-		.alert {
-			margin-left:auto !important;
-		}
-	}
-}
+// @media (min-width: 600px) {
+// 	.alert {
+// 		// width: auto;
+// 	}
+// 	.lobby {
+// 		.alert {
+// 			margin-left: .5rem !important;
+// 		}
+// 	}
+// }
+// //   'lg': '1024px',
+// @media (min-width: m.$large) {
+// 	.lobby {
+// 		.alert {
+// 			margin-left:auto !important;
+// 		}
+// 	}
+// }
 
-@media (min-width: 768px) {
+@media (min-width: m.$medium) {
 	.DAG {
 		right: 0px !important;
 		left: revert !important;
