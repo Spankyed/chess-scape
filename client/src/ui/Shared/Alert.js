@@ -20,7 +20,10 @@ export default (initial) => ({
 		show:
 			(options) =>
 			({ alerts }, actions) => {
-				if (options.time) delay(options.time).then((_) => actions.close({ id: options.id }));
+				if (options.time)
+					delay(options.time).then((_) =>
+						actions.close({ id: options.id })
+					);
 				return {
 					alerts: {
 						...alerts,
@@ -32,11 +35,13 @@ export default (initial) => ({
 				};
 			},
 		closeAll: () => () => ({ alerts: {} }),
-		closeSome: (some) => (_,{close}) => {
-			some.forEach(([id, completed]) => close({ id, completed }));
-		},
+		closeSome:
+			(some) =>
+			(_, { close }) => {
+				some.forEach(([id, completed]) => close({ id, completed }));
+			},
 		close:
-			({id, completed}) =>
+			({ id, completed }) =>
 			({ alerts }) => {
 				if (!alerts[id]) return;
 				if (!completed)
@@ -59,15 +64,17 @@ export default (initial) => ({
 				},
 			}),
 	},
-	view: ({ alerts }, actions) => () => {
-		return (
-			<div class="alert-wrapper">
-				{Object.entries(alerts).map(([id, alert]) => (
-					<Alert {...{ actions, id, alert }} />
-				))}
-			</div>
-		);
-	},
+	view:
+		({ alerts }, actions) =>
+		() => {
+			return (
+				<div class="alert-wrapper">
+					{Object.entries(alerts).map(([id, alert]) => (
+						<Alert {...{ actions, id, alert }} />
+					))}
+				</div>
+			);
+		},
 	hostAlert: {
 		// icon: "./assets/create/host.svg",
 		id: "host",
@@ -114,7 +121,7 @@ function Alert({id, alert, actions}){
 					{alert.showDAG && (
 						<div class="DAG">
 							<input
-								onchange={toggleAskAgain}
+								onchange={() => toggleAskAgain(id)}
 								checked={alert.dontAskAgain}
 								class="form-checkbox"
 								type="checkbox"
