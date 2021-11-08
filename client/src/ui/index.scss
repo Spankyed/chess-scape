@@ -101,7 +101,10 @@ button,
 	}
 }
 
-.sr-only	{
+.no-pointers{
+    pointer-events: none;
+}
+.sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
