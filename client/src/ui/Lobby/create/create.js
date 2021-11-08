@@ -149,7 +149,10 @@ export default (initial) => ({
 
 								{/* <!-- Add margin if you want to see some of the overlay behind the modal--> */}
 								<div class="create-content">
-									<div class="preset-types">
+									<div
+										class="preset-types"
+										// oncreate={(e) => e.scrollIntoView()}
+									>
 										{gameTypes.map((type) => (
 											<GameType
 												{...actions}
@@ -177,7 +180,8 @@ export default (initial) => ({
 										create,
 										toggle,
 										submitText: state.submitText,
-										attemptingSubmit: state.attemptingSubmit,
+										attemptingSubmit:
+											state.attemptingSubmit,
 									}}
 								/>
 							</div>
