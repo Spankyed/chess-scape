@@ -163,12 +163,7 @@ export default (initial) => ({
 					<AlertView />
 					<PinView joinRoom={moveToRoom} />
 
-					<div
-						class={`lobby-main ${
-							Object.keys(state.alert.alerts).length &&
-							"move-for-alert"
-						}`}
-					>
+					<div class='lobby-main'>
 						{/* Header */}
 						<div class="lobby-header">
 							<h1 class="title"> Lobby </h1>

@@ -2,7 +2,7 @@
 @import './create/create.scss'; 
 @import './pin/pin.scss'; 
 
-@import '../shared/alert.scss'; 
+// @import '../shared/alert.scss'; 
 
 .lobby {
     background-color: m.$lobby-bg-clr;
@@ -12,6 +12,16 @@
     min-width: 100vw;
     min-height: 100vh;
     font-size: m.$font-size;
+
+    .alert-wrapper {
+        z-index: 1;
+        .alert{
+            margin: 1rem;
+        }
+        bottom: 0px;
+        align-items: flex-end;
+        opacity: .85;
+    }
     .hide-sm {
         display:none;
     }
@@ -21,15 +31,16 @@
     .lobby-main {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        &.move-for-alert{
-            justify-content: end;
-        }
+        justify-content: start;
+        // &.move-for-alert{
+        //     justify-content: end;
+        // }
         width: 100%;
         max-width: 100%;
         height: 100vh;
         margin-left: auto;
         margin-right: auto;
+        margin-top: 5vh;
 
         .lobby-header {
             height:14vh;
@@ -38,7 +49,7 @@
             justify-content: space-between;
             h1 {
                 text-shadow: m.$shadow-sm;
-                font-size: 10vh;
+                font-size: 2.5rem;
                 padding-left: 1.25rem/* 20px */;
                 padding-right: 1.25rem/* 20px */;
                 line-height: 1.5rem/* 24px */;
@@ -108,7 +119,7 @@
                 img {
                     width: 100%;
                     text-align: center;
-                    height: 16rem;
+                    height: 12rem;
                     opacity: .85; 
                 }
                 .message {
@@ -482,54 +493,70 @@
     }
 }
 
-
 .modal {
-    z-index: 999;
+    z-index: 5;
 }
 
 //   'lg': '1024px',
-@media (min-width: 1024px) {
+@media (min-width: m.$large) {
     .lobby {
         .lobby-main {
             width: 65vw !important;
             max-width: 65vw !important;
             .lobby-header {
                 height:18vh;
-                button {
-                    margin-right: 1rem !important;
-                }
             }
 
+        }
+        .alert-wrapper {
+            margin-top: 1rem;
+            align-items: flex-start;
         }
     }
 }
 
 //   'md': '768px',
-@media (min-width: 768px) {
+@media (min-width: m.$medium) {
+    .lobby {
+        .lobby-main {
+            width: 85vw;
+            max-width: 85vw;
+            height: auto;
+            // &.move-for-alert{
+            //     justify-content: center;
+            // }
+            justify-content: center;
+            margin-top: 0px;
+            .lobby-header{
+                h1 {
+                    padding-left: 0rem;
+                    font-size: 3.5rem;
+                }
+                button {
+                    margin-right: 0rem;
+                    padding: 1rem;
+                }
+            }
+        }
+    }
     .hide-md {
         display: revert !important;
     }
 }
 
 //   'sm': '640px',
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
     .ripple{
         transform: scale(1.1) !important;
         animation: 1.5s ripple-lg ease infinite !important;
     }
     .lobby {
         .lobby-main {
-            width: 85vw;
-            max-width: 85vw;
-            height:auto;
-            &.move-for-alert{
-                justify-content: center;
-            }
-            .lobby-header{
+            .lobby-header {
                 margin-bottom: 1rem;
                 button {
                     img {
-                        padding-right: 0.5rem;
+                        padding-right: 0.5rem; // button has text not just image when > sm
                     }
                 }
             }
@@ -548,16 +575,28 @@
     }
 
 }
-
  // when in landscape view
-@media (max-height: 568px) {
-    .lobby .lobby-main .table-wrapper .table-empty img {
-        height: 9rem !important;
+@media (max-height: m.$landscape) {
+    .lobby .lobby-main {
+        .lobby-header button {
+            margin-right: 2rem !important;
+            padding: .5rem;
+        }
+        .table-wrapper .table-empty img {
+            height: 7.5rem !important;
+        }
     }
 }
 
-@media (min-width: 600px) {
-    .lobby .lobby-main .lobby-header button {
-        margin-right: 0rem;
-    }
-}
+// @media (min-width: 600px) {
+//     .lobby .lobby-main .lobby-header button {
+//         margin-right: 0rem;
+//     }
+// }
+// @media (min-width: 600px) {
+//     .lobby {
+//         .alert-wrapper {
+//             align-items: flex-start;
+//         }
+//     }
+// }
