@@ -84,7 +84,8 @@ $text-color: #D4D3D3;
 				display: inline-block;
 				text-transform: uppercase;
 				border: m.$border;
-      			border-radius: $border-radius;
+      			border-top-left-radius: $border-radius;
+      			border-top-right-radius: $border-radius;
 				&:hover {
 					background-color: #4c4c4c33;
 				}
@@ -182,7 +183,7 @@ $text-color: #D4D3D3;
 
 
 //   'sm': '640px',
-@media (min-width: 640px) { 
+@media (min-width: m.$small) { 
 	.side-panel .panel-wrapper .tabs .tab {
 		padding-left: .75rem;
 		padding-right: .75rem;
@@ -190,10 +191,10 @@ $text-color: #D4D3D3;
 }
 
 //   'md': '768px',
-// => @media (min-width: 768px) { ... }
+// => @media (min-width: m.$medium) { ... }
 
 //   'lg': '1024px',
-@media (min-width: 1024px) {
+@media (min-width: m.$large) {
 	.panel-wrapper { 
 		position: static !important;
 		width: 100% !important;
