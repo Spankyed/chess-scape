@@ -29,17 +29,17 @@ export default initial => ({
 						class={`${isOpen("music") && "active"} toggle`}
 						onclick={(_) => showMedia("music")}
 					>
-						<h2>
-							<span>Play</span> Music
-						</h2>
+						<img src="./assets/sidePanel/music.svg" />
+						{/* <span>Play</span> */}
+						Music
 					</button>
 					<button
 						class={`${isOpen("video") && "active"} toggle`}
 						onclick={(_) => showMedia("video")}
 					>
-						<h2>
-							<span>Play</span> Video
-						</h2>
+						<img src="./assets/sidePanel/video.svg" />
+						{/* <span>Play</span> */}
+						Video
 					</button>
 				</div>
 

@@ -11,6 +11,7 @@ $toggle-heading-color: #DCDDE3;
 $toggle-bg-color: #525357;
 
 // $toggle-bg-color: #242528;
+$toggle-active-color: m.$green;
 $toggle-hover-color: #868790;
 // $toggle-icon-color:#494A4E;
 // $toggle-icon-color:#474D50;
@@ -35,6 +36,7 @@ $toggle-dot-color: m.$green;
 
 
 	.media-toggles {
+		max-height:fit-content;
 		display: flex;
    		flex-direction: row;
 		background-color: $toggle-bg-color !important;
@@ -45,48 +47,56 @@ $toggle-dot-color: m.$green;
 		cursor: pointer;
 
 		&:first-child{
-        	// background-color: $toggle-hover-color !important;
+        	// background-color: $toggle-active-color !important;
 			border-right: m.$border;
 		}
 		.toggle {
+			display: flex;
+   			flex-direction: row;
+			align-items: center;
+			justify-content: space-evenly;
+			text-align: center;
 			width: 50%;
 			// height: 50%;
 			min-height: 100%;
-			padding: 1.25rem/* 20px */;
+			padding: m.$spacing-sm/* 20px */;
 			&.active { 
 				// font-weight: 700; 
-				background-color: $toggle-hover-color !important;
+				background-color: $toggle-active-color !important;
 			}
 			&:hover {
 				background-color: $toggle-hover-color !important;
 				color: rgba(243, 244, 246, 1);
 			}
-			span {
-				display: none;
+			// span {
+			// 	display: none;
+			// }
+			img {
+				max-height: 1.3rem;
 			}
-            .toggle-arrow {
-                --button-size: 1.5rem;
-                width: var(--button-size);
-                height: var(--button-size);
-                background-color: $toggle-icon-color;
-                border-radius: 50%;
-                padding: 5px;
-                margin: 2px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                // transition: filter 300ms;
-                // transform: rotate( 270deg);
-                transform: rotate( 180deg);
-                transition: all 0.35s;
-                &.rotate-down {
-                    // transition-duration: 300ms;
-                    // transform: rotate( 360deg);
-                    transform: rotate( 0deg);
-                    // transform: translateX(0) translateY(0) rotate( 180deg) skewX(0) skewY(0) scaleX(1) scaleY(1);
-                }
+            // .toggle-arrow {
+            //     --button-size: 1.5rem;
+            //     width: var(--button-size);
+            //     height: var(--button-size);
+            //     background-color: $toggle-icon-color;
+            //     border-radius: 50%;
+            //     padding: 5px;
+            //     margin: 2px;
+            //     display: flex;
+            //     align-items: center;
+            //     justify-content: center;
+            //     // transition: filter 300ms;
+            //     // transform: rotate( 270deg);
+            //     transform: rotate( 180deg);
+            //     transition: all 0.35s;
+            //     &.rotate-down {
+            //         // transition-duration: 300ms;
+            //         // transform: rotate( 360deg);
+            //         transform: rotate( 0deg);
+            //         // transform: translateX(0) translateY(0) rotate( 180deg) skewX(0) skewY(0) scaleX(1) scaleY(1);
+            //     }
              
-			}
+			// }
 		}
 			
     }
@@ -119,8 +129,11 @@ $toggle-dot-color: m.$green;
 	.media{
 		.media-toggles{
 			.toggle{
-				span {
-					display: inline;
+				// span {
+				// 	display: inline;
+				// }
+				img {
+					// max-height: 3rem;
 				}
 			}
 		}
