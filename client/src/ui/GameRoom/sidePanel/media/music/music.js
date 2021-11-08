@@ -2,111 +2,149 @@ import { h } from 'hyperapp';
 import Api from '../../../../../api/Api';
 import { nanoid } from 'nanoid/non-secure'
 import { delay } from "nanodelay";
+import Options from "../options"; 
+l=1
+const options = Options()
 
-export default initial => ({
+export default (initial) => ({
 	state: {
-		autoPlay: true,
-		allowShare: true,
-		persistShareSetting: false, // if false prompts user every time song is shared
+		options: options.state,
 		selectedFile: null,
 		songList: {},
 		currSongId: 0,
 		isLoading: false,
 		isPreviewing: false,
-		songPreview: { 
-			ID: '',
+		songPreview: {
+			ID: "",
 			src: null,
-			title: '',
-			fileName: '',
-			image: '',
-			duration: '',
+			title: "",
+			fileName: "",
+			image: "",
+			duration: "",
 			dataReady: false,
 			fromServer: false,
-		}
+		},
 	},
-	actions: { 
-		startLoading: _=> _=> ({isLoading: true}),
-		stopLoading: _=> _=> ({isLoading: false}),
-		setSelectedFile: file => _ => ({selectedFile: file}),
-		setProcessing: val => _ => ({isProcessing: val}),
-		addSong: song => state => {
-			debuggger
-			let ID = song.ID
-			if (ID && state.songList[ID]) return {} // not reachable ids always diff; compare names instead
+	actions: {
+		options: options.actions,
+		startLoading: (_) => (_) => ({ isLoading: true }),
+		stopLoading: (_) => (_) => ({ isLoading: false }),
+		setSelectedFile: (file) => (_) => ({ selectedFile: file }),
+		setProcessing: (val) => (_) => ({ isProcessing: val }),
+		addSong: (song) => (state) => {
+			debuggger;
+			let ID = song.ID;
+			if (ID && state.songList[ID]) return {}; // not reachable ids always diff; compare names instead
 			// let {songList, currSongId, autoPlay, isPreviewing} = state
-			let play = state.autoPlay || !state.currSongId 
+			let play = state.options.autoPlay || !state.currSongId;
 			return {
 				// isLoading: autoPlay,
 				songPreview: {}, // clear preview
-				songList: { [ID]: { ID, ...song },  ...state.songList }, 
+				songList: { [ID]: { ID, ...song }, ...state.songList },
 				currSongId: play ? ID : state.currSongId, // if autoplay, play new song
-				isPreviewing: false
-			}
-		}, 
-		setSongData: ({ID, data, preview}) => ({songList, songPreview}) => (
-			preview ? 
-			{ songPreview: {...songPreview, ...data }, isLoading: false} : 
-			{ songList: {...songList, [ID]: {...songList[ID], ...data}}}
-		),
-		setCurrSong: ID => _=> ({ currSongId: ID, isPreviewing: false}),
-		setSongPreview: (song) => state => ({ songPreview: song, isPreviewing: true }),
-		cancelPreview: _ => _=> ({isPreviewing: false, isLoading: false}),
-		setShare: ({bool, persist}) => state => ({ allowShare: bool, persistShareSetting: persist}),
-		toggle: option => state => ({ [option]: !state[option] }),
-		getState: _=>({songList, currSongId})=>({songList, currSongId})
-	},
-	view: (state, actions) => ({alert}) => {
-		let notEmpty = Object.getOwnPropertyNames(state.songList).length > 0
-		let songList = Object.values(state.songList)
-		Api.setMessageHandlers({
-			music: message => {
-				if (!state.allowShare) return
-				if (!state.persistShareSetting) promptShare(message, alert, actions)
-				else playSharedSong(message);
-			}
-		})
-		async function playSharedSong({ song } = {}){
-			actions.addSong({ ...song, fromServer: true});
-		}
-		function promptShare(message, alert, actions){
-			let {setShare, addVideo} = actions
-			// ID = '3vBwRfQbXkg'
-			alert.show({
-				role: 'info',
-				icon: "./assets/sidePanel/controls/music_icon.svg",
-				heading: 'Music Shared',
-				message: 'A user wants to share a song with you.', 
-				actions: {
-					confirm: { text: 'Allow', handler: (bool, persist) => {
-						setShare({bool, persist})
-						playSharedSong(message);
-					}},
-					default: { text: 'Deny', handler: (bool, persist) => {
-						if (persist) setShare({bool, persist})
-					}}, 
-				},
-				dontAskAgain: false
-			})
-		}
-		return (
-			<div class="music-area text-neutral">
-				<Options {...state} toggle={actions.toggle}/>
-				<SongPlayer actions={actions} state={state}/>
+				isPreviewing: false,
+			};
+		},
+		setSongData:
+			({ ID, data, preview }) =>
+			({ songList, songPreview }) =>
+				preview
+					? {
+							songPreview: { ...songPreview, ...data },
+							isLoading: false,
+					  }
+					: {
+							songList: {
+								...songList,
+								[ID]: { ...songList[ID], ...data },
+							},
+					  },
+		setCurrSong: (ID) => (_) => ({ currSongId: ID, isPreviewing: false }),
+		setSongPreview: (song) => (state) => ({
+			songPreview: song,
+			isPreviewing: true,
+		}),
+		cancelPreview: (_) => (_) => ({
+			isPreviewing: false,
+			isLoading: false,
+		}),
 
-				{ notEmpty &&
-					<ul class="music-table">
-					{ songList.map((song, i)=>(
-						<MusicItem song={song} setCurrSong={actions.setCurrSong} currSongId={state.currSongId}/>
-					))}
-					</ul>
-				}
-			</div>
-		)
-	}
-})
+		getState:
+			(_) =>
+			({ songList, currSongId }) => ({ songList, currSongId }),
+	},
+	view:
+		(state, actions) =>
+		({ alert, mediaOpen }) => {
+			const OptionsView = options.view(state.options, actions.options);
+			let notEmpty = Object.getOwnPropertyNames(state.songList).length > 0;
+			let songList = Object.values(state.songList);
+			Api.setMessageHandlers({
+				music: (message) => {
+					if (!state.options.allowShare) return;
+					if (!state.options.persistShareSetting)
+						promptShare(message, alert, actions);
+					else playSharedSong(message);
+				},
+			});
+			async function playSharedSong({ song } = {}) {
+				actions.addSong({ ...song, fromServer: true });
+			}
+			function promptShare(message, alert, actions) {
+				let { options } = actions;
+				// ID = '3vBwRfQbXkg'
+				alert.show({
+					role: "info",
+					icon: "./assets/sidePanel/controls/music_icon.svg",
+					heading: "Music Shared",
+					message: "A user wants to share a song with you.",
+					actions: {
+						confirm: {
+							text: "Allow",
+							handler: (bool, persist) => {
+								options.setShare({ bool, persist });
+								playSharedSong(message);
+							},
+						},
+						default: {
+							text: "Deny",
+							handler: (bool, persist) => {
+								if (persist) options.setShare({ bool, persist });
+							},
+						},
+					},
+					dontAskAgain: false,
+				});
+			}
+			const isMediaOpen = (type) => mediaOpen == type;
+			return (
+				<div
+					class={`media-section music ${
+						!isMediaOpen("music") && "no-pointers"
+					}`}
+				>
+					<OptionsView type='music' />
+					{/* <Options {...state} toggle={actions.toggle} /> */}
+					<SongPlayer actions={actions} state={state} />
+
+					{notEmpty && (
+						<ul class="music-list">
+							{songList.map((song, i) => (
+								<MusicItem
+									song={song}
+									setCurrSong={actions.setCurrSong}
+									currSongId={state.currSongId}
+								/>
+							))}
+						</ul>
+					)}
+				</div>
+			);
+		},
+});
 
 function SongPlayer({ state, actions }){
-	let {currSongId, isLoading, isPreviewing, songPreview, allowShare, selectedFile, isProcessing} = state // should be consts
+	let {currSongId, isLoading, isPreviewing, songPreview, options, selectedFile, isProcessing} = state // should be consts
 	let {setSongPreview, addSong, setSongData, startLoading, cancelPreview, setSelectedFile, setProcessing} = actions
 	let isPlaying = !!currSongId
 	const noop = _=>{}
@@ -129,7 +167,7 @@ function SongPlayer({ state, actions }){
 			file = setSelectedFile(form.song.files[0]).selectedFile
 			song = await processSong(file) // sets songPreview
 		}
-		if (allowShare) {
+		if (options.allowShare) {
 			let songForm = new FormData();
 			songForm.append("file", file);
 			const { dataReady, src, ID, ...formData } = song
@@ -142,13 +180,13 @@ function SongPlayer({ state, actions }){
 		delay(500).then(_ =>  form.song.value = [])
 	}
 	return (
-		<form name="song-form">
+		<form class='song-form' name="song-form">
 			<div class="song-player-wrapper">
 				{isLoading && <Loader />}
 				{isPlaying ? (
 					<Song {...actions} {...state} />
 				) : (
-					<div class="song-preview-wrapper h-full w-full">
+					<div class="song-preview-wrapper">
 						<input
 							onchange={preview}
 							class={`file-input ${
@@ -194,10 +232,9 @@ function SongPlayer({ state, actions }){
 							accept="audio/*"
 						/>
 					)}
-					<img
-						class="add-icon"
-						src="./assets/sidePanel/controls/plus_music.svg"
-					/>
+					<span class="add-icon">
+						<img src="./assets/create/add.svg"/>
+					</span>
 					<span class="add-text">
 						{isPreviewing ? "Play" : "Add Song"}
 					</span>
@@ -205,16 +242,18 @@ function SongPlayer({ state, actions }){
 			)}
 		</form>
 	);	
-	function Song({currSongId, songList, autoPlay, setCurrSong, getState}){
+	function Song({currSongId, songList, options, setCurrSong, getState}){
 		const song = songList[currSongId]
-		let imageStyle = `background-image: url(${song.image})` // todo: add default img?
+		let bgImage = song.image
+			? `background-image: url(${song.image})`
+			: `background-image: url('../assets/sidePanel/controls/music_icon.svg')`;
 		function handleSongEnd(audio){
 			// console.log('audio el',audio)
 			audio.addEventListener('ended', () => { 
-				if(autoPlay){
-					let {songList, currSongId} = getState()
-					let nextSong = next(songList, currSongId)
-					if (nextSong) setCurrSong(nextSong.ID)
+				if (options.autoPlay) {
+					let { songList, currSongId } = getState();
+					let nextSong = next(songList, currSongId);
+					if (nextSong) setCurrSong(nextSong.ID);
 				}
 			}, false);
 		}
@@ -223,7 +262,7 @@ function SongPlayer({ state, actions }){
 			audio.paused ? audio.play() : audio.pause();
 		}
 		return(
-			<div onclick={togglePlay} class="song-container" style={imageStyle} title={song.title}>
+			<div onclick={togglePlay} class="song-container" style={bgImage} title={song.title}>
 				<div class='song-title'>{song.title}</div>
 				<div class="audio-wrapper">
 					<audio oncreate={handleSongEnd} src={song.src} id="song-audio" controls autoplay>
@@ -234,18 +273,26 @@ function SongPlayer({ state, actions }){
 		)
 	}
 	function Preview({song, cancelPreview}){
-		const previewImage = `background-image: url(${song.image})` // todo: add default img
+		const previewImage = song.image
+			? `background-image: url(${song.image})`
+			: "background-image: url(./assets/sidePanel/controls/music_icon.svg)"
 		const cancel = _=>{
 			let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
 			form.song.value = []
 			cancelPreview()
 		}
-		return(
-			<div class="song-container" style={previewImage} title={song.fileName}>
-				<div class='song-title'>{song.title}</div>
-				<img onclick={cancel} class='trash-icon' src="../assets/sidePanel/controls/trash.svg"/>	
+		return (
+			<div
+				class="song-container"
+				style={previewImage}
+				title={song.fileName}
+			>
+				<div class="song-title">{song.title}</div>
+				<div class="trash-icon">
+					<img onclick={cancel} src="../assets/create/cancel.svg" />
+				</div>
 			</div>
-		)
+		);
 	}
 	function Input(){
 		return(
@@ -253,8 +300,8 @@ function SongPlayer({ state, actions }){
 				<img class='input-icon' src="../assets/sidePanel/controls/add_music.svg"/>	
 				<div class='input-text'>
 					<span class='btn'>Choose</span>
-					<span class='hidden md:inline'> or drag music file here</span>
-					<span class='md:hidden'> music file</span>
+					<span class='text'> or drag music file here</span>
+					<span class='text mobile'> music file</span>
 				</div>
 				{/* <img src="http://placekitten.com/200/300"/> */}
 			</div>
@@ -333,39 +380,10 @@ function MusicItem({song, currSongId, setCurrSong}){
 	)
 }
 
-function Options({allowShare, autoPlay, toggle}){
-	const options = 
-	[{text:['Allow ','Share'], name: 'allowShare', value: allowShare}, {text:'Auto-Play', name:'autoPlay', value: autoPlay}]
-	return (
-		<div class="options">
-		{	
-		options.map( (option) => (
-			<div class="option-item">
-				<label for={option.id} class="toggle-wrapper"
-					title={option.text == 'Share' ? 'Allow music sharing with room' : 'Auto-play new/next song in queue'}>
-					{	typeof option.text === "object" ?
-						<span class="toggle-text"> 
-							<span class='hide-mobile'>{option.text[0]}</span>
-							{option.text[1]} 
-						</span> :
-						<span class="toggle-text"> {option.text} </span>
-					}
-					<div class="toggle">
-						<input onchange={_=> toggle(option.name)} checked={option.value} id={option.id} type="checkbox"/>
-						<div class={`line ${ option.value && 'checked'}`}></div>
-						<div class="dot"></div>
-					</div>
-				</label>
-			</div>
-		))
-		}
-		</div>
-	)
-}
 
 function Loader(){
 	return (
-	<div class="loader">
+	<div class="music-loader">
 		<svg version="1.1" xmlns="http://www.w3.org/2000/svg"  x="0px" y="0px"
 			width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;">
 			<rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">

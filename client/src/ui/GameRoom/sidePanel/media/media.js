@@ -24,25 +24,30 @@ export default initial => ({
 		function isOpen(type){ return state.mediaOpen == type }
 		return (
 			<div class="media">
-				<section class="music-section">
-					<div onclick={_=> showMedia('music')} class={`${isOpen('music') && 'active'} media-dropdown ribbon`} >
-						<h2>Play a song</h2>
-						<img class={`dropdown-arrow ${isOpen('music') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play music dropdown"/>
+				<div class="media-toggles">
+					<button
+						class={`${isOpen("music") && "active"} toggle`}
+						onclick={(_) => showMedia("music")}
+					>
+						<h2>
+							<span>Play</span> Music
+						</h2>
+					</button>
+					<button
+						class={`${isOpen("video") && "active"} toggle`}
+						onclick={(_) => showMedia("video")}
+					>
+						<h2>
+							<span>Play</span> Video
+						</h2>
+					</button>
+				</div>
 
-					</div>
-					<div class={`section-content ${isOpen('music') && 'open'} `}>
-						<MusicView alert={alert}/>
-					</div>
-				</section>
-				<section class="video-section">
-					<div onclick={_=> showMedia('video')} class={`${isOpen('video') && 'active'} media-dropdown`} >
-						<h2>Play a video</h2>
-						<img class={`dropdown-arrow ${isOpen('video') && 'rotate-down'} `} src="./assets/sidePanel/icon-arrow-down.svg" alt="Play video dropdown"/>
-					</div>
-					<div class={`section-content ${isOpen('video') && 'open'} `}>
-						<VideoView alert={alert} mediaOpen={state.mediaOpen}/>
-					</div>
-				</section>
+				{isOpen("music") ? (
+					<MusicView alert={alert} mediaOpen={state.mediaOpen} />
+				) : (
+					<VideoView alert={alert} mediaOpen={state.mediaOpen} />
+				)}
 			</div>
 		);
 	}
