@@ -24,32 +24,16 @@ export default (initial) => ({
 			return (
 				<div class="options">
 					{options.map((option) => (
-						<div class="option-item">
-							<label
-								for={option.id}
-								class="toggle-wrapper"
-								title={
-									option.text == "Share"
-										? `Allow ${type} sharing with room`
-										: `Auto-play ${type} in queue`
-								}
-							>
-								<span class="toggle-text"> {option.text} </span>
-								<div class="toggle">
-									<input
-										onchange={(_) => toggle(option.name)}
-										checked={option.value}
-										id={option.id}
-										type="checkbox"
-									/>
-									<div
-										class={`line ${
-											option.value && "checked"
-										}`}
-									></div>
-									<div class="dot"></div>
-								</div>
-							</label>
+						<div
+							class="toggle-wrapper"
+							title={
+								option.text == "Share"
+									? `Allow ${type} sharing with room`
+									: `Auto-play ${type} in queue`
+							}
+						>
+							<span class="toggle-text"> {option.text} </span>
+							<Toggle {...{ option, toggle }} />
 						</div>
 					))}
 				</div>
@@ -57,3 +41,19 @@ export default (initial) => ({
 		},
 });
 
+function Toggle({ option, toggle }) {
+	return (
+		<div class="toggle">
+			<input
+				oncreate={(el) => (el.checked = option.value)}
+				onchange={(_) => toggle(option.name)}
+				class="tgl-input"
+				// checked={option.value}
+				id={option.name}
+				name={option.name}
+				type="checkbox"
+			/>
+			<label class="tgl-btn" for={option.name}></label>
+		</div>
+	);
+}
