@@ -410,7 +410,7 @@
 }
 
 //   'sm': '640px',
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
     .minutes-suffix {
         display: inline-block !important;
     }
