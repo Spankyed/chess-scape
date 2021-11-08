@@ -1,5 +1,7 @@
 
+//================================================================================
 // Colors
+//================================================================================
 $white: #dcdcdc;
 $light-gray: #a7a7a7;
 $light-gray-blue: #b8bdc6;
@@ -15,7 +17,7 @@ $green: #64972b;
 // $green: #79a547;  
 // $green: #5d951d;  
 $dark-green: #47682c;  
-$light-green: #527634;  
+// $light-green: #527634;  
 $bright-green: #559b06;  
 // $blue: #2C2EAF;  
 $blue: #281fcb;  
@@ -25,7 +27,9 @@ $spec-blue-alt: #18a;
 $orange: #d75923;
 $light-orange: #FF4B0A;
 
-// Color Sceme
+//================================================================================
+// Colors Scheme
+//================================================================================
 $primary-color: $beige;
 $primary-color--contrast: $dark;
 $secondary-color: $dark-brown;
@@ -41,16 +45,16 @@ $btn-secondary-hover: $beige;
 // Font Colors
 $light-font: rgb(219, 219, 219);
 $dark-font: $dark-brown;
+
+//================================================================================
 // Typography
+//================================================================================
 $font-family: 'Crete-Round', "Calibri", sans-serif;
 // $font-family--heading: var('Quattrocento Sans');
 $font-size-lg: 1.6rem;
 $font-size: 1.4rem;
 // $font-size: 1.4rem;
 $font-size-sm: 1.125rem;
-$fk-font: 1rem;
-
-
 $font-weight--thin: 100;
 $font-weight--normal: 400;
 $font-weight--semi-bold: 600;
@@ -58,7 +62,11 @@ $font-weight--extra-bold: 900;
 // Line heights
 $line-height: 1.5;
 $line-height--heading: 1.2;
-// Other Sizes
+
+
+//================================================================================
+// Spacing
+//================================================================================
 $spacing: 1.5rem;
 $spacing-sm: 0.75rem;
 $spacing-xs: 0.25rem;
@@ -67,11 +75,14 @@ $border-radius: 0.1875rem;
 $border-width: 0.0425rem;
 // $border: var(--border-width) solid currentColor;
 $border: $border-width solid $blue-gray;
-
 // Focus
 $focus-outline-width: 0.1875rem;
 $focus-outline-offset: 0.125rem;
 $focus-outline: var(--focus-outline-width) solid #{$white};
+
+//================================================================================
+// Misc
+//================================================================================
 // Animations
 $duration: 150ms;
 $timing: ease;
@@ -82,11 +93,24 @@ $shadow-sm: 2px 2px 6px #000;
 $shadow-lg: rgba(0, 0, 0, 0.45) 0px 5px 10px;
 
 //================================================================================
-// Entrance
+// Breakpoints (width)
 //================================================================================
+$x-small: 575.98px;
+$small: 767.98px;
+$medium: 991.98px;
+$large: 1199.98px;
+$x-large: 1280px;
+$landscape: 567.98px; // height
+// !Small devices (landscape phones, 576px and up)
+// @media (min-width: 576px) and (max-width: 767.98px) { ... }
+// !Medium devices (tablets, 768px and up)
+// @media (min-width: m.$medium) and (max-width: 991.98px) { ... }
+// !Large devices (desktops, 992px and up)
+// @media (min-width: 992px) and (max-width: 1199.98px) { ... }
+
 
 //================================================================================
-// Lobby
+// Lobby page
 //================================================================================
 $lobby-bg-clr: $dark;
 $table-bg-clr: $darker;
@@ -101,7 +125,7 @@ $scroll-thumb-clr: #3e4346;
 $scroll-track-clr: rgba(107,114,128,1);
 
 //================================================================================
-// Create
+// Create component
 //================================================================================
 $create-modal-bg-clr: $darker;
 // $create-bg-clr: $secondary-color;
@@ -112,9 +136,8 @@ $type-selected: $bright-green;
 // $type-bg-clr: #17375E;
 // $type-selected: #155567;
 
-
 //================================================================================
-// Custom
+// Custom component
 //================================================================================
 $control-bg-clr: $dark;
 // $type-bg-clr: $dark-green;
@@ -122,16 +145,3 @@ $control-bg-clr: $dark;
 $identity-bg-clr: $dark;
 $sec-ctrl-bg-clr: #32291d;
 
-//================================================================================
-// Room
-//================================================================================
-
-
-//================================================================================
-// Controls
-//================================================================================
-
-
-//================================================================================
-// Sidepanel
-//================================================================================

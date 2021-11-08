@@ -455,7 +455,7 @@ $border-radius: 0.125rem;
 }
 
 	//  BREAKPOINTS 
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
 	.promotion-wrapper{
 		width:30%;
 	}
@@ -507,7 +507,7 @@ $border-radius: 0.125rem;
 	}
 }
 
-@media (min-width: 768px) {
+@media (min-width: m.$medium) {
 	.player-section .player{
 		flex-direction: row !important;
 		flex-wrap: nowrap;

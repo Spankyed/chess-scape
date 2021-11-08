@@ -222,7 +222,7 @@ $submit-button-color: m.$green;
 }
 
 // sm breakpoint
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
     .move-wrapper {
         move {
             padding-left: 0rem;

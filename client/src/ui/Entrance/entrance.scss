@@ -214,7 +214,7 @@
 }
 
 //   'md': '768px',
-@media (min-width: 768px) {
+@media (min-width: m.$medium) {
     .entrance {
         font-size: 1.8rem;
         .user-form {
@@ -234,7 +234,7 @@
         }
     }
 }
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
     .entrance {
         font-size: 1.6rem;
         .banner {
@@ -282,7 +282,7 @@
 }
 
 // when in landscape view
-@media (max-height: 568px) {
+@media (max-height: m.$landscape) {
     .entrance {
         .user-form {
             .username {

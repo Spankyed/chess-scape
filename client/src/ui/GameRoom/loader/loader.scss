@@ -190,7 +190,7 @@ $colors: (
 	}
 }
 
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
 	.loader{
 		.loader-wrapper{
 			max-width: 65vw;
