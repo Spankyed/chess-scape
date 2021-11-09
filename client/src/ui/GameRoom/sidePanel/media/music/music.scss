@@ -239,6 +239,7 @@ $add-btn-color: m.$green;
             &.preview{
                 margin-top: 0;
                 .add-icon{ 
+                    display:none;
                     border-top-left-radius: 0px;
                     border-top-right-radius: 0px;
                     border-bottom-left-radius: m.$border-radius;
@@ -277,7 +278,6 @@ $add-btn-color: m.$green;
                 }
             }
             .add-text{
-                margin-left:-2px;
                 border-top-right-radius: 0.1875rem;
                 border-bottom-right-radius: 0px;
                 letter-spacing: 0.05em;
@@ -484,14 +484,27 @@ $add-btn-color: m.$green;
             form {
                 width: 60%;
                 height:100%;
+                // &.reverse-landscape{
+                //     flex-direction: column-reverse;
+                // }
                 .add-btn{
+                    &:not(.preview){
+                        justify-content: end;
+                    }
                     margin-top: 0px;
-                    justify-content: end;
                     .add-icon {
                         position: relative;
+                        border-top-left-radius: 0;
+                        border-top-right-radius: 0;
+                        border-bottom-left-radius: 0.1875rem;
+                        // border-bottom-right-radius: 0.1875rem;
                     }
                     .add-text {
-                        margin-left: 0px;
+                        // margin-left: 0px;
+                        width: 100%;
+                        padding-right: 20px;
+                        border-top-right-radius: 0;
+                        border-bottom-right-radius: 0.1875rem;
                     }
                 }
                 .song-player-wrapper audio {
@@ -505,4 +518,24 @@ $add-btn-color: m.$green;
             }
         }
     }
+}
+
+@media (max-width: m.$small) {
+	.media-section.music {
+        form .add-btn {
+            .add-icon {
+                position: relative;
+                // border-top-left-radius: 0;
+                border-top-right-radius: 0;
+                border-bottom-left-radius: 0;
+                // border-bottom-right-radius: 0.1875rem;
+            }
+            .add-text{
+                margin-left: -1px;
+                width: 100% !important;
+                padding-right: 20px;
+            }
+        }
+    }
+    // .media-section.music form .add-btn .add-icon{}
 }

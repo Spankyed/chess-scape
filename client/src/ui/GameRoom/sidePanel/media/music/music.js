@@ -183,7 +183,10 @@ function SongPlayer({ state, actions }){
 		delay(500).then(_ =>  form.song.value = [])
 	}
 	return (
-		<form class='song-form' name="song-form">
+		<form
+			class={`song-form ${!isPreviewing && "reverse-landscape"}`}
+			name="song-form"
+		>
 			<div class="song-player-wrapper">
 				{isLoading && <Loader />}
 				{isPlaying ? (
@@ -236,7 +239,7 @@ function SongPlayer({ state, actions }){
 						/>
 					)}
 					<span class="add-icon">
-						<img src="./assets/create/add.svg"/>
+						<img src="./assets/create/add.svg" />
 					</span>
 					<span class="add-text">
 						{isPreviewing ? "Play" : "Add Song"}
