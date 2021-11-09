@@ -96,6 +96,8 @@ export default (initial) => ({
 				},
 			});
 			const isMediaOpen = (type) => mediaOpen == type;
+			let notEmpty =
+				Object.getOwnPropertyNames(state.videoList).length > 0;
 			return (
 				<div
 					class={`media-section video ${
@@ -103,26 +105,33 @@ export default (initial) => ({
 					}`}
 				>
 					<OptionsView type="video" videoToggle={actions.toggle} />
-					<div class="youtube-embed">
-						{!isPlaying() && (
-							<Thumbnail
+
+					<div class={`video-wrapper ${!notEmpty && "show-full"}`}>
+						<div class="youtube-embed">
+							{!isPlaying() && (
+								<Thumbnail
+									{...actions}
+									{...state}
+									submit={submit}
+								/>
+							)}
+							<Embed
 								{...actions}
 								{...state}
-								submit={submit}
+								isPlaying={isPlaying}
 							/>
-						)}
-						<Embed {...actions} {...state} isPlaying={isPlaying} />
+						</div>
+						<VideoInput {...actions} {...state} submit={submit} />
+						<ul class="video-list">
+							{Object.values(state.videoList).map((video, i) => (
+								<VideoItem
+									video={video}
+									currVideoId={state.currVideoId}
+									setCurrVideo={actions.setCurrVideo}
+								/>
+							))}
+						</ul>
 					</div>
-					<VideoInput {...actions} {...state} submit={submit} />
-					<ul class="video-table">
-						{Object.values(state.videoList).map((video, i) => (
-							<VideoItem
-								video={video}
-								currVideoId={state.currVideoId}
-								setCurrVideo={actions.setCurrVideo}
-							/>
-						))}
-					</ul>
 				</div>
 			);
 		},
@@ -144,9 +153,9 @@ function VideoItem({video, currVideoId, setCurrVideo}){
 			 */}
 			<img class="video-img" src={`https://img.youtube.com/vi/${video.video_id}/mqdefault.jpg`}/> 
 			<div class='video-info'>
-				{ (dataReady() && isPlaying()) &&
+				{/* { (dataReady() && isPlaying()) &&
 					<h4 class="isPlaying">Now Playing</h4>
-				}
+				} */}
 				{ (!dataReady() && isPlaying()) &&
 					<h4 class="isLoading">Loading...</h4> 
 				}
@@ -186,13 +195,13 @@ function VideoInput (props){
 	return(
 		<form onsubmit={attemptSubmit} class="video-form" action="">
 			<div class="input-wrapper">
-				<input disabled={isLoading} oninput={onInput} class="input shadow-md" placeholder="YouTube Video URL" aria-label="Video URL" name="url" type='text' ></input>
+				<input disabled={isLoading} oninput={onInput} class="input" placeholder="YouTube Video URL" aria-label="Video URL" name="url" type='text' ></input>
 				<button type='submit' class="submit-button"> {options.autoPlay || !currVideoId ? "Watch" : 'Add'} </button>
 			</div>   
 			{	invalidUrl ? 
 					<p class='invalid-message'>Invalid video URL</p> : 
 				!invalidUrl && !videoFound ?
-					<p class='invalid-message'>Video not be found, check url or try a different video</p> : ''
+					<p class='invalid-message'>Check url or try a different video</p> : ''
 				// <p class='invalid-message'>Video could not be played, check url or try a different video</p>
 			}
 
@@ -307,7 +316,6 @@ async function checkVideoId(id) {
 function next(obj, key) {
 	var keys = Object.keys(obj), 
 	i = keys.indexOf(key);
-	console.log('next',i !== -1 && keys[i + 1] && obj[keys[i + 1]])
 	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
 };
 
