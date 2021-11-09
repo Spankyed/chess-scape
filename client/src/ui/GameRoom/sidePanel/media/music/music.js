@@ -3,7 +3,7 @@ import Api from '../../../../../api/Api';
 import { nanoid } from 'nanoid/non-secure'
 import { delay } from "nanodelay";
 import Options from "../options"; 
-l=1
+
 const options = Options()
 
 export default (initial) => ({
