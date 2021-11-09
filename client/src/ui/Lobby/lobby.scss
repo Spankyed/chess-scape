@@ -582,8 +582,13 @@
             margin-right: 2rem !important;
             padding: .5rem;
         }
-        .table-wrapper .table-empty img {
-            height: 7.5rem !important;
+        .table-wrapper {
+            table tbody td.host span{
+                max-width: 100%;
+            }
+            .table-empty img {
+                height: 7.5rem !important;
+            }
         }
     }
 }
