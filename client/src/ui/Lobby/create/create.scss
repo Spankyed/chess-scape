@@ -34,7 +34,7 @@
     }
 
     .selected{
-        box-shadow:#b8a776 0px 0px 3px 3px !important;
+        box-shadow:rgba(57, 63, 0, 0.6) 0px 0px 3px 3px !important;
     }
     select {
         -webkit-appearance: none;
@@ -191,6 +191,7 @@
                             }
                         }
                         img {
+                            filter: drop-shadow(0px 2px 20px rgba(0, 0, 0, 0.438));
                             // width: 100%;
                             max-height: 3rem;             
                             align-self: center;

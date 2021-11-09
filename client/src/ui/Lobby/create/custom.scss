@@ -2,8 +2,15 @@
 .custom  {
     // m.$type-bg-clr: #1F7A50;
     // m.$type-bg-clr: #1c3e2f;
-
-    background-color: m.$type-bg-clr;
+filter: drop-shadow(0
+px
+ 2
+px
+ 20
+px
+ #000);
+    // background-color: m.$type-bg-clr;
+    background-color: m.$mid-green;
     padding-left: 0.5rem/* 8px */;
     padding-right: 0.5rem/* 8px */;
     padding-bottom: 0.5rem/* 8px */;
@@ -25,6 +32,7 @@
         justify-content: center;
         align-items: center;
         img {
+            filter: drop-shadow(0px 2px 20px rgba(0, 0, 0, 0.438));
             
             height: 2.8rem;
             flex-shrink: 1;
