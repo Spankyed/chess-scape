@@ -15,7 +15,7 @@ export default (initial) => ({
 	// view: (state, {showMedia,...actions}) => () => {
 	view:
 		({ allowShare, autoPlay }, { toggle }) =>
-		({ type }) => {
+		({ type, videoToggle }) => {
 			const options = [
 				{ text: "Share", name: "allowShare", value: allowShare },
 				{ text: "Auto-Play", name: "autoPlay", value: autoPlay },
@@ -33,7 +33,7 @@ export default (initial) => ({
 							}
 						>
 							<span class="toggle-text"> {option.text} </span>
-							<Toggle {...{ option, toggle }} />
+							<Toggle {...{ option, toggle: videoToggle || toggle }} />
 						</div>
 					))}
 				</div>
@@ -45,10 +45,10 @@ function Toggle({ option, toggle }) {
 	return (
 		<div class="toggle">
 			<input
-				oncreate={(el) => (el.checked = option.value)}
+				// oncreate={(el) => (el.checked = option.value)}
 				onchange={(_) => toggle(option.name)}
 				class="tgl-input"
-				// checked={option.value}
+				checked={option.value}
 				id={option.name}
 				name={option.name}
 				type="checkbox"
