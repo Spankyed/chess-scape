@@ -44,7 +44,7 @@ async function createConnection() {
 	connection = notConnected
 		? new Sockette(connectionURL, {
 				timeout: 5e3,
-				// maxAttempts: 4,
+				maxAttempts: 6,
 				onopen,
 				onclose,
 				onmessage,
