@@ -1,33 +1,21 @@
+@use '../../../../master' as m; 
 // $submit-button-color: #82B64A; //409b6b
 // $submit-button-color: #4338CA; //409b6b
 // $submit-button-color: #6B944C; //409b6b
 $submit-button-color: #82B64A; //409b6b
 $toggle-track-color: #959b90;
 // $toggle-track-active-color: #4338CA;
-$toggle-dot-color: #3E5BB8;
-// $toggle-dot-color: #0075ff;
-// $toggle-dot-color: #3B82F6;
-// $toggle-dot-color: #4338CA;
-// $toggle-dot-color: #6B944C;
-// $toggle-dot-color: #F47B56; 
 
 
-.video-area{
-	// font-size: 0.875rem/* 14px */;
-    // line-height: 1.25rem/* 20px */;
-	height: 100%;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	&.no-pointers{
-		pointer-events: none;
-	}
+
+.media-section.video{
+	// root styles in media.scss
 
 	.youtube-embed {
+		padding-top: 56.25%;
 		display: block;
 		background: #CCC;
 		position: relative;
-		padding-top: 56.25%;
 		margin-bottom: 0.5rem/* 8px */;
 		img {
 			position: absolute;
@@ -62,7 +50,7 @@ $toggle-dot-color: #3E5BB8;
 				left: calc(40%);
 				top: calc(40%);
 				width: 20%;
-				.loader > path {
+				.video-loader > path {
 					// fill: #FF6700;
 					fill: #E5E5E5;
 				}
@@ -267,9 +255,10 @@ $toggle-dot-color: #3E5BB8;
 	
 }
 
-@media (min-width: 640px) {
+@media (min-width: m.$small) {
 	.hide-mobile{ display:initial !important;}
 }
+
 
 
 
