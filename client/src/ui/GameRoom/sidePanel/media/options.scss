@@ -21,9 +21,11 @@ $toggle-active-color: #6163df;
 		align-items: center;
 		cursor: pointer;
 		.toggle-text {
+			font-size: m.$font-size-sm;
+    		color: #858585;
 			.hide-mobile{ display:none ;}
 			// max-width: fit-content;
-			margin-right: 0.75rem/* 12px */;
+			margin-right: 0.5rem/* 12px */;
 			font-weight: 500;
 		}
 		.toggle {
@@ -113,6 +115,11 @@ $toggle-active-color: #6163df;
 	}
 }
 
-
-
+@media (max-width: m.$small) {
+	.options .toggle-wrapper{
+		&:first-child{
+			margin-right: 1rem !important;
+		}
+	}
+}
 
