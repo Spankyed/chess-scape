@@ -52,7 +52,7 @@ html, body {
     -o-animation: blink-bg 1.4s infinite;  /* Opera 12+ */
     animation: blink-bg 1.4s infinite;  /* IE 10+, Fx 29+ */
     animation-timing-function: cubic-bezier(0.25, 0.1, 0.85, 1);
-	// animation-iteration-count: 6;
+	animation-iteration-count: 6;
     transition: all .3s ease;
     
     @keyframes blink-bg {
