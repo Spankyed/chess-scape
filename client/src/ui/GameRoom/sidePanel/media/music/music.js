@@ -123,21 +123,24 @@ export default (initial) => ({
 						!isMediaOpen("music") && "no-pointers"
 					}`}
 				>
-					<OptionsView type='music' />
+					<OptionsView type="music" />
 					{/* <Options {...state} toggle={actions.toggle} /> */}
-					<SongPlayer actions={actions} state={state} />
 
-					{notEmpty && (
-						<ul class="music-list">
-							{songList.map((song, i) => (
-								<MusicItem
-									song={song}
-									setCurrSong={actions.setCurrSong}
-									currSongId={state.currSongId}
-								/>
-							))}
-						</ul>
-					)}
+					<div class={`music-wrapper ${!notEmpty && 'show-full'}`}>
+						<SongPlayer actions={actions} state={state} />
+
+						{notEmpty && (
+							<ul class="music-list">
+								{songList.map((song, i) => (
+									<MusicItem
+										song={song}
+										setCurrSong={actions.setCurrSong}
+										currSongId={state.currSongId}
+									/>
+								))}
+							</ul>
+						)}
+					</div>
 				</div>
 			);
 		},
