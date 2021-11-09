@@ -182,6 +182,7 @@ function SongPlayer({ state, actions }){
 		form.reset()
 		delay(500).then(_ =>  form.song.value = [])
 	}
+	const addDisabled = isProcessing && !isPlaying;
 	return (
 		<form
 			class={`song-form ${!isPreviewing && "reverse-landscape"}`}
@@ -220,12 +221,12 @@ function SongPlayer({ state, actions }){
 			{(isPreviewing || isPlaying) && (
 				<button
 					onclick={!isPlaying ? submit : noop}
-					class={`add-btn ${
-						((!isLoading && isPreviewing) ||
-							(!isPlaying && isPreviewing)) &&
-						"preview"
-					}`}
-					disabled={isProcessing}
+					class={`add-btn 
+						${((!isLoading && isPreviewing) || (!isPlaying && isPreviewing)) &&
+							" preview" }
+						${addDisabled && 'no-pointers'}
+					`}
+					disabled={addDisabled}
 					type="button"
 				>
 					{isPlaying && (
@@ -236,6 +237,7 @@ function SongPlayer({ state, actions }){
 							name="song"
 							type="file"
 							accept="audio/*"
+							disabled={addDisabled}
 						/>
 					)}
 					<span class="add-icon">
