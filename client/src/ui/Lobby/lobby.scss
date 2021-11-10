@@ -12,8 +12,9 @@
     font-size: m.$font-size;
 
     .alert-wrapper {
+        justify-content: end;
         z-index: 1;
-        .alert{
+        .alert {
             margin: 1rem;
         }
         bottom: 0px;
@@ -524,7 +525,8 @@
         }
         .alert-wrapper {
             margin-top: 1rem;
-            align-items: flex-start;
+            justify-content: start;
+            align-items: center;
         }
     }
 }

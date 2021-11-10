@@ -88,7 +88,7 @@ export default {
 		return {
 			// icon: "./assets/create/host.svg",
 			id: type,
-			role: "none",
+			role: "game",
 			heading: `${capitalize(type)} Offered`,
 			message,
 			actions: {
