@@ -62,12 +62,13 @@ $toggle-dot-color: m.$green;
 			// height: 50%;
 			min-height: 100%;
 			padding: m.$spacing-sm/* 20px */;
+    		transition: all .3s ease;
 			&.active { 
 				// font-weight: 700; 
 				background-color: $toggle-active-color !important;
 			}
 			&:hover {
-				background-color: $toggle-hover-color !important;
+				background-color: $toggle-hover-color;
 				color: rgba(243, 244, 246, 1);
 			}
 			// span {
