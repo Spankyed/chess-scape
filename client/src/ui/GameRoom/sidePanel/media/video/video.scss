@@ -59,6 +59,9 @@ $highlight-color: #b8a776;
 			left: 0;
 			width: 100%;
 			height: 100%;
+			&.hidden{
+				visibility: hidden;
+			}
 		}
 		.thumb-wrapper{
 			z-index: 9;
@@ -67,16 +70,18 @@ $highlight-color: #b8a776;
 			left: 0px;
 			height: 100%;
 			width: 100%;
-			.thumbnail{
+			.thumbnail {
 				height: 100%;
 				width: 100%;
 			}
-			.thumb-img{
+			.thumb-img {
 				height: 100%;
 				object-fit: cover;
-				filter: brightness(70%);
+				opacity: .7;
 			}
-			.middle-icon{
+			.middle-icon {
+				// top: calc(30%); 
+				z-index:2;
 				display: flex;
 				align-items: center; 
 				justify-content: center;
@@ -86,9 +91,12 @@ $highlight-color: #b8a776;
 				svg{
 					width: 20%;
 				}
-				.video-loader > path {
-					// fill: #FF6700;
-					fill: #E5E5E5;
+				.video-loader { 
+					enable-background:new 0 0 50 50;
+						&> path {
+						// fill: #FF6700;
+						fill: #E5E5E5;
+					}
 				}
 				&.video-play-btn{
 					cursor: pointer;
@@ -122,6 +130,7 @@ $highlight-color: #b8a776;
 		.input-wrapper{
 			display: flex;
 			justify-content: center;
+			min-width: 100%;
 			max-width: 100%;
 			.input{
 				min-width: 0;
@@ -160,7 +169,11 @@ $highlight-color: #b8a776;
 				color: #fff;;
 				align-items: center;
 				// font-weight: 600;
+				&.processing{
+                    -webkit-text-security: disc;
+                }
 			}
+			
 		}
 		.invalid-message{
 			// @apply ml-1 mt-0 mb-2 text-xs text-red-800;
@@ -298,8 +311,6 @@ $highlight-color: #b8a776;
 @media (min-width: m.$small) {
 	.hide-mobile{ display:initial !important;}
 }
-
-
 
 
 @media (max-height: m.$landscape) {
