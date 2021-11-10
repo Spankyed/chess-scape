@@ -1,8 +1,8 @@
+@use '../master' as m; 
 @import './loader/loader.scss'; 
 @import './controls/controls.scss'; 
 @import './sidePanel/sidePanel.scss'; 
 
-@import '../shared/alert.scss'; 
 
 .game-room {
     height: 100%;

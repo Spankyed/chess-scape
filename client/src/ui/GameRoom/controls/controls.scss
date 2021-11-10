@@ -393,11 +393,36 @@ $border-radius: 0.125rem;
 	}
 }
 
+.orientation-prompt {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 0.75rem;  
+	flex-grow: 1;
+	text-align: center;
+	background-color: m.$orange;
+	border: m.$border;
+	border-radius: m.$border-radius;
+	display: flex;
+	flex-direction: column;
+	// box-shadow: m.$shadow-sm;
+	.title {
+		font-size: 1.35rem;
+		color: #fff;
+	}
+	img{
+		height: 5rem;
+	}
+	// .message{
+	// }
+}
+
+
 //  BREAKPOINTS 
 @media (min-width: m.$x-small) {
-	.player-section .player{
-		width: 30%;
-		max-width: 30%;
+	.orientation-prompt{
+		display:none;
 	}
 }
 

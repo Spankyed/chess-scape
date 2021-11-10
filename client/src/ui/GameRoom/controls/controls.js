@@ -77,6 +77,8 @@ export default (initial) => ({
 					class={`controls-wrapper ${!loader.removed && "hidden"}`}
 				>
 					<div class="controls">
+						<OrientationPrompt />
+						
 						{gameOver && <MatchMessage matchInfo={matchInfo} />}
 						{state.isPromoting && (
 							<PieceSelection
@@ -234,6 +236,18 @@ function PieceSelection({resolve, closePieceSelect, color}){
 				</div>
 				{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
 				<button onclick={(_) => select(null)}>Cancel</button>
+			</div>
+		</div>
+	);
+}
+
+function OrientationPrompt() {
+	return (
+		<div class="orientation-prompt">
+			<div class="title">Portait Mode Unsupported</div>
+			<img src="./assets/controls/rotate-device.svg"></img>
+			<div class="message">
+				Please rotate your device into landscape mode.
 			</div>
 		</div>
 	);
