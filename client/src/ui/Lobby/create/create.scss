@@ -1,4 +1,8 @@
 @use '../../master' as m; 
+
+// $highlight-color: rgb(163 181 0 / 73%);
+$highlight-color: rgba(57, 63, 0, 0.6);
+
 .create-wrapper {
     font-size: m.$font-size;
 
@@ -34,7 +38,7 @@
     }
 
     .selected{
-        box-shadow:rgba(57, 63, 0, 0.6) 0px 0px 3px 3px !important;
+        box-shadow: $highlight-color 0px 0px 3px 3px !important;
     }
     select {
         -webkit-appearance: none;
@@ -191,7 +195,7 @@
                             }
                         }
                         img {
-                            filter: drop-shadow(0px 2px 20px rgba(0, 0, 0, 0.438));
+                            filter: drop-shadow(0px 2px 20px rgba(0, 0, 0, 0.33));
                             // width: 100%;
                             max-height: 3rem;             
                             align-self: center;
