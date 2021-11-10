@@ -63,10 +63,10 @@ $text-color: #D4D3D3;
 		.tabs{
 			pointer-events: none;
 			justify-content: flex-start;
-			display: flex;
-			z-index: 4;	
+			display: f		lex;
 			.tab {
-				// @apply  mt-1 bg-white inline-block py-2 px-4 font-semibold text-blue-600 hover:text-blue-800 uppercase;
+					margin-bottom: -1px;
+				z-index: 2;	
 				cursor: pointer;
 				pointer-events: auto;
 				// background-color:#989695;
@@ -84,12 +84,15 @@ $text-color: #D4D3D3;
 				display: inline-block;
 				text-transform: uppercase;
 				border: m.$border;
+				border-bottom-width: 0px;
       			border-top-left-radius: $border-radius;
       			border-top-right-radius: $border-radius;
 				&:hover {
 					background-color: #4c4c4c33;
 				}
 				&.active {
+					position: relative;
+    				z-index: 4;
 					background-color: m.$darker;
 					color: #fff;
 					border-bottom: 0px;
@@ -98,6 +101,7 @@ $text-color: #D4D3D3;
 			}
 		}
 		.content-wrapper {
+    		z-index: 3;
 			position: relative;
 			pointer-events: auto;
 			// background-color: #989695;
@@ -105,7 +109,7 @@ $text-color: #D4D3D3;
 			background-color: m.$darker;
       		border: m.$border;
      		border-radius: $border-radius;
-			border-top: 0px;
+			// border-top: 0px;
 			height: 100%;
 			width: 100%;
 			min-height: 0;
