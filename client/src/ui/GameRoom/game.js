@@ -48,6 +48,7 @@ export default (initial) => ({
 				const isStarted = matchStarted || info?.matchStarted;
 				if (isPlayer) {
 					Scene.game().playerColor = color;
+					Scene.game().start();
 					if (isStarted)
 						actions.enableMoving(info || { player, playerColor });
 					else {
@@ -112,8 +113,7 @@ export default (initial) => ({
 					actions.commit();
 				}
 				if (gameOver && info) {
-					// Scene.resetGame()
-					// this.game_over = true
+					Scene.game().end();
 					// checkmate|abort|abandon|resign|draw|stalemate|time|3foldrep
 					roomActions.endGame(info);
 				} else {
@@ -127,12 +127,14 @@ export default (initial) => ({
 				);
 			};
 			const onEnd = (info) => {
+				Scene.game().end();
 				roomActions.endGame(info);
 			};
 			const onRematch = () => {
 				roomActions.restartGame();
 				roomActions.sidePanel.moves.clear();
 				Scene.board().moveService.send({ type: "RESET_BOARD" });
+				Scene.game().start();
 				roomActions.alert.show(Prompts.onRematch);
 				actions.uncommit();
 			};

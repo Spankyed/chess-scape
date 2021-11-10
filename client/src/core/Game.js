@@ -11,20 +11,24 @@ export default class Game {
 		// this.opponentPlayer = canvas;
 		// this.computerColor = 'black';
 		this.playerColor = null;
-		// this.game_over = false;
+		this.game_over = false;
 		this.engine = new Chess();
 		this.reviewEngine = new Chess();
 		this.inReview = (_) =>
 			this.board().moveService.state.matches("reviewing");
 		return this;
 	}
+	
+	start() { this.game_over = false }
+	end() { this.game_over = true }
+
 	getCurrentEngine(isOpponentMove) {
 		return this.inReview() && !isOpponentMove
 			? this.reviewEngine
 			: this.engine;
 	}
-
 	makeMove(move, isOpponentMove) {
+		if (this.game_over) return
 		return this.appendIfChecked(this.getCurrentEngine(isOpponentMove).move(move));
 	}
 	async handlePlayerMove(move) {
