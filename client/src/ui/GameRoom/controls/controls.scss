@@ -364,7 +364,6 @@ $border-radius: 0.125rem;
 .message-wrapper {
 	--tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),0 10px 10px -5px rgba(0, 0, 0, 0.04);
 	box-shadow: var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);
-	z-index: 1;
 	position: absolute;
 	// top: 0px;
 	top: 50%;
