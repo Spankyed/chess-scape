@@ -8,7 +8,8 @@ $text-info-color: #7D7C7A;
 
 $toggle-heading-color: #DCDDE3;
 // $toggle-bg-color: #8C93A8;
-$toggle-bg-color: #525357;
+// $toggle-bg-color: #525357;
+$toggle-bg-color: #4c4c4c33;
 
 // $toggle-bg-color: #242528;
 $toggle-active-color: m.$green;
@@ -40,6 +41,7 @@ $toggle-dot-color: m.$green;
 		display: flex;
    		flex-direction: row;
 		background-color: $toggle-bg-color !important;
+		border: m.$border;
 		// padding: 1.25rem/* 20px */;
 		align-items: center;
 		justify-content: space-between;
