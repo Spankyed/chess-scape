@@ -309,7 +309,6 @@ function RoomsTable({rooms, join, openPinInput}) {
 // 	matchStarted: false,
 // };
 function RoomItem({room, join, openPinInput, idx}) {
-	console.log('room: ', room);
 	// room = roomModel;
 	const players = Object.values(room?.players||{})
 	const isHost = room?.host == Api.getClientID()
@@ -317,7 +316,6 @@ function RoomItem({room, join, openPinInput, idx}) {
 	const isPlayer = isHost || players?.find((p) => p.clientID == Api.getClientID());
 	const isFull = players?.length > 1
 	const isVsAngel = room?.gameOptions.selectedOpp == "angel";
-	console.log('isVsAngel: ', isVsAngel);
 	const hasPin = room?.gameOptions.pin;
 	const userImg = `https://avatars.dicebear.com/api/avataaars/${room.hostName}.svg`
 
