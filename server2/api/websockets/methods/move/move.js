@@ -84,17 +84,18 @@ module.exports = async function (
 					],
 				},
 				// select: "clients",
-			}),
-			sendMessageToRoom(roomID, {
-				method: "move",
-				move: validMove,
-				clientID,
-				gameOver,
-				info,
-				colorToMove: nextColor(colorToMove),
-			}),
+			})
 		]);
 
+		sendMessageToRoom(roomID, {
+			method: "move",
+			move: validMove,
+			clientID,
+			gameOver,
+			info,
+			colorToMove: nextColor(colorToMove),
+		})
+			
 		console.log(`Player[${clientID}][${colorToMove}] moved`, {
 			move,
 			info,
