@@ -338,7 +338,7 @@
                                 display:flex;
                                 align-items: center;
                                 background-color: m.$dark-green;
-                                color: #bee5a1;
+                                // color: #bee5a1;
                                 padding-top: .5rem;
                                 padding-bottom: .5rem;
                                 padding-left: 1rem;
@@ -380,7 +380,7 @@
                                     transition:all .3s ease-in-out;
                                 }
                                 &.host{
-                                    color: rgb(153, 173, 230);
+                                    // color: rgb(153, 173, 230);
                                     background-color: rgb(23, 55, 94);
                                     .locked {
                                         background-color: rgb(153, 173, 230);
@@ -399,6 +399,22 @@
                                         }
                                     }
                                 }
+                                &.watch {
+                                    background-color: #9d9b00;
+                                    &:hover {
+                                        .locked {
+                                            opacity:.7;
+
+                                        }
+                                        color: rgb(75, 73, 0);
+                                        box-shadow: rgb(61, 59, 0) 0px 5px 0px;
+                                        &:active{
+                                            // background: radial-gradient(ellipse at center, 
+                                            // rgb(69, 106, 206) 0%,rgb(32, 68, 167) 100%);
+                                        }
+                                    }
+                                }
+                                
                             }
                         }
                     }

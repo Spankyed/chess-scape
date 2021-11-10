@@ -309,14 +309,19 @@ function RoomsTable({rooms, join, openPinInput}) {
 // 	matchStarted: false,
 // };
 function RoomItem({room, join, openPinInput, idx}) {
+	console.log('room: ', room);
 	// room = roomModel;
 	const players = Object.values(room?.players||{})
 	const isHost = room?.host == Api.getClientID()
 	const isAngel = 'angel' == Api.getClientID();
 	const isPlayer = isHost || players?.find((p) => p.clientID == Api.getClientID());
 	const isFull = players?.length > 1
+	const isVsAngel = room?.gameOptions.selectedOpp == "angel";
+	console.log('isVsAngel: ', isVsAngel);
 	const hasPin = room?.gameOptions.pin;
 	const userImg = `https://avatars.dicebear.com/api/avataaars/${room.hostName}.svg`
+
+	const canPlay = (!isVsAngel && (isPlayer || !isFull)) || (!isFull && isAngel);
 
 	return (
 		<tr class={`${isHost && "selected-room"} odd`}>
@@ -370,12 +375,10 @@ function RoomItem({room, join, openPinInput, idx}) {
 							? join(room?.ID)
 							: openPinInput(room?.ID)
 					}
-					class={`${isHost && "host"}`}
+					class={`${isHost ? "host" : !canPlay && "watch"}`}
 				>
 					<span class="text">
-						{isHost
-							? "Enter"
-							: `${isPlayer || !isFull ? "Play" : "Watch"} `}
+						{isHost ? "Enter" : `${canPlay ? "Play" : "Watch"} `}
 					</span>
 					{hasPin && !(isHost || isAngel) && (
 						<span class="locked"></span>
