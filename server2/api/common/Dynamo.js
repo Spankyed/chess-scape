@@ -154,7 +154,10 @@ const Dynamo = {
 			UpdateExpression,
 			ReturnValues: "ALL_NEW",
 		};
-		return documentClient.update(params).promise();
+		return documentClient.update(params).promise().catch((err) => {
+			console.log('Update Error')
+			console.error(err)
+		});
 	},
 
 	query: async ({ TableName, queryKey, queryValue }) => {

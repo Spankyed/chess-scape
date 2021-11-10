@@ -10,6 +10,7 @@ const openGateway = (domainName, stage) => {
 };
 
 const send = ({ domainName, stage, connectionID, message }) => {
+	if (!domainName || !stage || !connectionID || !message) return;
 	const gateway = openGateway(domainName, stage);
 	const postParams = {
 		Data: JSON.stringify(message),
