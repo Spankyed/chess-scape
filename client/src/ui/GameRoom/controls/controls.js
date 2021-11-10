@@ -215,14 +215,26 @@ function PieceSelection({resolve, closePieceSelect, color}){
 		closePieceSelect()
 	}
 	return (
-		<div class="promotion-wrapper">
-			<h2 class='w-full mx-auto text-gray-600'>Select a piece</h2>
-			<div onclick={_=> select('q')} class="piece w-1/2"><img src={`./assets/controls/pieces/queen_${color}.png`}/></div>
-			<div onclick={_=> select('n')} class="piece w-1/2"><img src={`./assets/controls/pieces/knight_${color}.png`}/></div>
-			<div onclick={_=> select('r')} class="piece w-1/2"><img src={`./assets/controls/pieces/rook_${color}.png`}/></div>
-			<div onclick={_=> select('b')} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.png`}/></div>
-			{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
-			<button onclick={_=> select(null)}>Cancel</button>
+		<div class="promotion-wrapper" onclick={(_) => select(null)}>
+			<div class="promotion">
+				<h2>Select a piece</h2>
+				<div class="pieces">
+					<div onclick={(_) => select("q")} class="piece">
+						<img src={`./assets/controls/pieces/queen_${color}.png`} />
+					</div>
+					<div onclick={(_) => select("n")} class="piece">
+						<img src={`./assets/controls/pieces/knight_${color}.png`} />
+					</div>
+					<div onclick={(_) => select("r")} class="piece">
+						<img src={`./assets/controls/pieces/rook_${color}.png`} />
+					</div>
+					<div onclick={(_) => select("b")} class="piece">
+						<img src={`./assets/controls/pieces/bishop_${color}.png`} />
+					</div>
+				</div>
+				{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
+				<button onclick={(_) => select(null)}>Cancel</button>
+			</div>
 		</div>
-	)
+	);
 }

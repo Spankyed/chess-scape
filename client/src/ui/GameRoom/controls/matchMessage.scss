@@ -1,0 +1,104 @@
+// MATCH MESSAGE
+.message-wrapper {
+	--tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),0 10px 10px -5px rgba(0, 0, 0, 0.04);
+	box-shadow: var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);
+	position: absolute;
+	// top: 0px;
+	top: 50%;
+	left: 50%;
+	padding-top: 0.25rem/* 4px */;
+	// transform: translate(-50%);
+	transform: translate(-50%, -50%);
+	//  win banner courtesy of https://codepen.io/1bruddah/pen/ERjWxg
+	.match-message {
+		border: m.$border;
+		border-radius: m.$border-radius;
+		margin-left: auto;
+		margin-right: auto;
+		// margin-top: .5rem;
+		text-align: center;
+		align-items: center;
+		background-color:#6f9a4f;
+		color: #d7ecc2;
+		&.white{
+			background-color: #e9e7c4;
+			color:#1d1b18;
+		}
+		&.black{
+			background-color: #1c1915;
+			color:#e9e7c4;
+		}
+	}
+	.messages {
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: center;
+		align-content: flex-start;
+		align-items: center;
+	}
+	.messages div {
+		/*animation: move .5s ease-in-out 0.5s 4 alternate;*/
+		overflow:hidden;
+		border: 1px solid transparent;
+		// font-family: Century Gothic, sans-serif;
+	}
+	.message-topic {
+		font-weight: bold;
+		font-size: 2.25rem;
+		margin: 1rem 0 1rem 0;
+		// margin-right: 1rem;
+		padding: .5rem 1rem .5rem 1rem;
+	}
+	.message-content {
+		font-size: 1.85rem;
+	}
+	#topic-1 {
+		border-right: 1px solid #666;
+		animation: showup-1 7s infinite, pause-between-iterations 3s;
+	}
+	#message-1 {
+		width:0px;
+		height:0px;
+		animation: reveal-2 7s infinite, pause-between-iterations 3s;
+	}
+	#message-1 span {
+		margin-left:-50vw;
+		animation: slidein-2 7s infinite, pause-between-iterations 3s;
+	}
+
+	@keyframes showup-1 {
+		0% { opacity:0; border-right-color: transparent;}
+		20% { opacity:1; border-right-color: transparent;}
+		35% { border-right-color: #aaa;}
+		80% { opacity:1; }
+		100% { opacity:0; }
+	}
+	@keyframes reveal-1 {
+		0% { opacity:0; width:0px; height:0;}
+		20% { opacity:1; width:0px; height:3rem;}
+		30% { width:550px; }
+		80% { opacity:1; }
+		100% { opacity:0; width:550px; height:3rem;}
+	}
+	@keyframes reveal-2 {
+		0% { opacity:0; width:0px; height:0;}
+		20% { opacity:1; width:0px; height:3rem;}
+		30% { width:350px; }
+		80% { opacity:1; }
+		100% { opacity:0; width:350px; height:3rem;}
+	}
+	@keyframes slidein-1 {
+		0% { margin-left:-600px; }
+		20% { margin-left:-600px; }
+		30% { margin-left:0px; }
+		100% { margin-left:0px; }
+	}
+	@keyframes slidein-2 {
+		0% { margin-left:-400px; }
+		20% { margin-left:-400px; }
+		30% { margin-left:0px; }
+		100% { margin-left:0px; }
+	}
+}
