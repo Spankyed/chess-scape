@@ -160,7 +160,7 @@ export default (initial) => ({
 				Api.setMessageHandlers({
 					disband: onDisband,
 					join: onJoin,
-					disconnect: state.game.player && Api.reconnect, // if a player reconnect immediately
+					// disconnect: state.game.player && Api.reconnect, // if a player reconnect immediately
 					idleReconnect: Api.sync,
 					reconnect: Api.sync,
 				});
