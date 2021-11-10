@@ -65,7 +65,7 @@ export default (initial) => ({
 				if (isKeyDown && keys[13] && !keys[16]) {
 					let text = evt.target.value;
 					addMessage({
-						username: "test", // todo store user's name in Api.getUsername,
+						username: "You", // todo store user's name in Api.getUsername,
 						time: Date.now(),
 						// clientID: Api.getClientID()
 						text,
