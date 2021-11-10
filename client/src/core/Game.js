@@ -100,6 +100,7 @@ export default class Game {
 		);
 	}
 	promptPieceSelect() {
+		document.body.style.cursor = "default";
 		const color = this.playerColor;
 		return new Promise((resolve, reject) =>
 			this.Scene.uiActions.controls.openPieceSelect({
