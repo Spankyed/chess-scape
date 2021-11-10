@@ -373,10 +373,14 @@ function RoomItem({room, join, openPinInput, idx}) {
 							? join(room?.ID)
 							: openPinInput(room?.ID)
 					}
-					class={`${isHost ? "host" : !canPlay && "watch"}`}
+					class={`${
+						isHost || isPlayer ? "enter" : !canPlay && "watch"
+					}`}
 				>
 					<span class="text">
-						{isHost ? "Enter" : `${canPlay ? "Play" : "Watch"} `}
+						{isHost || isPlayer
+							? "Enter"
+							: `${canPlay ? "Play" : "Watch"} `}
 					</span>
 					{hasPin && !(isHost || isAngel) && (
 						<span class="locked"></span>
