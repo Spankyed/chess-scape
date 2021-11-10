@@ -149,6 +149,7 @@ $submit-button-color: m.$green;
                             // color: #424141 !important;
                             background: m.$green !important;
                             cursor: default;
+                            // filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.23)) !important;
                         }
                         span {
                             padding-bottom: .3em;
@@ -157,7 +158,7 @@ $submit-button-color: m.$green;
                             font-weight: 300;
                             padding-right: .3em;
                             // padding-top: .1em;
-                            font-size: 1.4rem/* 20px */;
+                            font-size: 1.5rem/* 20px */;
                             // line-height: 1.75rem/* 28px */;
                             // font-family: 'noto-chess';
                             display:none;
@@ -178,6 +179,7 @@ $submit-button-color: m.$green;
                     }
                     // border-right: 0.02rem solid rgba(107, 114, 128, 0.2);
                     sans { 
+                        // filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.13));
                         color: #fff; 
                         text-shadow: 0 1px .1rem rgb(0, 0, 0),
                         // 0 2px 0 #555147, 
@@ -198,6 +200,7 @@ $submit-button-color: m.$green;
                 &.black{
                     border-left: 0.02rem solid rgba(107, 114, 128, 0.2);
                     sans { 
+                        // filter: drop-shadow(0px 2px 5px rgba(233, 231, 231, 0.13));
                         color: #000000;
                         text-shadow: $shadow-def #282626;
                         // 0 2px 0 #928a7a, 
