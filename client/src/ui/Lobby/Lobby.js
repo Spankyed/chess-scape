@@ -69,13 +69,17 @@ export default (initial) => ({
 		completeFetch:
 			({ rooms }) =>
 			(_, actions) => {
-				const hostedRoomID = rooms.find(
+				const hostedRoom = rooms.find(
 					(room) => room.host == Api.getClientID()
-				)?.ID;
-				if (!!hostedRoomID) actions.alert.show(alert.hostAlert);
+				);
+				const multiplePlayers = hostedRoom && Object.keys(hostedRoom.players).length > 1
+
+				if (!!hostedRoom && !multiplePlayers)
+					actions.alert.show(alert.hostAlert);
+
 				actions.updateRooms(rooms);
 				return {
-					hostedRoom: hostedRoomID,
+					hostedRoom: hostedRoom?.ID,
 					loading: false,
 					isFetching: false,
 					initialized: true,
