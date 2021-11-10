@@ -191,14 +191,15 @@ function VideoInput (props){
 		return true
 	}
 	const onInput = async (e) =>{
-		// check/set url validity & set video Thumbnail preview 
+		// check/set url validity & set video Thumbnail preview
 		// console.log('input', e.target)
-		const videoId = parseYoutubeUrl(e.target.value)
-		let videoFound = await checkVideoId(videoId);
-		if (!videoFound) return;
-		setValidity(!videoId)
-		setVideoThumb(videoId || 0) // todo: begin preloading video in iframe?
-		if (!!videoId) setVideoFound(true) // oninput, resets found state if new video was found 
+		const videoId = parseYoutubeUrl(e.target.value);
+		// setValidity(!videoId);
+		setVideoThumb(videoId || 0); // todo: begin preloading video in iframe?
+		// let videoFound = await checkVideoId(videoId); // check too slow to use for oninput
+		// setValidity(!videoId || !videoFound);
+		// setVideoFound(!!videoId && videoFound); // oninput, resets found state if new video was found
+		setVideoFound(!!videoId); // oninput, resets found state if new video was found
 	}
 	return(
 		<form onsubmit={attemptSubmit} class="video-form" action="">
