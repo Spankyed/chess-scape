@@ -63,7 +63,7 @@ $text-color: #D4D3D3;
 		.tabs{
 			pointer-events: none;
 			justify-content: flex-start;
-			display: f		lex;
+			display: flex;
 			.tab {
 					margin-bottom: -1px;
 				z-index: 2;	
@@ -125,9 +125,9 @@ $text-color: #D4D3D3;
 			.panel-toggle {
 				z-index: 2;
 				position: absolute;
-				transform: translate(-100%, 0%);
+				transform: translate(-100%, -60%);
 				// left: -100%;
-				top: 10%;
+				top: 40%;
 				border: m.$border;
 				border-radius: $border-radius;
 				border-right: 0px;
@@ -151,8 +151,8 @@ $text-color: #D4D3D3;
 					border-left: 0px;
 					// padding-right: 0rem;
 					padding-left: 0.25rem/* 16px */;
-					-webkit-transform: scaleX(-1) translate(100%, 0%);
-  					transform: scaleX(-1) translate(100%, 0%);
+					-webkit-transform: scaleX(-1) translate(100%, -60%);
+  					transform: scaleX(-1) translate(100%, -60%);
 				}
 			}
 
