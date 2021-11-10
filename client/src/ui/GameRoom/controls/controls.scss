@@ -80,6 +80,7 @@ $border-radius: 0.125rem;
 				--speed: 500ms; 
 				position: relative;
 				.menu {
+					max-width: max-content;
 					z-index: 3;
 					align-items: center;
 					justify-content: center;
