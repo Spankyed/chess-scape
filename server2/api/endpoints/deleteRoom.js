@@ -6,6 +6,7 @@ const {
 } = require("../common/websocket/message");
 
 const roomsTable = process.env.roomsTableName;
+const matchesTable = process.env.matchesTableName;
 
 const schema = {
 	body: { ID: "string" },
@@ -14,6 +15,13 @@ const schema = {
 const handler = async (event) => {
 	const { clientID, ID } = event.body;
 
+	//get room if match started return	const room
+	const match = await Dynamo.get(ID, matchesTable);
+
+	if (match.started && match.moves.length > 1) {
+		return Responses._400({ message: "Can't delete room when match in progress" });
+	}
+
 	const deletedRoom = await Dynamo.delete(ID, roomsTable);
 
 	if (!deletedRoom) {
@@ -21,7 +29,7 @@ const handler = async (event) => {
 	}
 
 	// notify anyone who may be in room, room was deleted
-	// and anyone in lobby except person deleting 
+	// and anyone in lobby except person deleting
 	Promise.all([
 		sendMessageToRoom(ID, { method: "disband" }),
 		sendMessageToRoomExcept("lobby", clientID, {

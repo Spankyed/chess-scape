@@ -18,6 +18,7 @@ const initialState = {
 	loading: true,
 	isFetching: false,
 	initialized: false,
+
 }
 
 export default (initial) => ({
@@ -158,6 +159,8 @@ export default (initial) => ({
 				initialize();
 			}
 
+			const hideHeaderButtons = hostedRoom && getHostedRoom(rooms).matchStarted;
+
 			return (
 				<div class="lobby">
 					<CreateView
@@ -171,32 +174,34 @@ export default (initial) => ({
 						{/* Header */}
 						<div class="lobby-header">
 							<h1 class="title"> Lobby </h1>
-							<div>
-								{!hostedRoom ? (
-									<button
-										onclick={actions.toggleCreate}
-										disabled={
-											!initialized ||
-											isFetching ||
-											loading
-										}
-									>
-										{	initialized &&
-											!showCreate &&
-											!loading &&
-											!(state.rooms?.length > 0)  && 
-											<div class="ripple"></div>
-										}
-										<img src="./assets/create/add.svg"></img>
-										<p class="hide-sm">Create</p>
-									</button>
-								) : (
-									<button onclick={cancel} class="cancel">
-										<img src="./assets/create/cancel.svg"></img>
-										<p class="hide-sm"> Cancel </p>
-									</button>
-								)}
-							</div>
+							{!hideHeaderButtons &&
+								<div>
+									{!hostedRoom ? (
+										<button
+											onclick={actions.toggleCreate}
+											disabled={
+												!initialized ||
+												isFetching ||
+												loading
+											}
+										>
+											{	initialized &&
+												!showCreate &&
+												!loading &&
+												!(state.rooms?.length > 0)  && 
+												<div class="ripple"></div>
+											}
+											<img src="./assets/create/add.svg"></img>
+											<p class="hide-sm">Create</p>
+										</button>
+									) : (
+										<button onclick={cancel} class="cancel">
+											<img src="./assets/create/cancel.svg"></img>
+											<p class="hide-sm"> Cancel </p>
+										</button>
+									)}
+								</div>
+							}
 						</div>
 						{/* Table */}
 						<div class="table-wrapper">
@@ -398,6 +403,12 @@ function RoomItem({room, join, openPinInput, idx}) {
 function sortByCreated(arr) {
 	return (arr || []).sort((a, b) => b.created - a.created)
 }
+
+function getHostedRoom(rooms) {
+	return rooms.find((r) => r.host == Api.getClientID());
+}
+
+
 function cleanupHandlers(){
 	Api.setMessageHandlers({
 		create:()=>{},

@@ -30,6 +30,17 @@ const handler = async (event) => {
 	// todo do not allow to create room if already hosting room 
 	const { client, clientID, gameOptions: opts } = event.body;
 	const { selectedColor } = opts
+
+	const rooms = await Dynamo.getAll(roomsTable);
+	// check if cient is host in any rooms
+	const isHost = rooms.find((room) => room.host === clientID);
+
+	if (isHost) {
+		return Responses._409({
+			message: "You are already hosting a room",
+		});
+	}
+
 	const room = {
 		gameOptions: allowEnabledOptions(opts),
 		ID: nanoid(),
