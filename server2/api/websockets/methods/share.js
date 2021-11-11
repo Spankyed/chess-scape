@@ -33,8 +33,8 @@ module.exports = async function (
 	try {
 		const response = mediaHandlers[type](message);
 
-		sendMessageToRoom(roomID, response);
-		// sendMessageToRoomExcept(roomID, response);
+		// sendMessageToRoom(roomID, response);
+		sendMessageToRoomExcept(roomID, clientID, response);
 
 		console.log(`Client[${clientID}] shared ${type}`);
 		return Responses._200({});
