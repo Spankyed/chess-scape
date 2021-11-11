@@ -2,7 +2,7 @@ const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
 const { sendMessageToRoom } = require("../../common/websocket/message");
 
-// const roomsTable = process.env.roomsTableName;
+const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
 
 module.exports = async function ({ clientID, roomID, color }) {
@@ -25,12 +25,12 @@ module.exports = async function ({ clientID, roomID, color }) {
 					method: "start",
 					startTime,
 				}),
-				// Dynamo.update({
-				// 	TableName: roomsTable,
-				// 	primaryKey: "ID",
-				// 	primaryKeyValue: roomID,
-				// 	updates: { matchStarted: true },
-				// }),
+				Dynamo.update({
+					TableName: roomsTable,
+					primaryKey: "ID",
+					primaryKeyValue: roomID,
+					updates: { matchStarted: true },
+				}),
 				Dynamo.update({
 					TableName: matchesTable,
 					primaryKey: "ID",
