@@ -63,7 +63,12 @@ export default (initial) => ({
 					!game.matchStarted ||
 					game.type == "forever"
 				) {
-					leaveRoom();
+					if (!game.committed) {
+						Scene.manager.leaveRoom();
+						alert.show(prompts['abort'](leaveRoom));
+					} else {
+						leaveRoom();
+					}
 				} else {
 					const method = !game.committed ? "abort" : "abandon";
 					alert.show(prompts[method](leaveRoom));
