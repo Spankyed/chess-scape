@@ -63,8 +63,8 @@ export default (initial) => ({
 					!game.matchStarted ||
 					game.type == "forever"
 				) {
-					if (!game.committed) {
-						alert.show(prompts['abort'](leaveRoom));
+					if (!game.committed && roomState.room?.players > 1) {
+						alert.show(prompts["abort"](leaveRoom));
 					} else {
 						leaveRoom();
 					}
