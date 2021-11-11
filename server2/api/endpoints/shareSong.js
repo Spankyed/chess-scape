@@ -34,7 +34,7 @@ handler = async (event) => {
 
 		const [isAuthorized, client] = await authorize(clientID, TOKEN);
 		
-		if (!isAuthorized) {
+		if (!isAuthorized || client.room != roomID) {
 			return Responses._401({ message: "Unauthorized connection" });
 		}
 
