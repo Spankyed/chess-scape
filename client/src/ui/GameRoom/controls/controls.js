@@ -64,7 +64,6 @@ export default (initial) => ({
 					game.type == "forever"
 				) {
 					if (!game.committed) {
-						Scene.manager.leaveRoom();
 						alert.show(prompts['abort'](leaveRoom));
 					} else {
 						leaveRoom();
