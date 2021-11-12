@@ -15,7 +15,8 @@ const schema = {
 	// body: { name: "string" },
 };
 
-function allowEnabledOptions(gameOptions) {
+// filter: currently only 'forever' game type is allowed/enabled
+function allowedOptions(gameOptions) {
 	const { pin, selectedOpp, selectedColor } = gameOptions;
 	return {
 		name: "forever",
@@ -42,7 +43,7 @@ const handler = async (event) => {
 	}
 
 	const room = {
-		gameOptions: allowEnabledOptions(opts),
+		gameOptions: allowedOptions(opts),
 		ID: nanoid(),
 		host: clientID,
 		hostName: client.username,
