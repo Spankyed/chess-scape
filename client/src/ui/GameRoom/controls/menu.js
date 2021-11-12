@@ -79,7 +79,7 @@ export default (initial) => ({
 				<div oncreate={oncreate} class="menu-wrapper">
 					{menuOpen && (
 						<div
-							class="menu pointer-events-auto"
+							class="menu"
 							role="menu"
 							aria-orientation="vertical"
 							aria-labelledby="menu-button"
@@ -191,7 +191,7 @@ export default (initial) => ({
 					>
 						<img
 							src="./assets/controls/menu.svg"
-							class="pointer-events-none"
+							// class="no-pointers"
 						></img>
 					</button>
 				</div>

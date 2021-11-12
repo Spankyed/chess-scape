@@ -159,7 +159,7 @@ export default (initial) => ({
 				initialize();
 			}
 
-			const hideHeaderButtons = hostedRoom && getHostedRoom(rooms).matchStarted;
+			const hideHeaderButtons = hostedRoom && getHostedRoom(rooms)?.matchStarted;
 
 			return (
 				<div class="lobby">
