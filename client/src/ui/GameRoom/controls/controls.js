@@ -54,16 +54,32 @@ export default (initial) => ({
 				closed: roomClosed,
 			} = roomState;
 
+			
 			const leave = () => {
-				if (roomState.room?.players > 1 && !game.matchStarted) return; // player cant leave until match started
+				const isTwoPlayers = (obj) => Object.keys(obj).length > 1;
+				
+				if (!roomState.room) {
+					leaveRoom();
+					return
+				}
+				
 				if (
-					!roomState.room ||
+					game.player &&
+					isTwoPlayers(roomState.room?.players) &&
+					!game.matchStarted
+				)
+					return; // player cant leave until match started
+				if (
 					gameOver ||
-					!game.player ||
+					!game.player || // is spectator
 					!game.matchStarted ||
-					game.type == "forever"
+					game.type == "forever" // game type is forever
 				) {
-					if (!game.committed && roomState.room?.players > 1) {
+					if (
+						game.player && 
+						isTwoPlayers(roomState.room?.players) &&
+						!game.committed // player hasnt moved
+					) {
 						alert.show(prompts["abort"](leaveRoom));
 					} else {
 						leaveRoom();
