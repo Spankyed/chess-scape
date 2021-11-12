@@ -1,5 +1,6 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
+const S3 = require("../common/S3");
 const { hooksWithSchema } = require("../common/hooks");
 const {
 	sendMessageToRoom, sendMessageToRoomExcept,
@@ -7,6 +8,8 @@ const {
 
 const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
+const mediaTable = process.env.mediaTableName;
+const bucket = process.env.bucketName;
 
 const schema = {
 	body: { ID: "string" },
@@ -22,10 +25,17 @@ const handler = async (event) => {
 		return Responses._400({ message: "Can't delete room when match in progress" });
 	}
 
-	const deletedRoom = await Dynamo.delete(ID, roomsTable);
+	const [removedMedia, deletedRoom] = await Promise.all([
+		removeMediaFiles(ID),
+		Dynamo.delete(ID, roomsTable),
+	]);
 
 	if (!deletedRoom) {
 		return Responses._400({ message: "Failed to delete room" });
+	} else if (!removedMedia) {
+		return Responses._400({
+			message: "Failed to remove media files from S3",
+		});
 	}
 
 	// notify anyone who may be in room, room was deleted
@@ -47,4 +57,26 @@ const handler = async (event) => {
 };
 
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
-exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
+// exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
+
+async function removeMediaFiles(roomID) {
+	const roomMedia = await Dynamo.queryOn({
+		TableName: mediaTable,
+		index: "room-index",
+		queryKey: "roomID",
+		queryValue: roomID,
+	});
+
+	if (!roomMedia) return
+	
+	const s3Removals = roomMedia && roomMedia.map(async (media) =>
+		S3.delete(media.ID, bucket)
+	);;
+
+	return s3Removals;
+}
+
+module.exports = {
+	handler: hooksWithSchema(schema, ["parse", "authorize"])(handler),
+	removeMediaFiles,
+}

@@ -28,4 +28,4 @@ dynamodb:
 # for S3 offline
 s3:
   host: localhost
-  directory: /tmp
+  directory: /sync

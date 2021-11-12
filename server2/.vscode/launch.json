@@ -9,14 +9,16 @@
             "request": "launch",
             "name": "Launch Serverless Offline",
             "program": "${workspaceFolder}/node_modules/serverless/bin/serverless",
-            // "args": ["offline", "start", "--httpPrt", "4000"]
+            // "args": ["offline", "start", "--httpPrt", "4000"],
             "args": ["offline", "start", "--httpPrt", "4000", "--noTimeout"],
             "protocol": "inspector",
             "runtimeExecutable": "node",
             "env": {
                 "clientsTableName": "Clients",
                 "roomsTableName": "Rooms",
-                "matchesTableName": "Matches"
+                "matchesTableName": "Matches",
+                "mediaTableName": "Media",
+                "savedMatchesTableName": "SavedMatches",
             },
             "windows": {
                 "program": "${workspaceFolder}\\node_modules\\serverless\\bin\\serverless",

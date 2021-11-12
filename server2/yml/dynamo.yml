@@ -64,8 +64,17 @@ Resources:
       AttributeDefinitions:
         - AttributeName: ID
           AttributeType: S
+        - AttributeName: roomID
+          AttributeType: S
       KeySchema:
         - AttributeName: ID
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: room-index
+          KeySchema:
+            - AttributeName: roomID
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
 # todo add matches table

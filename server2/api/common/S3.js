@@ -49,6 +49,18 @@ const S3 = {
 		console.log(`File uploaded successfully`, { s3Data });
 		return s3Data;
 	},
+	async delete(Key, bucket) {
+		const params = {
+			Bucket: bucket,
+			Key,
+		};
+		const s3Data = await s3Client.deleteObject(params).promise();
+		if (!s3Data) {
+			throw Error("there was an error deleting the file");
+		}
+		console.log(`File deleted successfully`, { s3Data });
+		return s3Data;
+	}
 };
 
 module.exports = S3;

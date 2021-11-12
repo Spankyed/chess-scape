@@ -8,11 +8,15 @@
             }
         ],
         "AttributeDefinitions": [
-            {
-                "AttributeName": "ID",
-                "AttributeType": "S"
-            }
-        ],
+			{
+				"AttributeName": "ID",
+				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "roomID",
+				"AttributeType": "S"
+			}
+		],
         "ProvisionedThroughput": {
             "ReadCapacityUnits": 4,
             "WriteCapacityUnits": 4

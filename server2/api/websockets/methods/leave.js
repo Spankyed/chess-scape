@@ -1,5 +1,6 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
+const { removeMediaFiles } = require("../../endpoints/deleteRoom");
 const {
 	sendMessageToRoom,
 	sendMessageToLobby,
@@ -51,6 +52,7 @@ module.exports = async function ({ clientID, roomID }, {username}) {
 			Dynamo.delete(roomID, roomsTable) // if player leaves after game ends, delete room
 			sendMessageToLobby({ method: "delete", roomID })
 			sendMessageToRoom(roomID, { method: "disband" })
+			removeMediaFiles(roomID);
 		}
 
 

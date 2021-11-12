@@ -11,6 +11,22 @@
 			{
 				"AttributeName": "ID",
 				"AttributeType": "S"
+			},
+			{
+				"AttributeName": "roomID",
+				"AttributeType": "S"
+			}
+		],
+		"GlobalSecondaryIndexes": [
+			{
+				"IndexName": "room-index",
+				"KeySchema": [
+					{
+						"AttributeName": "roomID",
+						"KeyType": "HASH"
+					}
+				],
+				"Projection": { "ProjectionType": "ALL" }
 			}
 		],
 		"ProvisionedThroughput": {

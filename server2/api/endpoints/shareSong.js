@@ -58,6 +58,7 @@ handler = async (event) => {
 			created: Date.now(),
 			fileName: file.filename,
 			src: s3Data.Location,
+			roomID,
 		};
 
 		Promise.all([

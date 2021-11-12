@@ -1,39 +1,36 @@
-#  Serverless-Sandbox
-Serverless backend sandbox to test and prototype services and architectures. Works remote & offline with currently used services. Takes about 5 minutes to setup thanks to the [Serverless Framework](https://www.serverless.com/)!
-
+#  Serverless-Backend
+This serverless backend works remote & offline (with the AWS services currently used). Takes around 5 minutes to setup. Many thanks to the developers of the [Serverless Framework](https://www.serverless.com/) & community for all the awesome tooling!
 
 ##  Services used
 - API Gateway
 - Lambda
 - DynamoDB
 - CloudFormation
-- S3 (for cloudformation deployment)
-
+- S3 (user files + cloudformation deployment)
+- Swagger 
 
 
 ##  Run 
-To run you must create a new IAM user account with administrator access for [serverless](https://www.serverless.com/) to use AWS CLI and SDK tools. You can then run the following commands.
+To run you must create a new IAM user account with administrator access for the [Serverless Framework](https://www.serverless.com/) can use AWS CLI and SDK tools. Afterwards you can run the following commands:
 
 ### **Remote**
-
+Setup & configure
 `npm i -g serverless`
-
 `serverless config credentials --provider aws --key {iam-account-key} --secret {iam-account-secret} --profile {any-custom-name}`
+Config Example :  
+`serverless config credentials --provider aws --key ABCDEFHGHIJ1234 --secret 123456 --profile serverlessUser`
 
-Example :  `serverless config credentials --provider aws --key ASKDNG23K43JKADF --secret 123456 --profile serverlessUser`
-
-
-Start :  `sls deploy`
+Deploy all services:  
+`sls deploy`
+Deploy single function : 
 `sls deploy -f onlyDeployFunctionName`
 
 ### **Offline**
+Setup
 `sls dynamodb install`
 `sls serverless-offline install`
 
 Start :  `sls offline start`
 
-
-
-
 ## Credits
-Shout out to [Complete Coding](https://www.youtube.com/channel/UC8uBP0Un18DJAnWjm1CPqBg) for an awesome [course playlist](https://www.youtube.com/channel/UC8uBP0Un18DJAnWjm1CPqBg) on serverless.
+Special thanks to [Complete Coding](https://www.youtube.com/channel/UC8uBP0Un18DJAnWjm1CPqBg) for the rockstar [course](https://www.youtube.com/channel/UC8uBP0Un18DJAnWjm1CPqBg) that teaches the basics of working with the Serverless framework.
