@@ -3,16 +3,19 @@ import { app } from 'hyperapp';
 import Api from '../api/Api';
 // import { withLogger } from "@hyperapp/logger";
 
+import Admin from "./Admin/Admin";
 import Entrance from './Entrance/Entrance';
 import GameRoom from './GameRoom/Room';
 import Lobby from './Lobby/Lobby';
 import './index.scss';
 
+const admin = Admin()
 const entrance = Entrance()
 const gameRoom = GameRoom()
 const lobby = Lobby()
 
 const initialState = {
+	admin: admin.state,
 	entrance: entrance.state,
 	gameRoom: gameRoom.state,
 	lobby: lobby.state,
@@ -27,6 +30,7 @@ const state = {
 };
 
 const actions = {
+	admin: admin.actions,
 	entrance: entrance.actions,
 	gameRoom: gameRoom.actions,
 	lobby: lobby.actions,
@@ -37,6 +41,7 @@ const actions = {
 };
 
 const view = (state, actions) => {
+	const AdminView = admin.view(state.admin, actions.admin);
 	const EntranceView = entrance.view(state.entrance, actions.entrance);
 	const GameRoomView = gameRoom.view(state.gameRoom, actions.gameRoom);
 	const LobbyView = lobby.view(state.lobby, actions.lobby);
@@ -52,11 +57,10 @@ const view = (state, actions) => {
 	}
 	return (
 		<div oncreate={init} class="app">
-			{/* {false ? ( */}
+			<AdminView {...state} {...{actions}} />
+
 			{!state.isAuthorized ? (
-				<EntranceView
-					authorize={actions.authorize}
-				/>
+				<EntranceView authorize={actions.authorize} />
 			) : state.inGame ? (
 				<GameRoomView
 					roomID={state.roomID}

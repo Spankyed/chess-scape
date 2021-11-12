@@ -1,14 +1,13 @@
 // The Api module is designed to handle all interactions with the server
-import { nanoid } from 'nanoid/non-secure'
+// import { nanoid } from 'nanoid/non-secure'
 import Sockette from "sockette";
 import { fromEvent, merge } from "rxjs";
 import { take } from "rxjs/operators";
 
 const baseHttpUrl = "http://localhost:9001/local";
 const baseWSUrl = 'ws://localhost:3001'
-const client = JSON.parse(localStorage.getItem("client") || '""');
-let clientID = client.clientID || null,
-	TOKEN = client.TOKEN || null,
+let clientID = null,
+	TOKEN = null,
 	roomID = null,
 	connection,
 	connected = false,
@@ -33,6 +32,13 @@ let clientID = client.clientID || null,
 		reconnect: () => {},
 	};
 
+setClient(JSON.parse(localStorage.getItem("client") || '""'));
+
+function setClient(client) {
+	clientID = client.clientID;
+	TOKEN = client.TOKEN;
+}
+
 function setMessageHandlers(newHandlers) {
 	Object.assign(handlers, newHandlers);
 }
@@ -44,7 +50,7 @@ async function createConnection() {
 	connection = notConnected
 		? new Sockette(connectionURL, {
 				timeout: 5e3,
-				maxAttempts: 6,
+				// maxAttempts: 6,
 				onopen,
 				onclose,
 				onmessage,
@@ -296,6 +302,7 @@ async function searchSongImage(title) {
 }
 
 export default {
+	setClient,
 	createClient,
 	getRoom,
 	getRooms,
