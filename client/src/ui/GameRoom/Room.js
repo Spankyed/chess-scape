@@ -143,7 +143,8 @@ export default (initial) => ({
 				}
 
 				actions.updateRoom(room);
-				actions.sidePanel.chat.addMessage({
+
+				if (username) actions.sidePanel.chat.addMessage({
 					text: `${username} has joined the room`,
 					appMsg: true,
 				});

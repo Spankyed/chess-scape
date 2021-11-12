@@ -50,10 +50,12 @@ module.exports = async function (
 			// only message lobby if player joined, not spectator
 			...(group == "players"
 				? [
-					sendMessageToLobby({
-						method: "join",
-						room: sanitizeRoom(updatedRoom),
-					}),
+						sendMessageToLobby({
+							method: "join",
+							room: sanitizeRoom(updatedRoom),
+							group,
+							username: client.username,
+						}),
 				  ]
 				: []),
 		];
