@@ -70,7 +70,7 @@ export default (initial) => ({
 					{!state.consoleOpen ? (
 						<span
 							class="open-console"
-							onclick={() => actions.toggle(true)}
+							ondblclick={() => actions.toggle(true)}
 						></span>
 					) : (
 						<div
