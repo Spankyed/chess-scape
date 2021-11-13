@@ -4,8 +4,15 @@ import Sockette from "sockette";
 import { fromEvent, merge } from "rxjs";
 import { take } from "rxjs/operators";
 
-const baseHttpUrl = "http://localhost:9001/local";
-const baseWSUrl = 'ws://localhost:3001'
+let baseHttpUrl = "http://localhost:9001/local";
+let baseWSUrl = "ws://localhost:3001";
+
+if (process.env.NODE_ENV === "development") {
+	console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
+	baseHttpUrl = "http://localhost:9001/local";
+	baseWSUrl = "ws://localhost:3001";
+}
+
 let clientID = null,
 	TOKEN = null,
 	roomID = null,
