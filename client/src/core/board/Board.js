@@ -335,7 +335,7 @@ function createBoard(scene){ //!
     const boardTiles = new MeshBuilder.CreateTiledGround("Chess_Board", {...bounds, subdivisions: grid})
     const totalVertices = boardTiles.getTotalVertices() // Needed for subMeshes
     const gridIndices = boardTiles.getIndices().length / (grid.w * grid.h);
-    boardTiles.position = new Vector3(0,0,0)
+    boardTiles.position = new Vector3(0,-.02,0)
     boardTiles.material = multiMaterial;
     boardTiles.subMeshes = [];
 

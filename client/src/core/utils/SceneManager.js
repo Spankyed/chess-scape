@@ -96,9 +96,13 @@ export default class SceneManager {
 		this._scene.activeCamera = camera;
 
 		let spotLight = new SpotLight("SpotLight", new Vector3(0, 50, 0), new Vector3(0, -1, 0), 0.8, 40, this._scene);
-		spotLight.intensity = 0.3;
+		spotLight.intensity = 0.6;
 		spotLight.exponent = 5;
-		spotLight.diffuse = new Color3(0.8, 0.95, 1.000);
+		spotLight.diffuse = new Color3(0.7, 0.85, 1.000);
+		// spotLight.diffuse = new Color4.FromHexString("#65972b3d");
+
+		// window.spotLight = spotLight;
+		// window.clr = Color3.FromHexString;
 
 		var light = new HemisphericLight(
 			"light1",
@@ -115,7 +119,7 @@ export default class SceneManager {
 			new Vector3(-1, 10, -5),
 			this._scene
 		);
-		light2.intensity = 0.45;
+		light2.intensity = 0.3;
 
 
 		// return new BABYLON.ShadowGenerator(1024, spotLight);
