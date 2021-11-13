@@ -119,7 +119,7 @@ export default class SceneManager {
 			new Vector3(-1, 10, -5),
 			this._scene
 		);
-		light2.intensity = 0.15;
+		light2.intensity = 0.2;
 
 
 		// return new BABYLON.ShadowGenerator(1024, spotLight);
