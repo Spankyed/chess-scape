@@ -99,6 +99,7 @@ export default (initial) => ({
 								placeholder="Type then press enter"
 								onkeyup={handleKeyPress}
 								onkeydown={handleKeyPress}
+								tabindex="-1"
 								// oninput={e => modify({ message: e.target.value })}
 								// value={state.message}
 							/>
