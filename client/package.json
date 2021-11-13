@@ -8,7 +8,8 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "parcel src/ui/index.html -p 3000 --no-cache",
-		"build": "parcel build src/ui/index.html -d build --no-cache"
+		"build": "parcel build src/ui/index.html",
+		"analyze": "parcel build src/ui/index.html --reporter @parcel/reporter-bundle-buddy"
 	},
 	"staticFiles": {
 		"staticPath": [
@@ -19,7 +20,8 @@
 		]
 	},
 	"dependencies": {
-		"babylonjs": "^3.3.0",
+		"@babylonjs/core": "^4.2.0",
+		"@babylonjs/materials": "^4.2.0",
 		"chess.js": "^0.12.0",
 		"file-saver": "^2.0.5",
 		"hyperapp": "1.2.9",
@@ -28,15 +30,14 @@
 		"rxjs": "^7.2.0",
 		"sockette": "^2.0.6",
 		"tiny-debounce": "^0.1.1",
-		"utilities": "^1.0.5",
 		"xstate": "^4.23.2"
 	},
 	"devDependencies": {
-		"@hyperapp/logger": "^0.5.0",
+		"@parcel/reporter-bundle-buddy": "^2.0.1",
 		"@parcel/transformer-sass": "^2.0.0-rc.0",
 		"@xstate/inspect": "^0.5.0",
 		"del-cli": "1.1.0",
-		"parcel": "^2.0.0-rc.0",
+		"parcel": "^2.0.1",
 		"postcss": "^8.3.5",
 		"sass": "^1.35.2",
 		"tailwindcss": "^2.2.4"

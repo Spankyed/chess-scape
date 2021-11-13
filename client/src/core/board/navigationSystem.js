@@ -1,4 +1,5 @@
-let movingPieces = []
+import { Vector3 } from "@babylonjs/core/Maths/math";
+let movingPieces = [];
 const stepLength = 0.7
 
 function startMovingPiece(piece, destination) {
@@ -24,7 +25,7 @@ function stepPiece(move) {
         return false
     } else {
         if (piece && !piece.position.equals(destination)){
-            let updatedPos = new BABYLON.Vector3(destination.x, piece.position.y, destination.z)
+            let updatedPos = new Vector3(destination.x, piece.position.y, destination.z)
             piece.position = updatedPos
         }
         return true

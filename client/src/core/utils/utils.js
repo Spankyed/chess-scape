@@ -2,6 +2,8 @@ import { Observable } from 'rxjs';
 // import { debounceTime, map, filter, pairwise, startWith } from 'rxjs/operators';
 import { debounceTime } from 'rxjs/operators';
 import initialState from "../board/state";
+import { Vector3 } from "@babylonjs/core/Maths/math";
+
 
 // https://github.com/twig-it/from-resize/blob/main/projects/from-resize/src/resize/resize.ts
 const FromResize = (element) => {
@@ -82,7 +84,7 @@ function createCaptureSq(count, color) {
 	let x = columnsCoords[column];
 	let z = -6.5 + 1.3 * offsetMultiplier; // start rows vertical: -6.5 and move each piece up 1.3 units
 	let coords = color == "white" ? [-1 * x, 0, -1 * z] : [x, 0, z]; // invert coords for whites pieces
-	return { coords: new BABYLON.Vector3(...coords), newCount: ++count };
+	return { coords: new Vector3(...coords), newCount: ++count };
 };
 
 function moveChangesToBoardMaps(moves) {

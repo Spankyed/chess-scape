@@ -1,11 +1,11 @@
-import SceneManager from './utils/SceneManager';
-import utils from './utils/utils'; 
+// import { delay } from "nanodelay";
+import { Engine } from "@babylonjs/core/Engines/engine";
+import SceneManager from "./utils/SceneManager";
 import Board from './board/Board';
 import Game from './Game';
 import loadPieces  from './Pieces'; 
-import { delay } from "nanodelay";
+// import utils from './utils/utils'; 
 // import Api from '../api/Api'; 
-// import { Scene, Engine } from 'babylonjs';
 
 const Scene = new class {
     constructor(){
@@ -24,7 +24,7 @@ const Scene = new class {
 			// todo: add playerColor arg
 			if (!canvas) console.warn("No canvas found");
 			// this.uiActions = actions;
-			let engine = new BABYLON.Engine(canvas, true);
+			let engine = new Engine(canvas, true);
 			let scene = SceneManager.CreateScene(engine, canvas, true);
 			engine.loadingScreen = {
 				displayLoadingUI: actions.loader.showLoader,

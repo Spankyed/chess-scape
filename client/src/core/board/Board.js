@@ -1,17 +1,25 @@
 
+import { Color3,Vector3 } from "@babylonjs/core/Maths/math";
+import { HighlightLayer } from "@babylonjs/core/Layers/highlightLayer";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { MultiMaterial } from "@babylonjs/core/Materials/multiMaterial";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
+import { SubMesh } from "@babylonjs/core/Meshes/subMesh";
+
 import { delay } from "nanodelay";
 import { ClonePiece } from '../utils/utils'; 
 import { setupMoveMachine } from './moveMachines';
 // import { fromEvent } from "rxjs";
 // import { throttleTime } from "rxjs/operators";
-import { moveChangesToBoardMaps, createCaptureSq, getColor } from "../utils/utils"; 
+import { moveChangesToBoardMaps, createCaptureSq, getColor } from "../utils/utils";
 
 export default function Board(current, scene, canvas){
 	let game = current.game,
 	pieces = current.pieces,
 	[board, squares] = createBoard(scene), // board var not used
-	selectedHighlightLayer = new BABYLON.HighlightLayer("selected_sq", scene),
-	checkedHighlightLayer = new BABYLON.HighlightLayer("checked_sq", scene),
+	selectedHighlightLayer = new HighlightLayer("selected_sq", scene),
+	checkedHighlightLayer = new HighlightLayer("checked_sq", scene),
 	moveService = setupMoveMachine(current, game, squares, pieces);
 	// $moveState = subscribeChanges(moveService)
 	subscribeChanges(moveService)
@@ -112,7 +120,7 @@ export default function Board(current, scene, canvas){
             changePosition(piece, coords, true) 
         }
         selectedHighlightLayer.removeAllMeshes();
-        selectedHighlightLayer.addMesh(fromSq.mesh, BABYLON.Color3.Yellow()); // highlight
+        selectedHighlightLayer.addMesh(fromSq.mesh, Color3.Yellow()); // highlight
     }
     function deselectSq(_, state){
 	    const { send } = moveService
@@ -222,7 +230,7 @@ export default function Board(current, scene, canvas){
         let kingColor = movingColor == 'w' ? 'b' : 'w'
         let kingSq = Object.values(squares).find(({piece}) => piece?.id == `k_${kingColor}_1`)
         if (kingSq) {
-            checkedHighlightLayer.addMesh(kingSq.mesh, BABYLON.Color3.Red()); // highlight
+            checkedHighlightLayer.addMesh(kingSq.mesh, Color3.Red()); // highlight
         }
     }
     function resetHighlights(){
@@ -234,7 +242,7 @@ export default function Board(current, scene, canvas){
         if (!fromPos) return
         let closest = { sqName: '', dist: 999 }; 
         for (const sqName in squares) {
-            let dist = BABYLON.Vector3.Distance(fromPos, squares[sqName].coords)
+            let dist = Vector3.Distance(fromPos, squares[sqName].coords)
             // console.log('dist', dist)
             if (dist < closest.dist){
                 closest = { sqName: sqName, dist: dist }
@@ -289,20 +297,20 @@ export default function Board(current, scene, canvas){
 }
 
 function createBoard(scene){ //!
-    const whiteMaterial = new BABYLON.StandardMaterial("White");
-    whiteMaterial.diffuseColor = new BABYLON.Color3(0.97, 0.98, 0.85);
-    whiteMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    const whiteMaterial = new StandardMaterial("White");
+    whiteMaterial.diffuseColor = new Color3(0.97, 0.98, 0.85);
+    whiteMaterial.specularColor = new Color3(0, 0, 0);
     // whiteMaterial.backFaceCulling = false
-    const blackMaterial = new BABYLON.StandardMaterial("Black");
-    blackMaterial.diffuseColor = new BABYLON.Color3(0.50, 0.64, 0.35);
-    blackMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    const blackMaterial = new StandardMaterial("Black");
+    blackMaterial.diffuseColor = new Color3(0.50, 0.64, 0.35);
+    blackMaterial.specularColor = new Color3(0, 0, 0);
     // blackMaterial.backFaceCulling = false
 
-    let board = BABYLON.Mesh.CreateBox("board", 1, scene); // should be an invisible ground under Tiled Ground
+    let board = Mesh.CreateBox("board", 1, scene); // should be an invisible ground under Tiled Ground
     board.scaling.y = .5;
     board.scaling.x = 16
     board.scaling.z = 16
-    board.position = new BABYLON.Vector3(0, -.3, 0);
+    board.position = new Vector3(0, -.3, 0);
     board.material = whiteMaterial;
     board.isPickable = false; // if falseget from scene.pick(x,y,null)
     // console.log('board platform', board)
@@ -316,7 +324,7 @@ function createBoard(scene){ //!
     // ground.position = new BABYLON.Vector3(0, -.7, 0);
     // ground.receiveShadows = true;
 
-    const multiMaterial = new BABYLON.MultiMaterial("multi", scene);
+    const multiMaterial = new MultiMaterial("multi", scene);
     multiMaterial.subMaterials.push(blackMaterial, whiteMaterial);
     // multiMaterial.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.8);
     // multiMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
@@ -324,10 +332,10 @@ function createBoard(scene){ //!
     
     const grid = { 'h' : 8, 'w' : 8 }
     const bounds = { xmin: -8, zmin: -8, xmax: 8, zmax: 8 }
-    const boardTiles = new BABYLON.MeshBuilder.CreateTiledGround("Chess_Board", {...bounds, subdivisions: grid})
+    const boardTiles = new MeshBuilder.CreateTiledGround("Chess_Board", {...bounds, subdivisions: grid})
     const totalVertices = boardTiles.getTotalVertices() // Needed for subMeshes
     const gridIndices = boardTiles.getIndices().length / (grid.w * grid.h);
-    boardTiles.position = new BABYLON.Vector3(0,0,0)
+    boardTiles.position = new Vector3(0,0,0)
     boardTiles.material = multiMaterial;
     boardTiles.subMeshes = [];
 
@@ -339,12 +347,12 @@ function createBoard(scene){ //!
             let materialIdx = rIdx % 2 ^ fIdx % 2
             let startIdx = fIdx * gridIndices + (rIdx * 48); // slide over 48 indices every rank for subMesh def
             let sqName = `${String.fromCharCode(fIdx + 97)}${rIdx + 1}`
-            let squareDef = new BABYLON.SubMesh(materialIdx, 0, totalVertices, startIdx, gridIndices, boardTiles)
-            // let sq = new BABYLON.Mesh(sqName, scene);
+            let squareDef = new SubMesh(materialIdx, 0, totalVertices, startIdx, gridIndices, boardTiles)
+            // let sq = new Mesh(sqName, scene);
             let sq = boardTiles.clone(sqName) // could deconstruct mesh alternatively https://doc.babylonjs.com/toolsAndResources/utilities/Deconstruct_Mesh
             sq.subMeshes = [squareDef.clone(sq, sq)] 
             Object.assign(sq, {isPickable: true, id: sqName, name: sqName})
-            let sqState = { sqName, coords: new BABYLON.Vector3(coords.x, 0, coords.y), mesh: sq, piece: null }
+            let sqState = { sqName, coords: new Vector3(coords.x, 0, coords.y), mesh: sq, piece: null }
             return {...squares, [sqName]: sqState}
         },{})
         return {...ranks, ...rankSquares}

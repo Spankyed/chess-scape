@@ -1,4 +1,5 @@
 
+import { Vector3 } from "@babylonjs/core/Maths/math";
 import { createMachine, interpret, assign, send } from 'xstate';
 import { pure } from 'xstate/lib/actions';
 import { SerializeBoard, DeserializeBoard, getColor } from "../utils/utils"; 
@@ -531,7 +532,7 @@ function positionPieces(pieces) {
     if (!(pieces instanceof Array)) pieces = [pieces]
     pieces.forEach(({ piece, newPos, dontSlide }) => {
 		if (piece && !piece.position.equals(newPos)){
-			let updatedPos = new BABYLON.Vector3(newPos.x, piece.position.y, newPos.z)
+			let updatedPos = new Vector3(newPos.x, piece.position.y, newPos.z)
 			if (!dontSlide) startMovingPiece(piece, updatedPos);
 			else piece.position = updatedPos;
         }

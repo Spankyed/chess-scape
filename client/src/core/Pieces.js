@@ -1,18 +1,20 @@
-// import  SceneManager  from './utils/SceneManager';
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { AssetsManager } from "@babylonjs/core";
+import { Vector3, Color3 } from "@babylonjs/core/Maths/math";
 
 function getPieceMaterials(scene){
-    var white = new BABYLON.StandardMaterial(scene);
+    var white = new StandardMaterial(scene);
     white.alpha = 1;
-    white.diffuseColor = new BABYLON.Color3(0.90, 0.82, 0.63); // white rgb(229,209,160)
-    white.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+    white.diffuseColor = new Color3(0.90, 0.82, 0.63); // white rgb(229,209,160)
+    white.specularColor = new Color3(0.2, 0.2, 0.2);
     white.specularPower = 25;
     let black = white.clone();
-    black.diffuseColor = new BABYLON.Color3(0.37, 0.29, 0.28); // black rgb(94,77,71)
+    black.diffuseColor = new Color3(0.37, 0.29, 0.28); // black rgb(94,77,71)
     return { white, black }
 }
 function getPiecesContainer(scene){
     // todo: move this code to SceneManager
-    let assetsManager = new BABYLON.AssetsManager(scene)
+    let assetsManager = new AssetsManager(scene)
     assetsManager.useDefaultLoadingScreen = false
     let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/", 'pieces.babylon');
     return new Promise((resolve, rej) => {
@@ -23,7 +25,7 @@ function getPiecesContainer(scene){
         assetsManager.load()
     })
 }
-function rotateKnight(piece, right){ piece.rotation = new BABYLON.Vector3(0, right ? Math.PI : 0, 0) }
+function rotateKnight(piece, right){ piece.rotation = new Vector3(0, right ? Math.PI : 0, 0) }
 
 async function loadPieces(scene){
     let container = await getPiecesContainer(scene)
@@ -32,7 +34,7 @@ async function loadPieces(scene){
         ...container.instantiateModelsToScene(name => name + "_black", false).rootNodes
     ]
     let materials = getPieceMaterials(scene)
-    // var kingGlowLayer = new BABYLON.GlowLayer("glow", this.scene);
+    // var kingGlowLayer = new GlowLayer("glow", this.scene);
     // kingGlowLayer.intensity = .02;
 
     let pieceCount = { 
@@ -49,7 +51,7 @@ async function loadPieces(scene){
         piece.material = isWhite ? materials.white : materials.black
         if (!isWhite){
             let newPos = piece.position.clone()
-            piece.position = new BABYLON.Vector3(newPos.x, newPos.y, -newPos.z) // flip position
+            piece.position = new Vector3(newPos.x, newPos.y, -newPos.z) // flip position
         }
         if (piece.name.startsWith('Knight')) {
             rotateKnight(piece, isWhite)
