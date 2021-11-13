@@ -11,7 +11,7 @@ This serverless backend works remote & offline (with the AWS services currently 
 
 
 ##  Run 
-To run you must create a new IAM user account with administrator access for the [Serverless Framework](https://www.serverless.com/) can use AWS CLI and SDK tools. Afterwards you can run the following commands:
+To run you must create a new IAM user account with administrator access so that the [Serverless Framework](https://www.serverless.com/) can use AWS CLI and SDK tools. Afterwards you can run the following commands:
 
 ### **Remote**
 Setup & configure
