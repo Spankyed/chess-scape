@@ -3,6 +3,7 @@ import Api from '../../api/Api';
 import Create from "./create/create";
 import Alert from '../Shared/Alert';
 import Pin from './pin/pin';
+import debounce from "tiny-debounce";
 
 const create = Create()
 const alert = Alert()
@@ -147,8 +148,8 @@ export default (initial) => ({
 					delete: actions.removeRoom,
 					join: onJoin,
 					disconnect: hostedRoom && Api.reconnect, // hosting game, reconnect immediately
-					idleReconnect: refreshRoomList, 
-					reconnect: refreshRoomList, // refreshRoomList on all reconnects
+					idleReconnect: refreshRoomList,
+					reconnect: debounce(refreshRoomList, 6e3), // refreshRoomList on all reconnects
 				});
 				actions.fetchRooms();
 				// todo stop loading
