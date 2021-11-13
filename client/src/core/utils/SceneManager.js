@@ -6,7 +6,7 @@ import { Color4, Color3 } from "@babylonjs/core/Maths/math";
 import { CubicEase } from "@babylonjs/core/Animations/easing";
 import { Animation } from "@babylonjs/core/Animations/animation";
 import { EasingFunction } from "@babylonjs/core/Animations/easing";
-// import { SpotLight } from "@babylonjs/core/Lights/spotLight";
+import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 // import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
@@ -95,10 +95,10 @@ export default class SceneManager {
 
 		this._scene.activeCamera = camera;
 
-		// let spotLight = new SpotLight("SpotLight", new Vector3(0, 50, 0), new Vector3(0, -1, 0), 0.8, 40, this._scene);
-		// spotLight.intensity = 0.5;
-		// spotLight.exponent = 5;
-		// spotLight.diffuse = new Color3(0.8, 0.95, 1.000);
+		let spotLight = new SpotLight("SpotLight", new Vector3(0, 50, 0), new Vector3(0, -1, 0), 0.8, 40, this._scene);
+		spotLight.intensity = 0.3;
+		spotLight.exponent = 5;
+		spotLight.diffuse = new Color3(0.8, 0.95, 1.000);
 
 		var light = new HemisphericLight(
 			"light1",
@@ -109,12 +109,15 @@ export default class SceneManager {
 		light.diffuse = new Color3(1, 1, 0.5);
 		light.specular = new Color3(1, 1, 1);
 		light.groundColor = new Color3(0.5, 1, 1);
+
 		var light2 = new HemisphericLight(
 			"light1",
 			new Vector3(-1, 10, -5),
 			this._scene
 		);
-		light2.intensity = 0.15;
+		light2.intensity = 0.45;
+
+
 		// return new BABYLON.ShadowGenerator(1024, spotLight);
 	}
 
