@@ -85,7 +85,7 @@ export default (initial) => ({
 									state.isVisible && "close"
 								}`}
 							>
-								<img src="./assets/controls/panel-open.svg"></img>
+								<img src="./assets/sidePanel/panel-open.svg"></img>
 							</button>
 						</div>
 					</div>
