@@ -18,7 +18,7 @@
             margin: 1rem;
         }
         bottom: 0px;
-        align-items: flex-end;
+        align-items: center;
         opacity: .85;
     }
     .hide-sm {
@@ -526,7 +526,7 @@
         .alert-wrapper {
             margin-top: 1rem;
             justify-content: start;
-            align-items: center;
+            // align-items: center;
         }
     }
 }
