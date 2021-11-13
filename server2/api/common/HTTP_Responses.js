@@ -31,7 +31,18 @@ const Responses = {
             statusCode: 401,
             body: JSON.stringify(data)
         }
-    }
+    },
+    _409(data = {}){
+        return {
+            headers:{
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Methods': '*',
+                'Access-Control-Allow-Origin': '*',
+            },
+            statusCode: 409,
+            body: JSON.stringify(data)
+        }
+    },
 };
 
 module.exports = Responses;
