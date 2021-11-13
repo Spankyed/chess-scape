@@ -20,6 +20,18 @@ export default (initial) => ({
 		// finished: false, // todo remove if isnt used, or use instead of room.gameOver
 	},
 	actions: {
+		syncBoard: ({ board, roomActions }) => {
+			Scene.board().syncBoard(board);
+			board.moves.forEach(({ info }, idx) =>
+				roomActions.sidePanel.moves.addMove({
+					piece: info.piece,
+					san: info.san,
+					color: info.color,
+					id: idx,
+				})
+			);
+			return { colorToMove: board.colorToMove };
+		},
 		changeTurn: (colorToMove) => ({ colorToMove }),
 		createScene: ({ canvas, roomActions, roomID }) => {
 			canvas.focus();
@@ -85,16 +97,7 @@ export default (initial) => ({
 		(state, actions) =>
 		({ roomID, roomState, roomActions, clockActions }) => {
 			const onSync = (board) => {
-				Scene.board().syncBoard(board);
-				board.moves.forEach(({ info }, idx) =>
-					roomActions.sidePanel.moves.addMove({
-						piece: info.piece,
-						san: info.san,
-						color: info.color,
-						id: idx,
-					})
-				);
-				actions.changeTurn(board.colorToMove);
+				actions.syncBoard({ board, roomActions });
 			};
 			const onMove = ({
 				move,

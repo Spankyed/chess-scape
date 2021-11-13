@@ -86,6 +86,10 @@ export default (initial) => ({
 					isSceneSetup: _.loader.removed,
 				});
 
+				if (match.moves.length > 0) {
+					actions.game.syncBoard({ board: match, roomActions: actions });
+				}
+
 				return {
 					room,
 					isHost,

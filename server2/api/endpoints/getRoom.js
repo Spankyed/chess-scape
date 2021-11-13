@@ -15,14 +15,14 @@ const handler = async (event) => {
 	const room = await Dynamo.get(roomID, roomsTable);
 	const match = await Dynamo.get(roomID, matchesTable);
 
-	if (match.matchStarted && match.moves.length > 0) {
-		sendMessage(client.connection, {
-			method: "sync",
-			moves: match.moves,
-			lastMove: match.lastMove,
-			colorToMove: match.colorToMove,
-		});
-	}
+	// if (match.matchStarted && match.moves.length > 0) {
+	// 	sendMessage(client.connection, {
+	// 		method: "sync",
+	// 		moves: match.moves,
+	// 		lastMove: match.lastMove,
+	// 		colorToMove: match.colorToMove,
+	// 	});
+	// }
 
 	// todo if private, verify user is in room, b/c chat is included in the response
 	return Responses._200({ room: sanitizeRoom(room), match });
