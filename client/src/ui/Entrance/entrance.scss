@@ -91,7 +91,8 @@
                     width: 100%;
                     appearance: none;
                     background-color: transparent;
-                    border-style: none;
+                    // border-style: none;
+                    border: m.$border;
                     padding: 0.25rem;
                     line-height: 1.25;
                     font-size: 2rem;
@@ -124,8 +125,9 @@
                     padding-left: 1rem;
                     padding-right: 1rem;
                     .rating-option {
+                        text-shadow: 2px 2px #1d1711a1;
                         // box-shadow: 0 0 3px 3px rgba(87, 13, 13, 0.06) inset;
-                        box-shadow: 0 0 3px 3px rgb(50, 41, 29, .6) inset;
+                        box-shadow: 0 0 3px 3px rgb(50, 41, 29, .25) inset;
                         border-radius: m.$border-radius;
                         display:flex;
                         justify-content: center;
@@ -149,6 +151,7 @@
                 }
             }
             .save {
+                border: m.$border;
                 border-radius: m.$border-radius;
                 height: 8.5vh;
                 width: 100%;
