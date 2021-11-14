@@ -1,4 +1,8 @@
 @use '../../master' as m; 
+
+$dark-test: #1d1711;
+// $dark-test: #fff;
+
 .custom  {
     // m.$type-bg-clr: #1F7A50;
     // m.$type-bg-clr: #1c3e2f;
@@ -11,6 +15,8 @@
     border-radius: 0.125rem;
     margin-top: 1.25rem;
     .name {
+        // color: $dark-test;
+        text-shadow: 2px 2px $dark-test;
         font-size: m.$font-size-lg;
         padding-left: 1rem/* 16px */;
         padding-right: 1rem/* 16px */;
@@ -65,7 +71,9 @@
                 font-size: m.$font-size-lg !important;
                 width: 25%;
                 color:#f9f9f9;
-                background-color: m.$identity-bg-clr;
+                // background-color: m.$identity-bg-clr;
+                // background-color: m.$green;
+                background-color: #5999107d;
                 // background-color: #0b603b;
                 min-height: 100%;
                 // border-right-width: .2rem;
@@ -74,11 +82,13 @@
                 justify-content: center;
                 pointer-events: none;  
                 // light grey border
-                --borderHeight: .1rem;
-                --borderColor: hsla(0,0%,100%,0.05);
-                --secondaryBorderColor: transparent; 
-                box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
-                border: .1rem solid var(--borderColor);
+                // --borderHeight: .1rem;
+                // --borderColor: hsla(0,0%,100%,0.05);
+                // --secondaryBorderColor: transparent; 
+                // box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
+                // border: .1rem solid var(--borderColor);
+
+                border:m.$border;
                 // border-right: 0;   
                 
                 img {

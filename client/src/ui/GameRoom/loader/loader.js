@@ -25,7 +25,7 @@ export default (initial) => ({
 			if (!loaderText) {
 				setLoaderText(getRandomFact());
 			} else if (!isLoading && !removed) {
-				delay(1).then(remove);
+				delay(2000).then(remove);
 			}
 			return (
 				<div class={`loader ${removed && "hide"}`}>

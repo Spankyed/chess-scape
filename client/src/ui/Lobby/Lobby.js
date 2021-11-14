@@ -155,7 +155,6 @@ export default (initial) => ({
 			};
 
 			if (!initialized && !isFetching) {
-				
 				initialize();
 			}
 
@@ -265,7 +264,7 @@ function TableHead() {
 function LoadingTable() {
 	return (
 		<tbody class="loading-table">
-			{[...new Array(3)].map((_, idx) => (
+			{[...new Array(2)].map((_, idx) => (
 				<tr class={`${idx == 0 && "selected-room"}`}>
 					<td class="host">
 						<span class="img"></span>

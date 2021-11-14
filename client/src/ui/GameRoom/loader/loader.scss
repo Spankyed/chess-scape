@@ -2,29 +2,29 @@
 // green 709B50
 // white DAEFC4
 $--p-1: #DAEFC4;
-$--p-2: #709B50;
+$--p-2: m.$green;
 $--p-3: #DAEFC4;
-$--p-4: #709B50;
+$--p-4: m.$green;
 
-$--b-1: #709B50;
+$--b-1: m.$green;
 $--b-2: #DAEFC4;
-$--b-3: #709B50;
+$--b-3: m.$green;
 $--b-4: #DAEFC4;
 
 $--g-1: #DAEFC4;
-$--g-2: #709B50;
+$--g-2: m.$green;
 $--g-3: #DAEFC4;
-$--g-4: #709B50;
+$--g-4: m.$green;
 
-$--y-1: #709B50;
+$--y-1: m.$green;
 $--y-2: #DAEFC4;
-$--y-3: #709B50;
+$--y-3: m.$green;
 $--y-4: #DAEFC4;
 
 $--s-1: #DAEFC4;
-$--s-2: #709B50;
+$--s-2: m.$green;
 $--s-3: #DAEFC4;
-$--s-4: #709B50;
+$--s-4: m.$green;
 
 $colors: (
 	$--p-1,
@@ -49,8 +49,12 @@ $colors: (
 .loader {
 	// background-color:#302E2B; 
 	// background-color: #32291d;
+    // background-color: #1f1f1f;
+    background-color: m.$lobby-bg-clr; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, m.$dark, #343434, m.$dark); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, m.$dark, #343434, m.$dark);
+
     color: #cdcdcd;  
-    background-color: #1f1f1f;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -83,7 +87,17 @@ $colors: (
 		justify-content: center;
 		align-items: center;
 		// background-color: rgb(49, 40, 28,.6);
-		background-color: #40382cf5;
+		// background-color: #40382cf5;
+		// background-color: #1d1711;
+		// background-color: #65972bf2;
+		// background-color: m.$spec-blue;
+		background-color: #042d38;
+		mix-blend-mode: screen;
+
+		$dark-test: #1d1711a1;
+		// text-shadow: 2px 2px $dark-test;
+		text-shadow: m.$shadow-sm;
+
 		border-radius: m.$border-radius;
 		padding: 2rem;
 		// background: linear-gradient(135deg, #32291d, #64533B);
@@ -94,7 +108,7 @@ $colors: (
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
-		opacity: .85;
+		// opacity: .85;
 		// bottom: 0%;
 		// transform: translate(-50%);
 		z-index:10;
@@ -120,7 +134,7 @@ $colors: (
 		--border-width: 1px;
 		--cells: 4;
 		--total-size: calc(var(--cells) * (var(--cell-size) + 2 * var(--cell-spacing)));
-		opacity:.8;
+		opacity:.2;
 		z-index:9;
 		display: flex;
 		flex-wrap: wrap;

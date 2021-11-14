@@ -215,26 +215,28 @@ function ColorSelect({ selectedColor, selectColor }) {
 function GameType({ type, selectGameType, selectedGameType }) {
 	const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 	return (
-		<div
-			onclick={() => selectGameType(type.id)}
-			class={`type 
+		<div class="type-wrapper">
+			<div
+				onclick={() => selectGameType(type.id)}
+				class={`type 
 			${type.id == selectedGameType && " selected"} 
 			${type.name != "forever" && " temp-disabled"}`}
-			title={type.name == "forever" ? type.name : "Type Disabled"}
-		>
-			<div class="time">
-				<h2 class="name">{capitalize(type.name)}</h2>
-				{type.time && (
-					<h3>
-						<span class="value">{type.time.minutes} </span>
-						min
-					</h3>
-				)}
+				title={type.name == "forever" ? type.name : "Type Disabled"}
+			>
+				<div class="time">
+					<h2 class="name">{capitalize(type.name)}</h2>
+					{type.time && (
+						<h3>
+							<span class="value">{type.time.minutes} </span>
+							min
+						</h3>
+					)}
+				</div>
+				<img
+					src={`./assets/create/types/${type.name}.svg`}
+					alt="game type"
+				/>
 			</div>
-			<img
-				src={`./assets/create/types/${type.name}.svg`}
-				alt="game type"
-			/>
 		</div>
 	);
 }
