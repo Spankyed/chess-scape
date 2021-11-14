@@ -2,7 +2,7 @@ const webpush = require("web-push");
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
-const { sendMessageToLobby } = require("../common/websocket/message");
+const { sendMessageToRoomExcept } = require("../common/websocket/message");
 const { customAlphabet } = require("nanoid");
 const nanoid = customAlphabet("1234567890abcdef", 20);
 const initialState = require("../websockets/methods/move/state");
@@ -84,7 +84,11 @@ const handler = async (event) => {
 				moves: [],
 			};
 			await Promise.all([
-				sendMessageToLobby({ method: "create", newRoom }),
+				// sendMessageToLobby({ method: "create", newRoom }),
+				sendMessageToRoomExcept("lobby", clientID, {
+					method: "create",
+					newRoom,
+				}),
 				Dynamo.write(match, matchesTable),
 			]);
 

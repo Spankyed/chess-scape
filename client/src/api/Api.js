@@ -237,10 +237,10 @@ async function createRoom(gameOptions) {
 	const url = `${baseHttpUrl}/create-room`;
 	const response = await fetch(url, { method, headers, body });
 	if (response.ok) {
-		const room = await response.json();
-		console.log("%c New Room", "color:blue;", { room });
-		// dont do anything with response, websocket message should be sent to update room list in lobby
-		return room;
+		const res = await response.json();
+		console.log("%c New Room", "color:blue;", res);
+		handlers.create(res);
+		return res;
 	} else if (response.status === 401) {
 		handlers.unauthorize();
 		throw Error("Unauthorized");
