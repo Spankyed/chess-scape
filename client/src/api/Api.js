@@ -308,6 +308,23 @@ async function searchSongImage(title) {
 	}
 }
 
+async function pushSubscribe(subscription) {
+	const method = "POST";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const body = JSON.stringify({ clientID, TOKEN, subscription });
+	const url = `${baseHttpUrl}/push-subscribe`;
+	const response = await fetch(url, { method, headers, body });
+	if (response.ok) {
+		const res = await response.json();
+		console.log("%c Device subscribed push notifications", "color:blue;", { res });
+		return res;
+	} else if (response.status === 401) {
+		handlers.unauthorize();
+		throw Error("Unauthorized");
+	}
+}
+
+
 export default {
 	setClient,
 	createClient,
@@ -323,6 +340,7 @@ export default {
 	deleteRoom,
 	joinRoom,
 	joinPrivate,
+	pushSubscribe,
 	sync,
 	ready,
 	leaveRoom,

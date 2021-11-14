@@ -69,6 +69,13 @@ joinLobby:
         path: join-lobby
         method: POST
         cors: true
+pushSubscribe:
+  handler: api/endpoints/pushSubscribe.handler
+  events:
+    - http:
+        path: push-subscribe
+        method: POST
+        cors: true        
 # getRoomClients:
 #   handler: api/endpoints/getRoomClients.handler
 #   events:
