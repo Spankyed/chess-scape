@@ -1,5 +1,7 @@
-package-lock.json
 node_modules
+package-lock.json
+yarn.lock
+.DS_Store
 .webpack
 .serverless
 .dynamodb

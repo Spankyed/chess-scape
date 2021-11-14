@@ -255,7 +255,7 @@ async function deleteRoom(ID) {
 	if (response.ok) {
 		const res = await response.json();
 		console.log(`%c ${res?.message}`, "color:orange;");
-		handlers.delete(res);
+		handlers.delete(res); // manually calling handler on client instead of server because...idk
 	} else if (res.status === 401) {
 		handlers.unauthorize();
 		throw Error("Unauthorized");

@@ -19,7 +19,6 @@ const initialState = {
 	loading: true,
 	isFetching: false,
 	initialized: false,
-
 }
 
 export default (initial) => ({
@@ -28,7 +27,7 @@ export default (initial) => ({
 		create: create.actions,
 		alert: alert.actions,
 		pin: pin.actions,
-		setLoad: (loading) => ({ loading }),
+		// setLoad: (loading) => ({ loading }),
 		toggleCreate: () => (state) => ({ showCreate: !state.showCreate }),
 		updateRooms: (rooms) => (state, actions) => ({
 			rooms: sortByCreated(rooms),
@@ -111,7 +110,7 @@ export default (initial) => ({
 			const AlertView = alert.view(state.alert, actions.alert);
 			const PinView = pin.view(state.pin, actions.pin);
 
-			window.isLoad = actions.setLoad;
+			// window.isLoad = actions.setLoad; // used for testing
 
 			const moveToRoom = (ID) => {
 				joinRoom(ID);
