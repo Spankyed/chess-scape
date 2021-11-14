@@ -22,6 +22,7 @@ const handler = async (event) => {
 		room: "lobby",
 		created: Date.now(),
 		ip: event.requestContext.identity.sourceIp,
+		subscriptions: [],
 	};
 
 	const newClient = await Dynamo.write(client, clientsTable);
