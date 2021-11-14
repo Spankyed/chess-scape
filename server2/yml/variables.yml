@@ -2,6 +2,7 @@ clientsTableName: Clients
 roomsTableName: Rooms
 matchesTableName: Matches
 mediaTableName: Media
+serviceTableName: Service
 bucketName: room-music-bucket
 # s3Sync:
 #     - bucketName: ${self:custom.bucketName}

@@ -15,6 +15,7 @@
 		"node-html-parser": "^5.1.0",
 		"serverless-s3-local": "^0.6.20",
 		"serverless-s3-sync": "^1.17.3",
+		"web-push": "^3.4.5",
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {

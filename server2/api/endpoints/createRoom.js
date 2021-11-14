@@ -1,3 +1,4 @@
+const webpush = require("web-push");
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { hooksWithSchema } = require("../common/hooks");
@@ -9,6 +10,7 @@ const initialState = require("../websockets/methods/move/state");
 const roomsTable = process.env.roomsTableName;
 const matchesTable = process.env.matchesTableName;
 const clientsTable = process.env.clientsTableName;
+const serviceTable = process.env.serviceTableName;
 
 // todo validate schema
 const schema = {
@@ -85,6 +87,10 @@ const handler = async (event) => {
 				sendMessageToLobby({ method: "create", newRoom }),
 				Dynamo.write(match, matchesTable),
 			]);
+
+			if (room.gameOptions.selectedOpp == "angel") {
+				await notifyAngel(room.ID, client.username);
+			}
 		}
 
 		console.log(`Player[${clientID}] created room[${newRoom.ID}]`);
@@ -99,3 +105,38 @@ const handler = async (event) => {
 // exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
 exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
 
+
+async function notifyAngel(roomID, oppName) {
+	const vapidKeys = await Dynamo.get("vapidKeys", serviceTable);
+
+	webpush.setVapidDetails(
+		"mailto:angel.santiago@tutanota.com",
+		vapidKeys.publicKey,
+		vapidKeys.privateKey
+	);
+
+	const angel = await Dynamo.get("angel", clientsTable);
+
+	const payload = { roomID, oppName };
+
+	angel.subscriptions.forEach((subscription) => {
+		webpush
+			.sendNotification(subscription, JSON.stringify(payload))
+			.then((response) => {
+				console.log("Notification sent", {
+					payload,
+					response,
+					subscription,
+				});
+			})
+			.catch(console.error);
+	});
+
+	/**
+	 * Subscriptions may get out of sync between FCM and your server.
+	 * Make sure your server parses the response body of the webpush
+	 * sendNotification, looking for error:NotRegistered and canonical_id results,
+	 * as explained in the FCM documentation.
+	 * https://developers.google.com/web/updates/2015/03/push-notifications-on-the-open-web
+	 */
+}

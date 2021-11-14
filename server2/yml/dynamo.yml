@@ -77,4 +77,15 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
+  ServiceTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.serviceTableName}
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST          
 # todo add matches table

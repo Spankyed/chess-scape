@@ -27,6 +27,7 @@ const initialState = {
 const state = {
 	...initialState,
 	isAuthorized: checkForClient(),
+	// roomID: checkForRoomID(),
 };
 
 const actions = {
@@ -37,7 +38,7 @@ const actions = {
 	authorize: () => ({ isAuthorized: true }),
 	unauthorize: () => ({ ...initialState }),
 	joinRoom: (roomID) => ({ inGame: true, roomID }),
-	joinLobby: () => ({ inGame: false }), // back to lobby
+	joinLobby: () => ({ inGame: false, roomID: "" }), // back to lobby
 };
 
 const view = (state, actions) => {
@@ -49,15 +50,15 @@ const view = (state, actions) => {
 	function init(){
 		Api.setMessageHandlers({
 			unauthorize: () => {
+				localStorage.clear();
 				Api.closeConnection()
 				actions.unauthorize();
-				localStorage.clear();
 			},
 		});
 	}
 	return (
 		<div oncreate={init} class="app">
-			<AdminView {...state} {...{actions}} />
+			<AdminView {...state} {...{ actions }} />
 
 			{!state.isAuthorized ? (
 				<EntranceView authorize={actions.authorize} />
@@ -67,7 +68,10 @@ const view = (state, actions) => {
 					joinLobby={actions.joinLobby}
 				/>
 			) : (
-				<LobbyView joinRoom={actions.joinRoom} />
+				<LobbyView
+					joinRoom={actions.joinRoom}
+					// {...{ ingame: state.ingame, roomID: state.roomID }}
+				/>
 			)}
 		</div>
 	);
@@ -79,4 +83,19 @@ function checkForClient() {
 	const client = localStorage.getItem("client");
 	const info = JSON.parse(client || '""');
 	return info.TOKEN && info.clientID;
+}
+
+// function checkForRoomID() {
+// 	const urlParams = new URLSearchParams(window.location.search);
+// 	const roomID = urlParams.get("roomID");
+// 	return roomID || "";
+// }
+
+if ("serviceWorker" in navigator) {
+	addEventListener("load", async () => {
+		await navigator.serviceWorker.register(
+			new URL("Worker.js", import.meta.url),
+			{ type: "module" }
+		);
+	});
 }
