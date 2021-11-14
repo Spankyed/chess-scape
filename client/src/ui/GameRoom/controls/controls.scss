@@ -199,11 +199,13 @@ $border-radius: 0.125rem;
 		&.selected {
 			box-shadow:#d6d6d667 0px 0px 5px 3px !important;
 		}
-		flex-wrap: nowrap;
 		background-color: $controls-bg-color;
 		position: relative;
 		display: flex;
-		flex-direction: column;
+		flex-wrap: nowrap;
+		// flex-direction: column;
+		flex-direction: row;
+		text-align: center;
 		padding: 0.75rem/* 8px */;
 		// margin-top: 0.5rem/* 8px */;
 		margin-left: 0.5rem/* 12px */;
@@ -216,10 +218,11 @@ $border-radius: 0.125rem;
     	max-width: 40%;
 		&.left { 
 			float:left; 
+			justify-content: start;
 		}
 		&.right { 
 			float:right; 
-			flex-direction: column-reverse;
+			// flex-direction: column-reverse;
 			justify-content: end;
 		}
 		.picture {
@@ -242,6 +245,7 @@ $border-radius: 0.125rem;
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;
+			flex-grow: 1;
 			color: rgba(55, 65, 81, 1);
 			align-items: center;
 			text-align: center;
@@ -484,11 +488,11 @@ $border-radius: 0.125rem;
 	}
 }
 
-@media (min-width: m.$medium) {
-	.player-section .player{
-		flex-direction: row !important;
-		flex-wrap: nowrap;
+// @media (min-width: m.$medium) {
+// 	.player-section .player{
+// 		flex-direction: row !important;
+// 		flex-wrap: nowrap;
 		
-	}
-}
+// 	}
+// }
 
