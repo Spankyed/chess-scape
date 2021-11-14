@@ -1,4 +1,5 @@
 import Api from "../../api/Api";
+import { delay } from "nanodelay";
 
 async function subscribe() {
 	let sw = await navigator.serviceWorker.ready;
@@ -13,12 +14,17 @@ async function subscribe() {
 }
 
 async function setuser({ actions, args }) {
-	const [ clientID, TOKEN ] = args;
+	const [clientID, TOKEN] = args;
 	const client = { clientID, TOKEN };
+	localStorage.clear();
+	Api.closeConnection();
+	actions.unauthorize();
 	localStorage.setItem("client", JSON.stringify(client));
-	Api.setClient(client);
-	actions.authorize();
-	return {message: `User set [${clientID}]:[${TOKEN}]`}
+	delay(200).then(_ => {
+		Api.setClient(client);
+		actions.authorize();
+	});
+	return { message: `User set [${clientID}]:[${TOKEN}]` };
 }
 
 export default {
