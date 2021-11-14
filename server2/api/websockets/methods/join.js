@@ -39,25 +39,20 @@ module.exports = async function (
 
 		const [group, updatedRoom] = await updateRoom(room, client);
 
+		const { lastMove, moves, ...matchData } = match;
+		
+		const message = {
+			method: "join",
+			room: sanitizeRoom(updatedRoom),
+			match: matchData,
+			group,
+			username: client.username,
+		};
+
 		const messageRecipients = [
-			sendMessageToRoom(roomID, {
-				method: "join",
-				room: sanitizeRoom(updatedRoom),
-				match: { ...match, lastMove: undefined, moves: [] },
-				group,
-				username: client.username,
-			}),
+			sendMessageToRoom(roomID, message),
 			// only message lobby if player joined, not spectator
-			...(group == "players"
-				? [
-						sendMessageToLobby({
-							method: "join",
-							room: sanitizeRoom(updatedRoom),
-							group,
-							username: client.username,
-						}),
-				  ]
-				: []),
+			...(group == "players" ? [sendMessageToLobby(message)] : []),
 		];
 
 		Promise.all(messageRecipients);
