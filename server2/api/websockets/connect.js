@@ -53,7 +53,7 @@ const handler = async (event) => {
 		},
 	});
 
-	console.log(`Connected client [${client.ID}]`, { clientConn });
+	console.log(`Connected client [${client.username}]`, { clientConn });
 
 	return Response._200({ message: "connected" });
 };

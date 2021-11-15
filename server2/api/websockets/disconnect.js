@@ -32,7 +32,7 @@ const handler = async (event) => {
 		},
 	});
 
-	console.log(`Disconnected client [${client.ID}]`);
+	console.log(`Disconnected client [${client.username}]`);
 	return Responses._200({ message: "disconnected" });
 };
 
