@@ -12,8 +12,9 @@ const {
 	sendMessageToRoomExcept,
 } = require("../common/websocket/message");
 
-const bucket = process.env.bucketName;
+const roomsTable = process.env.roomsTableName;
 const mediaTable = process.env.mediaTableName;
+const bucket = process.env.bucketName;
 
 const schema = {
 	// body: { clientID: "string", roomID: "string" },
@@ -31,6 +32,17 @@ handler = async (event) => {
 		const { clientID, roomID, TOKEN, ...form } = body;
 		const file = form.files[0];
 		const { files, ...songInfo } = form
+
+		const room = await Dynamo.get(roomID, roomsTable);
+
+		const multiplePlayers = Object.keys(room.players).length > 1;
+		const spectators = Object.keys(room.spectators).length > 0;
+
+		if (!multiplePlayers && !spectators) {
+			return Responses._400({
+				message: "No one in room to share media with",
+			});
+		}
 
 		const [isAuthorized, client] = await authorize(clientID, TOKEN);
 		
