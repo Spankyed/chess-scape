@@ -17,7 +17,7 @@ async function setuser({ actions, args }) {
 	const [clientID, TOKEN] = args;
 	const client = { clientID, TOKEN };
 	localStorage.clear();
-	Api.closeConnection();
+	Api.isConnected() && Api.closeConnection();
 	actions.unauthorize();
 	localStorage.setItem("client", JSON.stringify(client));
 	delay(200).then(_ => {

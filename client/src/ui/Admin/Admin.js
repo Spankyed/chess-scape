@@ -60,6 +60,10 @@ export default (initial) => ({
 							actions.endExec();
 						})
 						.catch((err) => {
+							actions.addEntryResponse({
+								id,
+								response: err.message,
+							});
 							actions.endExec();
 							console.error(err);
 						});
