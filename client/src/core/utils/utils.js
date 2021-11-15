@@ -5,6 +5,29 @@ import initialState from "../board/state";
 import { Vector3 } from "@babylonjs/core/Maths/math";
 
 
+const OrientationChange = () => {
+	const narrowDevice = window.innerWidth / window.innerHeight < 1.1;
+	let narrowLastChecked = narrowDevice;
+
+	let resize$ = new Observable(subscriber => {
+		const handler = () => {
+			const resizedNarrow = window.innerWidth / window.innerHeight < 1.1;
+			if (narrowLastChecked !== resizedNarrow) {
+				narrowLastChecked = resizedNarrow;
+				subscriber.next(resizedNarrow);
+			}
+		};
+
+		window.addEventListener("resize", handler);
+		return () => {
+			window.removeEventListener("resize", handler);
+		};
+	})
+
+	return resize$.pipe(debounceTime(1));
+};
+
+
 // https://github.com/twig-it/from-resize/blob/main/projects/from-resize/src/resize/resize.ts
 const FromResize = (element) => {
 	let resize$ = new Observable(subscriber => {
@@ -143,6 +166,7 @@ export {
 	createCaptureSq,
 	getColor,
 	FromResize,
+	OrientationChange,
 };
 
 

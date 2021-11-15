@@ -1,4 +1,4 @@
-import { FromResize } from './utils'; 
+import { FromResize, OrientationChange } from "./utils"; 
 import { updateNavigation } from '../board/navigationSystem'; 
 import { Scene } from "@babylonjs/core/scene";
 import { Vector3 } from "@babylonjs/core/Maths/math";
@@ -10,6 +10,7 @@ import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 // import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
 import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
+
 // import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 
 export default class SceneManager {
@@ -56,12 +57,9 @@ export default class SceneManager {
 		// camera.attachControl(canvas, true);
 		//this._scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
 		//camera.applyGravity = true;
-
-		// change background color to dark-gray
-		// this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17);
-		this._scene.clearColor = new Color4(0, 0, 0, 0);
 		const narrowDevice = window.innerWidth / window.innerHeight < 1.1;
-		let cameraDistance = narrowDevice ? 33 : 25;
+		const [far, close] = [33, 27];
+		let cameraDistance = narrowDevice ? far : close;
 		var camera = new ArcRotateCamera(
 			"Camera",
 			0,
@@ -70,6 +68,7 @@ export default class SceneManager {
 			new Vector3(0, 0, 0),
 			this._scene
 		);
+		// camera.applyVerticalCorrection(); // Correcting perspective projection - https://doc.babylonjs.com/divingDeeper/cameras/camera_introduction#correcting-perspective-projection
 		camera.attachControl(canvas, true);
 		camera.inputs.attached.pointers.detachControl();
 		// camera.inputs.attached.keyboard.detachControl();
@@ -80,6 +79,12 @@ export default class SceneManager {
 		camera.upperBetaLimit = (Math.PI / 2) * 0.65;
 		camera.inertia = 0.65;
 		camera.fov = 0.7;
+
+		OrientationChange().subscribe((isNarrow) => {
+			if (!isNarrow) {
+				camera.radius = close;
+			}
+		});
 
 		// camera.keysUp = [87]; // w
 		// camera.keysDown = [83]; // S
@@ -94,11 +99,20 @@ export default class SceneManager {
 		// camera.checkCollisions = true;
 
 		this._scene.activeCamera = camera;
+		this._scene.clearColor = new Color4(0, 0, 0, 0);
+		// this._scene.clearColor = new BABYLON.Color3(0.19, 0.18, 0.17); // change background color to dark-gray
 
-		let spotLight = new SpotLight("SpotLight", new Vector3(0, 50, 0), new Vector3(0, -1, 0), 0.8, 40, this._scene);
+		let spotLight = new SpotLight(
+			"SpotLight",
+			new Vector3(0, 50, 0),
+			new Vector3(0, -1, 0),
+			0.8,
+			40,
+			this._scene
+		);
 		spotLight.intensity = 0.6;
 		spotLight.exponent = 5;
-		spotLight.diffuse = new Color3(0.71, 0.85, 1.000);
+		spotLight.diffuse = new Color3(0.71, 0.85, 1.0);
 		// spotLight.diffuse = new Color4.FromHexString("#65972b3d");
 
 		// window.spotLight = spotLight;
@@ -120,7 +134,6 @@ export default class SceneManager {
 			this._scene
 		);
 		light2.intensity = 0.2;
-
 
 		// return new BABYLON.ShadowGenerator(1024, spotLight);
 	}
