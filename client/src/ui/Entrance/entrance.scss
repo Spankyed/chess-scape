@@ -170,9 +170,10 @@ $dark-test: #1d1711a1;
                 padding-left: 1rem;
                 padding-right: 1rem;
                 &:hover {
-                    background-color: m.$dark-green;
+                    background-color: m.$green;
                     .text{
-                        background-color: m.$dark-green !important;
+                        background-color: m.$green !important;
+                        // background-color: m.$dark-green !important;
                     }
                 }
                 &:disabled {
