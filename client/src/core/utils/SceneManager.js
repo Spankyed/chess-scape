@@ -57,15 +57,19 @@ export default class SceneManager {
 		// camera.attachControl(canvas, true);
 		//this._scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
 		//camera.applyGravity = true;
+
 		const narrowDevice = window.innerWidth / window.innerHeight < 1.1;
-		const [far, close] = [33, 27];
+		var mql = window.matchMedia("(min-width: 1199.98px)");
+		let targetZ = mql.matches ? -1 : 0;
+		const closeDistance = mql.matches ? 22.5 : 25;
+		const [far, close] = [33, closeDistance];
 		let cameraDistance = narrowDevice ? far : close;
 		var camera = new ArcRotateCamera(
 			"Camera",
 			0,
 			2,
 			cameraDistance,
-			new Vector3(0, 0, 0),
+			new Vector3(0, 0, targetZ),
 			this._scene
 		);
 		// camera.applyVerticalCorrection(); // Correcting perspective projection - https://doc.babylonjs.com/divingDeeper/cameras/camera_introduction#correcting-perspective-projection
