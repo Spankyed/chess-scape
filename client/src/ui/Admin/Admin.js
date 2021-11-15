@@ -40,7 +40,7 @@ export default (initial) => ({
 	},
 	view:
 		(state, actions) =>
-		({ isAuthorized, inGame, lobby, actions: uiActions }) => {
+		({ actions: appActions, state: appState }) => {
 			// console.log("admin state: ", { isAuthorized, inGame, lobby });
 			const execute = (e) => {
 				e.preventDefault();
@@ -54,7 +54,7 @@ export default (initial) => ({
 				if (executor) {
 					let id = nanoid();
 					actions.addEntry({ id, command });
-					executor({ actions: uiActions, args })
+					executor({ state: appState, actions: appActions, args })
 						.then((response) => {
 							actions.addEntryResponse({ id, response });
 							actions.endExec();

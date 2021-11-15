@@ -58,7 +58,7 @@ const view = (state, actions) => {
 	}
 	return (
 		<div oncreate={init} class="app">
-			<AdminView {...state} {...{ actions }} />
+			<AdminView {...{ actions, state }} />
 
 			{!state.isAuthorized ? (
 				<EntranceView authorize={actions.authorize} />

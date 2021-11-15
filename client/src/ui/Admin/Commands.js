@@ -27,7 +27,15 @@ async function setuser({ actions, args }) {
 	return { message: `User set [${clientID}]:[${TOKEN}]` };
 }
 
+async function deleteroom({ state, args }) {
+	const [idx] = args;
+	const { rooms } = state.lobby;
+	await Api.deleteRoom(rooms[idx]?.ID);
+	return { message: `Room deleted [${idx}]:[${rooms[idx].ID}]` };
+}
+
 export default {
 	setuser,
 	subscribe,
+	deleteroom,
 };
