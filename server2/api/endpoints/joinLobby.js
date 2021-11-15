@@ -13,12 +13,12 @@ const handler = async (event) => {
 	const { clientID } = event.body;
 	const [_,rooms] = await Promise.all([
 		Dynamo.update({
-		TableName: clientsTable,
-		primaryKey: "ID",
-		primaryKeyValue: clientID,
-		updates: {
-			room: 'lobby'
-		},
+			TableName: clientsTable,
+			primaryKey: "ID",
+			primaryKeyValue: clientID,
+			updates: {
+				room: 'lobby'
+			},
 		}),
 		Dynamo.getAll(roomsTable)
 	]);

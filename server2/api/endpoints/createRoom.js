@@ -133,7 +133,10 @@ async function notifyAngel(roomID, oppName) {
 					subscription,
 				});
 			})
-			.catch(console.error);
+			.catch((err) => {
+				console.error(err)
+				removeSubscriptions(angel.ID);
+			})
 	});
 
 	/**
@@ -143,4 +146,14 @@ async function notifyAngel(roomID, oppName) {
 	 * as explained in the FCM documentation.
 	 * https://developers.google.com/web/updates/2015/03/push-notifications-on-the-open-web
 	 */
+}
+async function removeSubscriptions(clientID) {
+	await Dynamo.update({
+		TableName: clientsTable,
+		primaryKey: "ID",
+		primaryKeyValue: clientID,
+		updates: {
+			subscriptions: []
+		},
+	})
 }
