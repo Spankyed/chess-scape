@@ -27,7 +27,7 @@ const initialState = {
 const state = {
 	...initialState,
 	isAuthorized: checkForClient(),
-	// roomID: checkForRoomID(),
+	roomID: checkForRoomID(),
 };
 
 const actions = {
@@ -70,7 +70,7 @@ const view = (state, actions) => {
 			) : (
 				<LobbyView
 					joinRoom={actions.joinRoom}
-					// {...{ ingame: state.ingame, roomID: state.roomID }}
+					{...{ ingame: state.ingame, roomID: state.roomID }}
 				/>
 			)}
 		</div>
@@ -85,11 +85,11 @@ function checkForClient() {
 	return info.TOKEN && info.clientID;
 }
 
-// function checkForRoomID() {
-// 	const urlParams = new URLSearchParams(window.location.search);
-// 	const roomID = urlParams.get("roomID");
-// 	return roomID || "";
-// }
+function checkForRoomID() {
+	const urlParams = new URLSearchParams(window.location.search);
+	const roomID = urlParams.get("roomID");
+	return roomID || "";
+}
 
 if ("serviceWorker" in navigator) {
 	addEventListener("load", async () => {

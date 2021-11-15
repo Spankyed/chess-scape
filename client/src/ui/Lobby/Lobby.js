@@ -74,7 +74,8 @@ export default (initial) => ({
 				const hostedRoom = rooms.find(
 					(room) => room.host == Api.getClientID()
 				);
-				const multiplePlayers = hostedRoom && Object.keys(hostedRoom.players).length > 1
+				const multiplePlayers =
+					hostedRoom && Object.keys(hostedRoom.players).length > 1;
 
 				if (!!hostedRoom && !multiplePlayers) {
 					const isVsAngel =
@@ -101,7 +102,7 @@ export default (initial) => ({
 
 	view:
 		(state, actions) =>
-		({ joinRoom }) => {
+		({ joinRoom, inGame, roomID }) => {
 			const {
 				showCreate,
 				hostedRoom,
@@ -115,6 +116,8 @@ export default (initial) => ({
 			const PinView = pin.view(state.pin, actions.pin);
 
 			// window.isLoad = actions.setLoad; // used for testing
+
+
 
 			const moveToRoom = (ID) => {
 				joinRoom(ID);
@@ -158,11 +161,17 @@ export default (initial) => ({
 				// todo stop loading
 			};
 
+			const isAngel = Api.getClientID() == 'angel'
+
 			if (!initialized && !isFetching) {
 				initialize();
+			} else if (initialized && !inGame && roomID && isAngel) {
+				// when user intially enters lobby with a querystring in url
+				join(roomID);
 			}
 
-			const hideHeaderButtons = hostedRoom && getHostedRoom(rooms)?.matchStarted;
+			const hideHeaderButtons =
+				hostedRoom && getHostedRoom(rooms)?.matchStarted;
 
 			return (
 				<div class="lobby">
@@ -173,11 +182,11 @@ export default (initial) => ({
 					<AlertView />
 					<PinView joinRoom={moveToRoom} />
 
-					<div class='lobby-main'>
+					<div class="lobby-main">
 						{/* Header */}
 						<div class="lobby-header">
 							<h1 class="title"> Lobby </h1>
-							{!hideHeaderButtons &&
+							{!hideHeaderButtons && (
 								<div>
 									{!hostedRoom ? (
 										<button
@@ -188,12 +197,12 @@ export default (initial) => ({
 												loading
 											}
 										>
-											{	initialized &&
+											{initialized &&
 												!showCreate &&
 												!loading &&
-												!(state.rooms?.length > 0)  && 
-												<div class="ripple"></div>
-											}
+												!(state.rooms?.length > 0) && (
+													<div class="ripple"></div>
+												)}
 											<img src="./assets/create/add.svg"></img>
 											<p class="hide-sm">Create</p>
 										</button>
@@ -204,7 +213,7 @@ export default (initial) => ({
 										</button>
 									)}
 								</div>
-							}
+							)}
 						</div>
 						{/* Table */}
 						<div class="table-wrapper">
