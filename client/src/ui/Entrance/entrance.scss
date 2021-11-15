@@ -1,5 +1,7 @@
 @use '../master' as m; 
 
+$dark-test: #1d1711a1;
+
 .entrance {
     width: 100%;
     height: 100%;
@@ -43,7 +45,7 @@
         justify-content: center;
         .user-bg {
             height: 63.333333%;
-            background: repeating-conic-gradient(m.$tan 0% 25%, m.$green 0% 50%)  50% / 20px 20px;
+            background: repeating-conic-gradient(m.$tan 0% 25%, m.$mid-green 0% 50%)  50% / 20px 20px;
             width: 100%;
             position: absolute;
             bottom: 0px;
@@ -92,7 +94,7 @@
                     appearance: none;
                     background-color: transparent;
                     // border-style: none;
-                    border: m.$border;
+                    // border: m.$border;
                     padding: 0.25rem;
                     line-height: 1.25;
                     font-size: 2rem;
@@ -120,14 +122,15 @@
                     // width: 100%;
                     width: 95%;
                     height: 100%;
-                    background-color: m.$bg-primary;
+                    // background-color: m.$bg-primary;
+                    background-color: #32291d;
                     text-align: center;
                     padding-left: 1rem;
                     padding-right: 1rem;
                     .rating-option {
                         text-shadow: 2px 2px #1d1711a1;
                         // box-shadow: 0 0 3px 3px rgba(87, 13, 13, 0.06) inset;
-                        box-shadow: 0 0 3px 3px rgb(50, 41, 29, .25) inset;
+                        box-shadow: 0 0 3px 3px rgb(29 27 25 / 30%) inset;
                         border-radius: m.$border-radius;
                         display:flex;
                         justify-content: center;
@@ -158,7 +161,9 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background-color: m.$green;
+                // background-color: m.$green;
+                background-color: m.$mid-green;
+                text-shadow: 2px 2px $dark-test;
                 font-size: 1.8rem;
                 // font-size: 2rem;
                 letter-spacing: 1rem;
@@ -192,7 +197,7 @@
                     width: 100%;
                     height: 100%;
                     .text {
-                        background-color: m.$green;
+                        background-color: m.$mid-green;
                         margin-left: 1rem;
                         padding-left: 2rem;
                         padding-right: 2rem;

@@ -139,7 +139,7 @@ $colors: (
 		--border-width: 1px;
 		--cells: 4;
 		--total-size: calc(var(--cells) * (var(--cell-size) + 2 * var(--cell-spacing)));
-		opacity:.2;
+		opacity:.7;
 		z-index:9;
 		display: flex;
 		flex-wrap: wrap;
