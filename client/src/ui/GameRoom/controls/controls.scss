@@ -18,7 +18,16 @@ $btn-secondary-color: #383734;
 
 // $controls-bg-color: #1c1c21;
 // $controls-bg-color: #708B75;
-$controls-bg-color: m.$darker;
+// $controls-bg-color: m.$darker;
+
+// $controls-bg-color: #272522;
+$controls-bg-color: m.$dark-brown;
+
+// $controls-bg-color: m.$brown;
+// $controls-bg-color: m.$dark-brown;
+// $controls-bg-color: m.$green;
+// $controls-bg-color: m.$spec-blue-alt;
+
 $border-radius: 0.125rem;
 
 // CONTROLS
@@ -46,11 +55,12 @@ $border-radius: 0.125rem;
 				top: 0px;
 			}
 			&.center {
+				margin-top: 0px !important;
 				// text-align: center;
 				left: 50%;
 				transform: translate(-50%);
-				opacity:.95
-				img{
+				// opacity:.95;
+				img {
 					width:3.5rem;
 					height:3.5rem;
 				}
@@ -130,7 +140,8 @@ $border-radius: 0.125rem;
 						&:hover {
 							cursor: pointer;
 							// background-color: #525357;
-							background-color: #666666d9;
+							// background-color: #666666d9;
+							background-color: #464646;
 						}
 						.menu-icon {
 							border: m.$border;

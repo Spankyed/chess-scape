@@ -9,10 +9,18 @@
     display: flex;
     // background-color: #64533B;
     // background-color: #32291d;
-    background-color: #1f1f1f;
     // background-color: #212121;
     // background-image: linear-gradient(to bottom right,  #1b1b1b,#1f1f1f);
+    // background-color: #1f1f1f;
+    background-color: m.$lobby-bg-clr; /* dark */
+    // background-color: #312E2B; /* dark */
+    // background: -webkit-linear-gradient(to right, m.$dark, #343434, m.$dark); /* Chrome 10-25, Safari 5.1-6 */
+    // background: linear-gradient(to right, m.$dark, #343434, m.$dark);
+    // background: linear-gradient(to right, m.$dark, #0e2a001a, m.$dark);
+    background: -webkit-linear-gradient(to right, m.$dark-brown, #343434, m.$dark-brown); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, m.$dark-brown, #0e2a001a, m.$dark-brown);
     animation: fade-in 0.3s ease;
+
     .game-area{
         position: relative;
         flex-grow: 1;

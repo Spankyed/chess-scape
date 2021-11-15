@@ -91,8 +91,10 @@ $colors: (
 		// background-color: #1d1711;
 		// background-color: #65972bf2;
 		// background-color: m.$spec-blue;
-		background-color: #042d38;
-		mix-blend-mode: screen;
+		// background-color: #042d38;
+		// background-color: m.$dark-brown;
+		background-color: #272522;
+		// mix-blend-mode: screen;
 
 		$dark-test: #1d1711a1;
 		// text-shadow: 2px 2px $dark-test;
@@ -111,9 +113,12 @@ $colors: (
 		// opacity: .85;
 		// bottom: 0%;
 		// transform: translate(-50%);
-		z-index:10;
+		z-index: 10;
 		box-shadow: 0 30px 50px -20px #120b03;
-
+		-webkit-filter: blur(0px);
+		-filter: blur(0px);
+		-webkit-animation: deblur linear .4s;
+		animation: deblur linear .4s;
 		h2 {
 			flex-grow:1;
 			// width: 60%;
@@ -212,5 +217,10 @@ $colors: (
 			max-width: 65vw;
 		}
 	}
+}
+
+@-webkit-keyframes deblur {
+   0% {    -webkit-filter: blur(5px);}
+ 100% {  -webkit-filter: blur(0px);}
 }
 

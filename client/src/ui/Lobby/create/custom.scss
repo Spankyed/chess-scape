@@ -72,8 +72,8 @@ $dark-test: #1d1711;
                 width: 25%;
                 color:#f9f9f9;
                 // background-color: m.$identity-bg-clr;
-                // background-color: m.$green;
-                background-color: #5999107d;
+                background-color: m.$green;
+                // background-color: #5999107d;
                 // background-color: #0b603b;
                 min-height: 100%;
                 // border-right-width: .2rem;
@@ -87,8 +87,8 @@ $dark-test: #1d1711;
                 // --secondaryBorderColor: transparent; 
                 // box-shadow: 0 var(--borderHeight) 0 0 var(--borderColor),0 .7rem .95rem .05rem var(--secondaryBorderColor);
                 // border: .1rem solid var(--borderColor);
-
-                border:m.$border;
+                box-shadow: 0 0 1px 1px rgb(29 23 17 / 50%) inset;
+                // border:m.$border;
                 // border-right: 0;   
                 
                 img {

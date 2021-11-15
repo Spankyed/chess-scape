@@ -17,6 +17,8 @@ $dark-test: #1d1711a1;
     background-color: m.$lobby-bg-clr; /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, m.$dark, #343434, m.$dark); /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, m.$dark, #343434, m.$dark);
+    // background: -webkit-linear-gradient(to right, m.$dark-brown, #343434, m.$dark-brown); /* Chrome 10-25, Safari 5.1-6 */
+    // background: linear-gradient(to right, m.$dark-brown, #0e2a001a, m.$dark-brown);
     box-sizing: content-box;
     display: flex;
     flex-direction: column;
@@ -377,7 +379,8 @@ $dark-test: #1d1711a1;
                                 // font-weight: 600;
                                 &.full {
                                     // color: rgba(254, 202, 202,1);
-                                    background-color: #b12020;
+                                    // background-color: #b12020;
+                                    background-color: #7c1717;
                                 }
                             }
                         }
@@ -461,14 +464,15 @@ $dark-test: #1d1711a1;
                                     }
                                 }
                                 &.watch {
+                                    // color: #2a2a2a;
                                     background-color: #9d9b00;
+                                    text-shadow: 2px 2px $dark-test;
                                     &:hover {
+                                        // color: #fff;
                                         .locked {
                                             opacity:.7;
-
                                         }
                                         // color: rgb(75, 73, 0);
-                                        text-shadow: 2px 2px $dark-test;
                                         box-shadow: rgb(61, 59, 0) 0px 5px 0px;
                                         &:active{
                                             // background: radial-gradient(ellipse at center, 

@@ -94,8 +94,8 @@ function Move({move, currMove,  reviewDisabled, inReview, startReview, endReview
 				class={`${currMove == move && " active"}`}
 				title={move.san}
 			>
-				<sans>{pieceSymbols[move.piece]} </sans>
-				<span>{move.san} </span>
+				<span>{pieceSymbols[move.piece]} </span>
+				<sans>{move.san} </sans>
 			</move>
 		</div>
 	);

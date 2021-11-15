@@ -133,13 +133,14 @@ $submit-button-color: m.$green;
                         margin-top: .25rem;
                     }
                     move {
-                        background-color: #4c4c4c33; 
+                        // background-color: #4c4c4c33; 
+                        background-color: m.$darker; 
                         // background-color: $chat-footer-color;
                         height: 2rem;
-                        padding-left: .4rem;
+                        // padding-left: .4rem;
                         border: m.$border;
                         // font-weight: 600;
-                        display: block;
+                        display: flex;
                         cursor: pointer;
                         transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
                         text-overflow: ellipsis;
@@ -151,12 +152,19 @@ $submit-button-color: m.$green;
                             cursor: default;
                             // filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.23)) !important;
                         }
-                        span {
-                            padding-bottom: .3em;
-                        }
                         sans {
+                            padding-bottom: .3em;
+                            padding-left: .3em;
+                            flex-grow:1;
+                            text-align:center;
+                        }
+                        span {
+                            // padding-left: .1em;
+                            // background-color: #eeeeee33; 
+                            background-color: m.$green; 
+                            // border-radius: 99px;
+                            border:m.$border;
                             font-weight: 300;
-                            padding-right: .3em;
                             // padding-top: .1em;
                             font-size: 1.5rem/* 20px */;
                             // line-height: 1.75rem/* 28px */;
@@ -178,7 +186,7 @@ $submit-button-color: m.$green;
                         // background-color: #a0a0a033; 
                     }
                     // border-right: 0.02rem solid rgba(107, 114, 128, 0.2);
-                    sans { 
+                    span { 
                         // filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.13));
                         color: #fff; 
                         text-shadow: 0 1px .1rem rgb(0, 0, 0),
@@ -199,7 +207,7 @@ $submit-button-color: m.$green;
                 }
                 &.black{
                     border-left: 0.02rem solid rgba(107, 114, 128, 0.2);
-                    sans { 
+                    span { 
                         // filter: drop-shadow(0px 2px 5px rgba(233, 231, 231, 0.13));
                         color: #000000;
                         text-shadow: $shadow-def #282626;
@@ -229,7 +237,7 @@ $submit-button-color: m.$green;
     .move-wrapper {
         move {
             padding-left: 0rem;
-            sans {
+            span {
                 display: inline !important;
             }
         }
