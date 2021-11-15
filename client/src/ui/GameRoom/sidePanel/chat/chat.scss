@@ -93,6 +93,8 @@ $chat-footer-color: m.$dark;
             position: relative;
             // padding: 0 20px;
 
+
+
             textarea.chat-input {
                 //remove resize from textarea
                 resize: none;
@@ -120,6 +122,10 @@ $chat-footer-color: m.$dark;
     }
 }
 
-
+.side-panel.panel-hidden {
+    .chat-input{
+        padding: 0px !important;
+    }
+}
 
 
