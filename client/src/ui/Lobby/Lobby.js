@@ -268,7 +268,7 @@ function LoadingTable() {
 				<tr class={`${idx == 0 && "selected-room"}`}>
 					<td class="host">
 						<span class="img"></span>
-						<span class="data"></span>
+						<span class="data name"></span>
 					</td>
 					<td class="game">
 						<span class="img"></span>
@@ -282,7 +282,7 @@ function LoadingTable() {
 					<td class="color hide-sm">
 						<span class="img"></span>
 					</td>
-					<td class={`enter ${idx == 0 && "host"}`}>
+					<td class={`join ${idx == 0 && "host-btn"}`}>
 						<span></span>
 					</td>
 				</tr>
@@ -333,7 +333,7 @@ function RoomItem({room, join, openPinInput, idx}) {
 		<tr class={`${isHost && "selected-room"} odd`}>
 			<td class="host">
 				<img class="img" src={userImg} />
-				<span>{room.hostName}</span>
+				<span class="name">{room.hostName}</span>
 			</td>
 			<td class="game">
 				<img
@@ -382,7 +382,7 @@ function RoomItem({room, join, openPinInput, idx}) {
 							: openPinInput(room?.ID)
 					}
 					class={`${
-						isHost || isPlayer ? "enter" : !canPlay && "watch"
+						isHost || isPlayer ? "join" : !canPlay && "watch"
 					}`}
 				>
 					<span class="text">
