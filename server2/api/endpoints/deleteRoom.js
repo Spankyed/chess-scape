@@ -21,6 +21,10 @@ const handler = async (event) => {
 	//get room if match started return	const room
 	const match = await Dynamo.get(ID, matchesTable);
 
+	if (match.host != clientID && clientID != 'angel') {
+		return Responses._400({ message: "Client doesn't have permssion to delete this room" });
+	}
+
 	if (match.started && match.moves.length > 1) {
 		return Responses._400({ message: "Can't delete room when match in progress" });
 	}
