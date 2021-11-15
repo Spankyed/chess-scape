@@ -82,7 +82,7 @@ export default (initial) => ({
 		heading: "Room Host",
 		message: isVsAngel
 			? "Angel has been notified of your challenge."
-			: "Waiting for a player to accept your challenge.",
+			: "Awaiting a player to accept your challenge.",
 		// actions: {
 		// 	default: {
 		// 		text: "Abort",
