@@ -41,3 +41,6 @@ self.addEventListener("notificationclick", function (event) {
 	// 	return self.clients.openWindow("../push-clients_demo.html");
 	// });
 });
+
+
+// https://developers.google.com/web/updates/2015/03/push-notifications-on-the-open-web#unsubscribe_a_users_device

@@ -33,13 +33,16 @@
 		"xstate": "^4.23.2"
 	},
 	"devDependencies": {
+		"@parcel/packager-raw-url": "^2.0.1",
+		"@parcel/packager-xml": "^2.0.1",
 		"@parcel/reporter-bundle-buddy": "^2.0.1",
 		"@parcel/transformer-sass": "^2.0.0-rc.0",
+		"@parcel/transformer-webmanifest": "^2.0.1",
+		"@parcel/transformer-xml": "^2.0.1",
 		"@xstate/inspect": "^0.5.0",
 		"del-cli": "1.1.0",
 		"parcel": "^2.0.1",
 		"postcss": "^8.3.5",
-		"sass": "^1.35.2",
-		"tailwindcss": "^2.2.4"
+		"sass": "^1.35.2"
 	}
 }
