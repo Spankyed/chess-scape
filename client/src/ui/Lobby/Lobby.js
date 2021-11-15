@@ -41,7 +41,8 @@ export default (initial) => ({
 			({ newRoom }) =>
 			({ rooms, hostedRoom }, actions) => {
 				const isHost = newRoom.host == Api.getClientID();
-				if (isHost) actions.alert.show(alert.hostAlert);
+				const isVsAngel = newRoom?.gameOptions.selectedOpp == "angel";
+				if (isHost) actions.alert.show(alert.hostAlert(isVsAngel));
 				return {
 					rooms: sortByCreated([...rooms, newRoom]),
 					hostedRoom: isHost ? newRoom.ID : hostedRoom,
@@ -75,8 +76,11 @@ export default (initial) => ({
 				);
 				const multiplePlayers = hostedRoom && Object.keys(hostedRoom.players).length > 1
 
-				if (!!hostedRoom && !multiplePlayers)
-					actions.alert.show(alert.hostAlert);
+				if (!!hostedRoom && !multiplePlayers) {
+					const isVsAngel =
+						hostedRoom?.gameOptions.selectedOpp == "angel";
+					actions.alert.show(alert.hostAlert(isVsAngel));
+				}
 
 				actions.updateRooms(rooms);
 				return {

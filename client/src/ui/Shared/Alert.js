@@ -75,12 +75,14 @@ export default (initial) => ({
 				</div>
 			);
 		},
-	hostAlert: {
+	hostAlert: (isVsAngel) => ({
 		// icon: "./assets/create/host.svg",
 		id: "host",
 		role: "none",
 		heading: "Room Host",
-		message: "Waiting for a player to join your room.",
+		message: isVsAngel
+			? "Angel has been notified of your challenge."
+			: "Waiting for a player to accept your challenge.",
 		// actions: {
 		// 	default: {
 		// 		text: "Abort",
@@ -89,7 +91,7 @@ export default (initial) => ({
 		// 		},
 		// 	},
 		// },
-	},
+	}),
 	startAlert: {
 		// icon: "./assets/create/host.svg",
 		id: "start",

@@ -59,7 +59,8 @@ export default (initial) => ({
 					[];
 				if (!match.matchStarted) {
 					if (players.length == 1) {
-						isHost && actions.alert.show(alert.hostAlert);
+						const isVsAngel = room?.gameOptions.selectedOpp == "angel";
+						isHost && actions.alert.show(alert.hostAlert(isVsAngel));
 					} else {
 						actions.alert.show(alert.startAlert);
 					}
