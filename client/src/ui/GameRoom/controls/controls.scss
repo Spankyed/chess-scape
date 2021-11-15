@@ -499,6 +499,21 @@ $border-radius: 0.125rem;
 	}
 }
 
+ // when in landscape view
+@media (max-height: m.$landscape) {
+	.player-section .player{
+		padding: 0.5rem;
+		.tagline .name{
+			font-size: 1.3rem;
+		}
+	}
+	.controls-wrapper .controls .control-btn{
+		padding-left: 0.75rem;
+		padding-right: 0.75rem;
+	}
+}
+
+
 // @media (min-width: m.$medium) {
 // 	.player-section .player{
 // 		flex-direction: row !important;
