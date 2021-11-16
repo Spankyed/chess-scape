@@ -297,6 +297,8 @@ $dark-test: #1d1711a1;
                                     display:flex;
                                     justify-content: center;
                                     align-items: center;
+                                    margin-right: auto;
+                                    margin-left: auto;
                                     // width: 10rem;
                                     span {
 
@@ -408,6 +410,8 @@ $dark-test: #1d1711a1;
                                 // font-weight: 600;
                                 display:flex;
                                 align-items: center;
+                                margin-right: auto;
+                                margin-left: auto;
                                 background-color: m.$green;
                                 // color: #bee5a1;
                                 padding-top: .5rem;
