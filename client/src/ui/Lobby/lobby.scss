@@ -175,7 +175,7 @@ $dark-test: #1d1711a1;
                 tr{
                     // padding-right: 1rem;
                     td:first-child{
-                        padding-left: .25rem;
+                        padding-left: .75rem;
                     }
                 }
 
@@ -194,7 +194,7 @@ $dark-test: #1d1711a1;
                     // background-color: m.$green;
                     tr {
                         th:first-child{
-                            padding-left: .25rem;
+                            padding-left: .75rem;
                         }
                         border-bottom-width: .2rem;
                         border-color: rgb(184, 189, 198, .1);
@@ -217,6 +217,16 @@ $dark-test: #1d1711a1;
                             display: block;
                             height: 100%;
                             width: 100%;
+                        }
+
+                        &.Host{
+                            width: 35%;
+                        }
+                        &.Game{
+                            width: 30%;
+                        }
+                        &.Action{
+                            width: 35%;
                         }
                     }
                 }
@@ -643,8 +653,19 @@ $dark-test: #1d1711a1;
             justify-content: center;
             margin-top: 0px;
             .table-wrapper{
-                height:65vh;
+                height: 65vh;
                 flex-grow: 0;
+                table thead th{
+                    &.Host{
+                        width: fit-content;
+                    }
+                    &.Game{
+                        width: fit-content;
+                    }
+                    &.Action{
+                        width: fit-content;
+                    }
+                }
             }
             .lobby-header{
                 h1 {
