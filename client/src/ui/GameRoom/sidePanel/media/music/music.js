@@ -218,7 +218,7 @@ function SongPlayer({ state, actions }){
 		const song = songList[currSongId]
 		let bgImage = song.image
 			? `background-image: url(${song.image})`
-			: `background-image: url('../assets/sidePanel/controls/music_icon.svg')`;
+			: `background-image: url('../assets/room/sidePanel/controls/music_icon.svg')`;
 		function handleSongEnd(audio){
 			// console.log('audio el',audio)
 			audio.addEventListener('ended', () => { 
@@ -247,7 +247,7 @@ function SongPlayer({ state, actions }){
 	function Preview({song, cancelPreview}){
 		const previewImage = song.image
 			? `background-image: url(${song.image})`
-			: "background-image: url(./assets/sidePanel/controls/music_icon.svg)"
+			: "background-image: url(./assets/room/sidePanel/controls/music_icon.svg)"
 		const cancel = _=>{
 			let form = document.getElementsByTagName('form')[0] // todo: ensure is song form
 			form.song.value = []
@@ -269,7 +269,7 @@ function SongPlayer({ state, actions }){
 	function Input(){
 		return(
 			<div class="song-input cursor-pointer">
-				<img class='input-icon' src="../assets/sidePanel/controls/add_music.svg"/>	
+				<img class='input-icon' src="../assets/room/sidePanel/controls/add_music.svg"/>	
 				<div class='input-text'>
 					<span class='btn'>Choose</span>
 					<span class='text'> or drag music file here</span>
@@ -335,7 +335,7 @@ function MusicItem({song, currSongId, setCurrSong}){
 	return(
 		<li onclick={select} class={`music-row ${isPlaying && 'selected'}`} title={song.title}>
 			{/* color: https://www.iconfinder.com/icons/3049253/button_audio_interface_music_play_sound_video_icon */}
-			<img class="song-img" src={song.image ? song.image : "./assets/sidePanel/controls/music_icon.svg"}/>
+			<img class="song-img" src={song.image ? song.image : "./assets/room/sidePanel/controls/music_icon.svg"}/>
 			<div class="song-info">
 				{/* <div class="artist">Artist</div> */}
 				<div class="song-title">{song.title}</div>

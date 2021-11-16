@@ -104,7 +104,7 @@ function promptReview(alert, endReview){
 	alert.show({
 		role: "warn",
 		id: "review",
-		icon: "./assets/sidePanel/controls/review_icon.svg",
+		icon: "./assets/room/sidePanel/controls/review_icon.svg",
 		heading: "Reviewing Moves",
 		// message: "You are currently reviewing moves. The board does not reflect current game state.",
 		message: "The board does not reflect current game.",

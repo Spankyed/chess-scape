@@ -6,7 +6,7 @@ export default {
 	abort: (callback) => ({
 		id: "abort",
 		role: "game",
-		// icon: "./assets/sidePanel/controls/yt_play.svg",
+		// icon: "./assets/room/sidePanel/controls/yt_play.svg",
 		heading: "Abort",
 		message: "This match will be aborted.",
 		actions: {
@@ -26,7 +26,7 @@ export default {
 	abandon: (callback) => ({
 		id: "abandon",
 		role: "game",
-		// icon: "./assets/sidePanel/controls/yt_play.svg",
+		// icon: "./assets/room/sidePanel/controls/yt_play.svg",
 		heading: "Abandon",
 		message: "You are abandoning the match.",
 		actions: {
@@ -45,7 +45,7 @@ export default {
 	}),
 	resign: {
 		role: "game",
-		// icon: "./assets/sidePanel/controls/yt_play.svg",
+		// icon: "./assets/room/sidePanel/controls/yt_play.svg",
 		heading: "Resign",
 		message: "Please confirm your resignation.",
 		actions: {
@@ -61,7 +61,7 @@ export default {
 	},
 	// offerDraw: {
 	// 	role: "game",
-	// 	// icon: "./assets/sidePanel/controls/yt_play.svg",
+	// 	// icon: "./assets/room/sidePanel/controls/yt_play.svg",
 	// 	heading: "Draw",
 	// 	message: "Please confirm draw offer.",
 	// 	actions: {

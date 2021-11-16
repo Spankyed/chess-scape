@@ -53,7 +53,7 @@ export default initial => ({
 						class={`${isOpen("music") && "active"} toggle`}
 						onclick={(_) => showMedia("music")}
 					>
-						<img src="./assets/sidePanel/music.svg" />
+						<img src="./assets/room/sidePanel/music.svg" />
 						{/* <span>Play</span> */}
 						Music
 					</button>
@@ -61,7 +61,7 @@ export default initial => ({
 						class={`${isOpen("video") && "active"} toggle`}
 						onclick={(_) => showMedia("video")}
 					>
-						<img src="./assets/sidePanel/video.svg" />
+						<img src="./assets/room/sidePanel/video.svg" />
 						{/* <span>Play</span> */}
 						Video
 					</button>
@@ -82,7 +82,7 @@ function promptShare(type, alert, options, playMedia) {
 	// alternative video icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 	const iconsFileName = { music: "music_icon.svg", video: "yt_play.svg" };
 
-	const icon = `./assets/sidePanel/controls/${iconsFileName[type]}`;
+	const icon = `./assets/room/sidePanel/controls/${iconsFileName[type]}`;
 	const message = `A user wants to share a ${
 		type == "music" ? "song" : "video"
 	} with you.`;
