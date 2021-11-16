@@ -5,7 +5,6 @@ import { delay } from "nanodelay";
 export default {
 	abort: (callback) => ({
 		id: "abort",
-		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
 		heading: "Abort",
@@ -26,7 +25,6 @@ export default {
 	}),
 	abandon: (callback) => ({
 		id: "abandon",
-		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
 		heading: "Abandon",
@@ -46,7 +44,6 @@ export default {
 		},
 	}),
 	resign: {
-		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 		role: "game",
 		// icon: "./assets/sidePanel/controls/yt_play.svg",
 		heading: "Resign",
@@ -63,7 +60,6 @@ export default {
 		},
 	},
 	// offerDraw: {
-	// 	// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
 	// 	role: "game",
 	// 	// icon: "./assets/sidePanel/controls/yt_play.svg",
 	// 	heading: "Draw",
