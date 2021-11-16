@@ -75,47 +75,11 @@ export default (initial) => ({
 	},
 	view:
 		(state, actions) =>
-		({ alert, mediaOpen }) => {
+		({ mediaOpen }) => {
 			const OptionsView = options.view(state.options, actions.options);
 			let notEmpty = Object.getOwnPropertyNames(state.songList).length > 0;
 			let songList = Object.values(state.songList);
-			Api.setMessageHandlers({
-				music: (message) => {
-					if (!state.options.allowShare) return;
-					if (!state.options.persistShareSetting)
-						promptShare(message, alert, actions);
-					else playSharedSong(message);
-				},
-			});
-			async function playSharedSong({ song } = {}) {
-				actions.addSong({ ...song, fromServer: true });
-			}
-			function promptShare(message, alert, actions) {
-				let { options } = actions;
-				// ID = '3vBwRfQbXkg'
-				alert.show({
-					role: "info",
-					icon: "./assets/sidePanel/controls/music_icon.svg",
-					heading: "Music Shared",
-					message: "A user wants to share a song with you.",
-					actions: {
-						confirm: {
-							text: "Allow",
-							handler: (bool, persist) => {
-								options.setShare({ bool, persist });
-								playSharedSong(message);
-							},
-						},
-						default: {
-							text: "Deny",
-							handler: (bool, persist) => {
-								if (persist) options.setShare({ bool, persist });
-							},
-						},
-					},
-					dontAskAgain: false,
-				});
-			}
+
 			const isMediaOpen = (type) => mediaOpen == type;
 			return (
 				<div

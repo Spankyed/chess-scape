@@ -12,7 +12,6 @@ export default (initial) => ({
 			(state) => ({ allowShare: bool, persistShareSetting: persist }),
 		toggle: (option) => (state) => ({ [option]: !state[option] }),
 	},
-	// view: (state, {showMedia,...actions}) => () => {
 	view:
 		({ allowShare, autoPlay }, { toggle }) =>
 		({ type, videoToggle }) => {

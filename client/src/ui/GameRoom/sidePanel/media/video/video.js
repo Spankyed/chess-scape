@@ -83,7 +83,7 @@ export default (initial) => ({
 	},
 	view:
 		(state, actions) =>
-		({ alert, mediaOpen }) => {
+		({ mediaOpen }) => {
 			const OptionsView = options.view(state.options, actions.options);
 			const isPlaying = () => state.currVideoId && !state.isLoading;
 			const handleBadAttempt = () => {
@@ -115,14 +115,7 @@ export default (initial) => ({
 					actions.setValidity(false)
 				}
 			};
-			Api.setMessageHandlers({
-				video: (message) => {
-					if (!state.options.allowShare) return;
-					if (!state.persistShareSetting)
-						promptShare(message.videoId, alert, actions);
-					else actions.addVideo(message.videoId);
-				},
-			});
+
 			const isMediaOpen = (type) => mediaOpen == type;
 			let notEmpty =
 				Object.getOwnPropertyNames(state.videoList).length > 0;
@@ -387,33 +380,6 @@ function Thumbnail({thumbVideoId, currVideoId, isLoading, attemptingSubmit, subm
 	);
 }
 
-function promptShare(videoId, alert, actions){
-	let {options, addVideo} = actions
-	// videoId = '3vBwRfQbXkg'
-	alert.show({
-		// alternative icon https://www.iconfinder.com/icons/291691/youtube_movie_play_video_film_logo_icon
-		role: "info",
-		icon: "./assets/sidePanel/controls/yt_play.svg",
-		heading: "Video Shared",
-		message: "A user wants to share a video with you.",
-		actions: {
-			confirm: {
-				text: "Allow",
-				handler: (bool, persist) => {
-					options.setShare({ bool, persist });
-					addVideo(videoId);
-				},
-			},
-			default: {
-				text: "Deny",
-				handler: (bool, persist) => {
-					if (persist) options.setShare({ bool, persist });
-				},
-			},
-		},
-		dontAskAgain: false,
-	});
-}
 
 function PlayButton() {
 	return (
