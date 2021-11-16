@@ -87,7 +87,7 @@ export default (initial) => ({
 						</div>
 					) : (
 						<div class="controls">
-							<h2 class="name">{type.name}</h2>
+							<h2 class="name"> {type.name} </h2>
 							<TimeControl
 								{...{
 									setTime,
@@ -268,7 +268,10 @@ function OpponentSelect({
 	setComputerSkill,
 }) {
 	return (
-		<div class={`opponent-select ${isSelectingOpp && 'opp-selecting'}`}>
+		<div
+			class={`opponent-select ${isSelectingOpp && "opp-selecting"}`}
+			oncreate={(e) => e.scrollIntoView()}
+		>
 			{/* {true ? ( */}
 			{!isSelectingOpp ? (
 				<SelectedOpponent {...{ selectedOpp, toggleOppMenu }} />
