@@ -35,12 +35,12 @@ const handler = async (event) => {
 	const { selectedColor } = opts
 
 	const rooms = await Dynamo.getAll(roomsTable);
-	// check if cient is host in any rooms
-	const isHost = rooms.find((room) => room.host === clientID);
 
+	// check if cient is already hosting a room
+	const isHost = rooms.find((room) => room.host === clientID);
 	if (isHost) {
 		return Responses._409({
-			message: "You are already hosting a room",
+			message: "User is already hosting a room",
 		});
 	}
 
@@ -111,15 +111,23 @@ exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
 
 
 async function notifyAngel(roomID, oppName) {
-	const vapidKeys = await Dynamo.get("vapidKeys", serviceTable);
+	/**
+	 * Subscriptions may get out of sync between FCM and server.
+	 * Make sure server parses the response body of the webpush
+	 * sendNotification, looking for error:NotRegistered and canonical_id results,
+	 * as explained in the FCM documentation.
+	 * https://developers.google.com/web/updates/2015/03/push-notifications-on-the-open-web
+	 */
+	const [vapidKeys, angel] = await Promise.all([
+		Dynamo.get("vapidKeys", serviceTable),
+		Dynamo.get("angel", clientsTable),
+	]);
 
 	webpush.setVapidDetails(
 		"mailto:angel.santiago@tutanota.com",
 		vapidKeys.publicKey,
 		vapidKeys.privateKey
 	);
-
-	const angel = await Dynamo.get("angel", clientsTable);
 
 	const payload = { roomID, oppName };
 
@@ -134,26 +142,19 @@ async function notifyAngel(roomID, oppName) {
 				});
 			})
 			.catch((err) => {
-				console.error(err)
+				console.error(err);
 				removeSubscriptions(angel.ID);
-			})
+			});
 	});
 
-	/**
-	 * Subscriptions may get out of sync between FCM and your server.
-	 * Make sure your server parses the response body of the webpush
-	 * sendNotification, looking for error:NotRegistered and canonical_id results,
-	 * as explained in the FCM documentation.
-	 * https://developers.google.com/web/updates/2015/03/push-notifications-on-the-open-web
-	 */
-}
-async function removeSubscriptions(clientID) {
-	await Dynamo.update({
-		TableName: clientsTable,
-		primaryKey: "ID",
-		primaryKeyValue: clientID,
-		updates: {
-			subscriptions: []
-		},
-	})
+	async function removeSubscriptions(clientID) {
+		await Dynamo.update({
+			TableName: clientsTable,
+			primaryKey: "ID",
+			primaryKeyValue: clientID,
+			updates: {
+				subscriptions: [],
+			},
+		});
+	}
 }

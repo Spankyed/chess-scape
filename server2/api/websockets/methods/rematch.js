@@ -15,7 +15,7 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 
 	if (!room) {
 		await sendMessageToRoom(roomID, { method: "disband" });
-		return Responses._400({ message: "Match not found" });
+		return Responses._400({ message: "Room not found" });
 	}
 
 	if (!match) return Responses._400({ message: "Match not found" });
@@ -35,7 +35,7 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 	if (!accepted) {
 		// handle reject response
 		await removeOffer(roomID);
-		return Responses._400({ message: "Opponent rejected" }); 
+		return Responses._400({ message: "Opponent rejected rematch" }); 
 	}
 
 	const now = Date.now();

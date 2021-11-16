@@ -1,10 +1,10 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
-
 const { withHooks } = require("../common/hooks");
 
 const roomsTable = process.env.roomsTableName;
 
+// endpoint reached when client reconnects to app
 const handler = async (event) => {
 	const rooms = await Dynamo.getAll(roomsTable);
 

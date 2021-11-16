@@ -9,8 +9,10 @@ module.exports = async function ({ clientID, roomID }, client, connection) {
 
 	if (!match) return Responses._400({ message: "Match not found" });
 	
-	if (match.moves.length < 1) { // prob should still send moveless board incase first move wasn't received
-		return Responses._400({ message: 'No moves found for sync '});
+	if (match.moves.length < 1) {
+		// todo: prob should still send moveless board
+		// todo: incase players first move wasn't received
+		return Responses._400({ message: "No moves found for sync " });
 	};
 
 	sendMessage(connection, {

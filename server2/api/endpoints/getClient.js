@@ -9,6 +9,11 @@ const schema = {
 	// path: { ID: "string" },
 };
 
+/** 
+ * ! THIS ENDPOINT MUST NEVER BE PUBLICLY ACCESSIBLE
+ * ! EXPOSES USER CREDENTIALS (TOKEN)
+ * ! currently disabled in function.yml
+*/
 const handler = async (event) => {
 	// if (!event.pathParameters.ID) {
 	// 	// failed without an ID

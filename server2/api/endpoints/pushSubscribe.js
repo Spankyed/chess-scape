@@ -10,12 +10,13 @@ const schema = {
 
 const handler = async (event) => {
 	const { clientID, subscription } = event.body;
+
 	if (clientID != 'angel') {
 		return Responses._401({ message: "User is not an admin" });
 	}
 
 	if (!subscription) {
-		return Responses._401({ message: "No subscription found info" });
+		return Responses._401({ message: "No subscription info found" });
 	}
 
 	try {
@@ -29,7 +30,7 @@ const handler = async (event) => {
 		});
 	} catch (err){
 		console.error(err)
-		return Responses._400({ message: "Issue saving subscription" });
+		return Responses._400({ message: "Issue adding subscription" });
 	}
 
 	console.log(`Admin[${clientID}] subscribed to push notifications`);

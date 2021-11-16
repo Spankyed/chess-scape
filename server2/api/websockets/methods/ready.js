@@ -7,17 +7,21 @@ const matchesTable = process.env.matchesTableName;
 
 module.exports = async function ({ clientID, roomID, color }) {
 	try {
-		const { Attributes } = await Dynamo.update({
+		// ! currently player can be readyed by anyone sending ready msg with color
+		// ! when clock is implemented, must verify client is player
+
+		const { Attributes: room } = await Dynamo.update({
 			TableName: matchesTable,
 			primaryKey: "ID",
 			primaryKeyValue: roomID,
 			updates: { [`players.${color}.ready`]: true },
 		});
 
-		const playersReady = Object.values(Attributes.players).filter(
+		const playersReady = Object.values(room.players).filter(
 			(player) => player.ready
 		);
-		if (playersReady.length == 2 && !Attributes.matchStarted) {
+
+		if (playersReady.length == 2 && !room.matchStarted) {
 			const startTime = Date.now();
 
 			await Promise.all([

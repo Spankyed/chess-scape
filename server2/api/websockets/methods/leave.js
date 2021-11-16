@@ -24,8 +24,8 @@ module.exports = async function ({ clientID, roomID }, {username}) {
 
 		sendMessageToRoom(roomID, {
 			method: "leave",
-			clientID, // todo add username to leave message
 			group: player ? "players" : "spectators",
+			clientID,
 			username,
 		});
 
@@ -38,20 +38,23 @@ module.exports = async function ({ clientID, roomID }, {username}) {
 					[`spectators.${clientID}.watching`]: false,
 				},
 			});
-		} else if (match.finished || (players.length == 2 && !match.started)) { // delete room if player leaves when match finished
-			// todo user shouldn't be able to leave if !matchFinished & match is time controlled
+		} else if (match.finished || (players.length == 2 && !match.started)) {
+			// delete room if player leaves when match finished
+			// or if 2 players but game hasn't started (b/c.. well idr why)
+			// todo user shouldn't be able to leave if match is time controlled & not finished
 			Dynamo.update({
 				// ! probably shouldn't be deleting player from match record
+				// might be ok because match is saved once finished, ergo before reaching here
 				TableName: matchesTable,
 				primaryKey: "ID",
 				primaryKeyValue: roomID,
 				updates: {
 					[`players.${color}`]: null,
 				},
-			})
-			Dynamo.delete(roomID, roomsTable) // if player leaves after game ends, delete room
-			sendMessageToLobby({ method: "delete", roomID })
-			sendMessageToRoom(roomID, { method: "disband" })
+			});
+			Dynamo.delete(roomID, roomsTable);
+			sendMessageToLobby({ method: "delete", roomID });
+			sendMessageToRoom(roomID, { method: "disband" });
 			removeMediaFiles(roomID);
 		}
 

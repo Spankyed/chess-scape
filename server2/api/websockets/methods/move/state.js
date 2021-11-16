@@ -1,8 +1,11 @@
-// initial board state, is set when match created
-// when player moves, record only what changed in state
-// can reconstruct every board state using initial state + list of moves/changes,
-// with this method less data is required to sync game up to current move when spectator joins
-// or if player gets out of sync due to network/runtime issues
+/** 
+ * initial board state, is set when match created
+ * when player moves, record only what changed in state
+ * can reconstruct every board state using initial state + list of moves/changes
+ * every board state required to sync player, as moves previous moves can be reviewed 
+ * with this method less data is required to sync game up to current move when client joins room
+ * or if player gets out of sync due to network/runtime issues
+*/
 module.exports = {
 	captured: {
 		white: 0,

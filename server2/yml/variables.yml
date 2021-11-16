@@ -6,8 +6,8 @@ serviceTableName: Service
 bucketName: room-music-bucket
 # s3Sync:
 #     - bucketName: ${self:custom.bucketName}
-#       localDir: mockMusicData
-# Offline config below
+#       localDir: sync
+# From here below is offline configs
 serverless-offline:
   # hideStackTraces: true
   allowCache: false

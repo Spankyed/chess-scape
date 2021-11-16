@@ -18,15 +18,20 @@ const schema = {
 const handler = async (event) => {
 	const { clientID, ID } = event.body;
 
-	//get room if match started return	const room
 	const match = await Dynamo.get(ID, matchesTable);
 
-	if (match.host != clientID && clientID != 'angel') {
-		return Responses._400({ message: "Client doesn't have permssion to delete this room" });
+	const isAdmin = clientID === 'angel'
+
+	if (match.host != clientID && !isAdmin) {
+		return Responses._400({
+			message: "User doesn't have permssion to delete this room",
+		});
 	}
 
-	if (match.started && match.moves.length > 1) {
-		return Responses._400({ message: "Can't delete room when match in progress" });
+	if (match.started && match.moves.length > 1 && !isAdmin) {
+		return Responses._400({
+			message: "Can't delete room when match in progress",
+		});
 	}
 
 	const [removedMedia, deletedRoom] = await Promise.all([
@@ -42,8 +47,8 @@ const handler = async (event) => {
 		});
 	}
 
-	// notify anyone who may be in room, room was deleted
-	// and anyone in lobby except person deleting
+	// notify anyone who may be in room that the room was deleted
+	// and everyone in lobby, except person deleting
 	Promise.all([
 		sendMessageToRoom(ID, { method: "disband" }),
 		sendMessageToRoomExcept("lobby", clientID, {
@@ -71,7 +76,7 @@ async function removeMediaFiles(roomID) {
 		queryValue: roomID,
 	});
 
-	if (!roomMedia) return
+	if (!roomMedia) return true
 	
 	const s3Removals = roomMedia && roomMedia.map(async (media) =>
 		S3.delete(media.ID, bucket)

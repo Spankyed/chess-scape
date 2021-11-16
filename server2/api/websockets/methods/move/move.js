@@ -38,7 +38,7 @@ module.exports = async function (
 		await syncPlayer(connection, { moves, lastMove, colorToMove });
 		return Responses._400({ message: "Out of sync" });
 	} else {
-		// todo when game over store match in completeMatchesTable
+		// todo when game over (or room deleted) store match in savedMatchesTable
 		const gameOver = engine.game_over();
 		const mated = gameOver && engine.in_checkmate();
 		const endMethod = gameOver && mated ? "checkmate" : gameOver && "draw";
@@ -49,8 +49,8 @@ module.exports = async function (
 			endMethod,
 			mated,
 		};
-		// todo if time controlled game, get stepFN task token and send to machine to end prev exec,
-		// todo then exec new state machine
+		// todo if time controlled game, get stepFN task token and send to machine to end prev execution,
+		// todo then execute new clock state machine
 		const changes = update(move, match);
 		const commit = !player.committed;
 		await Promise.all([
@@ -84,7 +84,7 @@ module.exports = async function (
 					],
 				},
 				// select: "clients",
-			})
+			}),
 		]);
 
 		sendMessageToRoom(roomID, {
@@ -94,12 +94,12 @@ module.exports = async function (
 			gameOver,
 			info,
 			colorToMove: nextColor(colorToMove),
-		})
-			
-		console.log(`Player[${clientID}][${colorToMove}] moved`, {
+		});
+
+		console.log(`Player[${colorToMove}][${clientID}] moved`, {
 			move,
 			info,
-			gameOver
+			gameOver,
 		});
 	}
 
@@ -119,7 +119,8 @@ function nextColor(color) {
 	return color == "white" ? "black" : "white";
 }
 
-function constructHeadings() {
+function constructHeadings(match) {
+	// todo construct actual match heading
 	return {
 		Site: "Chess-Scape",
 		White: "Angel (2037)",
@@ -127,7 +128,8 @@ function constructHeadings() {
 		Round: "",
 		Result: "1/2-1/2",
 		finished: getDate(),
-		TimeControl: "1 in 3 days",
+		// TimeControl: "1 in 3 days",
+		TimeControl: "none",
 		Termination: "ACEChess won by resignation",
 	};
 }

@@ -5,6 +5,7 @@ const { withHooks } = require("../common/hooks");
 const clientsTable = process.env.clientsTableName;
 
 async function findClient(connectionID) {
+	if (!connectionID) return [false];
 	return Dynamo.queryOn({
 		TableName: clientsTable,
 		index: "connection-index",
@@ -17,9 +18,11 @@ const handler = async (event) => {
 	const { connectionId: connectionID } = event.requestContext;
 
 	const [client] = await findClient(connectionID);
-	// ! could find/update wrong client if user has multiple client records with same connectionID
+
+	// ! can/will find & update wrong client if user has multiple client records with same connectionID
+
 	if (!client) {
-		return Responses._400({ message: "Disconnect encountered problems" });
+		return Responses._400({ message: "Unable to find client to disconnect" });
 	}
 
 	await Dynamo.update({

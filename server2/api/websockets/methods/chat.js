@@ -20,7 +20,7 @@ module.exports = async function ({ clientID, roomID, text }, { username }) {
 		const chat = {
 			clientID,
 			username,
-			text, // ! todo sanitize text
+			text, // ! todo sanitize text to prevent xss attacks
 			time: Date.now(),
 		};
 

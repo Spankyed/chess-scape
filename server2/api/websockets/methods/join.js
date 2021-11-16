@@ -23,10 +23,10 @@ module.exports = async function (
 			return Responses._400({ error: "Room not found" });
 		}
 
-		const isAngel = clientID == "angel";
-		const isHost = room.host == clientID;
+		const isAdmin = clientID === "angel";
+		const isHost = room.host === clientID;
 
-		if (room.gameOptions.pin && !pinValidated && !isHost && !isAngel) {
+		if (room.gameOptions.pin && !pinValidated && !isHost && !isAdmin) {
 			return Responses._400({ error: "Room is private" });
 		}
 
@@ -55,13 +55,13 @@ module.exports = async function (
 			...(group == "players" ? [sendMessageToLobby(message)] : []),
 		];
 
+		console.log(`[${group}] Joined room[${roomID}] client[${clientID}]`);
+
 		Promise.all(messageRecipients);
 	} catch (err) {
 		console.error(err);
 		return Responses._400({ error: err.message });
 	}
-
-	console.log(`Joined room[${roomID}] client[${clientID}]`);
 
 	return Responses._200({});
 };

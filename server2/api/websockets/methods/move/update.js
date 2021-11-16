@@ -1,3 +1,4 @@
+// Example move: castle kingside
 // {
 //     "color": "w",
 //     "from": "e1",

@@ -6,6 +6,7 @@ const { withHooks } = require("../common/hooks");
 const clientsTable = process.env.clientsTableName;
 
 async function findClient(TOKEN) {
+	if (!TOKEN) return [false]
 	return Dynamo.queryOn({
 		TableName: clientsTable,
 		index: "token-index",
@@ -21,7 +22,10 @@ const handler = async (event) => {
 		stage,
 	} = event.requestContext;
 
-	const CLIENT = event.client; // ! input when called from ./message.js, srs problem if user can smuggle this param into event
+	// ! CLIENT is passed in event if connect is called from ./message.js
+	// ! srs problem if user can somehow smuggle this param into event
+	// ! as it will bypass authorization
+	const CLIENT = event.client;
 
 	const { TOKEN } = event.queryStringParameters;
 	const [client] = CLIENT ? [CLIENT] : await findClient(TOKEN);
@@ -43,6 +47,8 @@ const handler = async (event) => {
 		connected: true,
 	};
 
+	// todo append connection to a list to allow multiple browser windows
+	// todo must also refactor sendMessage() in order to send message to all the clients connections
 	const clientConn = await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",

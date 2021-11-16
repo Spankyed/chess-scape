@@ -33,7 +33,7 @@ deleteRoom:
         path: delete-room
         method: POST
         cors: true
-# ! GET CLIENT PUBLICLY EXPOSES CLIENT TOKEN CURRENTLY
+# ! CURRENTLY, GET CLIENT PUBLICLY EXPOSES CLIENT TOKEN 
 # getClient:
 #   handler: api/endpoints/getClient.handler
 #   events:
@@ -76,13 +76,6 @@ pushSubscribe:
         path: push-subscribe
         method: POST
         cors: true        
-# getRoomClients:
-#   handler: api/endpoints/getRoomClients.handler
-#   events:
-#     - http:
-#         path: get-room-clients/{room}
-#         method: GET
-#         cors: true
 websocket-connect:
   handler: api/websockets/connect.handler
   events:

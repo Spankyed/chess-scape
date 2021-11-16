@@ -5,10 +5,8 @@ This serverless backend works remote & offline (with the AWS services currently 
 - API Gateway
 - Lambda
 - DynamoDB
-- CloudFormation
 - S3 (user files + cloudformation deployment)
-- Swagger 
-
+- CloudFormation
 
 ##  Run 
 To run you must create a new IAM user account with administrator access so that the [Serverless Framework](https://www.serverless.com/) can use AWS CLI and SDK tools. Afterwards you can run the following commands:
@@ -17,10 +15,10 @@ To run you must create a new IAM user account with administrator access so that 
 Setup & configure
 `npm i -g serverless`
 `serverless config credentials --provider aws --key {iam-account-key} --secret {iam-account-secret} --profile {any-custom-name}`
-Config Example :  
+Configuration Example :  
 `serverless config credentials --provider aws --key ABCDEFHGHIJ1234 --secret 123456 --profile serverlessUser`
 
-Deploy all services:  
+Deploy all services for remote development:  
 `sls deploy`
 Deploy single function : 
 `sls deploy -f onlyDeployFunctionName`

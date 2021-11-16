@@ -20,7 +20,7 @@ module.exports = async function ({ clientID, roomID, type }, client, connection)
 
 	if (opponents.length > 1) {
 		// todo punish naughty spectator
-		return Responses._400({ message: "Client is not a player" }); 
+		return Responses._400({ message: "User is not a player" }); 
 	}
 	if (opponents.length < 1) {
 		// notify player opponent left room
@@ -36,9 +36,12 @@ module.exports = async function ({ clientID, roomID, type }, client, connection)
 	}
 
 	if (match.offer && match.offer.type == type) {
-		if (match.offer.to != opponent.clientID) { // both players offered same thing
-			offerHandlers[type]({ clientID, roomID, accepted:true });
-			return Responses._200({ message: `Both players offered to ${type}` })
+		if (match.offer.to != opponent.clientID) {
+			// both players offered same thing so accept
+			offerHandlers[type]({ clientID, roomID, accepted: true });
+			return Responses._200({
+				message: `Both players offered to ${type}`,
+			});
 		} else {
 			return Responses._400({ message: "Duplicate offer" })
 		}

@@ -40,7 +40,7 @@ handler = async (event) => {
 
 		if (!multiplePlayers && !spectators) {
 			return Responses._400({
-				message: "No one in room to share media with",
+				message: "No one in room to share song with",
 			});
 		}
 
@@ -73,13 +73,13 @@ handler = async (event) => {
 			roomID,
 		};
 
-		Promise.all([
+		await Promise.all([
+			Dynamo.write(song, mediaTable),
 			sendMessageToRoomExcept(roomID, clientID, {
 				method: "share",
 				type: "music",
 				song,
-			}),
-			Dynamo.write(song, mediaTable),
+			})
 		]);
 		
 		return Responses._200({ song });

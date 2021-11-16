@@ -38,8 +38,8 @@ const handler = async (event) => {
 	);
 
 	const sameConnection = client.connectionID === connectionID;
-	const shouldUpdate = !sameConnection || !client.connection.connected;
-	if (shouldUpdate) connect.handler({ ...event, client });
+	const updateConnection = !sameConnection || !client.connection.connected;
+	if (updateConnection) connect.handler({ ...event, client });
 
 	console.log(`Message [${method}] from [${clientID}]`, {
 		message,

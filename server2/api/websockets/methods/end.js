@@ -7,7 +7,9 @@ const matchesTable = process.env.matchesTableName;
 
 module.exports = async function ({ clientID, roomID, endMethod }) {
 	const match = await Dynamo.get(roomID, matchesTable);
+	
 	if (!match) return Responses._400({ message: "Match not found" });
+	
 	const { players, started, finished } = match;
 
 	if (finished) {

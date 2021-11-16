@@ -32,7 +32,10 @@ const handler = async (event) => {
 		}
 		
 		const response = await join({ clientID, roomID }, client, null, true)
+
 		// console.log(`Joined private room[${roomID}] client[${clientID}]`);
+
+		// todo append 'valid' bool to join response and return it instead
 		return Responses._200({ valid: true, roomID });
 
 	} catch (err) {

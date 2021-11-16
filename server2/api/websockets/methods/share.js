@@ -15,7 +15,9 @@ const {
  * Previously songs were sent directly to room
  * Now songs are uploaded to S3 bucket and 
  * room clients can access the audio with a
- * file location URL returned from S3 bucket upload.
+ * file location URL returned from S3 bucket upload. 
+ * This also drastically saves bandwith, if user denies share
+ * because audio file is never sent/retrieved.
  * ! Files must be removed from bucket when room deleted
  */
 
@@ -26,7 +28,7 @@ module.exports = async function (
 ) {
 	const { clientID, roomID, type } = message
 
-	if (client.room != roomID) return Responses._400({ message: "Not in room" });
+	if (client.room != roomID) return Responses._400({ message: "User not in room" });
 
 	const mediaHandlers = { video: handleVideo };
 	
