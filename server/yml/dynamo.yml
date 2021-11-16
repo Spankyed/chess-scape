@@ -42,10 +42,19 @@ Resources:
       AttributeDefinitions:
         - AttributeName: ID
           AttributeType: S
+        - AttributeName: host
+          AttributeType: S
       KeySchema:
         - AttributeName: ID
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: host-index
+          KeySchema:
+            - AttributeName: host
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
   MatchesTable:
     Type: AWS::DynamoDB::Table
     Properties:

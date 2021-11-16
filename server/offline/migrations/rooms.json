@@ -1,25 +1,37 @@
 {
     "Table": {
-        "TableName": "Rooms",
-        "KeySchema": [
-            {
-                "AttributeName": "ID",
-                "KeyType": "HASH"
-            }
-        ],
-        "AttributeDefinitions": [
+		"TableName": "Rooms",
+		"KeySchema": [
+			{
+				"AttributeName": "ID",
+				"KeyType": "HASH"
+			}
+		],
+		"AttributeDefinitions": [
 			{
 				"AttributeName": "ID",
 				"AttributeType": "S"
 			},
 			{
-				"AttributeName": "roomID",
+				"AttributeName": "host",
 				"AttributeType": "S"
 			}
 		],
-        "ProvisionedThroughput": {
-            "ReadCapacityUnits": 4,
-            "WriteCapacityUnits": 4
-        }
-    }
+		"GlobalSecondaryIndexes": [
+			{
+				"IndexName": "host-index",
+				"KeySchema": [
+					{
+						"AttributeName": "host",
+						"KeyType": "HASH"
+					}
+				],
+				"Projection": { "ProjectionType": "ALL" }
+			}
+		],
+		"ProvisionedThroughput": {
+			"ReadCapacityUnits": 4,
+			"WriteCapacityUnits": 4
+		}
+	}
 }
