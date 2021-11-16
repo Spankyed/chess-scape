@@ -1,5 +1,6 @@
 const Responses = require("../../../common/HTTP_Responses");
 const Dynamo = require("../../../common/Dynamo");
+const { archiveMatch } = require("../../../common/archive");
 const update = require("./update");
 const {
 	sendMessage,
@@ -85,6 +86,7 @@ module.exports = async function (
 				},
 				// select: "clients",
 			}),
+			...(gameOver ? [archiveMatch({ ...match, endMethod })] : []),
 		]);
 
 		sendMessageToRoom(roomID, {
@@ -117,26 +119,4 @@ function appendIfChecked(validMove) {
 
 function nextColor(color) {
 	return color == "white" ? "black" : "white";
-}
-
-function constructHeadings(match) {
-	// todo construct actual match heading
-	return {
-		Site: "Chess-Scape",
-		White: "Angel (2037)",
-		Black: "Kathie (1300)",
-		Round: "",
-		Result: "1/2-1/2",
-		finished: getDate(),
-		// TimeControl: "1 in 3 days",
-		TimeControl: "none",
-		Termination: "ACEChess won by resignation",
-	};
-}
-
-function getDate() {
-	var date = new Date();
-	return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-		.toISOString()
-		.split("T")[0];
 }

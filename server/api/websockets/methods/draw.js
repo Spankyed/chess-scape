@@ -1,6 +1,7 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
 const { sendMessageToRoom } = require("../../common/websocket/message");
+const { archiveMatch } = require("../../common/archive");
 
 const matchesTable = process.env.matchesTableName;
 
@@ -27,6 +28,7 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 	const endMethod = 'draw';
 	await Promise.all([
 		// todo when game over store match in completeMatchesTable
+		archiveMatch({ ...match, endMethod }),
 		Dynamo.update({
 			TableName: matchesTable,
 			primaryKey: "ID",

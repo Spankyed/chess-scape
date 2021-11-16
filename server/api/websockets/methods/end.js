@@ -1,6 +1,7 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
 const { sendMessageToRoom } = require("../../common/websocket/message");
+const { archiveMatch } = require("../../common/archive");
 
 const matchesTable = process.env.matchesTableName;
 // const roomsTable = process.env.roomsTableName;
@@ -46,6 +47,7 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 		: opponentColor
 	await Promise.all([
 		// todo when game over store match in completeMatchesTable
+		archiveMatch({ ...match, endMethod }),
 		Dynamo.update({
 			TableName: matchesTable,
 			primaryKey: "ID",
@@ -54,7 +56,7 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 				finished: true,
 				endTime: Date.now(),
 				winningColor,
-				endMethod
+				endMethod,
 			},
 		}),
 		sendMessageToRoom(roomID, {
@@ -69,24 +71,3 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 
 	return Responses._200({});
 };
-
-function constructHeadings() {
-	return {
-		Site: "Chess-Scape",
-		White: "Angel (2037)",
-		Black: "Kathie (1300)",
-		Round: "",
-		Result: "1/2-1/2",
-		finished: getDate(),
-		TimeControl: "1 in 3 days",
-		Termination: "Kathie won by resignation",
-	};
-}
-
-function getDate() {
-	var date = new Date();
-	return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-		.toISOString()
-		.split("T")[0];
-}
-
