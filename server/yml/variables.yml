@@ -3,6 +3,8 @@ roomsTableName: Rooms
 matchesTableName: Matches
 mediaTableName: Media
 serviceTableName: Service
+savedMatchesTableName: SavedMatches
+savedChatsTableName: SavedChats
 bucketName: room-music-bucket
 # s3Sync:
 #     - bucketName: ${self:custom.bucketName}

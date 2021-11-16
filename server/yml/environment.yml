@@ -3,4 +3,6 @@ roomsTableName: ${self:custom.roomsTableName}
 matchesTableName: ${self:custom.matchesTableName}
 mediaTableName: ${self:custom.mediaTableName}
 serviceTableName: ${self:custom.serviceTableName}
+savedMatchesTableName: ${self:custom.savedMatchesTableName}
+savedChatsTableName: ${self:custom.savedChatsTableName}
 bucketName: ${self:custom.bucketName}

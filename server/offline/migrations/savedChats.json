@@ -1,0 +1,21 @@
+{
+	"Table": {
+		"TableName": "SavedChats",
+		"KeySchema": [
+			{
+				"AttributeName": "ID",
+				"KeyType": "HASH"
+			}
+		],
+		"AttributeDefinitions": [
+			{
+				"AttributeName": "ID",
+				"AttributeType": "S"
+			}
+		],
+		"ProvisionedThroughput": {
+			"ReadCapacityUnits": 4,
+			"WriteCapacityUnits": 4
+		}
+	}
+}
