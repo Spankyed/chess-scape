@@ -36,7 +36,7 @@ $highlight-color: #b8a776;
 		height: fit-content;
 	}
 	.youtube-embed {
-		overflow:hidden;
+		// overflow:hidden;
         border-radius: m.$border-radius;
 		padding-top: 56.25%;
 		min-width: 100%;
@@ -140,6 +140,10 @@ $highlight-color: #b8a776;
 				flex-grow: 1;
 				// background-color: m.$dark;
 				background-color: rgba(255, 255, 255, 1);
+        		border-radius: m.$border-radius;
+				border-top-right-radius: 0px;
+				border-top-left-radius: 0px;
+				border-bottom-right-radius: 0px;
 				border: m.$border;
 				border-width: 2px;
 				box-shadow: m.$shadow-sm;
@@ -158,7 +162,11 @@ $highlight-color: #b8a776;
 				}
 			}
 			.submit-button{
-				min-width:fit-content;
+				border-radius: m.$border-radius;
+				border-top-right-radius: 0px;
+				border-top-left-radius: 0px;
+				border-bottom-left-radius: 0px;
+				min-width: fit-content;
 				height: 100%;
 				// height: 2.5rem/* 40px */;
 				display: flex;
@@ -332,8 +340,8 @@ $highlight-color: #b8a776;
 				.video-form {
 					height:2.5rem;
 					margin-bottom: 0rem;
-					border-top-left-radius: 0;
-					border-top-right-radius: 0;
+					border-top-left-radius: 0px;
+					border-top-right-radius: 0px;
 					// border-bottom-right-radius: 0;
 					.input-wrapper {
 						width: 100%;
