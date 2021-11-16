@@ -205,7 +205,7 @@ function SongPlayer({ state, actions }){
 						/>
 					)}
 					<span class="add-icon">
-						<img src="./assets/create/add.svg" />
+						<img src="./assets/lobby/create/add.svg" />
 					</span>
 					<span class="add-text">
 						{isPreviewing ? "Play" : "Add Song"}
@@ -261,7 +261,7 @@ function SongPlayer({ state, actions }){
 			>
 				<div class="song-title">{song.title}</div>
 				<div class="trash-icon">
-					<img onclick={cancel} src="../assets/create/cancel.svg" />
+					<img onclick={cancel} src="../assets/lobby/create/cancel.svg" />
 				</div>
 			</div>
 		);

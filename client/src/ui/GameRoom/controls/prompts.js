@@ -82,7 +82,7 @@ export default {
 				? "Opponent would like to draw the match."
 				: "Opponent would like a rematch";
 		return {
-			// icon: "./assets/create/host.svg",
+			// icon: "./assets/lobby/create/host.svg",
 			id: type,
 			role: "game",
 			heading: `${capitalize(type)} Offered`,
@@ -105,7 +105,7 @@ export default {
 		};
 	},
 	onRematch: {
-		// icon: "./assets/create/host.svg",
+		// icon: "./assets/lobby/create/host.svg",
 		id: "onRematch",
 		role: "none",
 		heading: "Rematch Agreed",

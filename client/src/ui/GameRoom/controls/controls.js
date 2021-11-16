@@ -121,14 +121,14 @@ export default (initial) => ({
 									onclick={() => actions.flipCamera()}
 									class="control-btn"
 								>
-									<img src="./assets/controls/flip-camera.svg"></img>
+									<img src="./assets/room/controls/spectator-camera.svg"></img>
 								</button>
 							</div>
 						)}
 						{/* Back button */}
 						<div class="btn-wrapper left">
 							<button onclick={leave} class="control-btn">
-								<img src="./assets/controls/back.svg"></img>
+								<img src="./assets/room/controls/back.svg"></img>
 							</button>
 						</div>
 						{/* Menu button */}
@@ -152,7 +152,7 @@ export default (initial) => ({
 function Players({ players, game, gameOver, matchInfo }) {
 	let userImg = (username) => username
 			? `https://avatars.dicebear.com/api/avataaars/${username}.svg`
-			: "./assets/controls/avatar-placeholder.svg";
+			: "./assets/room/controls/player/avatar-placeholder.svg";
 	let { white, black } = players;
 	let { colorToMove, matchStarted } = game;
 	let isTurn = (color) => color === colorToMove && matchStarted && !gameOver;
@@ -242,19 +242,19 @@ function PieceSelection({resolve, closePieceSelect, color}){
 				<h2>Select a piece</h2>
 				<div class="pieces">
 					<div onclick={(_) => select("q")} class="piece">
-						<img src={`./assets/controls/pieces/queen_${color}.png`} />
+						<img src={`./assets/room/controls/pieces/queen_${color}.png`} />
 					</div>
 					<div onclick={(_) => select("n")} class="piece">
-						<img src={`./assets/controls/pieces/knight_${color}.png`} />
+						<img src={`./assets/room/controls/pieces/knight_${color}.png`} />
 					</div>
 					<div onclick={(_) => select("r")} class="piece">
-						<img src={`./assets/controls/pieces/rook_${color}.png`} />
+						<img src={`./assets/room/controls/pieces/rook_${color}.png`} />
 					</div>
 					<div onclick={(_) => select("b")} class="piece">
-						<img src={`./assets/controls/pieces/bishop_${color}.png`} />
+						<img src={`./assets/room/controls/pieces/bishop_${color}.png`} />
 					</div>
 				</div>
-				{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/controls/pieces/bishop_${color}.svg`}/></div> */}
+				{/* <div onclick={_=> select(false)} class="piece w-1/2"><img src={`./assets/room/controls/pieces/bishop_${color}.svg`}/></div> */}
 				<button onclick={(_) => select(null)}>Cancel</button>
 			</div>
 		</div>
@@ -265,7 +265,7 @@ function OrientationPrompt() {
 	return (
 		<div class="orientation-prompt">
 			<div class="title">Portait Mode Unsupported</div>
-			<img src="./assets/controls/rotate-device.svg"></img>
+			<img src="./assets/room/controls/rotate-device.svg"></img>
 			<div class="message">
 				Please rotate your device into landscape mode.
 			</div>

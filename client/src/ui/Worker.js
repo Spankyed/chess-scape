@@ -11,7 +11,7 @@ self.addEventListener("push", function (event) {
 	const options = {
 		body,
 		data,
-		icon: "assets/logo.png",
+		icon: "assets/brand/logo.png",
 		// badge: "img/img2.png",
 		tag: 'chess-scape-notification'
 	};

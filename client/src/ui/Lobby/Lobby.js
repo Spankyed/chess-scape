@@ -203,12 +203,12 @@ export default (initial) => ({
 												!(state.rooms?.length > 0) && (
 													<div class="ripple"></div>
 												)}
-											<img src="./assets/create/add.svg"></img>
+											<img src="./assets/lobby/create/add.svg"></img>
 											<p class="hide-sm">Create</p>
 										</button>
 									) : (
 										<button onclick={cancel} class="cancel">
-											<img src="./assets/create/cancel.svg"></img>
+											<img src="./assets/lobby/create/cancel.svg"></img>
 											<p class="hide-sm"> Cancel </p>
 										</button>
 									)}
@@ -220,7 +220,7 @@ export default (initial) => ({
 							{!loading && !state.rooms?.length > 0 && (
 								<div class="table-empty">
 									{/* if not game rooms, show some  ui */}
-									<img src="./assets/lobby/empty.svg" />
+									<img src="./assets/lobby/table-empty.svg" />
 									<div class="message">
 										No games to play here ...
 									</div>
@@ -351,7 +351,7 @@ function RoomItem({room, join, openPinInput, idx}) {
 			<td class="game">
 				<img
 					class="opt-img"
-					src={`./assets/create/types/${room.gameOptions.name}.svg`}
+					src={`./assets/lobby/create/types/${room.gameOptions.name}.svg`}
 					alt="game type"
 				/>
 			</td>
@@ -384,7 +384,7 @@ function RoomItem({room, join, openPinInput, idx}) {
 			<td class="color hide-sm">
 				<img
 					class="opt-img"
-					src={`./assets/create/piece-${room.selectedColor}.svg`}
+					src={`./assets/lobby/create/piece-${room.selectedColor}.svg`}
 				/>
 			</td>
 			<td class="action">

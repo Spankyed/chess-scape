@@ -94,7 +94,7 @@ export default (initial) => ({
 									tabindex="-1"
 								>
 									<div class="menu-icon">
-										<img src="./assets/controls/menu/resign.svg" />
+										<img src="./assets/room/controls/menu/resign.svg" />
 									</div>
 									<span>Resign</span>
 								</div>
@@ -111,7 +111,7 @@ export default (initial) => ({
 										tabindex="-1"
 									>
 										<div class="menu-icon">
-											<img src="./assets/controls/menu/draw.svg" />
+											<img src="./assets/room/controls/menu/draw.svg" />
 										</div>
 										<span>Offer Draw</span>
 									</div>
@@ -128,7 +128,7 @@ export default (initial) => ({
 										tabindex="-1"
 									>
 										<div class="menu-icon">
-											<img src="./assets/controls/menu/rematch.svg" />
+											<img src="./assets/room/controls/menu/rematch.svg" />
 										</div>
 										<span>Rematch</span>
 									</div>
@@ -141,7 +141,7 @@ export default (initial) => ({
 								tabindex="-1"
 							>
 								<div class="menu-icon">
-									<img src="./assets/controls/menu/chat.svg" />
+									<img src="./assets/room/controls/menu/chat.svg" />
 								</div>
 								<span>Chat</span>
 							</div>
@@ -153,7 +153,7 @@ export default (initial) => ({
 								tabindex="-1"
 							>
 								<div class="menu-icon">
-									<img src="./assets/controls/menu/review.svg" />
+									<img src="./assets/room/controls/menu/review.svg" />
 								</div>
 								<span>Review Moves</span>
 							</div>
@@ -165,7 +165,7 @@ export default (initial) => ({
 								tabindex="-1"
 							>
 								<div class="menu-icon">
-									<img src="./assets/controls/menu/media.svg" />
+									<img src="./assets/room/controls/menu/media.svg" />
 								</div>
 								<span>Play Media</span>
 							</div>
@@ -178,7 +178,7 @@ export default (initial) => ({
 									tabindex="-1"
 								>
 									<div class="menu-icon">
-										<img src="./assets/controls/menu/rotate-camera.svg" />
+										<img src="./assets/room/controls/menu/rotate-camera.svg" />
 									</div>
 									<span>Flip Camera</span>
 								</div>
@@ -190,7 +190,7 @@ export default (initial) => ({
 						class={`control-btn first ${menuOpen && "active"}`}
 					>
 						<img
-							src="./assets/controls/menu.svg"
+							src="./assets/room/controls/menu/menu.svg"
 							// class="no-pointers"
 						></img>
 					</button>

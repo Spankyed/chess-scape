@@ -76,7 +76,7 @@ export default (initial) => ({
 			);
 		},
 	hostAlert: (isVsAngel) => ({
-		// icon: "./assets/create/host.svg",
+		// icon: "./assets/lobby/create/host.svg",
 		id: "host",
 		role: "none",
 		heading: "Room Host",
@@ -93,7 +93,7 @@ export default (initial) => ({
 		// },
 	}),
 	startAlert: {
-		// icon: "./assets/create/host.svg",
+		// icon: "./assets/lobby/create/host.svg",
 		id: "start",
 		role: "none",
 		heading: "Both Players Joined",

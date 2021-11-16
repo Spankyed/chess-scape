@@ -16,7 +16,7 @@ function getPiecesContainer(scene){
     // todo: move this code to SceneManager
     let assetsManager = new AssetsManager(scene)
     assetsManager.useDefaultLoadingScreen = false
-    let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/", 'pieces.babylon');
+    let meshTask = assetsManager.addContainerTask("pieces task", "", "./assets/models/", 'pieces.babylon');
     return new Promise((resolve, rej) => {
         meshTask.onError = (err) => rej(err)
         meshTask.onSuccess = (task) => {

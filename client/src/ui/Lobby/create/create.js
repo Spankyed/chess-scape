@@ -205,7 +205,7 @@ function ColorSelect({ selectedColor, selectColor }) {
 						class="pieces"
 						id={`color-select-${color}`}
 						onclick={(_) => selectColor(color)}
-						src={`./assets/create/piece-${color}.svg`}
+						src={`./assets/lobby/create/piece-${color}.svg`}
 					/>
 				</div>
 			))}
@@ -233,7 +233,7 @@ function GameType({ type, selectGameType, selectedGameType }) {
 					)}
 				</div>
 				<img
-					src={`./assets/create/types/${type.name}.svg`}
+					src={`./assets/lobby/create/types/${type.name}.svg`}
 					alt="game type"
 				/>
 			</div>

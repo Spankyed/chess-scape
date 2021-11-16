@@ -219,7 +219,7 @@ export default (initial) => ({
 
 function DisbandedAlert(leave) {
 	return {
-		// icon: "./assets/create/host.svg",
+		// icon: "./assets/lobby/create/host.svg",
 		id: "disband",
 		role: "none",
 		heading: "Room Disbanded",

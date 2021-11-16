@@ -59,8 +59,8 @@ export default (initial) => ({
 			return (
 				<div class="entrance">
 					<div class="banner">
-						<img class="mobile" src="./assets/mobile/banner.svg" />
-						<img src="./assets/banner.svg" />
+						<img class="mobile" src="./assets/brand/mobile/banner.svg" />
+						<img src="./assets/brand/banner.svg" />
 					</div>
 					<div class="user-pic">
 						<div class="user-bg"></div>

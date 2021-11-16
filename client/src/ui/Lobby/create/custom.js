@@ -83,7 +83,7 @@ export default (initial) => ({
 					{!controlsOpen ? (
 						<div class="open-controls">
 							<h2 class="name">{type.name}</h2>
-							<img src="./assets/create/types/custom.svg" />
+							<img src="./assets/lobby/create/types/custom.svg" />
 						</div>
 					) : (
 						<div class="controls">
@@ -160,7 +160,7 @@ function TimeControl({
 		<div class="time-wrapper">
 			<div class="control time" onclick={!tempDisabled && focusInput}>
 				<span class="clock identity">
-					<img src="./assets/create/custom/clock.svg" />
+					<img src="./assets/lobby/create/custom/clock.svg" />
 				</span>
 				<div class={`minutes-input ${tempDisabled && "temp-disabled"}`}>
 					<label for="time" class="sr-only">
@@ -297,7 +297,7 @@ function SelectedOpponent({ selectedOpp, toggleOppMenu }) {
 		<div onclick={toggleOppMenu} class="control opp-menu-toggle">
 			<span class="vs identity">VS</span>
 			<div class="opp-img">
-				<img src={`./assets/create/custom/${selectedOpp}.svg`} />
+				<img src={`./assets/lobby/create/custom/${selectedOpp}.svg`} />
 			</div>
 			<span class="opp-name">{capitalize(selectedOpp)}</span>
 			{/* todo add dropdown arrow? */}
@@ -338,7 +338,7 @@ function OpponentOption({ option, selectOpp }) {
 	return (
 		<div onclick={() => selectOpp(option)} class={`opp-option ${option}`}>
 			{/* <span class="vs">vs</span> */}
-			<div class="img"><img src={`./assets/create/custom/${option}.svg`} /></div>
+			<div class="img"><img src={`./assets/lobby/create/custom/${option}.svg`} /></div>
 			<span class="opp-name">{capitalize(option)}</span>
 		</div>
 	);
@@ -378,7 +378,7 @@ function PinProtect({ setPin, togglePin, pinEnabled, pin }) {
 	return (
 		<div class="pin-protect control">
 			<span class="identity">
-				<img src="./assets/create/custom/lock.svg" />
+				<img src="./assets/lobby/create/custom/lock.svg" />
 			</span>
 			<label for="pin" class="sr-only">
 				Private
