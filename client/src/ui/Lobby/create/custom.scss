@@ -309,7 +309,7 @@ $dark-test: #1d1711;
                     }
                     .opp-option {
                         display: flex;
-                        // flex-grow:1;
+                        flex-grow:1;
                         justify-content: start;
                         cursor: pointer;
                         align-items: baseline;
@@ -326,7 +326,7 @@ $dark-test: #1d1711;
                         //     margin-right: 0.5rem/* 8px */;
                         // }
                         justify-content: start;
-                        flex-grow: 0;
+                        // flex-grow: 0;
                         width: 100%;
                         .img {
                             display: flex;
