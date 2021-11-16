@@ -204,7 +204,9 @@ export default (initial) => ({
 								roomState: state,
 							}}
 						/>
-						<AlertView />
+						{state.loader.removed
+						 && <AlertView />
+						}
 					</div>
 
 					<SidePanelView
