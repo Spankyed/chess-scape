@@ -15,6 +15,7 @@ if (process.env.NODE_ENV === "development") {
 
 let clientID = null,
 	TOKEN = null,
+	username = null,
 	roomID = null,
 	connection,
 	connected = false,
@@ -44,6 +45,7 @@ setClient(JSON.parse(localStorage.getItem("client") || '""'));
 function setClient(client) {
 	clientID = client.clientID;
 	TOKEN = client.TOKEN;
+	username = client.username;
 }
 
 function setMessageHandlers(newHandlers) {
@@ -274,7 +276,11 @@ async function createClient(userInfo) {
 		console.log("%c User Data", "color:blue;", { newClient });
 		clientID = newClient.ID;
 		TOKEN = newClient.TOKEN;
-		localStorage.setItem("client", JSON.stringify({ clientID, TOKEN }));
+		username = newClient.username;
+		localStorage.setItem(
+			"client",
+			JSON.stringify({ clientID, TOKEN, username })
+		);
 		return newClient;
 	}
 }
@@ -324,9 +330,22 @@ async function pushSubscribe(subscription) {
 	}
 }
 
+async function adminSetClient(client) {
+	const method = "GET";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const url = `${baseHttpUrl}/get-client/${client.clientID}`;
+	const response = await fetch(url, { method, headers });
+	if (response.ok) {
+		const { username } = await response.json();
+		const clientInfo = { ...client, username }
+		setClient(clientInfo);
+		console.log("%c Admin set client ", "color:blue;", { clientInfo });
+		return username;
+	}
+}
 
 export default {
-	setClient,
+	adminSetClient,
 	createClient,
 	getRoom,
 	getRooms,
@@ -355,6 +374,7 @@ export default {
 	shareSong,
 	isConnected: () => connected,
 	getClientID: () => clientID,
+	getUsername: () => username,
 };
 
 function eraseCookie(name) {   

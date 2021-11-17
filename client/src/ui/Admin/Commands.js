@@ -14,17 +14,15 @@ async function subscribe() {
 }
 
 async function setuser({ actions, args }) {
-	const [clientID, TOKEN] = args;
-	const client = { clientID, TOKEN };
 	localStorage.clear();
 	Api.isConnected() && Api.closeConnection();
 	actions.unauthorize();
+	const [clientID, TOKEN] = args;
+	const client = { clientID, TOKEN };
 	localStorage.setItem("client", JSON.stringify(client));
-	delay(200).then(_ => {
-		Api.setClient(client);
-		actions.authorize();
-	});
-	return { message: `User set [${clientID}]:[${TOKEN}]` };
+	const username = await Api.adminSetClient(client);
+	delay(200).then(actions.authorize)
+	return { message: `User set [${username}]:[${clientID}]` };
 }
 
 async function deleteroom({ state, args }) {

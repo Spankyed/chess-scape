@@ -1,5 +1,6 @@
 import { h } from 'hyperapp';
 import Api from '../../../../api/Api';
+import { delay } from "nanodelay";
 
 // const mockMessages = [
 // 	{
@@ -35,18 +36,12 @@ export default (initial) => ({
 		({ isVisible }) => {
 			var { messages } = state;
 			function init() {
-				// ! move this into a state transition, test if chat bleeds between rooms
-				// todo: get prev chat posts, & scroll to last chat
-				// console.log('showing chat')
-				// Api.getChat(function() {});
-
 				const onLeave = ({ clientID, username }) => {
 					addMessage({
 						text: `${username} has left the room`,
 						appMsg: true,
 					});
 				};
-
 				Api.setMessageHandlers({
 					// join: onJoin,
 					leave: onLeave,
@@ -56,7 +51,6 @@ export default (initial) => ({
 
 			var keys = {};
 			var handleKeyPress = (evt) => {
-				// console.log('keypress event',evt)
 				let { keyCode, type } = evt || Event; // to deal with IE
 				if (keyCode != 13 && keyCode != 16) return;
 				let isKeyDown = type == "keydown";
@@ -65,15 +59,12 @@ export default (initial) => ({
 				if (isKeyDown && keys[13] && !keys[16]) {
 					let text = evt.target.value;
 					addMessage({
-						username: "You", // todo store user's name in Api.getUsername,
+						username: Api.getUsername(),
 						time: Date.now(),
-						// clientID: Api.getClientID()
 						text,
 					});
-					setTimeout((_) => (evt.target.value = ""), 1);
+					delay(1).then((_) => (evt.target.value = ""))
 					Api.sendChat(text);
-					// modify({ message: '' })
-					// todo: scrollBottom();
 				}
 				return null;
 			};

@@ -33,14 +33,13 @@ deleteRoom:
         path: delete-room
         method: POST
         cors: true
-# ! CURRENTLY, GET CLIENT PUBLICLY EXPOSES CLIENT TOKEN 
-# getClient:
-#   handler: api/endpoints/getClient.handler
-#   events:
-#     - http:
-#         path: get-client/{ID}
-#         method: GET
-#         cors: true
+getClient:
+  handler: api/endpoints/getClient.handler
+  events:
+    - http:
+        path: get-client/{ID}
+        method: GET
+        cors: true
 searchSongImage:
   handler: api/endpoints/searchSongImage.handler
   events:
