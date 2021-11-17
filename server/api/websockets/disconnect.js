@@ -88,7 +88,7 @@ async function checkCanDelete(room) {
 
 function dedupe(array) {
 	const seen = {};
-	return array.filter(({ ID }) => {
+	return array.filter(({ ID } = {}) => {
 		if (seen[ID]) return false;
 		seen[ID] = true;
 		return true;
