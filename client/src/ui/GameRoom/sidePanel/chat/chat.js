@@ -78,13 +78,15 @@ export default (initial) => ({
 				return null;
 			};
 
+			const isLastMessage = (idx) => messages.length - 1 === idx;
+
 			return (
 				// ! root el needs key to fix grammarly breaking textarea
 				<div oncreate={init} class="chat" key="_chat">
 					<div class="chat-window">
 						<ul>
-							{messages.map((message, i) => (
-								<Message message={message} />
+							{messages.map((message, idx) => (
+								<Message message={message} isLastMessage={isLastMessage(idx)}/>
 							))}
 						</ul>
 					</div>
@@ -118,10 +120,10 @@ export default (initial) => ({
 // 	chatWindow.animate({ scrollTop: chatWindow.prop('scrollHeight') }, 1000);
 // }
 
-function Message({message}){
-	const imgSeed = message.username || 'dicebear';
+function Message({ message, isLastMessage }) {
+	const imgSeed = message.username || "dicebear";
 	return (
-		<li class="message">
+		<li class="message" oncreate={(e) => isLastMessage && e.scrollIntoView()}>
 			{!message.appMsg && (
 				<img
 					src={`https://avatars.dicebear.com/api/avataaars/${imgSeed}.svg`}
@@ -131,13 +133,11 @@ function Message({message}){
 			<div class="text">
 				{!message.appMsg && (
 					<div class="user-name">
-							{message.username}
+						{message.username}
 						{/* <span class="text-sm text-gray-300 pl-2">{message.time}</span> */}
 					</div>
 				)}
-				<span class="message-text">
-					{message.text}
-				</span>
+				<span class="message-text">{message.text}</span>
 			</div>
 		</li>
 		// <div class="container dark">
