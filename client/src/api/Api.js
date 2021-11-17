@@ -4,8 +4,10 @@ import Sockette from "sockette";
 import { fromEvent, merge } from "rxjs";
 import { take } from "rxjs/operators";
 
-let baseHttpUrl = "http://localhost:9001/local";
-let baseWSUrl = "ws://localhost:3001";
+let baseHttpUrl =
+	"https://zat0cu0vz6.execute-api.us-east-1.amazonaws.com/production/";
+let baseWSUrl =
+	"wss://0ct4bslf0g.execute-api.us-east-1.amazonaws.com/production";
 
 if (process.env.NODE_ENV === "development") {
 	console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
