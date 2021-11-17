@@ -13,10 +13,17 @@ const schema = {
 const handler = async (event) => {
 	const { client, roomID } = event.body;
 
-	const room = await Dynamo.get(roomID, roomsTable);
-	const match = await Dynamo.get(roomID, matchesTable);
+	const [room, match] = await Promise.all([
+		Dynamo.get(roomID, roomsTable),
+		Dynamo.get(roomID, matchesTable)
+	]);
+
+	if (!room) {
+		return Responses._400({ error: "Room not found" });
+	}
 
 	// todo if private, verify user is in room, b/c chat is included in the response
+	// todo ^ must do so carefully as client.room may not be updated when req is made
 	return Responses._200({ room: sanitizeRoom(room), match });
 };
 

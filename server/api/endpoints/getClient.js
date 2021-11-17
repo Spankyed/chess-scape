@@ -1,7 +1,7 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 
-const { withHooks } = require("../common/hooks");
+const { hooksWithSchema } = require("../common/hooks");
 
 const clientsTable = process.env.clientsTableName;
 
@@ -14,7 +14,10 @@ const handler = async (event) => {
 
 	const client = await Dynamo.get(ID, clientsTable);
 
+	if (!client) {
+		return Responses._400({ error: "Client not found" });
+	}
+
 	return Responses._200({ username: client.username });
 };
-
-exports.handler = withHooks(["log", "parse"])(handler);
+exports.handler = hooksWithSchema(schema, [])(handler);
