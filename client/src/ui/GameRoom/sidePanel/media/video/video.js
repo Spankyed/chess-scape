@@ -432,7 +432,7 @@ function parseYoutubeUrl(url) {
 
 // https://stackoverflow.com/a/66362481/8723748
 async function checkVideoId(id) {
-	const { status } = await fetch("http://img.youtube.com/vi/" + id + "/mqdefault.jpg");
+	const { status } = await fetch("https://img.youtube.com/vi/" + id + "/mqdefault.jpg");
 	if (status === 404) return false;
 	return true;
 }
