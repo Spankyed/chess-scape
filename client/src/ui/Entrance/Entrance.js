@@ -129,7 +129,7 @@ export default (initial) => ({
 });
 
 function validate(username) {
-	illegalChars = /[^a-zA-Z0-9-_]/g.test(username);
+	let illegalChars = /[^a-zA-Z0-9-_]/g.test(username);
 	return !illegalChars && username.length > 0 && username.length < 27;
 }
 
