@@ -45,9 +45,7 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 	const winningColor =  endMethod == "draw" || endMethod == "abort"
 		? null
 		: opponentColor
-	await Promise.all([
-		// todo when game over store match in completeMatchesTable
-		archiveMatch({ ...match, endMethod }),
+	const [{ Attributes: matchUpdates }] = await Promise.all([
 		Dynamo.update({
 			TableName: matchesTable,
 			primaryKey: "ID",
@@ -66,6 +64,8 @@ module.exports = async function ({ clientID, roomID, endMethod }) {
 			endMethod,
 		}),
 	]);
+
+	archiveMatch({ ...matchUpdates, endMethod });
 
 	console.log(`Player[${clientID}][${color}] ended match [${endMethod}]`); // todo add playerColor to log
 

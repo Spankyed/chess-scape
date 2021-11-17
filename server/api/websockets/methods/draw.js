@@ -26,9 +26,8 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 	}
 
 	const endMethod = 'draw';
-	await Promise.all([
+	const [{ Attributes: matchUpdates }] = await Promise.all([
 		// todo when game over store match in completeMatchesTable
-		archiveMatch({ ...match, endMethod }),
 		Dynamo.update({
 			TableName: matchesTable,
 			primaryKey: "ID",
@@ -46,6 +45,8 @@ module.exports = async function ({ clientID, roomID, accepted }, connection) {
 			endMethod,
 		}),
 	]);
+
+	archiveMatch({ ...matchUpdates, endMethod });
 
 	console.log(`Game drawn[${roomID}]`);
 

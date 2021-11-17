@@ -54,7 +54,8 @@ module.exports = async function (
 		// todo then execute new clock state machine
 		const changes = update(move, match);
 		const commit = !player.committed;
-		await Promise.all([
+
+		const [{ Attributes: matchUpdates }] = await Promise.all([
 			Dynamo.update({
 				TableName: matchesTable,
 				primaryKey: "ID",
@@ -86,7 +87,7 @@ module.exports = async function (
 				},
 				// select: "clients",
 			}),
-			...(gameOver ? [archiveMatch({ ...match, endMethod })] : []),
+			...(gameOver ? [] : []),
 		]);
 
 		sendMessageToRoom(roomID, {
@@ -97,6 +98,11 @@ module.exports = async function (
 			info,
 			colorToMove: nextColor(colorToMove),
 		});
+
+
+		if (gameOver) {
+			await archiveMatch({ ...matchUpdates, endMethod });
+		}
 
 		console.log(`Player[${colorToMove}][${clientID}] moved`, {
 			move,
