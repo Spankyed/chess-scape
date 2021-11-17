@@ -15,7 +15,7 @@ async function sendMessage(connections, message) {
 				message,
 			}).catch(async (err) => {
 				console.error(err)
-				console.warn({ connectionID });
+				console.warn('Bad connection', { connectionID });
 				if (connectionID) await removeConnection(connectionID);
 			});
 		})

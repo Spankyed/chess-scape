@@ -35,6 +35,7 @@ async function removeMedia(roomID) {
 }
 
 function deleteRoomEvents(room) {
+	if (!room) return [];
 	return [
 		removeMedia(room.ID),
 		Dynamo.delete(room.ID, roomsTable),

@@ -27,11 +27,6 @@ async function findHostedRoom(clientID) {
 	});
 }
 
-async function checkMatchFinished(roomID) {
-	const match = await Dynamo.get(roomID, matchesTable);
-	return !!match.finished;
-}
-
 const handler = async (event) => {
 	const { connectionId: connectionID } = event.requestContext;
 	// ! TOKEN ISNT SENT WITH REQUEST SO CANNOT AUTHENTICATE USER
@@ -44,11 +39,9 @@ const handler = async (event) => {
 		});
 	}
 
-	// todo move get request to deleteRoom.js
-	const [room] = await findHostedRoom(client.ID);
+	const rooms = await getRoomsToDelete(client);
 
-	// const canDelete = room && (!room.matchStarted || await checkMatchFinished(room.ID));
-	const canDelete = room && await checkMatchFinished(room.ID);
+	const deleteEvents = rooms.map((room) => deleteRoomEvents(room)).flat();
 
 	await Promise.all([
 		Dynamo.update({
@@ -60,7 +53,7 @@ const handler = async (event) => {
 				connectionID: "0",
 			},
 		}),
-		...(canDelete ? [...deleteRoomEvents(room)] : []),
+		...deleteEvents
 	]);
 
 	console.log(`Disconnected client [${client.username}]`);
@@ -68,3 +61,25 @@ const handler = async (event) => {
 };
 
 exports.handler = withHooks(["parse"])(handler);
+
+async function getRoomsToDelete(client) {
+	const isInLobby = client.room == "lobby";
+	const [hostedRoom] = (await findHostedRoom(client.ID)) || [];
+
+	const rooms = [
+		...(hostedRoom ? [hostedRoom] : []),
+		...(!isInLobby ? [await Dynamo.get(client.room, roomsTable)] : []),
+	];
+
+	const isPlayer = (room) =>
+		room && room.players.find((p) => p.clientID == client.ID);
+	const canDelete = async (room) =>
+		room && (await checkMatchFinished(room.ID));
+	
+	return rooms.filter(async (room) => isPlayer && await canDelete(room));
+}
+
+async function checkMatchFinished(roomID) {
+	const match = await Dynamo.get(roomID, matchesTable);
+	return !!match.finished;
+}
