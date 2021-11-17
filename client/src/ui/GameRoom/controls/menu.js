@@ -107,7 +107,7 @@ export default (initial) => ({
 										onclick={offer("draw")}
 										class="menu-item"
 										role="menu-item"
-										id="menu-item-2"
+										id="menu-item-1"
 										tabindex="-1"
 									>
 										<div class="menu-icon">
@@ -124,7 +124,7 @@ export default (initial) => ({
 										onclick={offer("rematch")}
 										class="menu-item"
 										role="menu-item"
-										id="menu-item-0"
+										id="menu-item-2"
 										tabindex="-1"
 									>
 										<div class="menu-icon">
@@ -149,7 +149,7 @@ export default (initial) => ({
 								onclick={openPanel("moves")}
 								class="menu-item"
 								role="menu-item"
-								id="menu-item-2"
+								id="menu-item-3"
 								tabindex="-1"
 							>
 								<div class="menu-icon">
@@ -174,7 +174,7 @@ export default (initial) => ({
 									onclick={() => flipCamera(game.playerColor)}
 									class="menu-item"
 									role="menu-item"
-									id="menu-item-4"
+									id="menu-item-5"
 									tabindex="-1"
 								>
 									<div class="menu-icon">
