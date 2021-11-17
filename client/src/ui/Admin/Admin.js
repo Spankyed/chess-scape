@@ -3,16 +3,13 @@ import { h } from 'hyperapp';
 import Commands from './Commands';
 import { nanoid } from 'nanoid/non-secure'
 
-const initialState = {
-	consoleOpen: false,
-	// entries: { 1: { command: "hello", response: { message: "world" } } },
-	entries: {},
-	input: "",
-	executing: false,
-};
-
 export default (initial) => ({
-	state: initialState,
+	state: {
+		consoleOpen: false,
+		executing: false,
+		input: "",
+		entries: {},
+	},
 	actions: {
 		addEntry:
 			({ id, command }) =>
@@ -24,10 +21,10 @@ export default (initial) => ({
 			}),
 		addEntryResponse:
 			({ id, response }) =>
-			(state) => ({
+			({entries}) => ({
 				entries: {
-					...state.entries,
-					[id]: { ...state.entries[id], response },
+					...entries,
+					[id]: { ...entries[id], response },
 				},
 			}),
 		setInput: (e) => ({ input: e.target.value }),
@@ -52,7 +49,7 @@ export default (initial) => ({
 				const executor = Commands[command];
 				// console.log("executor: ", executor);
 				if (executor) {
-					let id = nanoid();
+					const id = nanoid();
 					actions.addEntry({ id, command });
 					executor({ state: appState, actions: appActions, args })
 						.then((response) => {
@@ -62,7 +59,7 @@ export default (initial) => ({
 						.catch((err) => {
 							actions.addEntryResponse({
 								id,
-								response: err.message,
+								response: { message: err.message, error: true },
 							});
 							actions.endExec();
 							console.error(err);
@@ -116,7 +113,11 @@ function Entry({entry}) {
 				{entry.command}
 			</div>
 			{entry.response ? (
-				<div class={`entry ${entry.response.error && "error"}`}>
+				<div
+					class={`entry ${
+						entry.response.error ? "error" : "success"
+					}`}
+				>
 					{entry.response.message}
 				</div>
 			) : (

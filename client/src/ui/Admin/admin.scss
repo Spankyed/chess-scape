@@ -54,6 +54,22 @@
         }
         .entry {
             color: gray;
+            &.error {
+                color: #A00;
+                // background: rgb(255, 245, 245, 0.17);
+            }
+            &.warning {
+                color: #8a6300;
+                // background: rgba(255, 230, 0, 0.17);
+            }
+            &.info {
+                color: rgb(0, 89, 148);
+                // background: rgba(0, 136, 255, 0.17);
+            }
+            &.success {
+                color: rgb(77, 148, 0);
+                // background: rgba(96, 226, 90, 0.17);
+            }
         }
     }
     .command-input-wrapper {
@@ -87,22 +103,7 @@
         justify-content: center;
     }
     
-    .error {
-        color: #A00;
-        background: rgb(255, 245, 245, 0.17);
-    }
-    .warning {
-        color: #8a6300;
-        background: rgba(255, 230, 0, 0.17);
-    }
-    .info {
-        color: rgb(0, 89, 148);
-        background: rgba(0, 136, 255, 0.17);
-    }
-    .success {
-        color: rgb(77, 148, 0);
-        background: rgba(96, 226, 90, 0.17);
-    }
+
 
     // .dark .command-input-wrapper button:hover,
     // .dark .command-input-wrapper button:focus {

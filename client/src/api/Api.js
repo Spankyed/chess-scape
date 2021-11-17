@@ -330,22 +330,37 @@ async function pushSubscribe(subscription) {
 	}
 }
 
-async function adminSetClient(client) {
+async function adminSetUser(client) {
+	if (!client) throw Error("Unable to set user");
 	const method = "GET";
 	const headers = { "Content-Type": "application/json; charset=utf-8" };
-	const url = `${baseHttpUrl}/get-client/${client.clientID}`;
+	const url = `${baseHttpUrl}/get-client/${client?.clientID}`;
 	const response = await fetch(url, { method, headers });
 	if (response.ok) {
 		const { username } = await response.json();
-		const clientInfo = { ...client, username }
+		const clientInfo = { ...client, username };
 		setClient(clientInfo);
 		console.log("%c Admin set client ", "color:blue;", { clientInfo });
 		return username;
+	} else if (response.status === 400) {
+		throw Error("Unable to set user");
+	}
+}
+async function getPushKey() {
+	const method = "GET";
+	const headers = { "Content-Type": "application/json; charset=utf-8" };
+	const url = `${baseHttpUrl}/get-push-key`;
+	const response = await fetch(url, { method, headers });
+	if (response.ok) {
+		const { publicKey } = await response.json();
+		console.log("%c Push Key retrieved", "color:blue;", { publicKey });
+		return publicKey;
 	}
 }
 
 export default {
-	adminSetClient,
+	adminSetUser,
+	getPushKey,
 	createClient,
 	getRoom,
 	getRooms,

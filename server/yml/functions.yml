@@ -40,6 +40,13 @@ getClient:
         path: get-client/{ID}
         method: GET
         cors: true
+getPushKey:
+  handler: api/endpoints/getPushKey.handler
+  events:
+    - http:
+        path: get-push-key
+        method: GET
+        cors: true
 searchSongImage:
   handler: api/endpoints/searchSongImage.handler
   events:

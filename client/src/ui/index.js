@@ -15,7 +15,6 @@ const gameRoom = GameRoom()
 const lobby = Lobby()
 
 const initialState = {
-	admin: admin.state,
 	entrance: entrance.state,
 	gameRoom: gameRoom.state,
 	lobby: lobby.state,
@@ -28,6 +27,7 @@ const state = {
 	...initialState,
 	isAuthorized: checkForClient(),
 	roomID: checkForRoomID(),
+	admin: admin.state,
 };
 
 const actions = {
