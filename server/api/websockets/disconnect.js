@@ -65,27 +65,25 @@ exports.handler = withHooks(["parse"])(handler);
 async function getRoomsToDelete(client) {
 	const isInLobby = client.room == "lobby";
 	const [hostedRoom] = (await findHostedRoom(client.ID)) || [];
-
 	const rooms = dedupe([
 		...(hostedRoom ? [hostedRoom] : []),
 		...(!isInLobby ? [await Dynamo.get(client.room, roomsTable)] : []),
 	])
-
 	const isPlayer = (room) =>
 		room &&
 		Object.values(room.players).find((p) => p.clientID == client.ID);
 	const canDelete = async (room) => room && (await checkCanDelete(room));
-
 	const roomsToDelete = await Promise.all(
 		rooms.filter(isPlayer).map(canDelete)
 	);
-
 	return roomsToDelete.filter((r) => r);
 }
 
 async function checkCanDelete(room) {
+	if (!room) return false
 	const match = room && (await Dynamo.get(room.ID, matchesTable));
-	return !!match.finished && room;
+	const abandonded = Object.values(room.players).length < 2 && !room.matchStarted;
+	return (abandonded || !!match.finished) && room;
 }
 
 function dedupe(array) {
