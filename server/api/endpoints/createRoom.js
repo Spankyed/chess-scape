@@ -131,6 +131,11 @@ async function notifyAngel(roomID, oppName) {
 
 	const payload = { roomID, oppName };
 
+	if (angel.subscriptions.length < 1) {
+		console.log(`No subscription found to send push message to`);
+		return;
+	}
+
 	angel.subscriptions.forEach((subscription) => {
 		webpush
 			.sendNotification(subscription, JSON.stringify(payload))

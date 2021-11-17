@@ -55,24 +55,33 @@ export default (initial) => ({
 			} = roomState;
 			
 			const leave = () => {
-				const isPlayer = game.player
-				const isTwoPlayers = Object.keys(roomState.room?.players).length > 1;
-				const matchBeginning = isTwoPlayers && !game.matchStarted
+				// todo player shouldn't be able to leave if match is time controlled & not finished
+				const isPlayer = game.player;
+				const isTwoPlayers =
+					Object.keys(roomState.room?.players).length > 1;
+				const matchBeginning = isTwoPlayers && !game.matchStarted;
 				const foreverType = game.type == "forever";
-				const matchNotStarted = !game.matchStarted
+				const matchNotStarted = !game.matchStarted;
 
 				if (isPlayer && matchBeginning) {
 					return;
 				}
-				if (!roomState.room || gameOver || matchNotStarted || !isPlayer) {
+				if (
+					!roomState.room ||
+					gameOver ||
+					matchNotStarted ||
+					!isPlayer
+				) {
 					leaveRoom();
 				} else if (foreverType) {
 					if (isTwoPlayers && !game.committed) {
 						alert.show(prompts["abort"](leaveRoom));
-					} else { // if type is "forever" you can leave freely once you've made a move, otherwise considered aborting match
+					} else {
+						// if type is "forever" you can leave freely once you've made a move, otherwise considered aborting match
 						leaveRoom();
 					}
-				} else { // type not "forever", match is time controlled, cant leave without abort/abandon
+				} else {
+					// type not "forever", match is time controlled, cant leave without abort/abandon
 					const method = !game.committed ? "abort" : "abandon";
 					alert.show(prompts[method](leaveRoom));
 				}

@@ -49,6 +49,7 @@ const handler = async (event) => {
 
 	// todo append connection to a list to allow multiple browser windows
 	// todo must also refactor sendMessage() in order to send message to all the clients connections
+	// ! can/will overwrite any existing client connections, old connection will no longer recieve messages
 	const clientConn = await Dynamo.update({
 		TableName: clientsTable,
 		primaryKey: "ID",

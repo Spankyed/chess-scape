@@ -17,7 +17,7 @@ async function findClient(connectionID) {
 	});
 }
 
-async function findRoom(clientID) {
+async function findHostedRoom(clientID) {
 	if (!clientID) return [false];
 	return Dynamo.queryOn({
 		TableName: roomsTable,
@@ -45,7 +45,7 @@ const handler = async (event) => {
 	}
 
 	// todo move get request to deleteRoom.js
-	const [room] = await findRoom(client.ID);
+	const [room] = await findHostedRoom(client.ID);
 
 	// const canDelete = room && (!room.matchStarted || await checkMatchFinished(room.ID));
 	const canDelete = room && await checkMatchFinished(room.ID);
