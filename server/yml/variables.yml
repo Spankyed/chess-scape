@@ -28,7 +28,7 @@ dynamodb:
     # delayTransientStatuses: true # simulates real service latency
   migration:
     dir: offline/migrations
-# for S3 offline
-s3:
-  host: localhost
-  directory: /sync
+# for S3 sync offline 
+# s3:
+#   host: localhost
+#   directory: /sync

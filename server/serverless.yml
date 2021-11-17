@@ -24,7 +24,7 @@ provider:
 
 plugins:
   # - serverless-webpack
-  - serverless-s3-sync
+  # - serverless-s3-sync
   - serverless-offline
   - serverless-dynamodb-local
   - serverless-s3-local
