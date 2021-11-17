@@ -1,6 +1,7 @@
 const Responses = require("../../common/HTTP_Responses");
 const Dynamo = require("../../common/Dynamo");
-const { removeMediaFiles } = require("../../endpoints/deleteRoom");
+const { deleteRoomEvents } = require("../../endpoints/deleteRoom");
+
 const {
 	sendMessageToRoom,
 	sendMessageToLobby,
@@ -40,24 +41,23 @@ module.exports = async function ({ clientID, roomID }, {username}) {
 			});
 		} else if (match.finished || (players.length == 2 && !match.started)) {
 			// delete room if player leaves when match finished
-			// or if 2 players but game hasn't started (b/c.. well idr why)
 			// todo user shouldn't be able to leave if match is time controlled & not finished
-			Dynamo.update({
-				// ! probably shouldn't be deleting player from match record
-				// might be ok because match is saved once finished, ergo before reaching here
-				TableName: matchesTable,
-				primaryKey: "ID",
-				primaryKeyValue: roomID,
-				updates: {
-					[`players.${color}`]: null,
-				},
-			});
-			Dynamo.delete(roomID, roomsTable);
-			sendMessageToLobby({ method: "delete", roomID });
-			sendMessageToRoom(roomID, { method: "disband" });
-			removeMediaFiles(roomID);
+			// todo dont attempt to delete room if already deleted
+			const room = await Dynamo.get(roomID, roomsTable);
+			await Promise.all([
+				Dynamo.update({
+					// ! probably shouldn't be deleting player from match record
+					// might be ok because match is saved once finished, ergo before reaching here
+					TableName: matchesTable,
+					primaryKey: "ID",
+					primaryKeyValue: roomID,
+					updates: {
+						[`players.${color}`]: null,
+					},
+				}),
+				...deleteRoomEvents(room),
+			]);
 		}
-
 
 		console.log(`Client[${clientID}] left room[${roomID}]`);
 

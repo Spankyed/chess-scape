@@ -1,9 +1,12 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const S3 = require("../common/S3");
+// const { archiveChat } = require("../common/archive");
 const { hooksWithSchema } = require("../common/hooks");
 const {
-	sendMessageToRoom, sendMessageToRoomExcept,
+	sendMessageToLobby,
+	sendMessageToRoom,
+	sendMessageToRoomExcept,
 } = require("../common/websocket/message");
 
 const roomsTable = process.env.roomsTableName;
@@ -15,10 +18,39 @@ const schema = {
 	body: { ID: "string" },
 };
 
+async function removeMediaFiles(roomID) {
+	const roomMedia = await Dynamo.queryOn({
+		TableName: mediaTable,
+		index: "room-index",
+		queryKey: "roomID",
+		queryValue: roomID,
+	});
+	if (!roomMedia) return true;
+	const s3Removals =
+		roomMedia &&
+		roomMedia.map(async (media) => S3.delete(media.ID, bucket));
+
+	// todo delete media record from db
+	return s3Removals;
+}
+
+function deleteRoomEvents(room) {
+	return [
+		removeMediaFiles(room.ID),
+		Dynamo.delete(room.ID, roomsTable),
+		// archiveChat(room.chat),
+		sendMessageToLobby({ method: "delete", roomID: room.ID }),
+		sendMessageToRoom(room.ID, { method: "disband" }),
+	];
+}
+
 const handler = async (event) => {
 	const { clientID, ID } = event.body;
 
-	const match = await Dynamo.get(ID, matchesTable);
+	const [room, match] = await Promise.all([
+		Dynamo.get(ID, roomsTable),
+		Dynamo.get(ID, matchesTable),
+	]);
 
 	const isAdmin = clientID === 'angel'
 
@@ -35,8 +67,7 @@ const handler = async (event) => {
 	}
 
 	const [removedMedia, deletedRoom] = await Promise.all([
-		removeMediaFiles(ID),
-		Dynamo.delete(ID, roomsTable),
+		...deleteRoomEvents(room),
 	]);
 
 	if (!deletedRoom) {
@@ -47,16 +78,6 @@ const handler = async (event) => {
 		});
 	}
 
-	// notify anyone who may be in room that the room was deleted
-	// and everyone in lobby, except person deleting
-	Promise.all([
-		sendMessageToRoom(ID, { method: "disband" }),
-		sendMessageToRoomExcept("lobby", clientID, {
-			method: "delete",
-			roomID: ID,
-		}),
-	]);
-
 	console.log(`Client[${clientID}] deleted room[${ID}]`);
 
 	return Responses._200({
@@ -65,27 +86,7 @@ const handler = async (event) => {
 	});
 };
 
-// exports.handler = hooksWithSchema(schema, ["log", "parse"])(handler);
-// exports.handler = hooksWithSchema(schema, ["parse", "authorize"])(handler);
-
-async function removeMediaFiles(roomID) {
-	const roomMedia = await Dynamo.queryOn({
-		TableName: mediaTable,
-		index: "room-index",
-		queryKey: "roomID",
-		queryValue: roomID,
-	});
-
-	if (!roomMedia) return true
-	
-	const s3Removals = roomMedia && roomMedia.map(async (media) =>
-		S3.delete(media.ID, bucket)
-	);;
-
-	return s3Removals;
-}
-
 module.exports = {
 	handler: hooksWithSchema(schema, ["parse", "authorize"])(handler),
-	removeMediaFiles,
-}
+	deleteRoomEvents,
+};

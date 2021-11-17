@@ -1,7 +1,7 @@
 const Responses = require("../common/HTTP_Responses");
 const Dynamo = require("../common/Dynamo");
 const { withHooks } = require("../common/hooks");
-// const { archiveChat } = require("../common/archive");
+const { deleteRoomEvents } = require("../endpoints/deleteRoom");
 
 const clientsTable = process.env.clientsTableName;
 const matchesTable = process.env.matchesTableName;
@@ -29,7 +29,7 @@ async function findRoom(clientID) {
 
 async function checkMatchFinished(roomID) {
 	const match = await Dynamo.get(roomID, matchesTable);
-	return match.finished;
+	return !!match.finished;
 }
 
 const handler = async (event) => {
@@ -44,9 +44,11 @@ const handler = async (event) => {
 		});
 	}
 
+	// todo move get request to deleteRoom.js
 	const [room] = await findRoom(client.ID);
 
-	const canDelete = room && (!room.matchStarted || await checkMatchFinished(room.ID));
+	// const canDelete = room && (!room.matchStarted || await checkMatchFinished(room.ID));
+	const canDelete = room && await checkMatchFinished(room.ID);
 
 	await Promise.all([
 		Dynamo.update({
@@ -58,7 +60,7 @@ const handler = async (event) => {
 				connectionID: "0",
 			},
 		}),
-		...(canDelete ? [Dynamo.delete(room.ID, roomsTable)] : []),
+		...(canDelete ? [...deleteRoomEvents(room)] : []),
 	]);
 
 	console.log(`Disconnected client [${client.username}]`);
