@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="512px" height="512px" viewBox="0 0 512 512" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 0L512 0L512 512L0 512L0 0L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+  <path d="M24.3951 449.635C32.7098 455.4 42.037 458.305 51.4087 458.305C59.2503 458.305 67.1191 456.267 74.4434 452.157L379.916 280.774C397.455 270.934 408.347 251.159 408.347 229.15C408.347 207.148 397.455 187.367 379.916 177.532L74.4434 6.14821C58.3717 -2.86614 39.6638 -1.92019 24.3951 8.67086C9.12199 19.2669 0 37.6209 0 57.7719L0 400.533C0 420.69 9.11756 439.045 24.3951 449.635L24.3951 449.635L24.3951 449.635Z" transform="translate(52.7771 27.276245)" id="Shape#2-path" fill="#F3F4F6" fill-rule="evenodd" stroke="none" />
+</svg>

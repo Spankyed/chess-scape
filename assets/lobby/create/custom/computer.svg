@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="707px" height="707px" viewBox="0 0 707 707" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <path d="M0 0L707 0L707 707L0 707L0 0L0 0Z" id="path_1" />
+    <clipPath id="mask_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+  </defs>
+  <g id="computer">
+    <g id="icon">
+      <path d="M0 0L707 0L707 707L0 707L0 0L0 0Z" id="Background" fill="none" fill-rule="evenodd" stroke="none" />
+      <g id="Mask-group">
+        <path d="M0 0L707 0L707 707L0 707L0 0L0 0Z" id="path_1" fill="none" fill-rule="evenodd" stroke="none" />
+        <g clip-path="url(#mask_1)">
+          <g id="Group" transform="translate(55.039062 56.039062)">
+            <g id="server">
+              <g id="Group" transform="translate(36.10675 159.0224)">
+                <g id="Group#1">
+                  <path d="M0 0L524.13 0L524.13 69.6449L0 69.6449L0 0L0 0Z" id="Shape" fill="#384949" fill-rule="evenodd" stroke="none" />
+                </g>
+              </g>
+              <path d="M0 0L262.065 0L262.065 69.6449L0 69.6449L0 0L0 0Z" transform="translate(298.17197 159.0224)" id="Shape#1" fill="#293939" fill-rule="evenodd" stroke="none" />
+              <g id="Group#2" transform="translate(36.10675 367.95697)">
+                <g id="Group#3">
+                  <path d="M0 0L524.13 0L524.13 69.6448L0 69.6448L0 0L0 0Z" id="Shape#2" fill="#384949" fill-rule="evenodd" stroke="none" />
+                </g>
+              </g>
+              <path d="M0 0L262.065 0L262.065 69.6448L0 69.6448L0 0L0 0Z" transform="translate(298.17197 367.95697)" id="Shape#3" fill="#293939" fill-rule="evenodd" stroke="none" />
+              <g id="Group#4">
+                <path d="M0 0L0 176.434L596.344 176.434L596.344 0L0 0L0 0Z" id="Shape#4" fill="#4A696F" fill-rule="evenodd" stroke="none" />
+              </g>
+              <path d="M0 0L298.172 0L298.172 176.434L0 176.434L0 0L0 0Z" transform="translate(298.17197 0)" id="Shape#5" fill="#384949" fill-rule="evenodd" stroke="none" />
+              <g id="Group#5" transform="translate(71.0488 71.96634)">
+                <g id="Group#6">
+                  <g id="Group#7">
+                    <path d="M0 0L34.9419 0L34.9419 34.8223L0 34.8223L0 0L0 0Z" id="Shape#6" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#8" transform="translate(140.93283 71.96634)">
+                <g id="Group#9">
+                  <path d="M0 0L34.9419 0L34.9419 34.8223L0 34.8223L0 0L0 0Z" id="Shape#7" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                </g>
+              </g>
+              <g id="Group#10" transform="translate(210.81691 71.96634)">
+                <g id="Group#11">
+                  <g id="Group#12">
+                    <path d="M0 0L34.9419 0L34.9419 34.8223L0 34.8223L0 0L0 0Z" id="Shape#8" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#13" transform="translate(350.58502 71.96634)">
+                <g id="Group#14">
+                  <path d="M0 0L174.71 0L174.71 34.8223L0 34.8223L0 0L0 0Z" id="Shape#9" fill="#293939" fill-rule="evenodd" stroke="none" />
+                </g>
+              </g>
+              <g id="Group#15" transform="translate(0 211.25604)">
+                <path d="M0 0L0 174.112L596.344 174.112L596.344 0L0 0L0 0Z" id="Shape#10" fill="#4A696F" fill-rule="evenodd" stroke="none" />
+              </g>
+              <path d="M0 0L298.172 0L298.172 174.112L0 174.112L0 0L0 0Z" transform="translate(298.17197 211.25604)" id="Shape#11" fill="#384949" fill-rule="evenodd" stroke="none" />
+              <g id="Group#16" transform="translate(71.0488 280.90088)">
+                <g id="Group#17">
+                  <g id="Group#18">
+                    <path d="M0 0L34.9419 0L34.9419 34.8224L0 34.8224L0 0L0 0Z" id="Shape#12" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#19" transform="translate(140.93283 280.90088)">
+                <g id="Group#20">
+                  <path d="M0 0L34.9419 0L34.9419 34.8224L0 34.8224L0 0L0 0Z" id="Shape#13" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                </g>
+              </g>
+              <g id="Group#21" transform="translate(210.81691 280.90088)">
+                <g id="Group#22">
+                  <g id="Group#23">
+                    <path d="M0 0L34.9419 0L34.9419 34.8224L0 34.8224L0 0L0 0Z" id="Shape#14" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#24" transform="translate(350.58502 280.90088)">
+                <g id="Group#25">
+                  <path d="M0 0L174.71 0L174.71 34.8224L0 34.8224L0 0L0 0Z" id="Shape#15" fill="#293939" fill-rule="evenodd" stroke="none" />
+                </g>
+              </g>
+              <g id="Group#26" transform="translate(0 420.1906)">
+                <path d="M0 0L0 174.112L596.344 174.112L596.344 0L0 0L0 0Z" id="Shape#16" fill="#4A696F" fill-rule="evenodd" stroke="none" />
+              </g>
+              <path d="M0 0L298.172 0L298.172 174.112L0 174.112L0 0L0 0Z" transform="translate(298.17197 420.1906)" id="Shape#17" fill="#384949" fill-rule="evenodd" stroke="none" />
+              <g id="Group#27" transform="translate(71.0488 489.83545)">
+                <g id="Group#28">
+                  <g id="Group#29">
+                    <path d="M0 0L34.9419 0L34.9419 34.8224L0 34.8224L0 0L0 0Z" id="Shape#18" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#30" transform="translate(140.93283 489.83545)">
+                <g id="Group#31">
+                  <g id="Group#32">
+                    <path d="M0 0L34.9419 0L34.9419 34.8224L0 34.8224L0 0L0 0Z" id="Shape#19" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#33" transform="translate(210.81691 489.83545)">
+                <g id="Group#34">
+                  <g id="Group#35">
+                    <path d="M0 0L34.9419 0L34.9419 34.8224L0 34.8224L0 0L0 0Z" id="Shape#20" fill="#9BFCFF" fill-rule="evenodd" stroke="none" />
+                  </g>
+                </g>
+              </g>
+              <g id="Group#36" transform="translate(350.58502 489.83545)">
+                <path d="M0 0L174.71 0L174.71 34.8224L0 34.8224L0 0L0 0Z" id="Shape#21" fill="#293939" fill-rule="evenodd" stroke="none" />
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
