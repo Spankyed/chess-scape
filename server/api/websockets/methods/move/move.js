@@ -50,6 +50,16 @@ module.exports = async function (
 			endMethod,
 			mated,
 		};
+
+		sendMessageToRoom(roomID, {
+			method: "move",
+			move: validMove,
+			clientID,
+			gameOver,
+			info,
+			colorToMove: nextColor(colorToMove),
+		});
+		
 		// todo if time controlled game, get stepFN task token and send to machine to end prev execution,
 		// todo then execute new clock state machine
 		const changes = update(move, match);
@@ -89,16 +99,6 @@ module.exports = async function (
 			}),
 			...(gameOver ? [] : []),
 		]);
-
-		sendMessageToRoom(roomID, {
-			method: "move",
-			move: validMove,
-			clientID,
-			gameOver,
-			info,
-			colorToMove: nextColor(colorToMove),
-		});
-
 
 		if (gameOver) {
 			await archiveMatch({ ...matchUpdates, endMethod });
