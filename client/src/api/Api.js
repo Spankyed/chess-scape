@@ -21,6 +21,7 @@ let clientID = null,
 	roomID = null,
 	connection,
 	connected = false,
+	pinger = null,
 	// Message Received handlers
 	handlers = {
 		// connect: msg => clientID = msg.clientID, // already setting clientID in entrance
@@ -111,13 +112,16 @@ function closeConnection() {
 }
 
 
+function ping() {
+	pinger = setInterval(() => sendMessage({ method: "ping" }), 1500);
+}
+function stopPinging() {
+	pinger && clearInterval(pinger)
+}
+
 // ** --------------------------------------------------------------------------
 // **  Send Message Wrappers
 // ** --------------------------------------------------------------------------
-// function ping() {
-// 	sendMessage({ method: "ping" });
-// }
-
 function joinRoom(id) {
 	roomID ??= id;
 	sendMessage({ method: "join", roomID });
@@ -387,13 +391,14 @@ export default {
 	end,
 	offer,
 	draw,
-	// ping,
 	rematch,
 	sendMove,
 	sendChat,
 	shareVideo,
 	// shareMusic,
 	shareSong,
+	ping,
+	stopPinging,
 	isConnected: () => connected,
 	getClientID: () => clientID,
 	getUsername: () => username,

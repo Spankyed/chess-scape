@@ -253,4 +253,5 @@ function cleanupHandlers(){
 		idleReconnect: () => {},
 		reconnect: () => {},
 	});	
+	Api.stopPinging();
 }

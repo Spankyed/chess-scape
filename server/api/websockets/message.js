@@ -22,9 +22,11 @@ const handler = async (event) => {
 
 	const message = event.body;
 	if (!message) return Responses._400({ message: "No message found" });
-
+	
 	const { clientID, TOKEN, method } = message;
 
+	if (method==='ping') return Responses._200({ message: "Ping recieved" });
+	
 	if ((!clientID || !TOKEN || !method)) {
 		console.warn(`Missing auth info or method not recognized`);
 		await sendMessage(connection, { method: "unauthorize" });
