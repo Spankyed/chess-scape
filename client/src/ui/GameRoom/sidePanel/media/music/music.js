@@ -261,7 +261,7 @@ function SongPlayer({ state, actions }){
 			>
 				<div class="song-title">{song.title}</div>
 				<div class="trash-icon">
-					<img onclick={cancel} src="../assets/lobby/create/cancel.svg" />
+					<img onclick={cancel} src="./assets/lobby/create/cancel.svg" />
 				</div>
 			</div>
 		);
@@ -269,7 +269,7 @@ function SongPlayer({ state, actions }){
 	function Input(){
 		return(
 			<div class="song-input cursor-pointer">
-				<img class='input-icon' src="../assets/room/sidePanel/controls/add_music.svg"/>	
+				<img class='input-icon' src="./assets/room/sidePanel/controls/add_music.svg"/>	
 				<div class='input-text'>
 					<span class='btn'>Choose</span>
 					<span class='text'> or drag music file here</span>
