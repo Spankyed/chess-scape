@@ -114,6 +114,9 @@ function closeConnection() {
 // ** --------------------------------------------------------------------------
 // **  Send Message Wrappers
 // ** --------------------------------------------------------------------------
+// function ping() {
+// 	sendMessage({ method: "ping" });
+// }
 
 function joinRoom(id) {
 	roomID ??= id;
@@ -170,8 +173,7 @@ function sendMessage(message, isBson) {
 		clientID, 
 		TOKEN // ! MUST SEND TOKEN FOR AUTH
 	};
-	if (isBson) connection.send(serialize(body));
-	else connection.send(JSON.stringify(body));
+	connection.send(JSON.stringify(body));
 	console.log(`%c Message sent [${message.method}]`, "color:orange;", { body });
 }
 
@@ -212,7 +214,7 @@ async function joinLobby() {
 		const rooms = await response.json();
 		console.log("%c Initial Lobby Rooms", "color:blue;", { rooms });
 		return rooms;
-	} else if (response.status === 401) {
+	} else if (response.status === 401) { // res is not defined
 		handlers.unauthorize();
         throw Error("Unauthorized");
 	}
@@ -245,7 +247,7 @@ async function createRoom(gameOptions) {
 		console.log("%c New Room", "color:blue;", res);
 		handlers.create(res);
 		return res;
-	} else if (response.status === 401) {
+	} else if (response.status === 401) { // res is not defined
 		handlers.unauthorize();
 		throw Error("Unauthorized");
 	}
@@ -260,7 +262,8 @@ async function deleteRoom(ID) {
 		const res = await response.json();
 		console.log(`%c ${res?.message}`, "color:orange;");
 		handlers.delete(res); // manually calling handler on client instead of server because...idk
-	} else if (res.status === 401) {
+	} else if (response.status === 401) {
+		// res is not defined
 		handlers.unauthorize();
 		throw Error("Unauthorized");
 	}
@@ -327,6 +330,7 @@ async function pushSubscribe(subscription) {
 		console.log("%c Device subscribed push notifications", "color:blue;", { res });
 		return res;
 	} else if (response.status === 401) {
+		// res is not defined
 		handlers.unauthorize();
 		throw Error("Unauthorized");
 	}
@@ -383,6 +387,7 @@ export default {
 	end,
 	offer,
 	draw,
+	// ping,
 	rematch,
 	sendMove,
 	sendChat,

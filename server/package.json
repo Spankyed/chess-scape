@@ -12,13 +12,13 @@
 		"nanoid": "^3.1.30",
 		"node-abort-controller": "^3.0.1",
 		"node-html-parser": "^5.1.0",
-		"serverless-s3-local": "^0.6.20",
-		"serverless-s3-sync": "^1.17.3",
 		"web-push": "^3.4.5",
 		"yup": "^0.32.9"
 	},
 	"devDependencies": {
 		"serverless": "^2.59.0",
+		"serverless-s3-local": "^0.6.20",
+		"serverless-s3-sync": "^1.17.3",
 		"serverless-dynamodb-local": "^0.2.40",
 		"serverless-offline": "^8.2.0",
 		"serverless-webpack": "^5.5.4",

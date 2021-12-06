@@ -51,7 +51,7 @@ module.exports = async function (
 			mated,
 		};
 
-		sendMessageToRoom(roomID, {
+		await sendMessageToRoom(roomID, {
 			method: "move",
 			move: validMove,
 			clientID,
@@ -59,7 +59,7 @@ module.exports = async function (
 			info,
 			colorToMove: nextColor(colorToMove),
 		});
-		
+
 		// todo if time controlled game, get stepFN task token and send to machine to end prev execution,
 		// todo then execute new clock state machine
 		const changes = update(move, match);
