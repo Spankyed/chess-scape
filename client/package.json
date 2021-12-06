@@ -8,7 +8,7 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "parcel src/ui/index.html -p 3000 --no-cache",
-		"build": "parcel build src/ui/index.html",
+		"build": "parcel build src/ui/index.html --public-url /chess-scape/",
 		"analyze": "parcel build src/ui/index.html --reporter @parcel/reporter-bundle-buddy"
 	},
 	"staticFiles": {
