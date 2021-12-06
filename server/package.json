@@ -25,6 +25,7 @@
 		"webpack": "^5.53.0"
 	},
 	"scripts": {
+		"dev": "sls offline start --httpPrt 4000 --noTimeout",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"deploy": "serverless deploy --stage production"
 	},
