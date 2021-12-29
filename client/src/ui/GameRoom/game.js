@@ -164,7 +164,7 @@ export default (initial) => ({
 				!roomState.loader.isLoading
 			) {
 				actions.prepareGame();
-				Api.ping() // fix for messages not recieved in prod: https://stackoverflow.com/questions/70019514/aws-websocket-doesnt-receive-previous-message-until-new-message-is-sent
+				// Api.ping() // fix for messages not recieved in prod: https://stackoverflow.com/questions/70019514/aws-websocket-doesnt-receive-previous-message-until-new-message-is-sent
 			}
 			// const removeScene = (canvas) => {
 			// 	// scene.dispose()
