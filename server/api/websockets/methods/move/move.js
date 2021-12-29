@@ -39,7 +39,6 @@ module.exports = async function (
 		await syncPlayer(connection, { moves, lastMove, colorToMove });
 		return Responses._400({ message: "Out of sync" });
 	} else {
-		// todo when game over (or room deleted) store match in savedMatchesTable
 		const gameOver = engine.game_over();
 		const mated = gameOver && engine.in_checkmate();
 		const endMethod = gameOver && mated ? "checkmate" : gameOver && "draw";

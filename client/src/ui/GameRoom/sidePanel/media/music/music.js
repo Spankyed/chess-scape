@@ -380,7 +380,7 @@ function Loader(){
 
 // Return next object key
 function next(obj, key) {
-	var keys = Object.keys(obj), 
+	let keys = Object.keys(obj), 
 	i = keys.indexOf(key);
 	return i !== -1 && keys[i + 1] && obj[keys[i + 1]];
 };
