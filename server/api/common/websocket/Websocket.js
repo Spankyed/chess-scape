@@ -1,7 +1,9 @@
 const AWS = require("aws-sdk");
 
+let gateway = null;
 const openGateway = (domainName, stage) => {
-	return new AWS.ApiGatewayManagementApi({
+	if (gateway) return;
+	return gateway = new AWS.ApiGatewayManagementApi({
 		apiVersion: "2018-11-29",
 		endpoint: process.env.IS_OFFLINE
 			? "http://localhost:3001"
