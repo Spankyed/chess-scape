@@ -5,6 +5,7 @@ const clientsTable = process.env.clientsTableName;
 
 async function sendMessage(connections, message) {
 	if (!(connections instanceof Array)) connections = [connections];
+	// todo change to for loop (cant message every user at once)
 	return Promise.all(
 		connections.map(({ connectionID, domainName, stage }) => {
 			if (connectionID == '0' || !domainName || !stage) return;
